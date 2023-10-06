@@ -1,0 +1,252 @@
+<div class="row animated fadeIn fast" *ngIf="cargando">
+    <div class="col-12">
+        <div class="alert alert-info text-center">
+            <h4 class="alert-heading"> Cargando</h4>
+            <i class="fa fa-spin fa-refresh fa-2x"></i>
+            <p class="mb-0">Por favor espere</p>
+
+        </div>
+    </div>
+</div>
+<div class="row animated fadeIn fast" *ngIf="!cargando">
+
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Lista de clientes</h4>
+                <h6 class="card-subtitle">Puede exportar los datos en Excel &amp; PDF</h6>
+                <div class="row p-t-12">
+                    <div class="col-md-4">
+                        <!-- Mostrar archivos -->
+                        <div class="dataTables_length" id="myTable_length">
+                            <label>Mostrar
+                                <select name="myTable_length" aria-controls="myTable" class="">
+                                    <option value="10">10</option>
+                                    <option value="25">25</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select> datos</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <!-- Acciones -->
+                        <div class="dt-buttons">
+                            <a class="dt-button buttons-copy buttons-html5 cursor" tabindex="0"
+                                aria-controls="example23" data-toggle="modal" data-target="#exampleModal">
+                                <span>
+                                    <i class=" mdi mdi-plus"></i>
+                                    Nuevo</span></a>
+                            <a class="dt-button buttons-excel buttons-html5" tabindex="0" aria-controls="example23"
+                                href="#">
+                                <span>
+                                    <i class=" mdi mdi-file-excel"></i>
+                                    Excel</span></a>
+                            <a class="dt-button buttons-pdf buttons-html5 " tabindex="0" aria-controls="example23"
+                                href="#"><span>
+                                    <i class=" mdi mdi-file-pdf"></i>
+                                    PDF</span></a>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <!-- Buscador -->
+                        <div id="myTable_filter" class="dataTables_filter">
+                            <label>Buscar:<input type="search" class="" placeholder="" aria-controls="myTable">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <!-- End, row acciones header table -->
+
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>CI</th>
+                                <th>Nombre</th>
+                                <th>Grupo Clientes</th>
+                                <th>Teléfono</th>
+                                <th>Dirección</th>
+                                <th class=" w100 text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of clients">
+                                <td>{{item.ci}}</td>
+                                <td>{{item.name}}</td>
+                                <td>{{item.id_group_cli}}</td>
+                                <td>{{item.phone}}</td>
+                                <td>{{item.address}}</td>
+                                <td class="text-nowrap text-center">
+                                    <a href="#" data-toggle="tooltip" data-original-title="Edit"> <i
+                                            class="fa fa-pencil text-inverse m-r-10"></i> </a>
+                                    <a href="#" data-toggle="tooltip" data-original-title="Close"> <i
+                                            class="fa fa-close text-danger"></i> </a>
+                                </td>
+
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="btn-group" role="group" aria-label="Basic example">
+                    <button type="button" class="btn btn-secondary">Anterior</button>
+                    <button type="button" class="btn btn-secondary">Siguiente</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+<!-- modal crear -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel1" #miModal>
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="exampleModalLabel1">Nuevo Cliente</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <form autocomplete="off">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Cédula</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class=" ti-id-badge"></i>
+                                    </div>
+                                    <input  type="text" class="form-control" 
+                                            id="ci" 
+                                            name="ci" 
+                                            [(ngModel)]="ci" 
+                                            placeholder="Cédula">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Nombre</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="ti-user"></i>
+                                    </div>
+                                    <input 
+                                    type="text" 
+                                    class="form-control" 
+                                    id="name"
+                                    name="name"
+                                    [(ngModel)]="name" 
+                                    placeholder="Nombre"
+                                        >
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Apellido</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="ti-user"></i>
+                                    </div>
+                                    <input type="text" 
+                                    class="form-control" 
+                                    id="lastname"
+                                    name="lastname"
+                                    [(ngModel)]="lastname" 
+                                    placeholder="Apellido">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Dirección</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class=" ti-location-pin"></i>
+                                    </div>
+                                    <input type="text" 
+                                    class="form-control" 
+                                    id="address"
+                                    name="address"
+                                    [(ngModel)]="address" 
+                                    placeholder="Dirección"
+                                        >
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Teléfono</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="mdi mdi-phone"></i>
+                                    </div>
+                                    <input type="text" 
+                                    class="form-control" 
+                                    id="phone"
+                                    name="phone"
+                                    [(ngModel)]="phone" 
+                                    placeholder="Teléfono"
+                                    >
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Email</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class=" ti-email"></i>
+                                    </div>
+                                    <input type="text" 
+                                    class="form-control" 
+                                    id="email"
+                                    name="email"
+                                    [(ngModel)]="email" 
+                                    placeholder="Email"
+                                    >
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Grupo de clientes</label>
+                                <div class="input-group">
+                                    <select class="select2 form-control custom-select select2-hidden-accessible" 
+                                    id=" id_group_cli" 
+                                    name="id_group_cli" 
+                                    [(ngModel)]="id_group_cli">
+                                        <option *ngFor="let item of groupClients" [value]="item.id"> {{item.name}}</option>
+    
+                                    </select>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" (click)="createClient()" data-dismiss="modal">Crear Cliente</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- /.modal  crear-->

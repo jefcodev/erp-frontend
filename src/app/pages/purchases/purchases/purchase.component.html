@@ -1,0 +1,130 @@
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+
+            <div class="card-body">
+                <form (submit)="createPurchase()" >
+                    <div class="form-body">
+                        <div class="row p-t-20">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label">Fecha de compra:*</label>
+                                    <input type="date" id="firstName" [(ngModel)]="date_buy"  name="date_buy" id="date_buy" class="form-control" placeholder="Plástico">
+                                    <!-- <span class="font-13 text-muted">e.g "15/08/2023"</span>  -->
+                                    <!-- <small class="form-control-feedback"> This is inline help </small> -->
+                                </div>
+                            </div>
+                            <!--/span-->
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label">Número de factura:</label>
+                                    <input type="text" placeholder="" [(ngModel)]="code_buy" name="code_buy" id="code_buy" 
+                                        class="form-control">
+                                   <!--  <label class="control-label">Número de factura:</label>
+                                    <input type="text" placeholder="" [(ngModel)]="code_buy" name="code_buy" id="code_buy" 
+                                    data-mask="999-999-999999999"
+                                        class="form-control"> -->
+                                    <span class="font-13 text-muted">e.g "001-001-000000062"</span>
+                                    <!-- <small class="form-control-feedback"> This field has error. </small> -->
+                                </div>
+
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label">Proveedor:</label>
+                                    <select class="form-control" [(ngModel)]="id_supplier" name="id_supplier"
+                                        id="id_supplier" tabindex="1">
+                                        <option *ngFor="let item of providers" [value]="item.id">{{item.trade_name}}
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!--/span-->
+                        </div>
+                        <!--/row-->
+                        <div class="row">
+
+                            <!-- <div class="col-md-6">
+                                <div class="input-group">
+                                    
+                                    <select class="form-control" [(ngModel)]="id_product" name="id_product"
+                                        id="id_product" tabindex="1">
+                                        <option *ngFor="let item of products" [value]="item.id">{{item.name}}</option>
+                                        
+                                    </select>
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-info" type="button" >Agregar Producto</button>
+                                    </span>
+                                </div>
+                            </div> -->
+
+                            <div class="col-md-8">
+                                <div class="input-group">
+                                  <select class="form-control" [(ngModel)]="selectedProduct" name="selectedProduct" id="selectedProduct" tabindex="1">
+                                    <option *ngFor="let item of products" [ngValue]="item">{{item.name}}</option>
+                                  </select>
+                                  &nbsp;&nbsp;
+                                  <input class="form-control" type="number" [(ngModel)]="selectedQuantity" name="selectedQuantity" id="selectedQuantity" tabindex="2">
+                                  <span class="input-group-btn">
+                                    <button class="btn btn-info" type="button" (click)="agregarProducto()">Agregar Producto</button>
+                                  </span>
+                                </div>
+                              </div>
+                              
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <button  type="submit" class=" btn btn-success"> <i class="fa fa-check"></i>
+                                        Crear Compra</button>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="row">
+                            
+                            <div class="col-md-12">
+                                <table class="table">
+                                  <thead>
+                                    <tr>
+                                      <th>ID</th>
+                                      <th>Nombre</th>
+                                      <th>Cantidad</th>
+                                      <th>Precio</th>
+                                      <th>Sub Total</th>
+                                      <th>Acciones</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr *ngFor="let product of purchasedProducts;  let i = index">
+                                      <td>{{ product.id }}</td>
+                                      <td>{{ product.description_product }}</td>
+                                      <td>{{ product.amount_product }}</td>
+                                      <td>{{ product.price_product }}</td>
+                                      <td>{{ product.price_product * product.amount_product }}</td>
+
+                                      <td>
+                                        <!-- <button type="button" (click)="removePrice(i)">Eliminar</button> -->
+                                        <button type="button" (click)="removePrice(i)" class="btn btn-danger"><i class="ti-trash"></i></button>
+                                    </td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </div>
+
+                        </div>
+
+                    </div>
+                    <!-- <div class="form-actions">
+                        <button type="submit" class="btn btn-success"> <i class="fa fa-check"></i> Crear</button>
+                        <button type="button" class="btn btn-inverse">Cancel</button>
+                        <button  type="submit" class=" btn btn-success"> <i class="fa fa-check"></i>
+                            Crear Compra</button>
+                    </div> -->
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
