@@ -1,0 +1,74 @@
+<div class="col-12">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Libro Mayor</h4>
+            <h6 class="card-subtitle"></h6>
+
+            <div class="float-left modal-footer">
+                <button class="btn btn-info waves-effect waves-light" data-toggle="modal" data-target="#exampleModal"
+                    type="button"><span class="btn-label"><i class="fa fa-plus"></i></span>Nuevo Asiento</button>
+
+                <button class="btn btn-success margin-left-10 AN__btn_imprimir_pdf___NEW_ASI hidenNew2 btn-new-version"
+                    id="btnimprimirasiento" type="button">
+                    <span class="fa fa-file-pdf-o" style="padding-left:0px;"></span>&nbsp;PDF
+                </button>
+                <button class="btn btn-success AN__btn_imprimir_excel___NEW_ASI hidenNew2 btn-new-version"
+                    id="btnasientoEXCEL" type="button">
+                    <span class="fa fa-file-excel-o" style="padding-left:0px;"></span>&nbsp;Excel
+                </button>
+                <button class="btn btn-success margin-left-10 AN__btn_imprimir_asiento___NEW_ASI hidenNew2 btn-print"
+                    id="btnimprimir" type="button" onclick="">
+                    <span class="fa fa-print" style="padding-left:0px;"></span>&nbsp;Imprimir
+                </button>
+                <div id="example23_filter" class="dataTables_filter"><label>Buscar:<input type="search" class=""
+                            placeholder="" aria-controls="example23"></label>
+                </div>
+            </div>
+            <div class="table-responsive">
+
+                <table id="demo-foo-addrow" class="table m-t-30 table-hover contact-list footable-loaded footable"
+                    data-page-size="10">
+                    <thead>
+                        <tr>
+                            <th class="footable-sortable">#<span class="footable-sort-indicator"></span></th>
+                            <th class="footable-sortable">Código<span class="footable-sort-indicator"></span></th>
+                            <th class="footable-sortable">Descripción<span class="footable-sort-indicator"></span></th>
+                            <th class="footable-sortable">Total Debe<span class="footable-sort-indicator"></span></th>
+                            <th class="footable-sortable">Total Haber<span class="footable-sort-indicator"></span></th>
+                            <th class="footable-sortable">Saldo<span class="footable-sort-indicator"></span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let libro of libro_mayor let i = index">
+                            <td><span class="footable-toggle"></span>{{ i + 1 }}</td>
+                            <td>{{libro.codigo}}</td>
+                            <td>{{libro.descripcion }}</td>
+                            <td>{{libro.total_debe }}</td>
+                            <td>{{libro.total_haber }}</td>
+                            <td>{{libro.saldo}}</td>
+                            <ng-template #inactivoOption>
+                            </ng-template>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="8">
+                                <div class="text-right">
+                                    <ul class="pagination">
+                                        <li class="footable-page-arrow disabled"><a data-page="first"
+                                                href="#first">«</a></li>
+                                        <li class="footable-page-arrow disabled"><a data-page="prev" href="#prev">‹</a>
+                                        </li>
+                                        <li class="footable-page-arrow"><a data-page="next" href="#next">›</a></li>
+                                        <li class="footable-page-arrow"><a data-page="last" href="#last">»</a></li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>

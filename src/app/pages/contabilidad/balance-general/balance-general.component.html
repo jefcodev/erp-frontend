@@ -1,0 +1,140 @@
+<style>
+    .verde {
+        color: green;
+    }
+
+    .rojo {
+        color: red;
+    }
+
+    .total-label {
+        margin-right: 10px;
+    }
+</style>
+
+<div class="col-12">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Balance General</h4>
+            <hr>
+            <h6 class="card-subtitle"></h6>
+
+            <div class="table-responsive">
+
+                <table id="demo-foo-addrow" class="table m-t-35 table-hover contact-list footable-loaded footable"
+                    data-page-size="10">
+                    <thead>
+                        <tr>
+                            <th class="footable-sortable">Codigo <span class="footable-sort-indicator"></span>
+                            </th>
+                            <th class="footable-sortable">Descripcion<span class="footable-sort-indicator"></span></th>
+                            <th class="footable-sortable">Saldo<span class="footable-sort-indicator"></span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let bg of balance_general let i = index">
+                            <td>{{bg.codigo}}</td>
+                            <td>{{bg.descripcion }}</td>
+                            <td>{{bg.saldo}}</td>
+                            <ng-template #inactivoOption>
+                            </ng-template>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                    </tfoot>
+                </table>
+                <hr>
+                <tr>
+                    <td colspan="2"></td>
+                    <td class="text-left">
+                        <h5 class="total-label">Total Activo: </h5>
+                    </td>
+                    <td class="text-right">
+                        <h5 class="total-value">{{ '$ ' + total_activo?.toLocaleString('es', { minimumFractionDigits: 2,
+                            maximumFractionDigits: 2 }) }}</h5>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2"></td>
+                    <td class="text-left">
+                        <h5 class="total-label">Total Pasivo: </h5>
+                    </td>
+                    <td class="text-right">
+                        <h5>{{ '$ ' + total_pasivo?.toLocaleString('es', { minimumFractionDigits: 2,
+                            maximumFractionDigits: 2 })
+                            }}</h5>
+                    </td>
+                </tr>
+                <hr>
+                <tr>
+                    <td colspan="2"></td>
+                    <td class="text-left">
+                        <h5 class="total-label">Patrimonio:</h5>
+                    </td>
+                    <td class="text-right">
+                        <h5>{{ '$ ' + patrimonio?.toLocaleString('es', { minimumFractionDigits: 2,
+                            maximumFractionDigits: 2 }) }}</h5>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2"></td>
+                    <td class="text-left">
+                        <h5 class="total-label">Resultado Ejercicio:</h5>
+                    </td>
+                    <td class="text-right">
+                        <h5>{{ '$ ' + resultado_ejercicio?.toLocaleString('es', { minimumFractionDigits: 2,
+                            maximumFractionDigits: 2 }) }}</h5>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2"></td>
+                    <td class="text-left">
+                        <h5 class="total-label">Total Patrimonio:</h5>
+                    </td>
+                    <td class="text-right">
+                        <h5>{{ '$ ' + total_patrimonio?.toLocaleString('es', { minimumFractionDigits: 2,
+                            maximumFractionDigits:
+                            2 }) }}</h5>
+                    </td>
+                </tr>
+                <hr>
+                <tr>
+                    <td colspan="2"></td>
+                    <td class="text-left">
+                        <h4 class="total-label"><strong>Total Activo:</strong></h4>
+                    </td>
+                    <td class="text-right" style="padding-right: 20px;">
+                        <h4>{{ '$ ' + total_activo?.toLocaleString('es', { minimumFractionDigits: 2,
+                            maximumFractionDigits: 2 }) }}</h4>
+                    </td>
+                    <td class="text-left" style="padding-left: 20px;">
+                        <h4 class="total-label"><strong>Total Pasivo + Total Patrimonio:</strong></h4>
+                    </td>
+                    <td class="text-right">
+                        <h4>{{ '$ ' + pasivo_patrimonio?.toLocaleString('es', { minimumFractionDigits: 2,
+                            maximumFractionDigits: 2 }) }}</h4>
+                    </td>
+                </tr>
+
+
+            </div>
+
+            <div class="float-left modal-footer">
+                <hr>
+                <button class="btn btn-success margin-left-10 AN__btn_imprimir_pdf___NEW_ASI hidenNew2 btn-new-version"
+                    id="btnimprimirasiento" type="button">
+                    <span class="fa fa-file-pdf-o" style="padding-left:0px;"></span>&nbsp;PDF
+                </button>
+                <button class="btn btn-success AN__btn_imprimir_excel___NEW_ASI hidenNew2 btn-new-version"
+                    id="btnasientoEXCEL" type="button">
+                    <span class="fa fa-file-excel-o" style="padding-left:0px;"></span>&nbsp;Excel
+                </button>
+                <button class="btn btn-success margin-left-10 AN__btn_imprimir_asiento___NEW_ASI hidenNew2 btn-print"
+                    id="btnimprimir" type="button" onclick="ImprimirAsiento();">
+                    <span class="fa fa-print" style="padding-left:0px;"></span>&nbsp;Imprimir
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>

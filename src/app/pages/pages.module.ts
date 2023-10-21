@@ -6,15 +6,6 @@ import { HttpClientModule } from "@angular/common/http";
 
 import { NgChartsModule } from 'ng2-charts';
 
-//Modules
-import { ComponentsModule } from '../components/components.module';
-import { ShareModule } from '../shared/share.module';
-import { UsuariosModule } from './usuarios/usuarios.module';
-import { InventoryModule } from './inventory/inventory.module';
-import { PurchaseModule } from './purchases/purchase.module';
-import { QuotationModule } from './quotations/quotation.module';
-
-
 // Components
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { PagesComponent } from './pages.component';
@@ -24,7 +15,15 @@ import { RxjsComponent } from './rxjs/rxjs.component';
 import { PerfilComponent } from './perfil/perfil.component';
 import { ApuModule } from './apu/apu.module';
 
+// Módulos
+import { ComponentsModule } from '../components/components.module';
+import { ShareModule } from '../shared/share.module';
+import { UsuariosModule } from './usuarios/usuarios.module';
+import { InventoryModule } from './inventory/inventory.module';
+import { PurchaseModule } from './purchases/purchase.module';
+import { QuotationModule } from './quotations/quotation.module';
 
+import { ContabilidadModule } from './contabilidad/contabilidad.module';
 
 @NgModule({
   declarations: [
@@ -39,7 +38,8 @@ import { ApuModule } from './apu/apu.module';
     DashboardComponent,
     PagesComponent,
     AccountSettingsComponent,
-    UsuariosModule
+    UsuariosModule,
+    ContabilidadModule
   ],
   imports: [
     CommonModule,
@@ -56,4 +56,5 @@ import { ApuModule } from './apu/apu.module';
     NgChartsModule,
   ]
 })
+
 export class PagesModule { }

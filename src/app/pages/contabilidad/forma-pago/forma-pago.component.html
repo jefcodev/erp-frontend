@@ -1,0 +1,167 @@
+<div class="col-12">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Lista de Formas de Pago</h4>
+            <h6 class="card-subtitle"></h6>
+            <button class="btn btn-primary waves-effect waves-light" data-toggle="modal" data-target="#exampleModal"
+                type="button"><span class="btn-label"><i class="fa fa-user-circle"></i></span>Crear Forma de Pago</button>
+
+            <div class="table-responsive">
+
+                <table id="demo-foo-addrow" class="table m-t-30 table-hover contact-list footable-loaded footable"
+                    data-page-size="10">
+                    <thead>
+                        <tr>
+
+                            <th class="footable-sortable">#<span class="footable-sort-indicator"></span></th>
+                            <th class="footable-sortable">Código <span class="footable-sort-indicator"></span>
+                            </th>
+                            <th class="footable-sortable">Descripción<span class="footable-sort-indicator"></span></th>
+
+                            <th class="footable-sortable">Action<span class="footable-sort-indicator"></span></th>
+                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let forma_pago of formas_pago let i = index">
+                            <td><span class="footable-toggle"></span>{{ i + 1 }}</td>
+                            <td>{{forma_pago.codigo}}</td>
+                            <td>{{forma_pago.descripcion}}</td>
+
+                            <td *ngIf="forma_pago.estado; else inactivo">
+                                <div class="label label-table label-success">Activo</div>
+                            </td>
+                            <ng-template #inactivo>
+                                <td>
+                                    <div class="label label-table label-danger">Inactivo</div>
+                                </td>
+                            </ng-template>
+
+                            <td *ngIf="forma_pago.estado else inactivoOption" class="text-nowrap">
+
+                                <a class="cursor" data-toggle="modal" (click)="cargarFormaPagoPorId(forma_pago.id_forma_pago);"
+                                    data-target="#exampleModalU"><span
+                                        class="fa fa-pencil text-inverse m-r-10"></span></a>
+
+                                <a class="cursor" (click)="borrarFormaPago(forma_pago);" data-toggle="tooltip"
+                                    data-original-title="Close"> <i class="fa fa-close text-danger"></i> </a>
+                            </td>
+                            <ng-template #inactivoOption>
+                            </ng-template>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="8">
+                                <div class="text-right">
+                                    <ul class="pagination">
+                                        <li class="footable-page-arrow disabled"><a data-page="first"
+                                                href="#first">«</a></li>
+                                        <li class="footable-page-arrow disabled"><a data-page="prev" href="#prev">‹</a>
+                                        </li>
+                                        <li class="footable-page-arrow"><a data-page="next" href="#next">›</a></li>
+                                        <li class="footable-page-arrow"><a data-page="last" href="#last">»</a></li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal create -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel1" #miModal>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="exampleModalLabel1">Nuevo Forma de Pago</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <form autocomplete="off" [formGroup]="formaPagoForm">
+                    <div class="form-group">
+
+                        <label for="exampleInputuname">Código</label>
+                        <div class="input-group">
+                            <div class="input-group-addon"><i class="ti-user"></i></div>
+                            <input type="text" class="form-control" id="exampleInputuname" placeholder="Código"
+                                formControlName="codigo">
+                        </div>
+
+                        <label for="exampleInputuname">Descripción</label>
+                        <div class="input-group">
+                            <div class="input-group-addon"><i class="ti-user"></i></div>
+                            <input type="text" class="form-control" id="exampleInputuname" placeholder="Descripción"
+                                formControlName="descripcion">
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col text-danger">
+                            <p *ngIf="campoNoValido('codigo',formaPagoForm)"> El campo es obligatorio</p>
+                            <p *ngIf="campoNoValido('descripcion',formaPagoForm)"> El campo es obligatorio</p>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" (click)="crearFormaPago();"
+                            data-dismiss="modal">Crear</button>
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- modal  update-->
+<div class="modal fade" id="exampleModalU" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel1" #miModal>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h4 class="modal-title" id="exampleModalLabel1">Actualizar Forma de Pago</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+
+            <div class="modal-body">
+
+                <form autocomplete="off" class="form-horizontal p-t-20" [formGroup]="formaPagoFormU">
+
+                    <div class="form-group row">
+                        <label for="exampleInputuname3" class="col-sm-3 control-label">Descripción</label>
+                        <div class="col-sm-9">
+                            <div class="input-group">
+                                <div class="input-group-addon"><i class="ti-user"></i></div>
+                                <input type="text" class="form-control" id="exampleInputuname3"
+                                    placeholder="Descripción" formControlName="descripcion">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col text-danger">
+                            <p *ngIf="campoNoValido('descripcion',formaPagoFormU)"> El campo es obligatorio</p>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" (click)="actualizarFormaPago();"
+                            data-dismiss="modal">Actualizar</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

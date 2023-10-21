@@ -63,6 +63,25 @@ export class SidebarService {
 
     },
     {
+      titulo: 'Compra2',
+      icono: 'mdi mdi-sale',
+      submenu: [
+        { titulo: 'Proveedores', url: ('proveedores') },
+        { titulo: 'Facturas compra', url: ('facturas') },
+        { titulo: 'Detalle Facturas compra', url: ('detalle-facturas') },
+      ]
+
+    },
+    {
+      titulo: 'Venta',
+      icono: 'mdi mdi-sale',
+      submenu: [
+        { titulo: 'Clientes', url: ('clientes') },
+        { titulo: 'Facturación', url: ('facturacion') },
+      ]
+
+    },
+    {
       titulo: 'Cotizaciones',
       icono: 'mdi mdi-arrow-up-bold-circle-outline',
       submenu :[
@@ -82,7 +101,21 @@ export class SidebarService {
         {titulo:'Lista de APUs', url:('apus')},
         
       ]
-
+    },
+    {
+      titulo: 'Contabilidad',
+      icono: 'mdi mdi-sale',
+      submenu: [
+        { titulo: 'Plan de Cuentas', url: ('cuentas') },
+        { titulo: 'Asientos', url: ('asientos') },
+        { titulo: 'Formas de Pago', url: ('formas-pago') },
+        { titulo: 'Libro Diario', url: ('libro-diario') },
+        { titulo: 'Libro Mayor', url: ('libro-mayor') },
+        { titulo: 'Estado de Resultado', url: ('estado-resultado') },
+        { titulo: 'Balance General', url: ('balance-general') },
+        { titulo: 'Estados de Cuenta', url: ('facturacion') },
+        { titulo: 'Impuestos', url: ('facturacion') },
+      ]
     },
     {
       titulo: 'Reportes',

@@ -32,7 +32,15 @@ import { QuotationComponent } from './quotations/quotations/quotation.component'
 import { ApusComponent } from './apu/apus/apus.component';
 import { ApuComponent } from './apu/apus/apu.component';
 
-
+// Contabilidad
+import { CuentaComponent } from './contabilidad/cuenta/cuenta.component';
+import { FormaPagoComponent } from './contabilidad/forma-pago/forma-pago.component';
+import { AsientoComponent } from './contabilidad/asiento/asiento.component';
+import { DetalleAsientoComponent } from './contabilidad/detalle-asiento/detalle-asiento.component';
+import { LibroDiarioComponent } from './contabilidad/libro-diario/libro-diario.component';
+import { LibroMayorComponent } from './contabilidad/libro-mayor/libro-mayor.component';
+import { BalanceGeneralComponent } from './contabilidad/balance-general/balance-general.component';
+import { EstadoResultadoComponent } from './contabilidad/estado-resultado/estado-resultado.component';
 
 const routes: Routes = [
     {
@@ -67,7 +75,6 @@ const routes: Routes = [
             {path: 'purchases', component: PurchasesComponent, data:{titulo:'Compras'}},
             {path: 'purchase', component: PurchaseComponent, data:{titulo:'Nueva Compra'}},
 
-
             /* Quotations */
             {path: 'quotations', component: QuotationsComponent, data:{titulo:'Proformas'}},
             {path: 'quotation', component: QuotationComponent, data:{titulo:'Nueva Proforma'}},
@@ -75,11 +82,19 @@ const routes: Routes = [
             {path: 'clients/groups', component: GroupsClientsComponent, data:{titulo:'Grupo de Clientes'}},
             {path: 'clients/import', component: ImportClientsComponent, data:{titulo:'Importar Clientes'}},
             
-            
             /* APUS */
-            
             {path: 'apus', component: ApusComponent, data:{titulo:'APUs'}},
             {path: 'apu', component: ApuComponent, data:{titulo:'Generar APU'}},
+
+            // Contabilidad
+            { path: 'cuentas', component: CuentaComponent, data: { titulo: 'Cuentas' } },
+            { path: 'formas-pago', component: FormaPagoComponent, data: { titulo: 'Formas de Pago' } },
+            { path: 'asientos', component: AsientoComponent, data: { titulo: 'Asientos' } },
+            { path: 'detalle-asientos', component: DetalleAsientoComponent, data: { titulo: 'Detalle Asientos' } },
+            { path: 'libro-diario', component: LibroDiarioComponent, data: { titulo: 'Libro Diario' } },
+            { path: 'libro-mayor', component: LibroMayorComponent, data: { titulo: 'Libro Mayor' } },
+            { path: 'estado-resultado', component: EstadoResultadoComponent, data: { titulo: 'Estado Resultado' } },
+            { path: 'balance-general', component: BalanceGeneralComponent, data: { titulo: 'Balance General' } },
         ]
     },
 ];
@@ -88,6 +103,7 @@ const routes: Routes = [
     imports: [ RouterModule.forChild(routes) ],
     exports: [ RouterModule ]
 })
+
 export class PagesRoutingModule {}
 
 
