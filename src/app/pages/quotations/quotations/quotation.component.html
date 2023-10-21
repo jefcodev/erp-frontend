@@ -49,7 +49,7 @@
                                 <div class="form-group">
                                     <label class="control-label">Seleccione producto:</label>
                                   <select class="form-control" [(ngModel)]="selectedProduct" name="selectedProduct" id="selectedProduct" tabindex="1">
-                                    <option *ngFor="let item of products" [ngValue]="item">{{item.name}}</option>
+                                    <option *ngFor="let item of products" [ngValue]="item">{{item.stock}}</option>
                                   </select>
                                   
                                 </div>

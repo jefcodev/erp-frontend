@@ -1,16 +1,21 @@
 export class Product {
     constructor( 
-        public sku: string,
-        public name: string,
-        public description: string,
-        public specifications: string,
-        public id_category: number,
-        public pur_price: number,
-        public id_iva: number,
-        public id_unit: number,
+        public id_tipo_inventario: number,
+        public id_categorias: number,
+        public id_unidad: number,
+        public id_ice: number,
+        public codigo: string,
+        public descripcion: string,
+        public especificaciones: string,
+        public ficha: string,
+        public stock_minimo: number,
         public mini_stock: number,
         public stock: number,
-        public status?: boolean,
-        public id?: number,
+        public iva: boolean,
+        public estado?: boolean,
+        public stock_maximo?: number,
+        public precios?: number,
+        public id_produco?: number,
+        
     ){}
   }

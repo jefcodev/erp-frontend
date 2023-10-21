@@ -20,18 +20,18 @@ const base_url = environment.base_url;
 export class ProductService {
   public product: Product;
 
-  constructor( private  http: HttpClient) { 
+  constructor(private http: HttpClient) {
   }
 
   get token(): string {
     return localStorage.getItem('token');
   }
-  
-  get headers(){
+
+  get headers() {
     return {
-       headers :{
-        'x-token' : this.token
-       }
+      headers: {
+        'x-token': this.token
+      }
     }
   }
 
@@ -51,15 +51,29 @@ export class ProductService {
 
     )
   } */
-  cargarProducts(){
+  cargarProducts() {
     const url = `${base_url}/inventory/products`;
-    return this.http.get<CargarProduct>(url,this.headers)
+    return this.http.get<CargarProduct>(url, this.headers)
       .pipe(
-        map( resp =>{
+        map(resp => {
           const products = resp.products.map(
-            pro => new Product (pro.sku,pro.name,pro.description, pro.specifications,pro.id_category,
-              pro.pur_price, pro.id_iva, pro.id_unit, pro.mini_stock, pro.stock, pro.status, pro.id )
-            );
+            pro => new Product(
+               pro.id_tipo_inventario,
+            pro.id_categorias,
+            pro.id_unidad,
+            pro.id_ice,
+            pro.codigo,
+            pro.descripcion,
+            pro.especificaciones,
+            pro.ficha,
+            pro.stock,
+            pro.stock_minimo,
+            pro.stock_maximo,
+            pro.iva,
+            pro.estado,
+            pro.precios
+            )
+          );
           return {
             total: resp.total,
             products
@@ -67,21 +81,21 @@ export class ProductService {
         })
       )
   }
-/*   cargarProducts(){
-    const url = `${base_url}/inventory/products`;
-    return this.http.get<CargarProduct>(url,this.headers)
-      .pipe(
-        delay(400),
-        map(resp => ({
-          total: resp.total,
-          products: resp.products.map(
-            pro => new Product (pro.sku,pro.name,pro.description, pro.specifications,pro.id_category,
-              pro.pur_price, pro.id_iva, pro.id_unit, pro.mini_stock, pro.stock, pro.status, pro.id )
-          )
-        }))
-        
-      )
-  } */
+  /*   cargarProducts(){
+      const url = `${base_url}/inventory/products`;
+      return this.http.get<CargarProduct>(url,this.headers)
+        .pipe(
+          delay(400),
+          map(resp => ({
+            total: resp.total,
+            products: resp.products.map(
+              pro => new Product (pro.sku,pro.name,pro.description, pro.specifications,pro.id_category,
+                pro.pur_price, pro.id_iva, pro.id_unit, pro.mini_stock, pro.stock, pro.status, pro.id )
+            )
+          }))
+          
+        )
+    } */
 
 
   createProduct(product) {

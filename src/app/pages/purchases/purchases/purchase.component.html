@@ -62,7 +62,7 @@
                             <div class="col-md-8">
                                 <div class="input-group">
                                   <select class="form-control" [(ngModel)]="selectedProduct" name="selectedProduct" id="selectedProduct" tabindex="1">
-                                    <option *ngFor="let item of products" [ngValue]="item">{{item.name}}</option>
+                                    <option *ngFor="let item of products" [ngValue]="item">{{item.stock}}</option>
                                   </select>
                                   &nbsp;&nbsp;
                                   <input class="form-control" type="number" [(ngModel)]="selectedQuantity" name="selectedQuantity" id="selectedQuantity" tabindex="2">

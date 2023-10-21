@@ -37,21 +37,23 @@ export class ProductComponent implements OnInit {
   public productForm: FormGroup;
   public price: number;
   public newPrice: number;
-  
+
   //Guardar los precios
   public prices: { value: number }[] = [];
 
   // Modelo products
-  public sku: string;
-  public name: string;
-  public description: string;
-  public specifications: string;
-  public id_category: number;
-  public pur_price: number;
-  public id_iva: number;
-  public id_unit: number;
-  public mini_stock: number;
+  public id_categorias: number;
+  public id_unidad: number;
+  public id_ice: number;
+  public codigo: string;
+  public descripcion: string;
+  public especificaciones: string;
+  public ficha: string;
+  public stock_minimo: number;
   public stock: number;
+  public iva: boolean;
+  public estado: boolean;
+  public stock_maximo: number;
 
 
 
@@ -83,21 +85,22 @@ export class ProductComponent implements OnInit {
     this.prices.splice(index, 1);
   }
 
-  
+
 
   createProduct() {
     const product = {
-      sku: this.sku,
-      name: this.name,
-      description: this.description,
-      specifications: this.specifications,
-      pur_price: this.pur_price,
-      id_category: this.id_category,
-      id_unit: this.id_unit,
-      id_iva: this.id_iva,
-      mini_stock: this.mini_stock,
-      stock: this.stock,
-      prices: this.prices.map(price => price.value)
+       id_categorias:this.id_categorias,
+       id_unidad:this.id_unidad,
+       id_ice:this.id_ice,
+       codigo:this.codigo,
+       descripcion:this.descripcion,
+       especificaciones:this.especificaciones,
+       ficha:this.ficha,
+       stock_minimo:this.stock_minimo,
+       stock:this.stock,
+       iva: this.iva,
+       stock_maximo:this.stock_maximo,
+       precios: this.prices.map(price => price.value)
     };
     console.log(product);
 

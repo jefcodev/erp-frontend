@@ -74,11 +74,11 @@ export class QuotationComponent implements OnInit {
     agregarProducto() {
       if (this.selectedProduct && this.selectedQuantity) {
         const purchasedProduct = {
-          id: this.selectedProduct.id,
+          /* id: this.selectedProduct.id,
           description_product: this.selectedProduct.name,
           price_product: this.selectedProduct.pur_price,
           iva_product:this.iva,
-          amount_product: this.selectedQuantity
+          amount_product: this.selectedQuantity */
         };
         this.purchasedProducts.push(purchasedProduct);
         // Reiniciar los valores seleccionados
