@@ -67,8 +67,8 @@ export class SidebarService {
       icono: 'mdi mdi-sale',
       submenu: [
         { titulo: 'Proveedores', url: ('proveedores') },
-        { titulo: 'Facturas compra', url: ('facturas') },
-        { titulo: 'Detalle Facturas compra', url: ('detalle-facturas') },
+        { titulo: 'Facturas Compra', url: ('facturas') },
+        { titulo: 'Detalle Facturas Compra', url: ('detalle-facturas') },
       ]
 
     },
@@ -77,6 +77,8 @@ export class SidebarService {
       icono: 'mdi mdi-sale',
       submenu: [
         { titulo: 'Clientes', url: ('clientes') },
+        { titulo: 'Facturas Venta', url: ('facturas-venta') },
+        { titulo: 'Detalle Facturas Venta', url: ('detalle-facturas-ventas') },
         { titulo: 'Facturación', url: ('facturacion') },
       ]
 

@@ -34,7 +34,7 @@ export class ClienteService {
     }
   }
 
-loadClientes() {
+  loadClientes() {
     const url = `${base_url}/clientes`;
     return this.hhtp.get<LoadCliente>(url, this.headers);
   }
@@ -42,7 +42,18 @@ loadClientes() {
   loadClienteById(id_cliente: any) {
     console.log("cargarClienteById")
     console.log(id_cliente)
-    const url = `${base_url}/clientes/${id_cliente}`;
+    //const url = `${base_url}/clientes/${id_cliente}`;
+    const url = `${base_url}/clientes/id/${id_cliente}`;
+    return this.hhtp.get(url, this.headers)
+      .pipe(
+        map((resp: { ok: boolean, cliente: Cliente }) => resp.cliente)
+      )
+  }
+
+  loadClienteByIdentificacion(identificacion: any) {
+    console.log("\n\n-> (service) loadClienteByIdentificacion(identificacion: any) {")
+    console.log('identidentificacion: ', identificacion)
+    const url = `${base_url}/clientes/identificacion/${identificacion}`;
     return this.hhtp.get(url, this.headers)
       .pipe(
         map((resp: { ok: boolean, cliente: Cliente }) => resp.cliente)

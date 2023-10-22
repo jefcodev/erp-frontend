@@ -15,21 +15,21 @@ import { concatMap } from 'rxjs/operators';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import * as xml2js from 'xml2js';
 //import * as $ from 'jquery';
-//import { forkJoin } from 'rxjs';
-//import { mergeMap } from 'rxjs/operators';
+import { forkJoin } from 'rxjs';
+import { mergeMap } from 'rxjs/operators';
 
 
 // Models
-import { Factura } from 'src/app/models/compra/factura.model';
-import { DetalleFactura } from '../../../models/compra/detalle-factura.model';
-import { Proveedor } from '../../../models/compra/proveedor.model';
+import { Factura } from 'src/app/models/venta/factura.model';
+import { DetalleFactura } from '../../../models/venta/detalle-factura.model';
+import { Cliente } from '../../../models/venta/cliente.model';
 import { Producto } from 'src/app/models/inventario/producto.model';
 import { FormaPago } from '../../../models/contabilidad/forma-pago.model';
 
 // Services
-import { FacturaService } from 'src/app/services/compras/factura.service';
-import { DetalleFacturaService } from 'src/app/services/compras/detalle-factura.service';
-import { ProveedorService } from 'src/app/services/compras/proveedor.service';
+import { FacturaService } from 'src/app/services/venta/factura.service';
+import { DetalleFacturaService } from 'src/app/services/venta/detalle-factura.service';
+import { ClienteService } from 'src/app/services/venta/cliente.service';
 import { ProductoService } from 'src/app/services/inventario/producto.service';
 import { FormaPagoService } from 'src/app/services/contabilidad/forma-pago.service';
 
@@ -55,15 +55,15 @@ interface DetalleFactura2 {
   styles: [
   ]
 })
-export class FacturaComponent implements OnInit {
+export class FacturaVentaComponent implements OnInit {
   public formSubmitted = false;
   public ocultarModal: boolean = true;
   public facturaForm: FormGroup;
   public facturaFormXML: FormGroup;
   public detalleForm: FormGroup;
   public facturaFormU: FormGroup;
-  public proveedorForm: FormGroup;
-  public proveedorSeleccionado2: Proveedor;
+  public clienteForm: FormGroup;
+  public clienteSeleccionado2: Cliente;
 
 
 
@@ -84,7 +84,7 @@ export class FacturaComponent implements OnInit {
   //public valor_total: string;
   public abono: string;
 
-  public proveedores: Proveedor[] = [];
+  public clientes: Cliente[] = [];
   public formas_pago: FormaPago[] = [];
   public productos: Producto[] = [];
 
@@ -96,8 +96,8 @@ export class FacturaComponent implements OnInit {
   public direccion: string;
   public telefono: string;
   public email: string;
-  //@Output() proveedorCreado: EventEmitter<any> = new EventEmitter<any>();
-  @Output() proveedorCreado = new EventEmitter<any>();
+  //@Output() clienteCreado: EventEmitter<any> = new EventEmitter<any>();
+  @Output() clienteCreado = new EventEmitter<any>();
   //@HostListener('document:click', ['$event'])
 
   public detalle_facturas: DetalleFactura[] = [];
@@ -141,7 +141,7 @@ export class FacturaComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private facturaService: FacturaService,
     private detalleFacturaService: DetalleFacturaService,
-    private proveedorService: ProveedorService,
+    private clienteService: ClienteService,
     private formaPagoService: FormaPagoService,
 
     private productoService: ProductoService,
@@ -154,9 +154,9 @@ export class FacturaComponent implements OnInit {
   ) {
     this.facturaForm = this.fb.group({
 
-      id_factura_compra: [''],
+      id_factura_venta: [''],
 
-      id_proveedor: ['', [Validators.required, Validators.minLength(0)]],
+      id_cliente: ['', [Validators.required, Validators.minLength(0)]],
       identificacion: ['', [Validators.required, Validators.minLength(0)]],
       nombre: ['', [Validators.required, Validators.minLength(0)]],
       apellido: ['', [Validators.required, Validators.minLength(0)]],
@@ -184,9 +184,9 @@ export class FacturaComponent implements OnInit {
     //Esta forma actua como si estuviera con un formulario quemado
     this.facturaFormXML = this.fb.group({
 
-      id_factura_compra: [''],
+      id_factura_venta: [''],
 
-      id_proveedor: ['1', [Validators.required, Validators.minLength(0)]],
+      id_cliente: ['1', [Validators.required, Validators.minLength(0)]],
       identificacion: ['111111', [Validators.required, Validators.minLength(0)]],
       nombre: ['Edison ', [Validators.required, Validators.minLength(0)]],
       apellido: ['Pinanjota', [Validators.required, Validators.minLength(0)]],
@@ -215,9 +215,9 @@ export class FacturaComponent implements OnInit {
 
     this.facturaFormU = this.fb.group({
 
-      //id_factura_compra: [''], 
+      //id_factura_venta: [''], 
 
-      //id_proveedor: [''],
+      //id_cliente: [''],
       identificacion: [''],
       nombre: [''],
       apellido: [''],
@@ -244,7 +244,7 @@ export class FacturaComponent implements OnInit {
       detalles: this.fb.array([])
     });
 
-    this.proveedorForm = this.fb.group({
+    this.clienteForm = this.fb.group({
       identificacion: ['1727671628', [Validators.required, Validators.minLength(3)]],
       nombre: ['Edison', [Validators.required, Validators.minLength(3)]],
       apellido: ['Pinanjota', [Validators.required, Validators.minLength(3)]],
@@ -258,7 +258,7 @@ export class FacturaComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarFacturas();
-    this.cargarProveedores();
+    this.cargarClientes();
     this.cargarFormasPago();
     this.cargarProductos();
     const fechaActual = new Date();
@@ -273,32 +273,32 @@ export class FacturaComponent implements OnInit {
       });
   }
 
-  cargarProveedores() {
-    this.proveedorService.loadProveedores()
-      .subscribe(({ proveedores }) => {
-        this.proveedores = proveedores;
+  cargarClientes() {
+    this.clienteService.loadClientes()
+      .subscribe(({ clientes }) => {
+        this.clientes = clientes;
       })
   }
 
-  cargarProveedorPorId(id_proveedor: any) {
-    return this.proveedorService.loadProveedorById(id_proveedor);
+  cargarClientePorId(id_cliente: any) {
+    return this.clienteService.loadClienteById(id_cliente);
   }
 
-  //cargarProveedorPorIdentificacion(identificacion: any) {
-  //return this.proveedorService.loadProveedorByIdentificacion(identificacion);
+  //cargarClientePorIdentificacion(identificacion: any) {
+  //return this.clienteService.loadClienteByIdentificacion(identificacion);
   //}
 
   /*
 
-  cargarProveedorPorIdentificacion(identificacion: string) {
-    console.log("  cargarProveedorPorIdentificacion(identificacion: any) {")
+  cargarClientePorIdentificacion(identificacion: string) {
+    console.log("  cargarClientePorIdentificacion(identificacion: any) {")
     console.log('identificaion a CARGAR')
     console.log(identificacion)
-    this.proveedorService.loadProveedorByIdentificacion(identificacion)
-      .subscribe(proveedor => {
-        const { id_proveedor, identificacion, nombre, apellido } = proveedor[0];
-        this.proveedorSeleccionado2 = proveedor[0];
-        console.log("id_proveedor: " + id_proveedor);
+    this.clienteService.loadClienteByIdentificacion(identificacion)
+      .subscribe(cliente => {
+        const { id_cliente, identificacion, nombre, apellido } = cliente[0];
+        this.clienteSeleccionado2 = cliente[0];
+        console.log("id_cliente: " + id_cliente);
         console.log("identificacion: " + identificacion);
         console.log("nombre: " + nombre);
         console.log("apellido: " + apellido);
@@ -306,27 +306,27 @@ export class FacturaComponent implements OnInit {
   }
   */
 
-  cargarProveedorByIdentificacion(identificacion: string) {
-    console.log("\n\n-> cargarProveedorPorIdentificacion(identificacion: string) {");
+  cargarClienteByIdentificacion(identificacion: string) {
+    console.log("\n\n-> cargarClientePorIdentificacion(identificacion: string) {");
     console.log('identificacion: ' + identificacion);
-    console.log('--> Incio - Load Proveedor (service)');
-    this.proveedorService.loadProveedorByIdentificacion(identificacion)
+    console.log('--> Incio - Load Cliente (service)');
+    this.clienteService.loadClienteByIdentificacion(identificacion)
       .subscribe(
-        (proveedor) => {
-          console.log('\n\n--> Incio - Load Proveedor (service - subscribe)');
-          if (Array.isArray(proveedor) && proveedor.length > 0) {
-            const { id_proveedor, identificacion, nombre, apellido } = proveedor[0];
-            console.log("Se encontró el proveedor con la identificación: " + identificacion);
-            console.log("< id_proveedor: ", id_proveedor);
+        (cliente) => {
+          console.log('\n\n--> Incio - Load Cliente (service - subscribe)');
+          if (Array.isArray(cliente) && cliente.length > 0) {
+            const { id_cliente, identificacion, nombre, apellido } = cliente[0];
+            console.log("Se encontró el cliente con la identificación: " + identificacion);
+            console.log("< id_cliente: ", id_cliente);
             console.log("< identificacion: ", identificacion);
             console.log("< nombre: " + nombre);
             console.log("< apellido: " + apellido);
-            this.id_proveedor = id_proveedor;
+            this.id_cliente = id_cliente;
             this.identificacion = identificacion;
             this.nombre = nombre;
             this.apellido = apellido;
           } else {
-            console.log("No se encontró ningún proveedor con la identificación: " + identificacion);
+            console.log("No se encontró ningún cliente con la identificación: " + identificacion);
             Swal.fire({
               title: 'Éxito 2',
               text: 'XML Cargado',
@@ -335,23 +335,23 @@ export class FacturaComponent implements OnInit {
               showConfirmButton: false, // Ocultar el botón "OK"
             })
               .then(() => {
-                this.mostrarMensajeDeAdvertenciaConOpciones('Advertencia', 'Proveedor no encontrado ¿Desea crear un nuevo proveedor?');
+                this.mostrarMensajeDeAdvertenciaConOpciones('Advertencia', 'Cliente no encontrado ¿Desea crear un nuevo cliente?');
               });
           }
-          console.log('--> Fin - Load Proveedor (service - subscribe)');
+          console.log('--> Fin - Load Cliente (service - subscribe)');
         },
         (err) => {
           // Manejo de errores en caso de problemas con la solicitud HTTP
-          console.error("Error al buscar el proveedor: ", err);
+          console.error("Error al buscar el cliente: ", err);
           // Puedes mostrar un mensaje de error al usuario o realizar otras acciones aquí
-          let errorMessage = 'Se produjo un error al cargar el proveedor.';
+          let errorMessage = 'Se produjo un error al cargar el cliente.';
           if (err.error && err.error.msg) {
             errorMessage = err.error.msg;
           }
           Swal.fire('Error', err.error.msg, 'error');
         }
       );
-    console.log('--> Fin - Load Proveedor (service)');
+    console.log('--> Fin - Load Cliente (service)');
   }
 
   // Función para mostrar mensajes de alerta con SweetAlert2
@@ -385,9 +385,9 @@ export class FacturaComponent implements OnInit {
       if (result.isConfirmed) {
         // El usuario hizo clic en "Sí", puedes tomar acciones aquí
         console.log('Usuario hizo clic en "Sí"');
-        console.log('--> Inicio - this.crearProveedorXML()');
-        this.crearProveedorXML();
-        console.log('--> Fin - this.crearProveedorXML()');
+        console.log('--> Inicio - this.crearClienteXML()');
+        this.crearClienteXML();
+        console.log('--> Fin - this.crearClienteXML()');
       } else {
         // El usuario hizo clic en "No" o cerró el cuadro de diálogo
         console.log('Usuario hizo clic en "No" o cerró el cuadro de diálogo');
@@ -538,11 +538,11 @@ export class FacturaComponent implements OnInit {
   }
 
 
-  cargarFacturaPorId(id_factura_compra: any) {
-    this.facturaService.loadFacturaById(id_factura_compra)
+  cargarFacturaPorId(id_factura_venta: any) {
+    this.facturaService.loadFacturaById(id_factura_venta)
       .pipe(
         switchMap((factura: any) => {
-          const { id_proveedor, id_forma_pago, id_asiento, codigo, fecha_emision, fecha_vencimiento, estado_pago,
+          const { id_cliente, id_forma_pago, id_asiento, codigo, fecha_emision, fecha_vencimiento, estado_pago,
             subtotal_sin_impuestos, total_descuento, iva, valor_total, abono } = factura.factura[0];
 
           const saldo = factura.saldo;
@@ -563,10 +563,10 @@ export class FacturaComponent implements OnInit {
           console.log("this.abono-----------------------");
           console.log(this.abono);
 
-          return this.cargarProveedorPorId(id_proveedor).pipe(
-            concatMap(proveedor => {
-              const { identificacion, nombre, apellido, nombre_comercial, direccion, telefono, email } = proveedor[0];
-              this.proveedorSeleccionado = proveedor[0];
+          return this.cargarClientePorId(id_cliente).pipe(
+            concatMap(cliente => {
+              const { identificacion, nombre, apellido, nombre_comercial, direccion, telefono, email } = cliente[0];
+              this.clienteSeleccionado = cliente[0];
               this.identificacion = identificacion;
               this.nombre = nombre;
               this.apellido = apellido;
@@ -588,12 +588,12 @@ export class FacturaComponent implements OnInit {
   }
 
   /*
-    cargarFacturaPorId2(id_factura_compra: any) {
-      //console.log('id_factura_compra')
-      //console.log(id_factura_compra)
-      this.facturaService.loadFacturaById(id_factura_compra)
+    cargarFacturaPorId2(id_factura_venta: any) {
+      //console.log('id_factura_venta')
+      //console.log(id_factura_venta)
+      this.facturaService.loadFacturaById(id_factura_venta)
         .pipe(switchMap(factura => {
-          const { id_proveedor, id_forma_pago, id_asiento, codigo, fecha_emision, fecha_vencimiento, estado_pago,
+          const { id_cliente, id_forma_pago, id_asiento, codigo, fecha_emision, fecha_vencimiento, estado_pago,
             subtotal_sin_impuestos, total_descuento, iva, valor_total, abono } = factura[0];
   
           this.facturaSeleccionado = factura[0];
@@ -608,10 +608,10 @@ export class FacturaComponent implements OnInit {
           console.log("this.abono")
           console.log(this.abono)
   
-          return this.cargarProveedorPorId(id_proveedor).pipe(
-            concatMap(proveedor => {
-              const { identificacion, nombre, apellido, nombre_comercial, direccion, telefono, email } = proveedor[0];
-              this.proveedorSeleccionado = proveedor[0];
+          return this.cargarClientePorId(id_cliente).pipe(
+            concatMap(cliente => {
+              const { identificacion, nombre, apellido, nombre_comercial, direccion, telefono, email } = cliente[0];
+              this.clienteSeleccionado = cliente[0];
               this.identificacion = identificacion;
               //console.log("identficacion this 1")
               //console.log(this.identificacion)
@@ -643,7 +643,7 @@ export class FacturaComponent implements OnInit {
     // Realizar posteo del factura principal
     this.facturaService.createFactura(this.facturaForm.value).subscribe(
       (res: any) => {
-        const facturaId = res.id_factura_compra; // Obtener el ID del factura guardado
+        const facturaId = res.id_factura_venta; // Obtener el ID del factura guardado
         console.log('facturaID')
         console.log(facturaId)
         console.log('DETALLES factura 222222')
@@ -653,7 +653,7 @@ export class FacturaComponent implements OnInit {
         for (const detalle2 of this.detalleFactura2) {
           const nuevoDetalle: DetalleFactura = {
             id_producto: detalle2.producto,
-            id_factura_compra: facturaId,
+            id_factura_venta: facturaId,
             codigo_principal: detalle2.descripcion,//ver
             detalle_adicional: detalle2.descripcion,//ver
             cantidad: detalle2.cantidad,
@@ -698,109 +698,6 @@ export class FacturaComponent implements OnInit {
   }
 
 
-  crearFactura2XML() {
-    this.formSubmitted = true; //OJO
-    console.log('\n\n-> START (Guardar XML) crearFactura2XML() {');
-
-    // solo para ver si tiene datos cargados
-    this.crearFactura2_aux_XML()
-
-    console.log("this.id_proveedor 2xml", this.id_proveedor)
-    console.log("this.identificacion 2xml", this.identificacion)
-    console.log("this.nombre 2xml", this.nombre)
-    console.log("this.apellido 2xml", this.apellido)
-
-    console.log('VERRRRRRRRRRRRRRRRRRRR 1')
-    console.log('id_proveedor: ' + this.id_proveedor)
-    console.log('identificacionComprador: ' + this.identificacionComprador)
-    console.log('VERRRRRRRRRRRRRRRRRRRR 2')
-    console.log('id_proveedor: ' + this.id_proveedor)
-    console.log('identificacionComprador: ' + this.identificacionComprador)
-
-
-    const facturaData: FormFacturaXML2 = {
-
-      codigo: '1',
-      fecha_emision: null,
-      fecha_vencimiento: null,
-      saldo: 0, // Valor válido
-
-      razonSocial: 'Nombre de la razón social',
-      ruc: '1234567890',
-      claveAcceso: 'clave de acceso',
-      estab: 'Establecimiento',
-      ptoEmi: 'Punto de emisión',
-      secuencial: 'Secuencial',
-      id_factura_compra: 1,
-
-      id_proveedor: this.id_proveedor,
-      id_forma_pago: this.id_forma_pago,
-      id_asiento: null,
-      // Otras propiedades requeridas
-      estado_pago: 'Por pagar', // Propiedad requerida
-      subtotal_sin_impuestos: this.totalSinImpuestos, // Propiedad requerida
-      total_descuento: 10, // Propiedad requerida
-      iva: 12, // Propiedad requerida
-      valor_total: this.importeTotal, // Propiedad requerida
-      abono: 0, // Valor válido
-    };
-
-
-    this.facturaService.createFactura(facturaData).subscribe(
-      (res: any) => {
-        const facturaId = res.id_factura_compra; // Obtener el ID del factura guardado
-        console.log('facturaID')
-        console.log(facturaId)
-        console.log('DETALLES factura 222222')
-        //console.log(this.detalleFactura2)
-        // Crear los detalles y asociarlos al factura
-        const detalles = [];
-        for (const detalle2 of this.xmlItems) {
-          const nuevoDetalle: DetalleFactura = {
-            id_producto: 1,
-            id_factura_compra: facturaId,
-            codigo_principal: detalle2.descripcion,//ver
-            detalle_adicional: detalle2.descripcion,//ver
-            cantidad: detalle2.cantidad,
-            descripcion: detalle2.descripcion,
-            precio_unitario: detalle2.precioUnitario,
-            subsidio: detalle2.cantidad,//ver
-            precio_sin_subsidio: detalle2.cantidad,//ver
-            descuento: detalle2.descuento,
-            codigo_auxiliar: detalle2.descripcion,//ver
-            precio_total: detalle2.precioTotalSinImpuesto,
-            iva: detalle2.tarifa,
-            ice: detalle2.cantidad,
-          };
-          detalles.push(nuevoDetalle);
-        }
-        console.log('DETALLES CON ID_factura')
-        console.log(detalles)
-        this.detalleFacturaService.createDetalleFactura2(detalles).subscribe(
-          () => {
-            Swal.fire({
-              icon: 'success',
-              title: 'Factura y detalles creados',
-              text: 'El factura y los detalles se han creado correctamente.',
-              showConfirmButton: false,
-              timer: 1500
-            });
-            this.recargarComponente();
-            this.cerrarModal();
-          },
-          (err) => {
-            // En caso de error en la creación del factura principal
-            let errorMessage = 'Se produjo un error al crear el factura.';
-            if (err.error && err.error.msg) {
-              errorMessage = err.error.msg;
-            }
-            Swal.fire('Error', errorMessage, 'error');
-          }
-        );
-
-        this.recargarComponente();
-      })
-  }
 
   /*
   Problemas de sincronización
@@ -814,16 +711,16 @@ export class FacturaComponent implements OnInit {
     // busca el proveeedor por identificacion
     console.log("this.identificacionComprador")
     console.log(this.identificacionComprador)
-    this.cargarProveedorPorIdentificacion(this.identificacionComprador)
+    this.cargarClientePorIdentificacion(this.identificacionComprador)
     console.log("FINALIN 1")
   
     // mostramos los datos recuperado de la busqueda
-    const nombreDelProveedor = this.proveedorSeleccionado2.nombre;
-    console.log("Nombre del proveedor: " + nombreDelProveedor);
+    const nombreDelCliente = this.clienteSeleccionado2.nombre;
+    console.log("Nombre del cliente: " + nombreDelCliente);
   
-    // asiganamos el id_proveedor de la identificación cargadad
-    console.log("this.id_proveedor XD")
-    console.log(this.id_proveedor)
+    // asiganamos el id_cliente de la identificación cargadad
+    console.log("this.id_cliente XD")
+    console.log(this.id_cliente)
   
     const facturaData: FormFacturaXML2 = {
   
@@ -838,9 +735,9 @@ export class FacturaComponent implements OnInit {
       estab: 'Establecimiento',
       ptoEmi: 'Punto de emisión',
       secuencial: 'Secuencial',
-      id_factura_compra: 1,
+      id_factura_venta: 1,
   
-      id_proveedor: 5,
+      id_cliente: 5,
       id_forma_pago: 3,
       id_asiento: null,
       // Otras propiedades requeridas
@@ -854,7 +751,7 @@ export class FacturaComponent implements OnInit {
   
     this.facturaService.createFactura(facturaData).subscribe(
       (res: any) => {
-        const facturaId = res.id_factura_compra; // Obtener el ID del factura guardado
+        const facturaId = res.id_factura_venta; // Obtener el ID del factura guardado
         console.log('facturaID')
         console.log(facturaId)
         console.log('DETALLES factura 222222')
@@ -864,7 +761,7 @@ export class FacturaComponent implements OnInit {
         for (const detalle2 of this.xmlItems) {
           const nuevoDetalle: DetalleFactura = {
             id_producto: 1,
-            id_factura_compra: facturaId,
+            id_factura_venta: facturaId,
             codigo_principal: detalle2.descripcion,//ver
             detalle_adicional: detalle2.descripcion,//ver
             cantidad: detalle2.cantidad,
@@ -1019,13 +916,13 @@ export class FacturaComponent implements OnInit {
 
   actualizarFactura() {
     console.log("Actualizar: actualizarFactura() { ")
-    //console.log(factura.id_factura_compra)
+    //console.log(factura.id_factura_venta)
     if (this.facturaFormU.invalid) {
       return;
     }
     const data = {
       ...this.facturaFormU.value,
-      id_factura_compra: this.facturaSeleccionado.id_factura_compra
+      id_factura_venta: this.facturaSeleccionado.id_factura_venta
     }
 
     console.log("UNO---updateFactura()")
@@ -1060,7 +957,7 @@ export class FacturaComponent implements OnInit {
 
   borrarFactura(factura: Factura) {
     console.log("Borrar:   borrarFactura(factura: Factura) {")
-    console.log(factura.id_factura_compra)
+    console.log(factura.id_factura_venta)
     Swal.fire({
       title: '¿Borrar Factura?',
       text: `Estas a punto de borrar a ${factura.codigo}`,
@@ -1070,7 +967,7 @@ export class FacturaComponent implements OnInit {
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.value) {
-        this.facturaService.deleteFactura(factura.id_factura_compra)
+        this.facturaService.deleteFactura(factura.id_factura_venta)
           .subscribe(resp => {
             this.cargarFacturas();
             Swal.fire({
@@ -1102,7 +999,7 @@ export class FacturaComponent implements OnInit {
 
   obtenerUltimoId(): number {
     if (this.facturas.length > 0) {
-      return (this.facturas[this.facturas.length - 1].id_factura_compra) + 1;
+      return (this.facturas[this.facturas.length - 1].id_factura_venta) + 1;
     }
     return 0; // o cualquier valor predeterminado
   }
@@ -1125,46 +1022,46 @@ export class FacturaComponent implements OnInit {
     this.ocultarModal = true;
   }
 
-  nombreProveedor: string;
-  apellidoProveedor: string;
-  direccionProveedor: string;
-  telefonoProveedor: string;
-  emailProveedor: string;
+  nombreCliente: string;
+  apellidoCliente: string;
+  direccionCliente: string;
+  telefonoCliente: string;
+  emailCliente: string;
 
   estadoPagoFactura: string;
 
   actualizarNombre(event: any): void {
-    const proveedorId = event.target.value;
-    const proveedor = this.proveedores.find(p => p.id_proveedor == proveedorId);
-    this.nombreProveedor = proveedor ? proveedor.nombre : '';
+    const clienteId = event.target.value;
+    const cliente = this.clientes.find(p => p.id_cliente == clienteId);
+    this.nombreCliente = cliente ? cliente.nombre : '';
   }
 
   actualizarApellido(event: any): void {
-    const proveedorId = event.target.value;
-    const proveedor = this.proveedores.find(p => p.id_proveedor == proveedorId);
-    this.apellidoProveedor = proveedor ? proveedor.apellido : '';
+    const clienteId = event.target.value;
+    const cliente = this.clientes.find(p => p.id_cliente == clienteId);
+    this.apellidoCliente = cliente ? cliente.apellido : '';
   }
 
   actualizarDireccion(event: any): void {
-    const proveedorId = event.target.value;
-    const proveedor = this.proveedores.find(p => p.id_proveedor == proveedorId);
-    this.direccionProveedor = proveedor ? proveedor.direccion : '';
+    const clienteId = event.target.value;
+    const cliente = this.clientes.find(p => p.id_cliente == clienteId);
+    this.direccionCliente = cliente ? cliente.direccion : '';
   }
 
   actualizarTelefono(event: any): void {
-    const proveedorId = event.target.value;
-    const proveedor = this.proveedores.find(p => p.id_proveedor == proveedorId);
-    this.telefonoProveedor = proveedor ? proveedor.telefono : '';
+    const clienteId = event.target.value;
+    const cliente = this.clientes.find(p => p.id_cliente == clienteId);
+    this.telefonoCliente = cliente ? cliente.telefono : '';
   }
 
   actualizarEmail(event: any): void {
-    const proveedorId = event.target.value;
-    const proveedor = this.proveedores.find(p => p.id_proveedor == proveedorId);
-    this.emailProveedor = proveedor ? proveedor.email : '';
+    const clienteId = event.target.value;
+    const cliente = this.clientes.find(p => p.id_cliente == clienteId);
+    this.emailCliente = cliente ? cliente.email : '';
   }
 
-  crearProveedorXML() {
-    console.log("\n\n-> crearProveedorXML() {")
+  crearClienteXML() {
+    console.log("\n\n-> crearClienteXML() {")
     //this.formSubmitted = true;
     /*
     this.identificacion = "1727671630"
@@ -1192,12 +1089,12 @@ export class FacturaComponent implements OnInit {
     console.log('> this.email: ', this.email)
 
     if (!this.identificacion || !this.nombre || !this.direccion) {
-      Swal.fire('Error', 'Falta información requerida para crear el proveedor.', 'error');
+      Swal.fire('Error', 'Falta información requerida para crear el cliente.', 'error');
       return;
     }
 
-    // Crea un objeto con la información del proveedor
-    const proveedorData = {
+    // Crea un objeto con la información del cliente
+    const clienteData = {
       identificacion: this.identificacion,
       nombre: this.nombre,
       apellido: this.apellido,
@@ -1207,66 +1104,66 @@ export class FacturaComponent implements OnInit {
       email: this.email
     };
 
-    // Realiza la solicitud POST para crear el proveedor
-    console.log('--> Incio - Create Proveedor (service)');
-    this.proveedorService.createProveedor(proveedorData).subscribe(
+    // Realiza la solicitud POST para crear el cliente
+    console.log('--> Incio - Create Cliente (service)');
+    this.clienteService.createCliente(clienteData).subscribe(
       (res) => {
         Swal.fire({
           icon: 'success',
-          title: 'Proveedor creado',
-          text: 'Proveedor se ha creado correctamente.',
+          title: 'Cliente creado',
+          text: 'Cliente se ha creado correctamente.',
           showConfirmButton: false,
           timer: 1500
         });
-        console.log('--> Inicio - this.cargarProveedorByIdentificacion(this.identificacion)');
-        this.cargarProveedorByIdentificacion(this.identificacion);
-        console.log('--> Fin - this.cargarProveedorByIdentificacion(this.identificacion)');
+        console.log('--> Inicio - this.cargarClienteByIdentificacion(this.identificacion)');
+        this.cargarClienteByIdentificacion(this.identificacion);
+        console.log('--> Fin - this.cargarClienteByIdentificacion(this.identificacion)');
         //this.recargarComponente();
         this.cerrarModal();
       }, (err) => {
         // En caso de error
-        let errorMessage = 'Se produjo un error al crear el proveedor.';
+        let errorMessage = 'Se produjo un error al crear el cliente.';
         if (err.error && err.error.msg) {
           errorMessage = err.error.msg;
         }
         Swal.fire('Error', err.error.msg, 'error');
       });
     //this.recargarComponente();
-    console.log('--> Fin - Create Proveedor (service)');
+    console.log('--> Fin - Create Cliente (service)');
   }
 
-  crearProveedor() {
+  crearCliente() {
     this.formSubmitted = true;
-    console.log(this.proveedorForm.value)
-    if (this.proveedorForm.invalid) {
+    console.log(this.clienteForm.value)
+    if (this.clienteForm.invalid) {
       return;
     }
     // realizar posteo
-    this.proveedorService.createProveedor(this.proveedorForm.value)
+    this.clienteService.createCliente(this.clienteForm.value)
       .subscribe(res => {
         Swal.fire({
           icon: 'success',
-          title: 'Proveedor creado',
-          text: 'Proveedor se ha creado correctamente.',
+          title: 'Cliente creado',
+          text: 'Cliente se ha creado correctamente.',
           showConfirmButton: false,
           timer: 1500
         });
-        //this.nuevoProveedor = res;
-        this.proveedorCreado.emit(res); // Emitir el evento proveedorCreado con el proveedor creado
+        //this.nuevoCliente = res;
+        this.clienteCreado.emit(res); // Emitir el evento clienteCreado con el cliente creado
         console.log('////////////// RES')
         console.log(res)
 
-        this.nuevoProveedor = res;
+        this.nuevoCliente = res;
 
-        this.id_proveedor = this.nuevoProveedor.id_proveedor;
-        this.nombre = this.nuevoProveedor.nombre;
-        this.apellido = this.nuevoProveedor.apellido;
-        this.direccion = this.nuevoProveedor.direccion;
-        this.telefono = this.nuevoProveedor.telefono;
-        this.email = this.nuevoProveedor.email;
+        this.id_cliente = this.nuevoCliente.id_cliente;
+        this.nombre = this.nuevoCliente.nombre;
+        this.apellido = this.nuevoCliente.apellido;
+        this.direccion = this.nuevoCliente.direccion;
+        this.telefono = this.nuevoCliente.telefono;
+        this.email = this.nuevoCliente.email;
 
-        console.log('ID PROVEEDOR')
-        console.log(this.id_proveedor)
+        console.log('ID CLIENTE')
+        console.log(this.id_cliente)
         console.log('NOMBRE')
         console.log(this.nombre)
         console.log('APELLIDO')
@@ -1279,11 +1176,11 @@ export class FacturaComponent implements OnInit {
         console.log(this.email)
 
         //this.recargarComponente();
-        this.agregarProveedor();
+        this.agregarCliente();
         this.cerrarModal();
       }, (err) => {
         // En caso de error
-        let errorMessage = 'Se produjo un error al crear el proveedor.';
+        let errorMessage = 'Se produjo un error al crear el cliente.';
         if (err.error && err.error.msg) {
           errorMessage = err.error.msg;
         }
@@ -1292,8 +1189,8 @@ export class FacturaComponent implements OnInit {
     //this.recargarComponente();
   }
 
-  nuevoProveedor: any;
-  id_proveedor: any;
+  nuevoCliente: any;
+  id_cliente: any;
   /* OJO ver si esta ingresadon correctamente por que fueron comentadas estas lienas
   nombre: any;
   apellido: any;
@@ -1301,9 +1198,9 @@ export class FacturaComponent implements OnInit {
   telefono: any;
   email: any;*/
 
-  agregarProveedor() {
-    // Seleccionar automáticamente el nuevo proveedor en el selector
-    this.facturaForm.get('id_proveedor').setValue(this.id_proveedor);
+  agregarCliente() {
+    // Seleccionar automáticamente el nuevo cliente en el selector
+    this.facturaForm.get('id_cliente').setValue(this.id_cliente);
     this.facturaForm.get('identificacion').setValue(this.identificacion);
     //this.facturaForm.get('identificacion').setValue(this.identificacionSeleccionada);
     this.facturaForm.get('nombre').setValue(this.nombre);
@@ -1313,40 +1210,40 @@ export class FacturaComponent implements OnInit {
     this.facturaForm.get('email').setValue(this.email);
   }
 
-  proveedoresFiltrados: any[] = [];
+  clientesFiltrados: any[] = [];
 
-  filtrarProveedores3(event: any) {
+  filtrarClientes3(event: any) {
     const identficacion = event.target.value.toLowerCase();
     console.log('A buscar')
     console.log(identficacion)
-    this.proveedoresFiltrados = this.proveedores.filter(proveedor => proveedor.identificacion.toLowerCase().includes(identficacion));
+    this.clientesFiltrados = this.clientes.filter(cliente => cliente.identificacion.toLowerCase().includes(identficacion));
     console.log('Encontrado')
-    console.log(this.proveedoresFiltrados)
+    console.log(this.clientesFiltrados)
   }
   /*
-    filtrarProveedores2(identficacionInput: any) {
+    filtrarClientes2(identficacionInput: any) {
       const identficacion = identficacionInput.target.value as string;
       console.log('A buscar')
       console.log(identficacion)
-      this.proveedores = this.proveedores.filter(proveedor => proveedor.identificacion.includes(identficacion));
+      this.clientes = this.clientes.filter(cliente => cliente.identificacion.includes(identficacion));
       console.log('Encontrado')
-      console.log(this.proveedores)
+      console.log(this.clientes)
     }*/
 
-  proveedorSeleccionado: any;
+  clienteSeleccionado: any;
 
-  seleccionarProveedor3(proveedor: any) {
-    // Aquí puedes realizar alguna acción adicional con el proveedor seleccionado
-    console.log(proveedor);
+  seleccionarCliente3(cliente: any) {
+    // Aquí puedes realizar alguna acción adicional con el cliente seleccionado
+    console.log(cliente);
     // También puedes asignar los valores a los campos correspondientes en el formulario
     this.facturaForm.patchValue({
-      id_proveedor: proveedor.id_proveedor,
-      identificacion: proveedor.identificacion,
-      nombre: proveedor.nombre,
-      apellido: proveedor.apellido,
-      direccion: proveedor.direccion,
-      telefono: proveedor.telefono,
-      email: proveedor.email
+      id_cliente: cliente.id_cliente,
+      identificacion: cliente.identificacion,
+      nombre: cliente.nombre,
+      apellido: cliente.apellido,
+      direccion: cliente.direccion,
+      telefono: cliente.telefono,
+      email: cliente.email
     });
   }
 
@@ -1356,12 +1253,12 @@ export class FacturaComponent implements OnInit {
     this.identificacionSeleccionada = identificacion;
   }
 
-  showProveedoresFiltrados: boolean = false;
+  showClientesFiltrados: boolean = false;
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     const clickedInside = this.elementRef.nativeElement.contains(event.target);
-    this.showProveedoresFiltrados = clickedInside;
+    this.showClientesFiltrados = clickedInside;
   }
 
 
@@ -1383,27 +1280,28 @@ export class FacturaComponent implements OnInit {
     return '';
   }
 
-  cargarDetalleFacturas(id_factura_compra: any) {
-    this.detalleFacturaService.loadDetalleFacturaByFactura(id_factura_compra)
+  /*
+  cargarDetalleFacturas(id_factura_venta: any) {
+    this.detalleFacturaService.loadDetalleFacturaByFactura(id_factura_venta)
       .subscribe(({ detalle_facturas }) => {
         this.detalle_facturas = detalle_facturas;
       })
   }
-  calcularAbono(id_factura_compra: any) {
-    this.detalleFacturaService.loadDetalleFacturaByFactura(id_factura_compra)
+  calcularAbono(id_factura_venta: any) {
+    this.detalleFacturaService.loadDetalleFacturaByFactura(id_factura_venta)
       .subscribe(({ detalle_facturas }) => {
         this.detalle_facturas = detalle_facturas;
       })
   }
 
 
-  cargarDetalleFacturas2(id_factura_compra: any) {
-    this.detalleFacturaService.loadDetalleFacturaByFactura2(id_factura_compra)
+  cargarDetalleFacturas2(id_factura_venta: any) {
+    this.detalleFacturaService.loadDetalleFacturaByFactura2(id_factura_venta)
       .subscribe(response => {
         this.detalle_facturas = response.detalle_facturas;
       });
   }
-
+*/
 
   // XML
   
@@ -1514,9 +1412,9 @@ export class FacturaComponent implements OnInit {
         resolve(arr);
 
         
-        console.log('--> Inicio -  Cargar Proveedor');
-        this.cargarProveedorByIdentificacion(this.identificacionComprador)
-        console.log('--> Fin -  Cargar Proveedor');
+        console.log('--> Inicio -  Cargar Cliente');
+        this.cargarClienteByIdentificacion(this.identificacionComprador)
+        console.log('--> Fin -  Cargar Cliente');
 
         console.log('--> Incio - Cargar Forma Pago');
         this.cargarFormaPagoByCodigo(this.formaPago)
@@ -1613,8 +1511,8 @@ interface FormFacturaXML2 {
   estab: string;
   ptoEmi: string;
   secuencial: string;
-  id_factura_compra: number;
-  id_proveedor: number;
+  id_factura_venta: number;
+  id_cliente: number;
   id_forma_pago: number;
   id_asiento: number;
   estado_pago: string;

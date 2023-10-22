@@ -1,0 +1,131 @@
+<!-- table data-->
+<div class="col-12">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Lista de Facturas Compra</h4>
+            <h6 class="card-subtitle"></h6>
+            <div class="float-left modal-footer">
+
+                <button class="btn btn-info waves-effect waves-light" data-toggle="modal" data-target="#exampleModal"
+                    type="button"><span class="btn-label"><i class="fa fa-plus"></i></span>Nueva Factura</button>
+                <button class="btn btn-success margin-left-10 AN__btn_imprimir_pdf___NEW_ASI hidenNew2 btn-new-version"
+                    id="btnimprimirasiento" type="button">
+                    <span class="fa fa-file-pdf-o" style="padding-left:0px;"></span>&nbsp;PDF
+                </button>
+
+                <button class="btn btn-success AN__btn_imprimir_excel___NEW_ASI hidenNew2 btn-new-version"
+                    id="btnasientoEXCEL" type="button">
+                    <span class="fa fa-file-excel-o" style="padding-left:0px;"></span>&nbsp;Excel
+                </button>
+                <button class="btn btn-success margin-left-10 AN__btn_imprimir_asiento___NEW_ASI hidenNew2 btn-print"
+                    id="btnimprimir" type="button" onclick="">
+                    <span class="fa fa-print" style="padding-left:0px;"></span>&nbsp;Imprimir
+                </button>
+                <div id="example23_filter" class="dataTables_filter"><label>Buscar:<input type="search" class=""
+                            placeholder="" aria-controls="example23"></label>
+                </div>
+            </div>
+            <div class="table-responsive">
+
+                <table id="demo-foo-addrow" class="table m-t-30 table-hover contact-list footable-loaded footable"
+                    data-page-size="10">
+                    <thead>
+                        <tr>
+                            <th class="footable-sortable">#<span class="footable-sort-indicator"></span></th>
+                            <th class="footable-sortable">Fecha Emisión<span class="footable-sort-indicator"></span>
+                            </th>
+                            <th class="footable-sortable">Factura<span class="footable-sort-indicator"></span></th>
+                            <th class="footable-sortable">Identificación<span class="footable-sort-indicator"></span>
+                            </th>
+                            <th class="footable-sortable">Razón Social<span class="footable-sort-indicator"></span></th>
+                            <th class="footable-sortable">Fecha Vencimiento<span class="footable-sort-indicator"></span>
+                            </th>
+                            <th class="footable-sortable text-center">Valor Total<span
+                                    class="footable-sort-indicator"></span>
+                            </th>
+                            <th class="footable-sortable text-center">Abono<span class="footable-sort-indicator"></span>
+                            </th>
+                            <th class="footable-sortable">Saldo<span class="footable-sort-indicator"></span>
+                            </th>
+                            <th class="footable-sortable">Estado Pago<span class="footable-sort-indicator"></span>
+                            </th>
+                            <th class="footable-sortable">Asiento<span class="footable-sort-indicator"></span>
+                            </th>
+                            <th class="footable-sortable">Estado<span class="footable-sort-indicator"></span></th>
+                            <th class="footable-sortable text-center">Action<span
+                                    class="footable-sort-indicator"></span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr *ngFor="let factura of facturas let i = index">
+                            <td><span class="footable-toggle"></span>{{ i + 1 }}</td>
+                            <td>{{factura.fecha_emision }}</td>
+                            <td>{{factura.codigo}}</td>
+                            <td>
+                                <ng-container *ngFor="let cliente of clientes">
+                                    <ng-container
+                                        *ngIf="cliente.id_cliente == factura.id_cliente ">{{cliente.identificacion}}</ng-container>
+                                </ng-container>
+                            </td>
+                            <td>
+                                <ng-container *ngFor="let cliente of clientes">
+                                    <ng-container
+                                        *ngIf="cliente.id_cliente == factura.id_cliente ">{{cliente.apellido}}
+                                        {{cliente.nombre}}</ng-container>
+                                </ng-container>
+                            </td>
+
+                            <td>{{ factura.fecha_vencimiento }}</td>
+                            <td class="text-right">{{ factura.valor_total }}</td>
+                            <td class="text-right">{{ factura.abono }}</td>
+                            <td class="text-right">{{ factura.valor_total - factura.abono }}</td>
+                            
+
+                            <td class="text-center">{{ factura.id_asiento }}</td>
+                            <td *ngIf="factura.estado; else inactivo">
+                                <div class="label label-table label-success">ACTIVA</div>
+                            </td>
+                            <ng-template #inactivo>
+                                <td>
+                                    <div class="label label-table label-danger">ANULADA</div>
+                                </td>
+                            </ng-template>
+
+                            <td *ngIf="factura.estado else inactivoOption" class="text-nowrap text-center">
+
+                                <a class="cursor" data-toggle="modal"
+                                    (click)="cargarFacturaPorId(factura.id_factura_venta); "
+                                    data-target="#exampleModalU"><span
+                                        class="fa fa-pencil text-inverse m-r-10"></span></a>
+
+                                <a class="cursor" (click)="borrarFactura(factura);" data-toggle="tooltip"
+                                    data-original-title="Close"> <i class="fa fa-close text-danger"></i> </a>
+                            </td>
+                            <ng-template #inactivoOption>
+                            </ng-template>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+
+                            <td colspan="8">
+                                <div class="text-right">
+                                    <ul class="pagination">
+                                        <li class="footable-page-arrow disabled"><a data-page="first"
+                                                href="#first">«</a></li>
+                                        <li class="footable-page-arrow disabled"><a data-page="prev" href="#prev">‹</a>
+                                        </li>
+                                        <li class="footable-page-arrow"><a data-page="next" href="#next">›</a></li>
+                                        <li class="footable-page-arrow"><a data-page="last" href="#last">»</a></li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
