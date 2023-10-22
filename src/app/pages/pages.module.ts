@@ -22,8 +22,8 @@ import { UsuariosModule } from './usuarios/usuarios.module';
 import { InventoryModule } from './inventory/inventory.module';
 import { PurchaseModule } from './purchases/purchase.module';
 import { ComprasModule } from './compras/compras.module';
+import { VentaModule } from './venta/venta.module';
 import { QuotationModule } from './quotations/quotation.module';
-
 import { ContabilidadModule } from './contabilidad/contabilidad.module';
 
 @NgModule({
@@ -41,6 +41,7 @@ import { ContabilidadModule } from './contabilidad/contabilidad.module';
     AccountSettingsComponent,
     UsuariosModule,
     ComprasModule,
+    VentaModule,
     ContabilidadModule
   ],
   imports: [
