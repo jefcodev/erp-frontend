@@ -1,0 +1,51 @@
+<div class="col-12">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Detalle Facturas</h4>
+            <h6 class="card-subtitle"></h6>
+            <button class="btn btn-primary waves-effect waves-light" data-toggle="modal" data-target="#exampleModal"
+                type="button"><span class="btn-label"><i class="fa fa-user-circle"></i></span>Crear Proveedor</button>
+
+            <div class="table-responsive">
+
+                <table id="demo-foo-addrow" class="table m-t-30 table-hover contact-list footable-loaded footable"
+                    data-page-size="10">
+                    <thead>
+                        <tr>
+                            <th class="footable-sortable">#<span class="footable-sort-indicator"></span></th>
+                            <th class="footable-sortable">ID producto <span class="footable-sort-indicator"></span>
+                            </th>
+                            <th class="footable-sortable">ID factura compra<span class="footable-sort-indicator"></span>
+                            </th>
+                            <th class="footable-sortable">Código Principal<span class="footable-sort-indicator"></span>
+                            </th>
+                            <th class="footable-sortable">Cantidad<span class="footable-sort-indicator"></span></th>
+                            <th class="footable-sortable">Descripcion<span class="footable-sort-indicator"></span></th>
+                            <th class="footable-sortable">Precio total<span class="footable-sort-indicator"></span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let df of detalle_facturas let i = index">
+                            <td><span class="footable-toggle"></span>{{ i + 1 }}</td>
+                            <td>{{df.id_producto}}</td>
+                            <td>{{df.id_factura_compra}}</td>
+                            <td>{{df.codigo_principal}}</td>
+                            <td>{{df.cantidad}}</td>
+                            <td>{{df.descripcion}}</td>
+                            <td>{{df.precio_total}}</td>
+
+                            <ng-template #inactivoOption>
+                            </ng-template>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+
+                            
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

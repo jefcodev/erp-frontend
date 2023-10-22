@@ -21,6 +21,7 @@ import { ShareModule } from '../shared/share.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
 import { InventoryModule } from './inventory/inventory.module';
 import { PurchaseModule } from './purchases/purchase.module';
+import { ComprasModule } from './compras/compras.module';
 import { QuotationModule } from './quotations/quotation.module';
 
 import { ContabilidadModule } from './contabilidad/contabilidad.module';
@@ -39,6 +40,7 @@ import { ContabilidadModule } from './contabilidad/contabilidad.module';
     PagesComponent,
     AccountSettingsComponent,
     UsuariosModule,
+    ComprasModule,
     ContabilidadModule
   ],
   imports: [

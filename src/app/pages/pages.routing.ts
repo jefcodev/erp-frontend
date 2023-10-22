@@ -32,6 +32,11 @@ import { QuotationComponent } from './quotations/quotations/quotation.component'
 import { ApusComponent } from './apu/apus/apus.component';
 import { ApuComponent } from './apu/apus/apu.component';
 
+// Compras
+import { ProveedorComponent } from './compras/proveedor/proveedor.component';
+import { FacturaComponent } from './compras/factura/factura.component';
+import { DetalleFacturaComponent } from './compras/detalle-factura/detalle-factura.component';
+
 // Contabilidad
 import { CuentaComponent } from './contabilidad/cuenta/cuenta.component';
 import { FormaPagoComponent } from './contabilidad/forma-pago/forma-pago.component';
@@ -46,45 +51,50 @@ const routes: Routes = [
     {
         path: 'dashboard',
         component: PagesComponent,
-        canActivate :[AuthGuard],
+        canActivate: [AuthGuard],
         children: [
-            { path: '', component: DashboardComponent, data:{titulo:'Dashboard'} },
-            {path: 'rxjs', component: RxjsComponent, data:{titulo:'Rxjs'}},
-            {path: 'promesas', component: PromesasComponent, data:{titulo:'Promesas'}},
-           
-            /* Perfil */ 
-            {path: 'account-settings', component: AccountSettingsComponent, data:{titulo:'Configuración Ususario'}},
-            {path: 'perfil', component: PerfilComponent, data:{titulo:'Perfil Usuario'}},
-           
+            { path: '', component: DashboardComponent, data: { titulo: 'Dashboard' } },
+            { path: 'rxjs', component: RxjsComponent, data: { titulo: 'Rxjs' } },
+            { path: 'promesas', component: PromesasComponent, data: { titulo: 'Promesas' } },
+
+            /* Perfil */
+            { path: 'account-settings', component: AccountSettingsComponent, data: { titulo: 'Configuración Ususario' } },
+            { path: 'perfil', component: PerfilComponent, data: { titulo: 'Perfil Usuario' } },
+
             /* Users */
-            {path: 'roles', component: RolesComponent, data:{titulo:'Roles'}},
-            {path: 'users', component: UsersComponent, data:{titulo:'Usuarios'}},
-            {path: 'user/:id', component: UserComponent, data:{titulo:'Usuarios'}},
-           
+            { path: 'roles', component: RolesComponent, data: { titulo: 'Roles' } },
+            { path: 'users', component: UsersComponent, data: { titulo: 'Usuarios' } },
+            { path: 'user/:id', component: UserComponent, data: { titulo: 'Usuarios' } },
+
             /* Inventory */
-            {path: 'inventory/categories', component: CategoriesComponent, data:{titulo:'Categorías'}},
-            {path: 'inventory/products', component: ProductsComponent, data:{titulo:'Productos'}},
-            {path: 'inventory/product', component: ProductComponent, data:{titulo:'Nuevo Producto'}},
-            {path: 'inventory/units', component: UnitsComponent, data:{titulo:'Unidades'}},
-            {path: 'inventory/import-products', component: ImportInventoryComponent, data:{titulo:'Importar Productos'}},
+            { path: 'inventory/categories', component: CategoriesComponent, data: { titulo: 'Categorías' } },
+            { path: 'inventory/products', component: ProductsComponent, data: { titulo: 'Productos' } },
+            { path: 'inventory/product', component: ProductComponent, data: { titulo: 'Nuevo Producto' } },
+            { path: 'inventory/units', component: UnitsComponent, data: { titulo: 'Unidades' } },
+            { path: 'inventory/import-products', component: ImportInventoryComponent, data: { titulo: 'Importar Productos' } },
 
             /* Purchases */
-            {path: 'purchase/iva', component: IvaComponent, data:{titulo:'Iva'}},
-            {path: 'providers', component: ProvidersComponent, data:{titulo:'Proveedores'}},
-            {path: 'providers/import', component: ImportProvidersComponent, data:{titulo:'Importar Proveedores'}},
-            {path: 'purchases', component: PurchasesComponent, data:{titulo:'Compras'}},
-            {path: 'purchase', component: PurchaseComponent, data:{titulo:'Nueva Compra'}},
+            { path: 'purchase/iva', component: IvaComponent, data: { titulo: 'Iva' } },
+            { path: 'providers', component: ProvidersComponent, data: { titulo: 'Proveedores' } },
+            { path: 'providers/import', component: ImportProvidersComponent, data: { titulo: 'Importar Proveedores' } },
+            { path: 'purchases', component: PurchasesComponent, data: { titulo: 'Compras' } },
+            { path: 'purchase', component: PurchaseComponent, data: { titulo: 'Nueva Compra' } },
+
+            // Compras
+            { path: 'proveedores', component: ProveedorComponent, data: { titulo: 'Proveedores' } },
+            { path: 'facturas', component: FacturaComponent, data: { titulo: 'Facturas' } },
+            { path: 'detalle-facturas', component: DetalleFacturaComponent, data: { titulo: 'Detalle Facturas' } },
 
             /* Quotations */
-            {path: 'quotations', component: QuotationsComponent, data:{titulo:'Proformas'}},
-            {path: 'quotation', component: QuotationComponent, data:{titulo:'Nueva Proforma'}},
-            {path: 'clients', component: ClientsComponent, data:{titulo:'Clientes'}},
-            {path: 'clients/groups', component: GroupsClientsComponent, data:{titulo:'Grupo de Clientes'}},
-            {path: 'clients/import', component: ImportClientsComponent, data:{titulo:'Importar Clientes'}},
-            
+            { path: 'quotations', component: QuotationsComponent, data: { titulo: 'Proformas' } },
+            { path: 'quotation', component: QuotationComponent, data: { titulo: 'Nueva Proforma' } },
+            { path: 'clients', component: ClientsComponent, data: { titulo: 'Clientes' } },
+            { path: 'clients/groups', component: GroupsClientsComponent, data: { titulo: 'Grupo de Clientes' } },
+            { path: 'clients/import', component: ImportClientsComponent, data: { titulo: 'Importar Clientes' } },
+
             /* APUS */
-            {path: 'apus', component: ApusComponent, data:{titulo:'APUs'}},
-            {path: 'apu', component: ApuComponent, data:{titulo:'Generar APU'}},
+            { path: 'apus', component: ApusComponent, data: { titulo: 'APUs' } },
+            { path: 'apu', component: ApuComponent, data: { titulo: 'Generar APU' } },
 
             // Contabilidad
             { path: 'cuentas', component: CuentaComponent, data: { titulo: 'Cuentas' } },
@@ -100,10 +110,10 @@ const routes: Routes = [
 ];
 
 @NgModule({
-    imports: [ RouterModule.forChild(routes) ],
-    exports: [ RouterModule ]
+    imports: [RouterModule.forChild(routes)],
+    exports: [RouterModule]
 })
 
-export class PagesRoutingModule {}
+export class PagesRoutingModule { }
 
 
