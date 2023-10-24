@@ -20,18 +20,14 @@
                     </ul>
                 </li>
                 <li class="nav-devider"></li>
-                
-                <li > <a class=" waves-effect waves-dark" 
-                    routerLink="/" 
-                    >
-                    <i class="mdi mdi-gauge">
-                    </i><span class="hide-menu">Dashboard 
-                        <span class="label label-rouded "></span></span></a>
-                    
+
+                <li> <a class=" waves-effect waves-dark" routerLink="/">
+                        <i class="mdi mdi-gauge">
+                        </i><span class="hide-menu">Dashboard
+                            <span class="label label-rouded "></span></span></a>
                 </li>
-                <li *ngFor="let item of menuItem"> 
-                    <a class="has-arrow waves-effect waves-dark" href="#"
-                        aria-expanded="false">
+                <li *ngFor="let item of menuItem">
+                    <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false">
                         <i [class]="item.icono"></i>
                         <span class="hide-menu">{{item.titulo}} <span
                                 class="label label-rouded label-themecolor pull-right">
@@ -42,6 +38,11 @@
                                 [routerLinkActiveOptions]="{exact:true}"> {{subitem.titulo}} </a>
                         </li>
                     </ul>
+                </li>
+                <li> <a class=" waves-effect waves-dark" routerLink="/">
+                        <i class="mdi mdi-exit-to-app">
+                        </i><span class="hide-menu">Cerrar Sesión
+                            <span class="label label-rouded "></span></span></a>
                 </li>
 
             </ul>
