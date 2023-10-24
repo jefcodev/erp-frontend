@@ -2,8 +2,7 @@ export class Proveedor {
     constructor(
         public id_proveedor: number,
         public identificacion: string,
-        public nombre: string,
-        public apellido: string,
+        public razon_social: string,
         public nombre_comercial: string,
         public direccion: string,
         public telefono: string,

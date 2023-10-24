@@ -90,8 +90,7 @@ export class FacturaComponent implements OnInit {
 
 
   public identificacion: string;
-  public nombre: string;
-  public apellido: string;
+  public razon_social: string;
   public nombre_comercial: string;
   public direccion: string;
   public telefono: string;
@@ -158,8 +157,7 @@ export class FacturaComponent implements OnInit {
 
       id_proveedor: ['', [Validators.required, Validators.minLength(0)]],
       identificacion: ['', [Validators.required, Validators.minLength(0)]],
-      nombre: ['', [Validators.required, Validators.minLength(0)]],
-      apellido: ['', [Validators.required, Validators.minLength(0)]],
+      razon_social: ['', [Validators.required, Validators.minLength(0)]],
       direccion: ['', [Validators.required, Validators.minLength(0)]],
       telefono: ['', [Validators.required, Validators.minLength(0)]],
       email: ['', [Validators.required, Validators.email]],
@@ -188,8 +186,7 @@ export class FacturaComponent implements OnInit {
 
       id_proveedor: ['1', [Validators.required, Validators.minLength(0)]],
       identificacion: ['111111', [Validators.required, Validators.minLength(0)]],
-      nombre: ['Edison ', [Validators.required, Validators.minLength(0)]],
-      apellido: ['Pinanjota', [Validators.required, Validators.minLength(0)]],
+      razon_social: ['Edison ', [Validators.required, Validators.minLength(0)]],
       direccion: ['Cayambe', [Validators.required, Validators.minLength(0)]],
       telefono: ['0978812129', [Validators.required, Validators.minLength(0)]],
       email: ['eepinanjota95@utn.edu.ec', [Validators.required, Validators.email]],
@@ -219,8 +216,7 @@ export class FacturaComponent implements OnInit {
 
       //id_proveedor: [''],
       identificacion: [''],
-      nombre: [''],
-      apellido: [''],
+      razon_social: [''],
       direccion: [''],
       telefono: [''],
       email: [''],
@@ -246,8 +242,7 @@ export class FacturaComponent implements OnInit {
 
     this.proveedorForm = this.fb.group({
       identificacion: ['1727671628', [Validators.required, Validators.minLength(3)]],
-      nombre: ['Edison', [Validators.required, Validators.minLength(3)]],
-      apellido: ['Pinanjota', [Validators.required, Validators.minLength(3)]],
+      razon_social: ['PINANJOTA EDISON', [Validators.required, Validators.minLength(3)]],
       nombre_comercial: ['Systemcode', [Validators.required, Validators.minLength(3)]],
       direccion: ['Cayambe', [Validators.required, Validators.minLength(3)]],
       telefono: ['0978812129', [Validators.required, Validators.minLength(3)]],
@@ -296,11 +291,11 @@ export class FacturaComponent implements OnInit {
     console.log(identificacion)
     this.proveedorService.loadProveedorByIdentificacion(identificacion)
       .subscribe(proveedor => {
-        const { id_proveedor, identificacion, nombre, apellido } = proveedor[0];
+        const { id_proveedor, identificacion, razon_social, apellido } = proveedor[0];
         this.proveedorSeleccionado2 = proveedor[0];
         console.log("id_proveedor: " + id_proveedor);
         console.log("identificacion: " + identificacion);
-        console.log("nombre: " + nombre);
+        console.log("razon_social: " + razon_social);
         console.log("apellido: " + apellido);
       })
   }
@@ -315,16 +310,14 @@ export class FacturaComponent implements OnInit {
         (proveedor) => {
           console.log('\n\n--> Incio - Load Proveedor (service - subscribe)');
           if (Array.isArray(proveedor) && proveedor.length > 0) {
-            const { id_proveedor, identificacion, nombre, apellido } = proveedor[0];
+            const { id_proveedor, identificacion, razon_social } = proveedor[0];
             console.log("Se encontró el proveedor con la identificación: " + identificacion);
             console.log("< id_proveedor: ", id_proveedor);
             console.log("< identificacion: ", identificacion);
-            console.log("< nombre: " + nombre);
-            console.log("< apellido: " + apellido);
+            console.log("< razon_social: " + razon_social);
             this.id_proveedor = id_proveedor;
             this.identificacion = identificacion;
-            this.nombre = nombre;
-            this.apellido = apellido;
+            this.razon_social = razon_social;
           } else {
             console.log("No se encontró ningún proveedor con la identificación: " + identificacion);
             Swal.fire({
@@ -565,17 +558,16 @@ export class FacturaComponent implements OnInit {
 
           return this.cargarProveedorPorId(id_proveedor).pipe(
             concatMap(proveedor => {
-              const { identificacion, nombre, apellido, nombre_comercial, direccion, telefono, email } = proveedor[0];
+              const { identificacion, razon_social, nombre_comercial, direccion, telefono, email } = proveedor[0];
               this.proveedorSeleccionado = proveedor[0];
               this.identificacion = identificacion;
-              this.nombre = nombre;
-              this.apellido = apellido;
+              this.razon_social = razon_social;
               this.direccion = direccion;
               this.telefono = telefono;
               this.email = email;
               const abono = "0.00";
               return of({
-                identificacion, nombre, apellido, direccion, telefono, email, id_forma_pago, id_asiento, codigo,
+                identificacion, razon_social, direccion, telefono, email, id_forma_pago, id_asiento, codigo,
                 fecha_emision, fecha_vencimiento, estado_pago, subtotal_sin_impuestos, total_descuento, iva, valor_total, abono, saldo
               });
             })
@@ -610,17 +602,17 @@ export class FacturaComponent implements OnInit {
   
           return this.cargarProveedorPorId(id_proveedor).pipe(
             concatMap(proveedor => {
-              const { identificacion, nombre, apellido, nombre_comercial, direccion, telefono, email } = proveedor[0];
+              const { identificacion, razon_social, apellido, nombre_comercial, direccion, telefono, email } = proveedor[0];
               this.proveedorSeleccionado = proveedor[0];
               this.identificacion = identificacion;
               //console.log("identficacion this 1")
               //console.log(this.identificacion)
-              this.nombre = nombre;
+              this.razon_social = razon_social;
               this.apellido = apellido;
               this.direccion = direccion;
               this.telefono = telefono;
               this.email = email;
-              return of({ identificacion, nombre, apellido, direccion, telefono, email, id_forma_pago, id_asiento, codigo, fecha_emision, fecha_vencimiento, estado_pago, subtotal_sin_impuestos, total_descuento, iva, valor_total, abono });
+              return of({ identificacion, razon_social, apellido, direccion, telefono, email, id_forma_pago, id_asiento, codigo, fecha_emision, fecha_vencimiento, estado_pago, subtotal_sin_impuestos, total_descuento, iva, valor_total, abono });
             })
           );
         })
@@ -707,8 +699,7 @@ export class FacturaComponent implements OnInit {
 
     console.log("this.id_proveedor 2xml", this.id_proveedor)
     console.log("this.identificacion 2xml", this.identificacion)
-    console.log("this.nombre 2xml", this.nombre)
-    console.log("this.apellido 2xml", this.apellido)
+    console.log("this.razon_social 2xml", this.razon_social)
 
     console.log('VERRRRRRRRRRRRRRRRRRRR 1')
     console.log('id_proveedor: ' + this.id_proveedor)
@@ -818,8 +809,8 @@ export class FacturaComponent implements OnInit {
     console.log("FINALIN 1")
   
     // mostramos los datos recuperado de la busqueda
-    const nombreDelProveedor = this.proveedorSeleccionado2.nombre;
-    console.log("Nombre del proveedor: " + nombreDelProveedor);
+    const nombreDelProveedor = this.proveedorSeleccionado2.razon_social;
+    console.log("razon_social del proveedor: " + nombreDelProveedor);
   
     // asiganamos el id_proveedor de la identificación cargadad
     console.log("this.id_proveedor XD")
@@ -832,7 +823,7 @@ export class FacturaComponent implements OnInit {
       fecha_vencimiento: null,
       saldo: 0, // Valor válido
   
-      razonSocial: 'Nombre de la razón social',
+      razonSocial: 'razon_social de la razón social',
       ruc: '1234567890',
       claveAcceso: 'clave de acceso',
       estab: 'Establecimiento',
@@ -1125,24 +1116,17 @@ export class FacturaComponent implements OnInit {
     this.ocultarModal = true;
   }
 
-  nombreProveedor: string;
-  apellidoProveedor: string;
+  razonSocialProveedor: string;
   direccionProveedor: string;
   telefonoProveedor: string;
   emailProveedor: string;
 
   estadoPagoFactura: string;
 
-  actualizarNombre(event: any): void {
+  actualizarRazonSocial(event: any): void {
     const proveedorId = event.target.value;
     const proveedor = this.proveedores.find(p => p.id_proveedor == proveedorId);
-    this.nombreProveedor = proveedor ? proveedor.nombre : '';
-  }
-
-  actualizarApellido(event: any): void {
-    const proveedorId = event.target.value;
-    const proveedor = this.proveedores.find(p => p.id_proveedor == proveedorId);
-    this.apellidoProveedor = proveedor ? proveedor.apellido : '';
+    this.razonSocialProveedor = proveedor ? proveedor.razon_social : '';
   }
 
   actualizarDireccion(event: any): void {
@@ -1168,30 +1152,27 @@ export class FacturaComponent implements OnInit {
     //this.formSubmitted = true;
     /*
     this.identificacion = "1727671630"
-    this.nombre = "Edison"
-    this.apellido = "Pinanjota"
+    this.razon_social = "Edison"
     this.nombre_comercial = "SystemCode"
     this.direccion = "Cayambe"
     this.telefono = "0978812130"
     this.email = "eepinanjotac30@utn.edu.ec"
     */
     this.identificacion = this.identificacionComprador
-    this.nombre = this.razonSocialComprador
-    this.apellido = ""
+    this.razon_social = this.razonSocialComprador
     this.nombre_comercial = ""
     this.direccion = this.direccionComprador
     this.telefono = ""
     this.email = this.identificacionComprador + "@example.com"
 
     console.log('> this.identificacion', this.identificacion)
-    console.log('> this.nombre (Razón Social): ', this.nombre)
-    console.log('> this.apellido: ', this.apellido)
+    console.log('> this.razon_social (Razón Social): ', this.razon_social)
     console.log('> this.nombre_comercial: ', this.nombre_comercial)
     console.log('> this.direccion: ', this.direccion)
     console.log('> this.telefono: ', this.telefono)
     console.log('> this.email: ', this.email)
 
-    if (!this.identificacion || !this.nombre || !this.direccion) {
+    if (!this.identificacion || !this.razon_social || !this.direccion) {
       Swal.fire('Error', 'Falta información requerida para crear el proveedor.', 'error');
       return;
     }
@@ -1199,8 +1180,7 @@ export class FacturaComponent implements OnInit {
     // Crea un objeto con la información del proveedor
     const proveedorData = {
       identificacion: this.identificacion,
-      nombre: this.nombre,
-      apellido: this.apellido,
+      razon_social: this.razon_social,
       nombre_comercial: this.nombre_comercial,
       direccion: this.direccion,
       telefono: this.telefono,
@@ -1259,18 +1239,15 @@ export class FacturaComponent implements OnInit {
         this.nuevoProveedor = res;
 
         this.id_proveedor = this.nuevoProveedor.id_proveedor;
-        this.nombre = this.nuevoProveedor.nombre;
-        this.apellido = this.nuevoProveedor.apellido;
+        this.razon_social = this.nuevoProveedor.razon_social;
         this.direccion = this.nuevoProveedor.direccion;
         this.telefono = this.nuevoProveedor.telefono;
         this.email = this.nuevoProveedor.email;
 
         console.log('ID PROVEEDOR')
         console.log(this.id_proveedor)
-        console.log('NOMBRE')
-        console.log(this.nombre)
-        console.log('APELLIDO')
-        console.log(this.apellido)
+        console.log('RAZÓN SOCIAL')
+        console.log(this.razon_social)
         console.log('DIRECCION')
         console.log(this.direccion)
         console.log('TELEFONO')
@@ -1295,8 +1272,7 @@ export class FacturaComponent implements OnInit {
   nuevoProveedor: any;
   id_proveedor: any;
   /* OJO ver si esta ingresadon correctamente por que fueron comentadas estas lienas
-  nombre: any;
-  apellido: any;
+  razon_social: any;
   direccion: any;
   telefono: any;
   email: any;*/
@@ -1306,8 +1282,7 @@ export class FacturaComponent implements OnInit {
     this.facturaForm.get('id_proveedor').setValue(this.id_proveedor);
     this.facturaForm.get('identificacion').setValue(this.identificacion);
     //this.facturaForm.get('identificacion').setValue(this.identificacionSeleccionada);
-    this.facturaForm.get('nombre').setValue(this.nombre);
-    this.facturaForm.get('apellido').setValue(this.apellido);
+    this.facturaForm.get('razon_social').setValue(this.razon_social);
     this.facturaForm.get('direccion').setValue(this.direccion);
     this.facturaForm.get('telefono').setValue(this.telefono);
     this.facturaForm.get('email').setValue(this.email);
@@ -1342,8 +1317,7 @@ export class FacturaComponent implements OnInit {
     this.facturaForm.patchValue({
       id_proveedor: proveedor.id_proveedor,
       identificacion: proveedor.identificacion,
-      nombre: proveedor.nombre,
-      apellido: proveedor.apellido,
+      razon_social: proveedor.razon_social,
       direccion: proveedor.direccion,
       telefono: proveedor.telefono,
       email: proveedor.email

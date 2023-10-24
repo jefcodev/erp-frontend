@@ -71,8 +71,7 @@
                             <td>
                                 <ng-container *ngFor="let proveedor of proveedores">
                                     <ng-container
-                                        *ngIf="proveedor.id_proveedor == factura.id_proveedor ">{{proveedor.apellido}}
-                                        {{proveedor.nombre}}</ng-container>
+                                        *ngIf="proveedor.id_proveedor == factura.id_proveedor ">{{proveedor.razon_social}}</ng-container>
                                 </ng-container>
                             </td>
 
@@ -248,22 +247,11 @@
 
                         <div class="col-md-3">
                             <div class="form-group">
-                                <label for="exampleInputuname">Nombres</label>
+                                <label for="exampleInputuname">Razón Social</label>
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="ti-user"></i></div>
-                                    <input type="text" class="form-control" id="exampleInputuname" placeholder="Nombres"
-                                        formControlName="nombre" [value]="nombreProveedor" readonly>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label for="exampleInputuname">Apellidos</label>
-                                <div class="input-group">
-                                    <div class="input-group-addon"><i class="ti-user"></i></div>
-                                    <input type="text" class="form-control" id="exampleInputuname"
-                                        placeholder="Apellidos" formControlName="apellido" [value]="apellidoProveedor"
-                                        readonly>
+                                    <input type="text" class="form-control" id="exampleInputuname" placeholder="Razón Social"
+                                        formControlName="razon_social" [value]="razonSocialProveedor" readonly>
                                 </div>
                             </div>
                         </div>
@@ -576,22 +564,11 @@
 
                         <div class="col-md-3">
                             <div class="form-group">
-                                <label for="exampleInputuname">Nombres</label>
+                                <label for="exampleInputuname">Razó Social</label>
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="ti-user"></i></div>
-                                    <input type="text" class="form-control" id="exampleInputuname" placeholder="nombre"
-                                        formControlName="nombre" readonly>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label for="exampleInputuname">Apellidos</label>
-                                <div class="input-group">
-                                    <div class="input-group-addon"><i class="ti-user"></i></div>
-                                    <input type="text" class="form-control" id="exampleInputuname"
-                                        placeholder="Apellidos" formControlName="apellido" readonly>
+                                    <input type="text" class="form-control" id="exampleInputuname" placeholder="Razón Social"
+                                        formControlName="razon_social" readonly>
                                 </div>
                             </div>
                         </div>
@@ -916,18 +893,11 @@
                                 formControlName="identificacion">
                         </div>
 
-                        <label for="exampleInputuname">Nombres</label>
+                        <label for="exampleInputuname">Razón Social</label>
                         <div class="input-group">
                             <div class="input-group-addon"><i class="ti-user"></i></div>
-                            <input type="text" class="form-control" id="exampleInputuname" placeholder="Nombres"
-                                formControlName="nombre">
-                        </div>
-
-                        <label for="exampleInputuname">Apellidos</label>
-                        <div class="input-group">
-                            <div class="input-group-addon"><i class="ti-user"></i></div>
-                            <input type="text" class="form-control" id="exampleInputuname" placeholder="Apellidos"
-                                formControlName="apellido">
+                            <input type="text" class="form-control" id="exampleInputuname" placeholder="Razón Social"
+                                formControlName="razon_social">
                         </div>
 
                         <label for="exampleInputuname">Nombre Comercial</label>
@@ -963,8 +933,7 @@
                     <div class="row">
                         <div class="col text-danger">
                             <p *ngIf="campoNoValido('identificacion',proveedorForm)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('nombre',proveedorForm)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('apellido',proveedorForm)"> El campo es obligatorio</p>
+                            <p *ngIf="campoNoValido('razon_social',proveedorForm)"> El campo es obligatorio</p>
                             <p *ngIf="campoNoValido('nombre_comercial',proveedorForm)"> El campo es obligatorio</p>
                             <p *ngIf="campoNoValido('direccion',proveedorForm)"> El campo es obligatorio</p>
                             <p *ngIf="campoNoValido('telefono',proveedorForm)"> El campo es obligatorio</p>

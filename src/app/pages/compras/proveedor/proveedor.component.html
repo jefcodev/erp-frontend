@@ -32,8 +32,7 @@
                             <td>{{proveedor.identificacion}}</td>
                             <td>
                                 <a href="javascript:void(0)"><img src="../assets/images/users/8.jpg" alt="user"
-                                        width="40" class="img-circle"> {{proveedor.apellido}}</a>
-                                <a href="javascript:void(0)"> {{proveedor.nombre}} </a>
+                                        width="40" class="img-circle"> {{proveedor.razon_social}}</a>
                             </td>
                             <td>{{proveedor.nombre_comercial}}</td>
                             <td>{{proveedor.direccion}}</td>
@@ -117,18 +116,11 @@
                                 formControlName="identificacion">
                         </div>
 
-                        <label for="exampleInputuname">Nombres</label>
+                        <label for="exampleInputuname">Razón Social</label>
                         <div class="input-group">
                             <div class="input-group-addon"><i class="ti-user"></i></div>
-                            <input type="text" class="form-control" id="exampleInputuname" placeholder="Nombres"
-                                formControlName="nombre">
-                        </div>
-
-                        <label for="exampleInputuname">Apellidos</label>
-                        <div class="input-group">
-                            <div class="input-group-addon"><i class="ti-user"></i></div>
-                            <input type="text" class="form-control" id="exampleInputuname" placeholder="Apellidos"
-                                formControlName="apellido">
+                            <input type="text" class="form-control" id="exampleInputuname" placeholder="Razón Social"
+                                formControlName="razon_social">
                         </div>
 
                         <label for="exampleInputuname">Nombre Comercial</label>
@@ -164,8 +156,7 @@
                     <div class="row">
                         <div class="col text-danger">
                             <p *ngIf="campoNoValido('identificacion',proveedorForm)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('nombre',proveedorForm)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('apellido',proveedorForm)"> El campo es obligatorio</p>
+                            <p *ngIf="campoNoValido('Razon_social',proveedorForm)"> El campo es obligatorio</p>
                             <p *ngIf="campoNoValido('nombre_comercial',proveedorForm)"> El campo es obligatorio</p>
                             <p *ngIf="campoNoValido('direccion',proveedorForm)"> El campo es obligatorio</p>
                             <p *ngIf="campoNoValido('telefono',proveedorForm)"> El campo es obligatorio</p>
@@ -213,23 +204,12 @@
                     </div>
 
                     <div class="form-group row">
-                        <label for="exampleInputuname3" class="col-sm-3 control-label">Nombres*</label>
+                        <label for="exampleInputuname3" class="col-sm-3 control-label">Razón Social*</label>
                         <div class="col-sm-9">
                             <div class="input-group">
                                 <div class="input-group-addon"><i class="ti-user"></i></div>
-                                <input type="text" class="form-control" id="exampleInputuname3" placeholder="Nombres"
-                                    formControlName="nombre">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
-                        <label for="exampleInputuname3" class="col-sm-3 control-label">Apellidos*</label>
-                        <div class="col-sm-9">
-                            <div class="input-group">
-                                <div class="input-group-addon"><i class="ti-user"></i></div>
-                                <input type="text" class="form-control" id="exampleInputuname3" placeholder="Apellidos"
-                                    formControlName="apellido">
+                                <input type="text" class="form-control" id="exampleInputuname3" placeholder="Razón Social"
+                                    formControlName="razon_social">
                             </div>
                         </div>
                     </div>
@@ -281,8 +261,7 @@
                     <div class="row">
                         <div class="col text-danger">
                             <p *ngIf="campoNoValido('identificacion',proveedorFormU)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('nombre',proveedorFormU)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('apellido',proveedorFormU)"> El campo es obligatorio</p>
+                            <p *ngIf="campoNoValido('razon_social',proveedorFormU)"> El campo es obligatorio</p>
                             <p *ngIf="campoNoValido('nombre_comercial',proveedorFormU)"> El campo es obligatorio</p>
                             <p *ngIf="campoNoValido('direccion',proveedorFormU)"> El campo es obligatorio</p>
                             <p *ngIf="campoNoValido('telefono',proveedorFormU)"> El campo es obligatorio</p>

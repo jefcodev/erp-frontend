@@ -52,8 +52,7 @@ export class ProveedorComponent implements OnInit {
   ) {
     this.proveedorForm = this.fb.group({
       identificacion: ['1727671628', [Validators.required, Validators.minLength(3)]],
-      nombre: ['Edison', [Validators.required, Validators.minLength(3)]],
-      apellido: ['Pinanjota', [Validators.required, Validators.minLength(3)]],
+      razon_social: ['PINANJOTA EDISON', [Validators.required, Validators.minLength(3)]],
       nombre_comercial: ['Systemcode', [Validators.required, Validators.minLength(3)]],
       direccion: ['Cayambe', [Validators.required, Validators.minLength(3)]],
       telefono: ['0978812129', [Validators.required, Validators.minLength(3)]],
@@ -62,8 +61,7 @@ export class ProveedorComponent implements OnInit {
 
     this.proveedorFormU = this.fb.group({
       identificacion: ['', [Validators.required, Validators.minLength(3)]],
-      nombre: ['', [Validators.required, Validators.minLength(3)]],
-      apellido: ['', [Validators.required, Validators.minLength(3)]],
+      razon_social: ['', [Validators.required, Validators.minLength(3)]],
       nombre_comercial: ['', [Validators.required, Validators.minLength(3)]],
       direccion: ['', [Validators.required, Validators.minLength(3)]],
       telefono: ['', [Validators.required, Validators.minLength(3)]],
@@ -116,7 +114,7 @@ export class ProveedorComponent implements OnInit {
     //this.proveedorService.cargarProveedorById(proveedor.id_proveedor)
     this.proveedorService.loadProveedorById(id_proveedor)
       .subscribe(proveedor => {
-        const { identificacion, nombre, apellido, nombre_comercial, direccion, telefono, email } = proveedor[0];
+        const { identificacion, razon_social, nombre_comercial, direccion, telefono, email } = proveedor[0];
         this.proveedorSeleccionado = proveedor[0];
         console.log("proveedor")
         console.log(proveedor)
@@ -124,9 +122,9 @@ export class ProveedorComponent implements OnInit {
         console.log(proveedor[0])
         console.log("identficacion")
         console.log(identificacion)
-        console.log("nombre")
-        console.log(nombre)
-        this.proveedorFormU.setValue({ identificacion, nombre, apellido, nombre_comercial, direccion, telefono, email })
+        console.log("razon_social")
+        console.log(razon_social)
+        this.proveedorFormU.setValue({ identificacion, razon_social, nombre_comercial, direccion, telefono, email })
       })
   }
 
@@ -205,7 +203,7 @@ export class ProveedorComponent implements OnInit {
     console.log(proveedor.id_proveedor)
     Swal.fire({
       title: '¿Borrar Proveedor?',
-      text: `Estas a punto de borrar a ${proveedor.nombre} ${proveedor.apellido}`,
+      text: `Estas a punto de borrar a ${proveedor.razon_social}`,
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Sí, borrar',
@@ -217,13 +215,13 @@ export class ProveedorComponent implements OnInit {
             this.cargarProveedores();
             /*Swal.fire(
               'Proveedor borrado',
-              `${proveedor.nombre} ${proveedor.apellido} ha sido borrado correctamente.`,
+              `${proveedor.nombre} ha sido borrado correctamente.`,
               'success'              
             );*/
             Swal.fire({
               icon: 'success',
               title: 'Proveedor borrado',
-              text: `${proveedor.nombre} ${proveedor.apellido} ha sido borrado correctamente.`,
+              text: `${proveedor.razon_social} ha sido borrado correctamente.`,
               showConfirmButton: false,
               timer: 1500
             });
