@@ -19,12 +19,13 @@ import { ApuModule } from './apu/apu.module';
 import { ComponentsModule } from '../components/components.module';
 import { ShareModule } from '../shared/share.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
-import { InventoryModule } from './inventory/inventory.module';
+import { InventarioModule } from './inventario/inventario.module';
 import { PurchaseModule } from './purchases/purchase.module';
 import { ComprasModule } from './compras/compras.module';
 import { VentaModule } from './venta/venta.module';
 import { QuotationModule } from './quotations/quotation.module';
 import { ContabilidadModule } from './contabilidad/contabilidad.module';
+import { InventoryModule } from './inventory/inventory.module';
 
 @NgModule({
   declarations: [
@@ -49,6 +50,7 @@ import { ContabilidadModule } from './contabilidad/contabilidad.module';
     RouterModule,
     ShareModule,
     InventoryModule,
+    InventarioModule,
     PurchaseModule,
     QuotationModule,
     FormsModule,

@@ -51,7 +51,8 @@ export class SidebarService {
       titulo: 'Inventario',
       icono: 'mdi mdi-dropbox',
       submenu: [
-        { titulo: 'Productos', url: ('inventory/products') },
+        { titulo: 'Productos', url: ('productos') },
+        { titulo: 'configuración', url: ('') },
         { titulo: 'Tipos de Productos', url: ('') },
         { titulo: 'Lista de Precios', url: ('') },
         { titulo: 'Inventarios', url: ('') },
@@ -102,7 +103,7 @@ export class SidebarService {
       submenu: [
         { titulo: 'Compras', url: ('') },
         { titulo: 'Ventas', url: ('') },
-        { titulo: 'Productos', url: ('') },
+        { titulo: 'Productos', url: ('productos') },
         { titulo: 'APUs', url: ('') },
         { titulo: 'Estado de Resultado', url: ('estado-resultado') },
         { titulo: 'Balance General', url: ('balance-general') },

@@ -7,7 +7,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import Swal from 'sweetalert2';
 
 import { DetalleFactura } from 'src/app/models/compra/detalle-factura.model';
-import { DetalleFacturaService } from 'src/app/services/compras/detalle-factura.service';
+import { DetalleFacturaService } from 'src/app/services/compra/detalle-factura.service';
 
 @Component({
   selector: 'app-detalle-factura',

@@ -6,8 +6,8 @@ import { Router } from '@angular/router';
 import { map, Observable, tap, catchError, of } from 'rxjs';
 
 // Interfaces
-import { FormProducto } from 'src/app/interfaces/inventario/producto/form-producto.interface';
-import { LoadProducto } from 'src/app/interfaces/inventario/producto/load-producto.interface';
+import { FormProducto } from '../..//interfaces/inventario/producto/form-producto.interface';
+import { LoadProducto } from '../../interfaces/inventario/producto/load-producto.interface';
 import { LoginForm } from '../../interfaces/login-form.iterface';
 
 // Models
@@ -50,6 +50,7 @@ export class ProductoService {
   }
 
   createProducto(formData: FormProducto) {
+    console.log("(service) formData: ", formData)
     const url = `${base_url}/productos`;
     console.log(url)
     return this.hhtp.post(url, formData, this.headers)

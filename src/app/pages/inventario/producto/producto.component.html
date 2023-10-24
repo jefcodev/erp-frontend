@@ -1,11 +1,11 @@
-<!-- Lista de Proveedores -->
+<!-- Lista de Productos -->
 <div class="col-12">
     <div class="card">
         <div class="card-body">
-            <h4 class="card-title">Lista de Proveedores</h4>
+            <h4 class="card-title">Lista de Productos</h4>
             <h6 class="card-subtitle"></h6>
             <button class="btn btn-primary waves-effect waves-light" data-toggle="modal" data-target="#exampleModal"
-                type="button"><span class="btn-label"><i class="fa fa-user-circle"></i></span>Crear Proveedor</button>
+                type="button"><span class="btn-label"><i class="fa fa-user-circle"></i></span>Crear Producto</button>
 
             <div class="table-responsive">
 
@@ -14,33 +14,33 @@
                     <thead>
                         <tr>
                             <th class="footable-sortable">#<span class="footable-sort-indicator"></span></th>
-                            <th class="footable-sortable">Identificación <span class="footable-sort-indicator"></span>
-                            </th>
-                            <th class="footable-sortable">Razón Social<span class="footable-sort-indicator"></span></th>
-                            <th class="footable-sortable">Nombre Comercial<span class="footable-sort-indicator"></span>
-                            </th>
-                            <th class="footable-sortable">Dirección<span class="footable-sort-indicator"></span></th>
-                            <th class="footable-sortable">Teléfono<span class="footable-sort-indicator"></span></th>
-                            <th class="footable-sortable">Email<span class="footable-sort-indicator"></span></th>
+                            <th class="footable-sortable">Código <span class="footable-sort-indicator"></span></th>
+                            <th class="footable-sortable">Descripción<span class="footable-sort-indicator"></span></th>
+                            <th class="footable-sortable">Stock<span class="footable-sort-indicator"></span>
+                            <th class="footable-sortable">Utilidad<span class="footable-sort-indicator"></span>
+                            <th class="footable-sortable">Descuento<span class="footable-sort-indicator"></span>
+                            <th class="footable-sortable">Precio Compra<span class="footable-sort-indicator"></span>
+                            <th class="footable-sortable">Precio Venta<span class="footable-sort-indicator"></span></th>
                             <th class="footable-sortable">Estado<span class="footable-sort-indicator"></span></th>
-
                             <th class="footable-sortable">Action<span class="footable-sort-indicator"></span></th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let proveedor of proveedores let i = index">
+                        
+                        <tr *ngFor="let producto of productos let i = index">
                             <td><span class="footable-toggle"></span>{{ i + 1 }}</td>
-                            <td>{{proveedor.identificacion}}</td>
+                            <td>{{producto.codigo_principal}}</td>
                             <td>
-                                <a href="javascript:void(0)"><img src="../assets/images/users/8.jpg" alt="user"
-                                        width="40" class="img-circle"> {{proveedor.razon_social}}</a>
+                                <a href="javascript:void(0)"><img src="../assets/images/products/product.jpg"
+                                        alt="product" width="30" class="img-circle"> {{producto.descripcion}}</a>
                             </td>
-                            <td>{{proveedor.nombre_comercial}}</td>
-                            <td>{{proveedor.direccion}}</td>
-                            <td>{{proveedor.telefono}}</td>
-                            <td>{{proveedor.email}}</td>
+                            <td>{{producto.stock}}</td>
+                            <td>{{producto.utilidad}}</td>
+                            <td>{{producto.descuento}}</td>
+                            <td>{{producto.precio_compra}}</td>
+                            <td>{{producto.precio_venta}}</td>
 
-                            <td *ngIf="proveedor.estado; else inactivo">
+                            <td *ngIf="producto.estado; else inactivo">
                                 <div class="label label-table label-success">Activo</div>
                             </td>
                             <ng-template #inactivo>
@@ -49,27 +49,23 @@
                                 </td>
                             </ng-template>
 
-                            <td *ngIf="proveedor.estado else inactivoOption" class="text-nowrap">
+                            <td *ngIf="producto.estado else inactivoOption" class="text-nowrap">
 
                                 <a class="cursor" data-toggle="modal"
-                                    (click)="cargarProveedorPorId(proveedor.id_proveedor);"
+                                    (click)="cargarProductoPorId(producto.id_producto);"
                                     data-target="#exampleModalU"><span
                                         class="fa fa-pencil text-inverse m-r-10"></span></a>
 
-                                <a class="cursor" (click)="borrarProveedor(proveedor);" data-toggle="tooltip"
+                                <a class="cursor" (click)="borrarProducto(producto);" data-toggle="tooltip"
                                     data-original-title="Close"> <i class="fa fa-close text-danger"></i> </a>
                             </td>
                             <ng-template #inactivoOption>
                             </ng-template>
-                            <!-- <td>
-                                <button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn" data-toggle="tooltip" data-original-title="Delete"><i class="ti-close" aria-hidden="true"></i></button>
-                            </td>
-                             -->
                         </tr>
+                    
                     </tbody>
                     <tfoot>
                         <tr>
-
                             <td colspan="8">
                                 <div class="text-right">
                                     <ul class="pagination">
@@ -77,12 +73,6 @@
                                                 href="#first">«</a></li>
                                         <li class="footable-page-arrow disabled"><a data-page="prev" href="#prev">‹</a>
                                         </li>
-
-                                        <!-- Generar dinámicamente los elementos de la paginación -->
-                                        <!--<li *ngFor="let pagina of paginas" class="footable-page">
-                                            <a [data-page]="pagina" href="#">{{ pagina + 1 }}</a>
-                                        </li>-->
-
                                         <li class="footable-page-arrow"><a data-page="next" href="#next">›</a></li>
                                         <li class="footable-page-arrow"><a data-page="last" href="#last">»</a></li>
                                     </ul>
@@ -96,78 +86,57 @@
     </div>
 </div>
 
-
 <!-- modal create -->
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel1" #miModal>
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" id="exampleModalLabel1">Nuevo Proveedor</h4>
+                <h4 class="modal-title" id="exampleModalLabel1">Nuevo Producto</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
             </div>
             <div class="modal-body">
-                <form autocomplete="off" [formGroup]="proveedorForm">
+                <form autocomplete="off" [formGroup]="productoForm">
                     <div class="form-group">
 
-                        <label for="exampleInputuname">Identificación</label>
-                        <div class="input-group">
-                            <div class="input-group-addon"><i class="ti-user"></i></div>
-                            <input type="text" class="form-control" id="exampleInputuname" placeholder="Identificación"
-                                formControlName="identificacion">
-                        </div>
-
-                        <label for="exampleInputuname">Razón Social</label>
-                        <div class="input-group">
-                            <div class="input-group-addon"><i class="ti-user"></i></div>
-                            <input type="text" class="form-control" id="exampleInputuname" placeholder="Razón Social"
-                                formControlName="razon_social">
-                        </div>
-
-                        <label for="exampleInputuname">Nombre Comercial</label>
+                        <label for="exampleInputuname">Código Principal</label>
                         <div class="input-group">
                             <div class="input-group-addon"><i class="ti-user"></i></div>
                             <input type="text" class="form-control" id="exampleInputuname"
-                                placeholder="Nombre Comercial" formControlName="nombre_comercial">
+                                placeholder="Código Principal" formControlName="codigo_principal">
                         </div>
 
-                        <label for="exampleInputuname">Dirección</label>
+                        <label for="exampleInputuname">Descripción</label>
                         <div class="input-group">
                             <div class="input-group-addon"><i class="ti-user"></i></div>
-                            <input type="text" class="form-control" id="exampleInputuname" placeholder="Dirección"
-                                formControlName="direccion">
+                            <input type="text" class="form-control" id="exampleInputuname" placeholder="Descripción"
+                                formControlName="descripcion">
                         </div>
 
-                        <label for="exampleInputuname">Telefóno</label>
+                        <label for="exampleInputuname">Stock</label>
                         <div class="input-group">
                             <div class="input-group-addon"><i class="ti-user"></i></div>
-                            <input type="text" class="form-control" id="exampleInputuname" placeholder="Telefóno"
-                                formControlName="telefono">
+                            <input type="number" class="form-control" id="exampleInputuname" placeholder="Stock"
+                                formControlName="stock">
                         </div>
 
-                        <label for="exampleInputuname">Email</label>
+                        <label for="exampleInputuname">Precio Compra</label>
                         <div class="input-group">
                             <div class="input-group-addon"><i class="ti-user"></i></div>
-                            <input type="text" class="form-control" id="exampleInputuname" placeholder="Email"
-                                formControlName="email">
+                            <input type="number" class="form-control" id="exampleInputuname" placeholder="Precio Compra"
+                                formControlName="precio_compra">
                         </div>
-
                     </div>
 
                     <div class="row">
                         <div class="col text-danger">
-                            <p *ngIf="campoNoValido('identificacion',proveedorForm)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('Razon_social',proveedorForm)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('nombre_comercial',proveedorForm)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('direccion',proveedorForm)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('telefono',proveedorForm)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('email',proveedorForm)"> El campo es obligatorio</p>
+                            <p *ngIf="campoNoValido('codigo_principal',productoForm)"> El campo es obligatorio</p>
                         </div>
                     </div>
 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-primary" (click)="crearProveedor();"
+                        <button type="button" class="btn btn-primary" (click)="crearProducto();"
                             data-dismiss="modal">Crear</button>
                     </div>
 
@@ -178,101 +147,109 @@
     </div>
 </div>
 
-<!-- modal  update-->
+
+<!-- modal  update -->
 <div class="modal fade" id="exampleModalU" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel1" #miModal>
     <div class="modal-dialog" role="document">
         <div class="modal-content">
 
             <div class="modal-header">
-                <h4 class="modal-title" id="exampleModalLabel1">Actualizar Proveedor</h4>
+                <h4 class="modal-title" id="exampleModalLabel1">Actualizar Producto</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
             </div>
 
             <div class="modal-body">
 
-                <form autocomplete="off" class="form-horizontal p-t-20" [formGroup]="proveedorFormU">
+                <form autocomplete="off" class="form-horizontal p-t-20" [formGroup]="productoFormU">
 
                     <div class="form-group row">
-                        <label for="exampleInputuname3" class="col-sm-3 control-label">Identificación</label>
+                        <label for="exampleInputuname3" class="col-sm-3 control-label">Código Principal*</label>
                         <div class="col-sm-9">
                             <div class="input-group">
                                 <div class="input-group-addon"><i class="ti-user"></i></div>
                                 <input type="text" class="form-control" id="exampleInputuname3"
-                                    placeholder="Identificación" formControlName="identificacion">
+                                    placeholder="Código Principal" formControlName="codigo_principal">
                             </div>
                         </div>
                     </div>
 
                     <div class="form-group row">
-                        <label for="exampleInputuname3" class="col-sm-3 control-label">Razón Social*</label>
+                        <label for="exampleInputuname3" class="col-sm-3 control-label">Descripción*</label>
                         <div class="col-sm-9">
                             <div class="input-group">
                                 <div class="input-group-addon"><i class="ti-user"></i></div>
-                                <input type="text" class="form-control" id="exampleInputuname3" placeholder="Razón Social"
-                                    formControlName="razon_social">
+                                <input type="text" class="form-control" id="exampleInputuname3" placeholder="Descripción"
+                                    formControlName="descripcion">
                             </div>
                         </div>
                     </div>
 
                     <div class="form-group row">
-                        <label for="exampleInputuname3" class="col-sm-3 control-label">Nombre Comercial*</label>
+                        <label for="exampleInputuname3" class="col-sm-3 control-label">Stock*</label>
                         <div class="col-sm-9">
                             <div class="input-group">
                                 <div class="input-group-addon"><i class="ti-user"></i></div>
                                 <input type="text" class="form-control" id="exampleInputuname3"
-                                    placeholder="Nombre Comercial" formControlName="nombre_comercial">
+                                    placeholder="Stock" formControlName="stock">
                             </div>
                         </div>
                     </div>
 
                     <div class="form-group row">
-                        <label for="exampleInputuname3" class="col-sm-3 control-label">Dirección*</label>
+                        <label for="exampleInputuname3" class="col-sm-3 control-label">Utilidad*</label>
                         <div class="col-sm-9">
                             <div class="input-group">
                                 <div class="input-group-addon"><i class="ti-user"></i></div>
-                                <input type="text" class="form-control" id="exampleInputuname3" placeholder="Dirección"
-                                    formControlName="direccion">
+                                <input type="text" class="form-control" id="exampleInputuname3" placeholder="Utilidad"
+                                    formControlName="utilidad">
                             </div>
                         </div>
                     </div>
 
                     <div class="form-group row">
-                        <label for="exampleInputuname3" class="col-sm-3 control-label">Telefóno*</label>
+                        <label for="exampleInputuname3" class="col-sm-3 control-label">Descuento*</label>
                         <div class="col-sm-9">
                             <div class="input-group">
                                 <div class="input-group-addon"><i class="ti-user"></i></div>
-                                <input type="text" class="form-control" id="exampleInputuname3" placeholder="Telefóno"
-                                    formControlName="telefono">
+                                <input type="text" class="form-control" id="exampleInputuname3" placeholder="Descuento"
+                                    formControlName="descuento">
                             </div>
                         </div>
                     </div>
-
                     <div class="form-group row">
-                        <label for="exampleInputuname3" class="col-sm-3 control-label">Email*</label>
+                        <label for="exampleInputuname3" class="col-sm-3 control-label">Precio Compra*</label>
                         <div class="col-sm-9">
                             <div class="input-group">
                                 <div class="input-group-addon"><i class="ti-user"></i></div>
-                                <input type="text" class="form-control" id="exampleInputuname3" placeholder="Email"
-                                    formControlName="email">
+                                <input type="text" class="form-control" id="exampleInputuname3" placeholder="Precio Compra"
+                                    formControlName="precio_compra">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="exampleInputuname3" class="col-sm-3 control-label">Precio Venta*</label>
+                        <div class="col-sm-9">
+                            <div class="input-group">
+                                <div class="input-group-addon"><i class="ti-user"></i></div>
+                                <input type="text" class="form-control" id="exampleInputuname3" placeholder="Precio Venta"
+                                    formControlName="precio_venta">
                             </div>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col text-danger">
-                            <p *ngIf="campoNoValido('identificacion',proveedorFormU)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('razon_social',proveedorFormU)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('nombre_comercial',proveedorFormU)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('direccion',proveedorFormU)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('telefono',proveedorFormU)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('email',proveedorFormU)"> El campo es obligatorio</p>
+                            <p *ngIf="campoNoValido('codigo_principal',productoFormU)"> El campo es obligatorio</p>
+                            <p *ngIf="campoNoValido('descripcion',productoFormU)"> El campo es obligatorio</p>
+                            <p *ngIf="campoNoValido('stock',productoFormU)"> El campo es obligatorio</p>
+                            <p *ngIf="campoNoValido('precio_compra',productoFormU)"> El campo es obligatorio</p>
                         </div>
                     </div>
 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-primary" (click)="actualizarProveedor();"
+                        <button type="button" class="btn btn-primary" (click)="actualizarProducto();"
                             data-dismiss="modal">Actualizar</button>
                     </div>
 

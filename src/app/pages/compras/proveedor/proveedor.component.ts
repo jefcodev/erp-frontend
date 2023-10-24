@@ -7,7 +7,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import Swal from 'sweetalert2';
 
 import { Proveedor } from '../../../models/compra/proveedor.model';
-import { ProveedorService } from 'src/app/services/compras/proveedor.service';
+import { ProveedorService } from 'src/app/services/compra/proveedor.service';
 
 @Component({
   selector: 'app-proveedor',
@@ -107,11 +107,8 @@ export class ProveedorComponent implements OnInit {
   }
 
   cargarProveedorPorId(id_proveedor: any) {
-    //cargarProveedor(proveedor: Proveedor) {
-    //console.log(proveedor)
     console.log("cargarProveedorPorId(id_proveedor: any)")
     console.log(id_proveedor)
-    //this.proveedorService.cargarProveedorById(proveedor.id_proveedor)
     this.proveedorService.loadProveedorById(id_proveedor)
       .subscribe(proveedor => {
         const { identificacion, razon_social, nombre_comercial, direccion, telefono, email } = proveedor[0];

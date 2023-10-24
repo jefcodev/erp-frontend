@@ -42,6 +42,9 @@ import { ClienteComponent } from './venta/cliente/cliente.component';
 import { FacturaVentaComponent } from './venta/factura/factura.component';
 //import { DetalleFacturaVentaComponent } from './venta/detalle-factura/detalle-factura.component';
 
+// Inventario
+import { ProductoComponent } from './inventario/producto/producto.component'; 
+
 // Contabilidad
 import { CuentaComponent } from './contabilidad/cuenta/cuenta.component';
 import { FormaPagoComponent } from './contabilidad/forma-pago/forma-pago.component';
@@ -89,11 +92,14 @@ const routes: Routes = [
             { path: 'proveedores', component: ProveedorComponent, data: { titulo: 'Proveedores' } },
             { path: 'facturas', component: FacturaComponent, data: { titulo: 'Facturas' } },
             { path: 'detalle-facturas', component: DetalleFacturaComponent, data: { titulo: 'Detalle Facturas' } },
-            
+
             // Venta
             { path: 'clientes', component: ClienteComponent, data: { titulo: 'Clientes' } },
             { path: 'facturas-venta', component: FacturaVentaComponent, data: { titulo: 'Facturas Venta' } },
             { path: 'detalle-facturas-venta', component: DetalleFacturaComponent, data: { titulo: 'Detalle Facturas Venta' } },
+
+            // Inventario
+            { path: 'productos', component: ProductoComponent, data: { titulo: 'Productos' } },
 
             /* Quotations */
             { path: 'quotations', component: QuotationsComponent, data: { titulo: 'Proformas' } },

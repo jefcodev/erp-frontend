@@ -7,9 +7,7 @@ export class Proveedor {
         public direccion: string,
         public telefono: string,
         public email: string,
+        public tipo_contribuyente: string,
         public estado?: boolean,
     ) { }
-    imprimirProveedor() {
-        console.log(this.identificacion)
-    }
 }

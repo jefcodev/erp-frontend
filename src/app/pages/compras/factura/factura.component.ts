@@ -27,9 +27,9 @@ import { Producto } from 'src/app/models/inventario/producto.model';
 import { FormaPago } from '../../../models/contabilidad/forma-pago.model';
 
 // Services
-import { FacturaService } from 'src/app/services/compras/factura.service';
-import { DetalleFacturaService } from 'src/app/services/compras/detalle-factura.service';
-import { ProveedorService } from 'src/app/services/compras/proveedor.service';
+import { FacturaService } from 'src/app/services/compra/factura.service';
+import { DetalleFacturaService } from 'src/app/services/compra/detalle-factura.service';
+import { ProveedorService } from 'src/app/services/compra/proveedor.service';
 import { ProductoService } from 'src/app/services/inventario/producto.service';
 import { FormaPagoService } from 'src/app/services/contabilidad/forma-pago.service';
 
