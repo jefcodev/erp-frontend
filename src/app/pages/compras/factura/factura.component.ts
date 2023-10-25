@@ -11,13 +11,10 @@ import { formatDate } from '@angular/common';
 import { of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { concatMap } from 'rxjs/operators';
+
 // XML
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import * as xml2js from 'xml2js';
-//import * as $ from 'jquery';
-//import { forkJoin } from 'rxjs';
-//import { mergeMap } from 'rxjs/operators';
-
 
 // Models
 import { Factura } from 'src/app/models/compra/factura.model';
@@ -35,8 +32,6 @@ import { FormaPagoService } from 'src/app/services/contabilidad/forma-pago.servi
 
 import { EventEmitter, Output } from '@angular/core';
 
-
-
 interface DetalleFactura2 {
   producto: number;
   cantidad: number;
@@ -44,10 +39,49 @@ interface DetalleFactura2 {
   precio_unitario: number;
   tarifa: number;
   descuento: number;
-  valor_total: number;
+  importe_total: number;
   valor_ICE: number;
 }
 
+// Define the ProductDetail interface
+interface ProductDetail {
+  codigoPrincipal: string;
+  descripcion: string;
+  cantidad: number;
+  precioUnitario: number;
+  descuento: number;
+  precioTotalSinImpuesto: number;
+  codigo: string; // Add the new properties here
+  codigoPorcentaje: string;
+  tarifa: number;
+  baseImponible: number;
+  valor: number;
+}
+
+interface FormFacturaXML2 {
+  id_proveedor: number;
+  id_forma_pago: number;
+  id_asiento: number;
+  id_info_tributaria: number,
+  clave_acceso: string;
+  codigo: string;
+  fecha_emision: Date;
+  fecha_vencimiento: Date;
+  estado_pago: string;
+  total_sin_impuesto: number;
+  total_descuento: number;
+  iva: number;
+  propina: number;
+  importe_total: number;
+  abono: number;
+  saldo: number;
+
+  razon_social: string;
+  ruc: string;
+  estab: string;
+  ptoEmi: string;
+  secuencial: string;
+}
 
 @Component({
   selector: 'app-factura',
@@ -56,6 +90,9 @@ interface DetalleFactura2 {
   ]
 })
 export class FacturaComponent implements OnInit {
+
+  @Output() proveedorCreado = new EventEmitter<any>();
+
   public formSubmitted = false;
   public ocultarModal: boolean = true;
   public facturaForm: FormGroup;
@@ -65,8 +102,6 @@ export class FacturaComponent implements OnInit {
   public proveedorForm: FormGroup;
   public proveedorSeleccionado2: Proveedor;
 
-
-
   public facturas: Factura[] = [];
   public saldo: string;
   public detalleFactura: DetalleFactura;
@@ -75,29 +110,23 @@ export class FacturaComponent implements OnInit {
   public fechaActual: string;
 
   public codigo: string;
-  //public abono: string;
-
-  public subtotal_sin_impuestos: string;
-  public total_descuento: string;
-  public iva: string;
-  public valor_total: string;
-  //public valor_total: string;
-  public abono: string;
+  public total_sin_impuesto: number;
+  public total_descuento: number;
+  public iva: number;
+  public importe_total: number;
+  public abono: number;
 
   public proveedores: Proveedor[] = [];
   public formas_pago: FormaPago[] = [];
   public productos: Producto[] = [];
 
-
+  // Proveedor
   public identificacion: string;
   public razon_social: string;
   public nombre_comercial: string;
   public direccion: string;
   public telefono: string;
   public email: string;
-  //@Output() proveedorCreado: EventEmitter<any> = new EventEmitter<any>();
-  @Output() proveedorCreado = new EventEmitter<any>();
-  //@HostListener('document:click', ['$event'])
 
   public detalle_facturas: DetalleFactura[] = [];
 
@@ -106,46 +135,62 @@ export class FacturaComponent implements OnInit {
   public xmlItems: ProductDetail[] = []; // Updated to use the ProductDetail interface
   private xmlFilePath: string | null = null;
 
-  // info tributaria
+  // infoTributaria
+  public ambiente: string = '';
+  public tipoEmision: string = '';
   public razonSocial: string = '';
   public ruc: string = '';
   public claveAcceso: string = '';
+  public codDoc: string = '';
   public estab: string = '';
   public ptoEmi: string = '';
   public secuencial: string = '';
-  // info factura
-  public fechaEmision: string = '';
+  public dirMatriz: string = '';
+  public contribuyenteRimpe: string = '';
+
+  // infoFactura
+  public fechaEmision: Date = null;
+  //EDpublic fechaEmision: string = '';
+  public dirEstablecimiento: string = '';
+  public obligadoContabilidad: string = '';
+  public tipoIdentificacionComprador: string = '';
   public razonSocialComprador: string = '';
   public identificacionComprador: string = '';
   public direccionComprador: string = '';
-  public totalSinImpuestos: number = 0;
-  public totalDescuento: number = 0;
+  public totalSinImpuestos: number = 0.00;
+  public totalDescuento: number = 0.00;
+
   public codigo2: string = '';
   public codigoPorcentaje2: string = '';
-  public baseImponible2: number = 0;
-  public valor2: number = 0;
-  public importeTotal: number = 0;
+  public baseImponible2: number = 0.00;
+  public valor2: number = 0.00;
+
+  public propina: number = 0.00;
+  public importeTotal1: number = 0.00;
+  public importeTotal: number = 0.00;
+  public moneda: string = "";
+
   public formaPago: string = '';
   public total: number = 0;
   public plazo: number = 0;
   public unidadTiempo: string = '';
 
-  // calculados
+  // calculados con detalles
   public precioTotalSinImpuestoAux: number = 0;
-  public valor: number = 0;
+  public valorAux: number = 0;
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
     private activatedRoute: ActivatedRoute,
+
+    private elementRef: ElementRef,
+
     private facturaService: FacturaService,
     private detalleFacturaService: DetalleFacturaService,
     private proveedorService: ProveedorService,
     private formaPagoService: FormaPagoService,
-
     private productoService: ProductoService,
-
-    private elementRef: ElementRef,
 
     //XML
     private http: HttpClient,
@@ -170,10 +215,10 @@ export class FacturaComponent implements OnInit {
       //fecha_vencimiento: ['2023-01-01'],
       fecha_vencimiento: [''],
       //estado_pago: ['POR PAGAR'],
-      subtotal_sin_impuestos: ['22'],
+      total_sin_impuesto: ['22'],
       total_descuento: ['22'],
       iva: ['22'],
-      valor_total: ['22'],
+      importe_total: ['22'],
       abono: [''],
       //saldo: ['8'],
 
@@ -200,10 +245,10 @@ export class FacturaComponent implements OnInit {
       fecha_vencimiento: ['2023-01-01'],
       //fecha_vencimiento: [''],
       //estado_pago: ['POR PAGAR'],
-      subtotal_sin_impuestos: ['22'],
+      total_sin_impuesto: ['22'],
       total_descuento: ['22'],
       iva: ['22'],
-      valor_total: ['22'],
+      importe_total: ['22'],
       abono: ['23'],
       //saldo: ['8'],
     });
@@ -227,10 +272,10 @@ export class FacturaComponent implements OnInit {
       fecha_emision: [''],
       fecha_vencimiento: [''],
       estado_pago: [''],
-      subtotal_sin_impuestos: [''],
+      total_sin_impuesto: [''],
       total_descuento: [''],
       iva: [''],
-      valor_total: [''],
+      importe_total: [''],
 
       abono: [''],
       saldo: [''],
@@ -258,7 +303,6 @@ export class FacturaComponent implements OnInit {
     this.cargarProductos();
     const fechaActual = new Date();
     this.fechaActual = formatDate(fechaActual, 'd-M-yyyy', 'en-US', 'UTC-5');
-    //this.codigo = 'CODIGO 1';
   }
 
   cargarFacturas() {
@@ -536,7 +580,7 @@ export class FacturaComponent implements OnInit {
       .pipe(
         switchMap((factura: any) => {
           const { id_proveedor, id_forma_pago, id_asiento, codigo, fecha_emision, fecha_vencimiento, estado_pago,
-            subtotal_sin_impuestos, total_descuento, iva, valor_total, abono } = factura.factura[0];
+            total_sin_impuesto, total_descuento, iva, importe_total, abono } = factura.factura[0];
 
           const saldo = factura.saldo;
           console.log("this.saldo");
@@ -544,13 +588,13 @@ export class FacturaComponent implements OnInit {
 
           this.facturaSeleccionado = factura.factura[0];
           this.codigo = codigo;
-          this.subtotal_sin_impuestos = subtotal_sin_impuestos;
+          this.total_sin_impuesto = total_sin_impuesto;
           this.total_descuento = total_descuento;
           this.iva = iva;
 
-          this.valor_total = valor_total;
-          console.log("this.valor_total");
-          console.log(this.valor_total);
+          this.importe_total = importe_total;
+          console.log("this.importe_total");
+          console.log(this.importe_total);
 
           this.abono = abono;
           console.log("this.abono-----------------------");
@@ -568,7 +612,7 @@ export class FacturaComponent implements OnInit {
               const abono = "0.00";
               return of({
                 identificacion, razon_social, direccion, telefono, email, id_forma_pago, id_asiento, codigo,
-                fecha_emision, fecha_vencimiento, estado_pago, subtotal_sin_impuestos, total_descuento, iva, valor_total, abono, saldo
+                fecha_emision, fecha_vencimiento, estado_pago, total_sin_impuesto, total_descuento, iva, importe_total, abono, saldo
               });
             })
           );
@@ -586,16 +630,16 @@ export class FacturaComponent implements OnInit {
       this.facturaService.loadFacturaById(id_factura_compra)
         .pipe(switchMap(factura => {
           const { id_proveedor, id_forma_pago, id_asiento, codigo, fecha_emision, fecha_vencimiento, estado_pago,
-            subtotal_sin_impuestos, total_descuento, iva, valor_total, abono } = factura[0];
+            total_sin_impuesto, total_descuento, iva, importe_total, abono } = factura[0];
   
           this.facturaSeleccionado = factura[0];
   
           this.codigo = codigo
   
-          this.subtotal_sin_impuestos = subtotal_sin_impuestos
+          this.total_sin_impuesto = total_sin_impuesto
           this.total_descuento = total_descuento
           this.iva = iva
-          this.valor_total = valor_total
+          this.importe_total = importe_total
           this.abono = abono
           console.log("this.abono")
           console.log(this.abono)
@@ -612,7 +656,7 @@ export class FacturaComponent implements OnInit {
               this.direccion = direccion;
               this.telefono = telefono;
               this.email = email;
-              return of({ identificacion, razon_social, apellido, direccion, telefono, email, id_forma_pago, id_asiento, codigo, fecha_emision, fecha_vencimiento, estado_pago, subtotal_sin_impuestos, total_descuento, iva, valor_total, abono });
+              return of({ identificacion, razon_social, apellido, direccion, telefono, email, id_forma_pago, id_asiento, codigo, fecha_emision, fecha_vencimiento, estado_pago, total_sin_impuesto, total_descuento, iva, importe_total, abono });
             })
           );
         })
@@ -655,7 +699,7 @@ export class FacturaComponent implements OnInit {
             precio_sin_subsidio: detalle2.cantidad,//ver
             descuento: detalle2.descuento,
             codigo_auxiliar: detalle2.descripcion,//ver
-            precio_total: detalle2.valor_total,
+            precio_total: detalle2.importe_total,
             iva: detalle2.tarifa,
             ice: detalle2.valor_ICE,
           };
@@ -693,47 +737,45 @@ export class FacturaComponent implements OnInit {
   crearFactura2XML() {
     this.formSubmitted = true; //OJO
     console.log('\n\n-> START (Guardar XML) crearFactura2XML() {');
+    // Reiniciar el arreglo xmlItems
+    //this.xmlItems = [];
+    // Limpiar el formulario de detalles
+    //this.detalleForm.reset();
 
-    // solo para ver si tiene datos cargados
-    this.crearFactura2_aux_XML()
-
-    console.log("this.id_proveedor 2xml", this.id_proveedor)
-    console.log("this.identificacion 2xml", this.identificacion)
-    console.log("this.razon_social 2xml", this.razon_social)
-
-    console.log('VERRRRRRRRRRRRRRRRRRRR 1')
-    console.log('id_proveedor: ' + this.id_proveedor)
-    console.log('identificacionComprador: ' + this.identificacionComprador)
-    console.log('VERRRRRRRRRRRRRRRRRRRR 2')
-    console.log('id_proveedor: ' + this.id_proveedor)
-    console.log('identificacionComprador: ' + this.identificacionComprador)
-
+    console.log("this.xmlItems: ", this.xmlItems);
+    if (this.xmlItems.length === 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Advertencia',
+        text: 'No ha cargado un archivo XML.',
+      });
+      return;
+    }
 
     const facturaData: FormFacturaXML2 = {
+      id_proveedor: this.id_proveedor,
+      id_forma_pago: this.id_forma_pago,
+      id_asiento: 1,
+      id_info_tributaria: 1,
+      clave_acceso: this.claveAcceso,
+      codigo: this.estab + "-" + this.ptoEmi + "-" + this.secuencial,
+      fecha_emision: this.fechaEmision,
+      fecha_vencimiento: this.fechaEmision,
+      estado_pago: 'Por pagar',
+      total_sin_impuesto: this.totalSinImpuestos,
+      total_descuento: this.totalDescuento,
+      iva: this.iva,
+      propina: this.propina,
+      importe_total: this.importeTotal,
 
-      codigo: '1',
-      fecha_emision: null,
-      fecha_vencimiento: null,
-      saldo: 0, // Valor válido
-
-      razonSocial: 'Nombre de la razón social',
+      razon_social: this.razonSocialComprador,
       ruc: '1234567890',
-      claveAcceso: 'clave de acceso',
       estab: 'Establecimiento',
       ptoEmi: 'Punto de emisión',
       secuencial: 'Secuencial',
-      id_factura_compra: 1,
 
-      id_proveedor: this.id_proveedor,
-      id_forma_pago: this.id_forma_pago,
-      id_asiento: null,
-      // Otras propiedades requeridas
-      estado_pago: 'Por pagar', // Propiedad requerida
-      subtotal_sin_impuestos: this.totalSinImpuestos, // Propiedad requerida
-      total_descuento: 10, // Propiedad requerida
-      iva: 12, // Propiedad requerida
-      valor_total: this.importeTotal, // Propiedad requerida
       abono: 0, // Valor válido
+      saldo: 0, // Valor válido
     };
 
 
@@ -836,10 +878,10 @@ export class FacturaComponent implements OnInit {
       id_asiento: null,
       // Otras propiedades requeridas
       estado_pago: 'Por pagar', // Propiedad requerida
-      subtotal_sin_impuestos: this.totalSinImpuestos, // Propiedad requerida
+      total_sin_impuesto: this.totalSinImpuestos, // Propiedad requerida
       total_descuento: 10, // Propiedad requerida
       iva: 12, // Propiedad requerida
-      valor_total: this.importeTotal, // Propiedad requerida
+      importe_total: this.importeTotal, // Propiedad requerida
       abono: 0, // Valor válido
     };
   
@@ -922,7 +964,7 @@ export class FacturaComponent implements OnInit {
         precio_unitario: formValues[`precio_unitario_${i}`],
         tarifa: formValues[`tarifa_${i}`],
         descuento: formValues[`descuento_${i}`],
-        valor_total: formValues[`valor_total_${i}`],
+        importe_total: formValues[`importe_total_${i}`],
         valor_ICE: formValues[`valor_ICE_${i}`],
       };
 
@@ -934,19 +976,6 @@ export class FacturaComponent implements OnInit {
     // Limpiar el formulario de detalles
     //this.detalleForm.reset();
   }
-
-  crearFactura2_aux_XML() {
-
-    // Reiniciar el arreglo xmlItems
-    //this.xmlItems = [];
-
-    console.log('PROBANDO DATOS 1 en xmlItems -----------');
-    console.log(this.xmlItems);
-    // Limpiar el formulario de detalles
-    //this.detalleForm.reset();
-  }
-
-
 
   agregarDetalleFactura2(): void {
     if (this.detalleForm.invalid) {
@@ -961,7 +990,7 @@ export class FacturaComponent implements OnInit {
       precio_unitario: null,
       tarifa: null,
       descuento: null,
-      valor_total: null,
+      importe_total: null,
       valor_ICE: null
     };
 
@@ -972,7 +1001,7 @@ export class FacturaComponent implements OnInit {
     const precioUnitarioControl = new FormControl(nuevoDetalle2.precio_unitario);
     const tarifaControl = new FormControl(nuevoDetalle2.tarifa);
     const descuentoControl = new FormControl(nuevoDetalle2.descuento);
-    const valorTotalControl = new FormControl(nuevoDetalle2.valor_total);
+    const valorTotalControl = new FormControl(nuevoDetalle2.importe_total);
     const valorICEControl = new FormControl(nuevoDetalle2.valor_ICE);
 
     // Agregar los controles al formulario
@@ -982,7 +1011,7 @@ export class FacturaComponent implements OnInit {
     this.detalleForm.addControl('precio_unitario_' + this.detalleFactura2.length, precioUnitarioControl);
     this.detalleForm.addControl('tarifa_' + this.detalleFactura2.length, tarifaControl);
     this.detalleForm.addControl('descuento_' + this.detalleFactura2.length, descuentoControl);
-    this.detalleForm.addControl('valor_total_' + this.detalleFactura2.length, valorTotalControl);
+    this.detalleForm.addControl('importe_total_' + this.detalleFactura2.length, valorTotalControl);
     this.detalleForm.addControl('valor_ICE_' + this.detalleFactura2.length, valorICEControl);
 
     nuevoDetalle2.producto = productoControl.value;
@@ -991,7 +1020,7 @@ export class FacturaComponent implements OnInit {
     nuevoDetalle2.precio_unitario = precioUnitarioControl.value;
     nuevoDetalle2.tarifa = tarifaControl.value;
     nuevoDetalle2.descuento = descuentoControl.value;
-    nuevoDetalle2.valor_total = valorTotalControl.value;
+    nuevoDetalle2.importe_total = valorTotalControl.value;
     nuevoDetalle2.valor_ICE = valorICEControl.value;
 
     // Agregar el detalle al arreglo
@@ -1149,18 +1178,9 @@ export class FacturaComponent implements OnInit {
 
   crearProveedorXML() {
     console.log("\n\n-> crearProveedorXML() {")
-    //this.formSubmitted = true;
-    /*
-    this.identificacion = "1727671630"
-    this.razon_social = "Edison"
-    this.nombre_comercial = "SystemCode"
-    this.direccion = "Cayambe"
-    this.telefono = "0978812130"
-    this.email = "eepinanjotac30@utn.edu.ec"
-    */
+
     this.identificacion = this.identificacionComprador
     this.razon_social = this.razonSocialComprador
-    this.nombre_comercial = ""
     this.direccion = this.direccionComprador
     this.telefono = ""
     this.email = this.identificacionComprador + "@example.com"
@@ -1380,7 +1400,7 @@ export class FacturaComponent implements OnInit {
 
 
   // XML
-  
+
   loadXML() {
     if (this.xmlFilePath) {
       this.http.get(this.xmlFilePath, {
@@ -1398,9 +1418,9 @@ export class FacturaComponent implements OnInit {
       });
     }
   }
-  
 
-  
+
+
   parseXML(data: string): Promise<ProductDetail[]> {
     console.log("\n\n-> parseXML(data: string): Promise<ProductDetail[]> {")
     return new Promise(resolve => {
@@ -1417,42 +1437,53 @@ export class FacturaComponent implements OnInit {
           resolve(arr);
           return;
         }
-
+        // infoTributaria
         const infoTributaria = factura.infoTributaria[0];
+        this.ambiente = infoTributaria.ambiente[0];
+        this.tipoEmision = infoTributaria.tipoEmision[0];
         this.razonSocial = infoTributaria.razonSocial[0];
         this.ruc = infoTributaria.ruc[0];
         this.claveAcceso = infoTributaria.claveAcceso[0];
+        this.codDoc = infoTributaria.codDoc[0];
         this.estab = infoTributaria.estab[0];
         this.ptoEmi = infoTributaria.ptoEmi[0];
         this.secuencial = infoTributaria.secuencial[0];
-
+        this.dirMatriz = infoTributaria.dirMatriz[0];
+        this.contribuyenteRimpe = infoTributaria.contribuyenteRimpe[0];
+        // infoFactura
         const infoFactura = factura.infoFactura[0];
         this.fechaEmision = infoFactura.fechaEmision[0];
+        this.dirEstablecimiento = infoFactura.dirEstablecimiento[0];
+        this.obligadoContabilidad = infoFactura.obligadoContabilidad[0];
+        this.tipoIdentificacionComprador = infoFactura.tipoIdentificacionComprador[0];
         this.razonSocialComprador = infoFactura.razonSocialComprador[0];
         this.identificacionComprador = infoFactura.identificacionComprador[0];
         this.direccionComprador = infoFactura.direccionComprador[0];
         this.totalSinImpuestos = parseFloat(infoFactura.totalSinImpuestos[0]);
         this.totalDescuento = parseFloat(infoFactura.totalDescuento[0]);
-
-        const totalImpuestos = infoFactura.totalConImpuestos[0].totalImpuesto[0];
-
-        if (totalImpuestos.codigo[0] === '2' && totalImpuestos.codigoPorcentaje[0] === '2') {
-          this.codigo2 = totalImpuestos.codigo[0];
-          this.codigoPorcentaje2 = totalImpuestos.codigoPorcentaje[0];
-          this.baseImponible2 = parseFloat(totalImpuestos.baseImponible[0]);
-          this.valor2 = parseFloat(totalImpuestos.valor[0]);
+        // infoFactura/totalConImpuestos
+        const totalConImpuestos = infoFactura.totalConImpuestos[0].totalImpuesto[0];
+        if (totalConImpuestos.codigo[0] === '2' && totalConImpuestos.codigoPorcentaje[0] === '2') {
+          this.codigo2 = totalConImpuestos.codigo[0];
+          this.codigoPorcentaje2 = totalConImpuestos.codigoPorcentaje[0];
+          this.baseImponible2 = parseFloat(totalConImpuestos.baseImponible[0]);
+          this.valor2 = parseFloat(totalConImpuestos.valor[0]);
         }
-
+        // infoFactura
+        this.propina = parseFloat(infoFactura.propina[0]);
+        this.importeTotal1 = parseFloat(infoFactura.importeTotal[0]);
         this.importeTotal = parseFloat(result.factura.infoFactura[0].importeTotal[0]);
+        this.moneda = infoFactura.moneda[0];
+        // infoFactura/pagos
+        const pagos = result.factura.infoFactura[0].pagos[0].pago[0];
+        this.formaPago = pagos.formaPago[0];
+        this.total = parseFloat(pagos.total[0]);
+        this.plazo = parseInt(pagos.plazo[0]);
+        this.unidadTiempo = pagos.unidadTiempo[0];
 
-        const pago = result.factura.infoFactura[0].pagos[0].pago[0];
-        this.formaPago = pago.formaPago[0];
-        this.total = parseFloat(pago.total[0]);
-        this.plazo = parseInt(pago.plazo[0]);
-        this.unidadTiempo = pago.unidadTiempo[0];
-
-        this.precioTotalSinImpuestoAux = 0;
-        this.valor = 0;
+        // reiniciar valores
+        this.precioTotalSinImpuestoAux = 0.00;
+        this.valorAux = 0.00;
 
         if (result && result.factura) {
           if (result.factura.detalles && result.factura.detalles[0] && result.factura.detalles[0].detalle) {
@@ -1460,23 +1491,24 @@ export class FacturaComponent implements OnInit {
             for (k in detalles) {
               var item = detalles[k];
               arr.push({
+                // detalles/detalle
                 codigoPrincipal: item.codigoPrincipal[0],
                 descripcion: item.descripcion[0],
                 cantidad: parseFloat(item.cantidad[0]),
                 precioUnitario: parseFloat(item.precioUnitario[0]),
                 descuento: parseFloat(item.descuento[0]),
                 precioTotalSinImpuesto: parseFloat(item.precioTotalSinImpuesto[0]),
-                // Add the new properties here
+                // detalles/detalle/impuestos
                 codigo: item.impuestos[0].impuesto[0].codigo[0],
                 codigoPorcentaje: item.impuestos[0].impuesto[0].codigoPorcentaje[0],
                 tarifa: parseFloat(item.impuestos[0].impuesto[0].tarifa[0]),
                 baseImponible: parseFloat(item.impuestos[0].impuesto[0].baseImponible[0]),
                 valor: parseFloat(item.impuestos[0].impuesto[0].valor[0]),
               });
-              // calculados
+              // calculados con detalles
               this.precioTotalSinImpuestoAux += parseFloat(item.precioTotalSinImpuesto[0]);
               if (item.impuestos[0].impuesto[0].codigoPorcentaje[0] === '2') {
-                this.valor += parseFloat(item.impuestos[0].impuesto[0].valor[0]);
+                this.valorAux += parseFloat(item.impuestos[0].impuesto[0].valor[0]);
               }
 
             }
@@ -1484,10 +1516,8 @@ export class FacturaComponent implements OnInit {
         }
         this.xmlItems = arr; // Updated to assign to xmlItems
         console.log('this.xmlItems: ', this.xmlItems);
-
         resolve(arr);
 
-        
         console.log('--> Inicio -  Cargar Proveedor');
         this.cargarProveedorByIdentificacion(this.identificacionComprador)
         console.log('--> Fin -  Cargar Proveedor');
@@ -1495,13 +1525,9 @@ export class FacturaComponent implements OnInit {
         console.log('--> Incio - Cargar Forma Pago');
         this.cargarFormaPagoByCodigo(this.formaPago)
         console.log('--> Fin - Cargar Forma Pago');
-
       });
     });
   }
-  
-
-
 
   onFileSelected(event: any): void {
     console.log('\n\n-> START (Seleccionar archivo)  onFileSelected(event: any): void {');
@@ -1538,7 +1564,7 @@ export class FacturaComponent implements OnInit {
       }
     }
   }
-  
+
 
   uploadFile(file: File): void {
     const formData = new FormData();
@@ -1555,47 +1581,6 @@ export class FacturaComponent implements OnInit {
     // });
   }
 
-
-
-
 }
 
-// Define the ProductDetail interface
-interface ProductDetail {
-  codigoPrincipal: string;
-  descripcion: string;
-  cantidad: number;
-  precioUnitario: number;
-  descuento: number;
-  precioTotalSinImpuesto: number;
-  codigo: string; // Add the new properties here
-  codigoPorcentaje: string;
-  tarifa: number;
-  baseImponible: number;
-  valor: number;
-}
 
-interface FormFacturaXML2 {
-
-  codigo: string;
-  fecha_emision: Date;
-  fecha_vencimiento: Date;
-  saldo: number;
-  razonSocial: string;
-  ruc: string;
-  claveAcceso: string;
-  estab: string;
-  ptoEmi: string;
-  secuencial: string;
-  id_factura_compra: number;
-  id_proveedor: number;
-  id_forma_pago: number;
-  id_asiento: number;
-  estado_pago: string;
-  subtotal_sin_impuestos: number;
-  total_descuento: number;
-  iva: number;
-  valor_total: number;
-  abono: number;
-  // Otras propiedades necesarias
-}

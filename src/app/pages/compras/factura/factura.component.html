@@ -1,4 +1,4 @@
-<!-- table data-->
+<!-- Table data-->
 <div class="col-12">
     <div class="card">
         <div class="card-body">
@@ -32,9 +32,9 @@
                     <thead>
                         <tr>
                             <th class="footable-sortable">#<span class="footable-sort-indicator"></span></th>
-                            <th class="footable-sortable">Fecha Emisión<span class="footable-sort-indicator"></span>
+                            <th class="footable-sortable">Fecha<span class="footable-sort-indicator"></span>
                             </th>
-                            <th class="footable-sortable">Factura<span class="footable-sort-indicator"></span></th>
+                            <th class="footable-sortable">Número<span class="footable-sort-indicator"></span></th>
                             <th class="footable-sortable">Identificación<span class="footable-sort-indicator"></span>
                             </th>
                             <th class="footable-sortable">Razón Social<span class="footable-sort-indicator"></span></th>
@@ -76,9 +76,9 @@
                             </td>
 
                             <td>{{ factura.fecha_vencimiento | date:'yyyy-MM-dd' }}</td>
-                            <td class="text-right">{{ factura.valor_total }}</td>
+                            <td class="text-right">{{ factura.importe_total }}</td>
                             <td class="text-right">{{ factura.abono }}</td>
-                            <td class="text-right">{{ factura.valor_total - factura.abono }}</td>
+                            <td class="text-right">{{ factura.importe_total - factura.abono }}</td>
                             <td>
                                 <ng-container [ngSwitch]="factura.estado_pago">
                                     <div *ngSwitchCase="'PAGADO'" class="label label-table label-success">PAGADO</div>
@@ -419,7 +419,7 @@
                                         </td>
                                         <td>
                                             <input type="number" class="form-control"
-                                                formControlName="valor_total_{{i}}">
+                                                formControlName="importe_total_{{i}}">
                                         </td>
                                         <td>
                                             <input type="number" class="form-control" formControlName="valor_ICE_{{i}}">
@@ -496,11 +496,11 @@
 
                                 <div class="pull-right m-t-30 text-right">
                                     <h4>Valores</h4>
-                                    <p>$ {{ subtotal_sin_impuestos}}</p>
+                                    <p>$ {{ total_sin_impuesto}}</p>
                                     <p>$ {{ total_descuento}}</p>
                                     <p>$ 0.00</p>
                                     <p>$ {{ iva}}</p>
-                                    <h3>$ {{ valor_total}}</h3>
+                                    <h3>$ {{ importe_total}}</h3>
                                 </div>
                             </div>
                         </div>
@@ -779,7 +779,7 @@
                             <div class="input-group">
                                 <div class="input-group-addon"><i class="ti-user"></i></div>
                                 <input type="text" class="form-control text-right" id="exampleInputuname"
-                                    placeholder="Valor Total" formControlName="valor_total" readonly>
+                                    placeholder="Valor Total" formControlName="importe_total" readonly>
                             </div>
                         </div>
                     </div>
@@ -818,7 +818,7 @@
                                         <div class="input-group-addon"><b>Total:</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i
                                                 class=""></i></div>
                                         <input type="number" class="form-control text-right" id="exampleInputuname"
-                                            placeholder="Valor Total" formControlName="valor_total" readonly>
+                                            placeholder="Valor Total" formControlName="importe_total" readonly>
                                     </div>
                                 </div>
 
@@ -837,11 +837,11 @@
 
                                 <div class="pull-right m-t-30 text-right">
                                     <h4>Valores</h4>
-                                    <p>$ {{ subtotal_sin_impuestos }}</p>
+                                    <p>$ {{ total_sin_impuesto }}</p>
                                     <p>$ {{ total_descuento }}</p>
                                     <p>$ 0.00</p>
                                     <p>$ {{ iva}}</p>
-                                    <h3>$ {{ valor_total }}</h3>
+                                    <h3>$ {{ importe_total }}</h3>
                                 </div>
                             </div>
                         </div>
@@ -987,7 +987,7 @@
     <p><b>Unidad Tiempo:</b> {{ unidadTiempo }}</p>
 
     <p>Calculados</p>
-    <p><b>IVA 12% (suma etiqueta valor):</b> {{ valor | currency: 'USD' }}</p>
+    <p><b>IVA 12% (suma etiqueta valor):</b> {{ valorAux | currency: 'USD' }}</p>
     <p><b>SUBTOTAL SIN IMPUESTOS:</b> {{ precioTotalSinImpuestoAux | currency: 'USD' }}</p>
     <table>
         <thead>

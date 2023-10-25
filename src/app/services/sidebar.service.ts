@@ -52,7 +52,7 @@ export class SidebarService {
       icono: 'mdi mdi-dropbox',
       submenu: [
         { titulo: 'Productos', url: ('productos') },
-        { titulo: 'configuración', url: ('') },
+        { titulo: 'Configuración', url: ('') },
         { titulo: 'Tipos de Productos', url: ('') },
         { titulo: 'Lista de Precios', url: ('') },
         { titulo: 'Inventarios', url: ('') },
