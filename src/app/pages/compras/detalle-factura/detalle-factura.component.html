@@ -1,3 +1,4 @@
+<!-- Table data -->
 <div class="col-12">
     <div class="card">
         <div class="card-body">
@@ -13,15 +14,17 @@
                     <thead>
                         <tr>
                             <th class="footable-sortable">#<span class="footable-sort-indicator"></span></th>
-                            <th class="footable-sortable">ID producto <span class="footable-sort-indicator"></span>
+                            <th class="footable-sortable">ID Factura<span class="footable-sort-indicator"></span>
                             </th>
-                            <th class="footable-sortable">ID factura compra<span class="footable-sort-indicator"></span>
+                            <th class="footable-sortable">ID Producto <span class="footable-sort-indicator"></span>
                             </th>
                             <th class="footable-sortable">Código Principal<span class="footable-sort-indicator"></span>
                             </th>
                             <th class="footable-sortable">Cantidad<span class="footable-sort-indicator"></span></th>
                             <th class="footable-sortable">Descripcion<span class="footable-sort-indicator"></span></th>
-                            <th class="footable-sortable">Precio total<span class="footable-sort-indicator"></span></th>
+                            <th class="footable-sortable">Precio U.<span class="footable-sort-indicator"></span></th>
+                            <th class="footable-sortable">Tarifa<span class="footable-sort-indicator"></span></th>
+                            <th class="footable-sortable">Precio Total<span class="footable-sort-indicator"></span></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -32,8 +35,9 @@
                             <td>{{df.codigo_principal}}</td>
                             <td>{{df.cantidad}}</td>
                             <td>{{df.descripcion}}</td>
-                            <td>{{df.precio_total}}</td>
-
+                            <td>{{df.precio_unitario}}</td>
+                            <td>{{df.tarifa}}</td>
+                            <td>{{df.tarifa}}</td>
                             <ng-template #inactivoOption>
                             </ng-template>
                         </tr>

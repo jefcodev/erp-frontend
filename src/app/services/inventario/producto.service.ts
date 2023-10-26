@@ -6,12 +6,13 @@ import { Router } from '@angular/router';
 import { map, Observable, tap, catchError, of } from 'rxjs';
 
 // Interfaces
-import { FormProducto } from '../..//interfaces/inventario/producto/form-producto.interface';
+//import { FormProducto } from '../..//interfaces/inventario/producto/form-producto.interface';
 import { LoadProducto } from '../../interfaces/inventario/producto/load-producto.interface';
 import { LoginForm } from '../../interfaces/login-form.iterface';
 
 // Models
 import { Producto } from 'src/app/models/inventario/producto.model';
+//import { ProductoU } from 'src/app/models/inventario/producto.model';
 
 // Variable API
 const base_url = environment.base_url;
@@ -40,25 +41,43 @@ export class ProductoService {
   }
 
   loadProductoById(id_producto: any) {
+    const url = `${base_url}/productos/${id_producto}`;
     console.log("cargarProductoById")
     console.log(id_producto)
-    const url = `${base_url}/productos/${id_producto}`;
     return this.hhtp.get(url, this.headers)
       .pipe(
         map((resp: { ok: boolean, producto: Producto }) => resp.producto)
       )
   }
 
-  createProducto(formData: FormProducto) {
-    console.log("(service) formData: ", formData)
+  //createProducto(formData: FormProducto) {
+  createProducto(formData: any) {
+  console.log('\n\n-> createProducto(formData: FormProducto) {')
     const url = `${base_url}/productos`;
     console.log(url)
+    console.log("(service) formData: ", formData)
+
     return this.hhtp.post(url, formData, this.headers)
       .pipe(
         map((resp: { ok: boolean, producto: Producto[] }) => resp.producto)
       )
   }
 
+  createProductoArray(productos: Producto[]) {
+    console.log('\n\n▶ createProductoArray(productos: Producto[]) {')
+    const url = `${base_url}/productos`;
+    console.log(url)
+    console.log('> productos: ', productos)
+
+    const formData = { productos }; // Crear un objeto con una propiedad 'detalles' que contenga el arreglo de detalles
+    console.log('> formData: ', formData)
+
+    return this.hhtp.post(url, formData, this.headers).pipe(
+      map((resp: { ok: boolean, producto: Producto[] }) => resp.producto)
+    )
+  }
+
+  //updateProducto(producto: ProductoU) {
   updateProducto(producto: Producto) {
     console.log("producto.id_producto")
     console.log(producto.id_producto)

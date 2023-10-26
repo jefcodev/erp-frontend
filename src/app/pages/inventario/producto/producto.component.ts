@@ -36,8 +36,10 @@ export class ProductoComponent implements OnInit {
     this.productoForm = this.fb.group({
       codigo_principal: ['000189999', [Validators.required, Validators.minLength(1)]],
       descripcion: ['CONSTRUCCION DE CANALETAS LAMINA GALVANIZADA 1.1 MM LONGITUD 2240MM ALTUR A 64 MM, ANCHO 84 MM, ALETAS 10 MM.......AVS 008579......', [Validators.required, Validators.minLength(1)]],
-      stock: [2, [Validators.required, Validators.minLength(1)]],
-      precio_compra: [25, [Validators.required, Validators.minLength(1)]],
+      stock: [0, [Validators.required, Validators.minLength(1)]],
+      stock_minimo: [0, [Validators.required, Validators.minLength(1)]],
+      stock_maximo: [0, [Validators.required, Validators.minLength(1)]],
+      precio_compra: [0.00, [Validators.required, Validators.minLength(1)]],
     });
 
     this.productoFormU = this.fb.group({

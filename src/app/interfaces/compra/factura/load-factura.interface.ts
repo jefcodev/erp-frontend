@@ -1,6 +1,6 @@
-import { Factura } from "../../../models/compra/factura.model";
+import { FacturaModel } from "../../../models/compra/factura.model";
 
 export interface LoadFactura {
-    facturas: Factura[];
+    facturas: FacturaModel[];
     saldo: number;
 }   

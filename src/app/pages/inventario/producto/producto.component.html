@@ -17,6 +17,8 @@
                             <th class="footable-sortable">Código <span class="footable-sort-indicator"></span></th>
                             <th class="footable-sortable">Descripción<span class="footable-sort-indicator"></span></th>
                             <th class="footable-sortable">Stock<span class="footable-sort-indicator"></span>
+                            <th class="footable-sortable">Stock Min.<span class="footable-sort-indicator"></span>
+                            <th class="footable-sortable">Stock Max.<span class="footable-sort-indicator"></span>
                             <th class="footable-sortable">Utilidad<span class="footable-sort-indicator"></span>
                             <th class="footable-sortable">Descuento<span class="footable-sort-indicator"></span>
                             <th class="footable-sortable">Precio Compra<span class="footable-sort-indicator"></span>
@@ -35,6 +37,8 @@
                                         alt="product" width="30" class="img-circle"> {{producto.descripcion}}</a>
                             </td>
                             <td>{{producto.stock}}</td>
+                            <td>{{producto.stock_minimo}}</td>
+                            <td>{{producto.stock_maximo}}</td>
                             <td>{{producto.utilidad}}</td>
                             <td>{{producto.descuento}}</td>
                             <td>{{producto.precio_compra}}</td>
@@ -118,6 +122,20 @@
                             <div class="input-group-addon"><i class="ti-user"></i></div>
                             <input type="number" class="form-control" id="exampleInputuname" placeholder="Stock"
                                 formControlName="stock">
+                        </div>
+
+                        <label for="exampleInputuname">Stock Mínimo</label>
+                        <div class="input-group">
+                            <div class="input-group-addon"><i class="ti-user"></i></div>
+                            <input type="number" class="form-control" id="exampleInputuname" placeholder="Stock Mínimo"
+                                formControlName="stock_minimo">
+                        </div>
+
+                        <label for="exampleInputuname">Stock Máximo</label>
+                        <div class="input-group">
+                            <div class="input-group-addon"><i class="ti-user"></i></div>
+                            <input type="number" class="form-control" id="exampleInputuname" placeholder="Stock Máximo"
+                                formControlName="stock_maximo">
                         </div>
 
                         <label for="exampleInputuname">Precio Compra</label>

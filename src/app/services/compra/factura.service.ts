@@ -6,12 +6,12 @@ import { Router } from '@angular/router';
 import { map, Observable, tap, catchError, of } from 'rxjs';
 
 // Interfaces
-import { FormFactura } from 'src/app/interfaces/compra/factura/form-factura.interface';
+//import { FormFactura } from 'src/app/interfaces/compra/factura/form-factura.interface';
 import { LoadFactura } from 'src/app/interfaces/compra/factura/load-factura.interface';
 import { LoginForm } from '../../interfaces/login-form.iterface';
 
 // Models
-import { Factura } from 'src/app/models/compra/factura.model';
+import { FacturaModel } from 'src/app/models/compra/factura.model';
 import { DetalleFactura } from 'src/app/models/compra/detalle-factura.model';
 
 // Variable API
@@ -43,7 +43,7 @@ export class FacturaService {
   loadFacturaById(id_factura_compra: any) {
     const url = `${base_url}/facturas/${id_factura_compra}`;
     return this.hhtp.get(url, this.headers).pipe(
-      map((resp: { ok: boolean, factura: Factura, saldo: number }) => {
+      map((resp: { ok: boolean, factura: FacturaModel, saldo: number }) => {
         return { factura: resp.factura, saldo: resp.saldo };
       })
     );
@@ -60,20 +60,21 @@ export class FacturaService {
         )
     }*/
 
-  createFactura(formData: FormFactura) {
+  //createFactura(formData: FormFactura) {
+  createFactura(formData: any) {
     const url = `${base_url}/facturas`;
     console.log(url)
     console.log("> formData: ", formData)
     console.log("> formData.id_proveedor: ", formData.id_proveedor)
     console.log("> formData.id_forma_pago: ", formData.id_forma_pago)
     console.log("> formData.id_asiento: ", formData.id_asiento)
-    console.log("> formData.id_asiento: ", formData.id_info_tributaria)
-    console.log("> formData.id_asiento: ", formData.clave_acceso)
+    console.log("> formData.id_info_tributaria: ", formData.id_info_tributaria)
+    console.log("> formData.clave_acceso: ", formData.clave_acceso)
     console.log("> formData.codigo: ", formData.codigo)
     console.log("> formData.fecha_emision: ", formData.fecha_emision)
     console.log("> formData.fecha_vencimiento: ", formData.fecha_vencimiento)
     console.log("> formData.estado_pago: ", formData.estado_pago)
-    console.log("> formData.subtotal_sin_impuesto: ", formData.total_sin_impuesto)
+    console.log("> formData.total_sin_impuesto: ", formData.total_sin_impuesto)
     console.log("> formData.total_descuento: ", formData.total_descuento)
     console.log("> formData.iva: ", formData.iva)
     console.log("> formData.iva: ", formData.propina)
@@ -82,11 +83,11 @@ export class FacturaService {
 
     return this.hhtp.post(url, formData, this.headers)
       .pipe(
-        map((resp: { ok: boolean, factura: Factura[] }) => resp.factura)
+        map((resp: { ok: boolean, factura: FacturaModel[] }) => resp.factura)
       )
   }
 
-  updateFactura(factura: Factura) {
+  updateFactura(factura: FacturaModel) {
     console.log("factura.id_factura_compra")
     console.log(factura.id_factura_compra)
     const url = `${base_url}/facturas/${factura.id_factura_compra}`;

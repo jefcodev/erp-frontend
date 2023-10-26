@@ -61,7 +61,7 @@ export class ProveedorService {
   }
 
   createProveedor(formData: FormProveedor) {
-    console.log('\n\n-> (service)  createProveedor(formData: FormProveedor) {');
+    console.log('\n\n▶ (service) createProveedor(formData: FormProveedor) {');
     console.log('formData: ', formData);
     const url = `${base_url}/proveedores`;
     console.log(url)
@@ -69,12 +69,11 @@ export class ProveedorService {
       .pipe(
         map((resp: { ok: boolean, proveedor: Proveedor[] }) => resp.proveedor)
       )
-  }
-
-  updateProveedor(proveedor: Proveedor) {
-    console.log("proveedor.id_proveedor")
-    console.log(proveedor.id_proveedor)
-    //const url = `${base_url}/proveedores/3`;
+    }
+    
+    updateProveedor(proveedor: Proveedor) {
+    console.log('\n\n▶ (service) updateProveedor(proveedor: Proveedor) {');
+    console.log("proveedor.id_proveedor: ", proveedor.id_proveedor)
     const url = `${base_url}/proveedores/${proveedor.id_proveedor}`;
     console.log("Service - URL")
     console.log(url)

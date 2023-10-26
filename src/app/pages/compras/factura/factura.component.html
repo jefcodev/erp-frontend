@@ -1,4 +1,4 @@
-<!-- Table data-->
+<!-- Table data -->
 <div class="col-12">
     <div class="card">
         <div class="card-body">
@@ -250,8 +250,9 @@
                                 <label for="exampleInputuname">Razón Social</label>
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="ti-user"></i></div>
-                                    <input type="text" class="form-control" id="exampleInputuname" placeholder="Razón Social"
-                                        formControlName="razon_social" [value]="razonSocialProveedor" readonly>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder="Razón Social" formControlName="razon_social"
+                                        [value]="razonSocialProveedor" readonly>
                                 </div>
                             </div>
                         </div>
@@ -376,23 +377,24 @@
                     <!-- </form> -->
 
                     <!-- Detalle Form -->
-                    <form autocomplete="off" [formGroup]="detalleForm">
+                    <form autocomplete="off" [formGroup]="detalleFacturaForm">
                         <div class="table-responsive m-t-5" style="clear: both;">
                             <table class="table table-hover">
                                 <thead>
                                     <th class="text-center">#</th>
-                                    <th class="text-right">Código</th>
+                                    <th class="text-right">Código Principal</th>
                                     <th class="text-right">Cantidad</th>
                                     <th class="text-right">Descripción</th>
                                     <th class="text-right">Precio U.</th>
-                                    <th class="text-right">Tarifa</th>
                                     <th class="text-right">Descuento</th>
-                                    <th class="text-right">Valor Total</th>
-                                    <th class="text-right">Valor ICE</th>
+                                    <th class="text-right">Precio Total Sin Impuesto</th>
+                                    <th class="text-right">Tarifa</th>
+                                    <th class="text-right">Valor</th>
+                                    <th class="text-right">Precio Total</th>
                                     <th class="text-right">Acción</th>
                                 </thead>
                                 <tbody>
-                                    <tr *ngFor="let detalle of detalleFactura2; let i = index">
+                                    <tr *ngFor="let detalle of detalleFacturaFormulario; let i = index">
                                         <td class="text-center">{{ i + 1 }}</td>
                                         <td>
                                             <select class="form-control" formControlName="producto_{{i}}">
@@ -412,17 +414,20 @@
                                                 formControlName="precio_unitario_{{i}}">
                                         </td>
                                         <td>
-                                            <input type="number" class="form-control" formControlName="tarifa_{{i}}">
-                                        </td>
-                                        <td>
                                             <input type="number" class="form-control" formControlName="descuento_{{i}}">
                                         </td>
                                         <td>
-                                            <input type="number" class="form-control"
-                                                formControlName="importe_total_{{i}}">
+                                            <input type="number" class="form-control" formControlName="precio_total_sin_impuesto_{{i}}">
                                         </td>
                                         <td>
-                                            <input type="number" class="form-control" formControlName="valor_ICE_{{i}}">
+                                            <input type="number" class="form-control" formControlName="tarifa_{{i}}">
+                                        </td>
+                                        <td>
+                                            <input type="number" class="form-control" formControlName="valor_{{i}}">
+                                        </td>
+                                        <td>
+                                            <input type="number" class="form-control"
+                                                formControlName="precio_total_{{i}}">
                                         </td>
                                         <td class="text-right">
                                             <button type="button" class="btn btn-danger btn-sm"
@@ -518,7 +523,7 @@
                 <hr>
                 <div class="float-right modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" (click)="crearFactura2();"
+                    <button type="button" class="btn btn-primary" (click)="crearFactura();"
                         data-dismiss="modal">Guardar</button>
                 </div>
             </div>
@@ -567,8 +572,8 @@
                                 <label for="exampleInputuname">Razó Social</label>
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="ti-user"></i></div>
-                                    <input type="text" class="form-control" id="exampleInputuname" placeholder="Razón Social"
-                                        formControlName="razon_social" readonly>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder="Razón Social" formControlName="razon_social" readonly>
                                 </div>
                             </div>
                         </div>
@@ -704,12 +709,11 @@
                                     <th class="footable-sortable">Precio Unitario<span
                                             class="footable-sort-indicator"></span>
                                     </th>
-                                    <th class="footable-sortable">Subsidio<span class="footable-sort-indicator"></span>
-                                    </th>
-                                    <th class="footable-sortable">Precio sin Subsidio<span
-                                            class="footable-sort-indicator"></span>
-                                    </th>
                                     <th class="footable-sortable">Descuento<span class="footable-sort-indicator"></span>
+                                    </th>
+                                    <th class="footable-sortable">Tarifa<span class="footable-sort-indicator"></span>
+                                    </th>
+                                    <th class="footable-sortable">Valor<span class="footable-sort-indicator"></span>
                                     </th>
                                     <th class="footable-sortable">Precio Total<span
                                             class="footable-sort-indicator"></span></th>
@@ -722,10 +726,11 @@
                                     <td>{{df.cantidad}}</td>
                                     <td>{{df.descripcion}}</td>
                                     <td>{{df.precio_unitario}}</td>
-                                    <td>{{df.subsidio}}</td>
-                                    <td>{{df.precio_sin_subsidio }}</td>
                                     <td>{{df.descuento}}</td>
-                                    <td class="text-right">{{df.precio_total}}</td>
+                                    <td>{{df.tarifa}}</td>
+                                    <td>{{df.valor}}</td>
+                                    <td>{{df.precio_total_sin_impuesto}}</td>
+                                    <td class="text-right">{{df.tarifa}}</td>
                                     <ng-template #inactivoOption>
                                     </ng-template>
                                 </tr>
@@ -956,12 +961,11 @@
 
 <div>
     <h1>{{ title }}</h1>
-    
+
     <input type="file" (change)="onFileSelected($event)">
 
-    <button type="button" class="btn btn-primary" (click)="crearFactura2XML();" data-dismiss="modal">Guardar
+    <button type="button" class="btn btn-primary" (click)="crearFacturaXML();" data-dismiss="modal">Guardar
         XML</button>
-    
 
     <p>Info Tributaria</p>
     <p><b>Razón Social:</b> {{ razonSocial }}</p>
@@ -1006,7 +1010,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let item of xmlItems">
+            <tr *ngFor="let item of productosXML">
                 <td>{{ item.codigoPrincipal }}</td>
                 <td>{{ item.cantidad }}</td>
                 <td>{{ item.descripcion }}</td>
@@ -1021,4 +1025,7 @@
             </tr>
         </tbody>
     </table>
+    <p><b>Teléfono:</b> {{ telefonoXML }}</p>
+    <p><b>Email:</b> {{ emailXML }}</p>
+
 </div>

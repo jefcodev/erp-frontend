@@ -1,3 +1,4 @@
+/*
 export interface FormFactura {
     //id_factura_compra: number,
     id_proveedor: number,
@@ -17,4 +18,5 @@ export interface FormFactura {
     abono: number,
     saldo: number,
 }
+*/
 

@@ -66,36 +66,26 @@ export class DetalleFacturaService {
   createDetalleFactura(formData: FormDetalleFactura) {
     const url = `${base_url}/detalle-facturas`;
     console.log(url)
-    console.log("formData")
-    console.log(formData)
-    console.log("formData.referencia")
-    console.log(formData.referencia)
-
+    console.log("> formData: ", formData)
     return this.hhtp.post(url, formData, this.headers)
       .pipe(
         map((resp: { ok: boolean, detalle_factura: DetalleFactura[] }) => resp.detalle_factura)
       )
   }
 
-
-  createDetalleFactura2(detalles: DetalleFactura[]) {
+  createDetalleFacturaArray(detalles: DetalleFactura[]) {
+    console.log('\n\n▶ (service) createDetalleFacturaArray(detalles: DetalleFactura[]) {');
     const url = `${base_url}/detalle-facturas`;
     console.log(url);
-    console.log("SERVICE createDetalleFactura2");
-    console.log('detalles');
-    console.log(detalles);
+    console.log('> detalles: ', detalles);
 
     const formData = { detalles }; // Crear un objeto con una propiedad 'detalles' que contenga el arreglo de detalles
-
-    console.log('FORMDATA');
-    console.log(formData);
+    console.log('> formData: ',formData);
 
     return this.hhtp.post(url, formData, this.headers).pipe(
       map((resp: { ok: boolean; detalle_factura: DetalleFactura[] }) => resp.detalle_factura)
     );
   }
-
-
 
   updateDetalleFactura(detalle_factura: DetalleFacturaU) {
     console.log("detalle_factura.id_detalle_factura_compra")
