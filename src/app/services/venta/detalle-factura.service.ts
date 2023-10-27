@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { map, Observable, tap, catchError, of } from 'rxjs';
 
 // Interfaces
-import { FormDetalleFactura } from 'src/app/interfaces/compra/detalle-factura/form-detalle-asiento.interface';
+//import { FormDetalleFactura } from 'src/app/interfaces/compra/detalle-factura/form-detalle-asiento.interface';
 import { LoadDetalleFactura } from 'src/app/interfaces/compra/detalle-factura/load-detalle-asiento.interface';
 import { LoginForm } from '../../interfaces/login-form.iterface';
 
@@ -62,8 +62,9 @@ export class DetalleFacturaService {
     const url = `${base_url}/detalle-facturas/factura/${id_factura_compra}`;
     return this.hhtp.get<{ detalle_facturas: DetalleFactura[] }>(url, this.headers);
   }
-
-  createDetalleFactura(formData: FormDetalleFactura) {
+/*
+  //createDetalleFactura(formData: FormDetalleFactura) {
+  createDetalleFactura(formData: any) {
     const url = `${base_url}/detalle-facturas`;
     console.log(url)
     console.log("formData")
@@ -76,12 +77,11 @@ export class DetalleFacturaService {
         map((resp: { ok: boolean, detalle_factura: DetalleFactura[] }) => resp.detalle_factura)
       )
   }
-
+*/
 
   createDetalleFactura2(detalles: DetalleFactura[]) {
     const url = `${base_url}/detalle-facturas`;
     console.log(url);
-    console.log("SERVICE createDetalleFactura2");
     console.log('detalles');
     console.log(detalles);
 

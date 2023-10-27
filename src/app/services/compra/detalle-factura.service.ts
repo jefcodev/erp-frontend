@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { map, Observable, tap, catchError, of } from 'rxjs';
 
 // Interfaces
-import { FormDetalleFactura } from 'src/app/interfaces/compra/detalle-factura/form-detalle-asiento.interface';
+//import { FormDetalleFactura } from 'src/app/interfaces/compra/detalle-factura/form-detalle-asiento.interface';
 import { LoadDetalleFactura } from 'src/app/interfaces/compra/detalle-factura/load-detalle-asiento.interface';
 import { LoginForm } from '../../interfaces/login-form.iterface';
 
@@ -36,15 +36,11 @@ export class DetalleFacturaService {
   }
 
   loadDetalleFacturas() {
-    console.log("XDXDXDXDXD")
     const url = `${base_url}/detalle-facturas`;
     return this.hhtp.get<LoadDetalleFactura>(url, this.headers);
   }
 
   loadDetalleFacturaById(id_detalle_factura_compra: any) {
-    console.log("SERVICE - loadDetalleFacturaById(id_detalle_factura_compra: any) {")
-    console.log("id_detalle_factura_compra")
-    console.log(id_detalle_factura_compra)
     const url = `${base_url}/detalle-facturas/id/${id_detalle_factura_compra}`;
     return this.hhtp.get(url, this.headers)
       .pipe(
@@ -52,8 +48,6 @@ export class DetalleFacturaService {
       )
   }
   loadDetalleFacturaByFactura(id_factura_compra: any) {
-    console.log("id_factura_compra")
-    console.log(id_factura_compra)
     const url = `${base_url}/detalle-facturas/factura/${id_factura_compra}`;
     return this.hhtp.get<LoadDetalleFactura>(url, this.headers);
   }
@@ -63,7 +57,8 @@ export class DetalleFacturaService {
     return this.hhtp.get<{ detalle_facturas: DetalleFactura[] }>(url, this.headers);
   }
 
-  createDetalleFactura(formData: FormDetalleFactura) {
+  //createDetalleFactura(formData: FormDetalleFactura) {
+  createDetalleFactura(formData: any) {
     const url = `${base_url}/detalle-facturas`;
     console.log(url)
     console.log("> formData: ", formData)

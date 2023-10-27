@@ -34,18 +34,20 @@ export class ProductoComponent implements OnInit {
     private activatedRoute: ActivatedRoute
   ) {
     this.productoForm = this.fb.group({
-      codigo_principal: ['000189999', [Validators.required, Validators.minLength(1)]],
-      descripcion: ['CONSTRUCCION DE CANALETAS LAMINA GALVANIZADA 1.1 MM LONGITUD 2240MM ALTUR A 64 MM, ANCHO 84 MM, ALETAS 10 MM.......AVS 008579......', [Validators.required, Validators.minLength(1)]],
-      stock: [0, [Validators.required, Validators.minLength(1)]],
-      stock_minimo: [0, [Validators.required, Validators.minLength(1)]],
-      stock_maximo: [0, [Validators.required, Validators.minLength(1)]],
-      precio_compra: [0.00, [Validators.required, Validators.minLength(1)]],
+      codigo_principal: ['101', [Validators.required, Validators.minLength(1)]],
+      descripcion: ['MARTILLO', [Validators.required, Validators.minLength(1)]],
+      stock: [3, [Validators.required, Validators.minLength(1)]],
+      stock_minimo: [5, [Validators.required, Validators.minLength(1)]],
+      stock_maximo: [10, [Validators.required, Validators.minLength(1)]],
+      precio_compra: [2.50, [Validators.required, Validators.minLength(1)]],
     });
 
     this.productoFormU = this.fb.group({
       codigo_principal: ['', [Validators.required, Validators.minLength(1)]],
       descripcion: ['', [Validators.required, Validators.minLength(1)]],
       stock: [''],
+      stock_minimo: [''],
+      stock_maximo: [''],
       utilidad: [''],
       descuento: [''],
       precio_compra: [''],
@@ -73,23 +75,16 @@ export class ProductoComponent implements OnInit {
     this.productoService.loadProductos()
       .subscribe(({ productos }) => {
         this.productos = productos;
-        console.log("Test (producto.component.ts) - cargarProductos()")
-        console.log(productos)
+        console.log("< this.productos", this.productos)
       })
   }
 
   cargarProductoPorId(id_producto: any) {
-    console.log("cargarProductoPorId(id_producto: any)")
-    console.log(id_producto)
     this.productoService.loadProductoById(id_producto)
       .subscribe(producto => {
-        const { codigo_principal, descripcion, stock, utilidad, descuento, precio_compra, precio_venta } = producto[0];
+        const { codigo_principal, descripcion, stock, stock_minimo, stock_maximo, utilidad, descuento, precio_compra, precio_venta } = producto[0];
         this.productoSeleccionado = producto[0];
-        console.log("producto: ", producto)
-        console.log("producto[0]: ", producto[0])
-        console.log("codigo_principal: ", codigo_principal)
-        console.log("descripcion: ", descripcion)
-        this.productoFormU.setValue({ codigo_principal, descripcion, stock, utilidad, descuento, precio_compra, precio_venta })
+        this.productoFormU.setValue({ codigo_principal, descripcion, stock, stock_minimo, stock_maximo, utilidad, descuento, precio_compra, precio_venta })
       })
   }
 

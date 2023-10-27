@@ -52,7 +52,7 @@ export class ProductoService {
 
   //createProducto(formData: FormProducto) {
   createProducto(formData: any) {
-  console.log('\n\n-> createProducto(formData: FormProducto) {')
+  console.log('\n\n➡️ createProducto(formData: FormProducto) {')
     const url = `${base_url}/productos`;
     console.log(url)
     console.log("(service) formData: ", formData)
@@ -64,7 +64,7 @@ export class ProductoService {
   }
 
   createProductoArray(productos: Producto[]) {
-    console.log('\n\n▶ createProductoArray(productos: Producto[]) {')
+    console.log('\n\n➡️ createProductoArray(productos: Producto[]) {')
     const url = `${base_url}/productos`;
     console.log(url)
     console.log('> productos: ', productos)

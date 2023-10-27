@@ -1,4 +1,4 @@
-export class FacturaModel {
+export class Factura {
     constructor(
         public id_factura_compra: number,
         public id_proveedor: number,
@@ -12,8 +12,8 @@ export class FacturaModel {
         public estado_pago: string,
         public total_sin_impuesto: number,
         public total_descuento: number,
-        public iva: number,
         public propina: number,
+        public valor: number,
         public importe_total: number,
         public abono: number,
         //public saldo: number,

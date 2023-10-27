@@ -11,7 +11,7 @@ import { LoadFactura } from 'src/app/interfaces/compra/factura/load-factura.inte
 import { LoginForm } from '../../interfaces/login-form.iterface';
 
 // Models
-import { FacturaModel } from 'src/app/models/compra/factura.model';
+import { Factura } from 'src/app/models/compra/factura.model';
 import { DetalleFactura } from 'src/app/models/compra/detalle-factura.model';
 
 // Variable API
@@ -43,7 +43,7 @@ export class FacturaService {
   loadFacturaById(id_factura_compra: any) {
     const url = `${base_url}/facturas/${id_factura_compra}`;
     return this.hhtp.get(url, this.headers).pipe(
-      map((resp: { ok: boolean, factura: FacturaModel, saldo: number }) => {
+      map((resp: { ok: boolean, factura: Factura, saldo: number }) => {
         return { factura: resp.factura, saldo: resp.saldo };
       })
     );
@@ -76,18 +76,18 @@ export class FacturaService {
     console.log("> formData.estado_pago: ", formData.estado_pago)
     console.log("> formData.total_sin_impuesto: ", formData.total_sin_impuesto)
     console.log("> formData.total_descuento: ", formData.total_descuento)
-    console.log("> formData.iva: ", formData.iva)
-    console.log("> formData.iva: ", formData.propina)
-    console.log("> formData.valor_total: ", formData.importe_total)
+    console.log("> formData.valor: ", formData.valor)
+    console.log("> formData.propina: ", formData.propina)
+    console.log("> formData.importe_total: ", formData.importe_total)
     console.log("> formData.abono: ", formData.abono)
 
     return this.hhtp.post(url, formData, this.headers)
       .pipe(
-        map((resp: { ok: boolean, factura: FacturaModel[] }) => resp.factura)
+        map((resp: { ok: boolean, factura: Factura[] }) => resp.factura)
       )
   }
 
-  updateFactura(factura: FacturaModel) {
+  updateFactura(factura: Factura) {
     console.log("factura.id_factura_compra")
     console.log(factura.id_factura_compra)
     const url = `${base_url}/facturas/${factura.id_factura_compra}`;

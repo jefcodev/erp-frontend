@@ -1,4 +1,4 @@
-<!-- Lista de Productos -->
+<!-- Table data -->
 <div class="col-12">
     <div class="card">
         <div class="card-body">
@@ -28,7 +28,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        
+
                         <tr *ngFor="let producto of productos let i = index">
                             <td><span class="footable-toggle"></span>{{ i + 1 }}</td>
                             <td>{{producto.codigo_principal}}</td>
@@ -66,7 +66,7 @@
                             <ng-template #inactivoOption>
                             </ng-template>
                         </tr>
-                    
+
                     </tbody>
                     <tfoot>
                         <tr>
@@ -90,7 +90,7 @@
     </div>
 </div>
 
-<!-- modal create -->
+<!-- Modal create -->
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel1" #miModal>
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -165,7 +165,6 @@
     </div>
 </div>
 
-
 <!-- modal  update -->
 <div class="modal fade" id="exampleModalU" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel1" #miModal>
     <div class="modal-dialog" role="document">
@@ -197,8 +196,8 @@
                         <div class="col-sm-9">
                             <div class="input-group">
                                 <div class="input-group-addon"><i class="ti-user"></i></div>
-                                <input type="text" class="form-control" id="exampleInputuname3" placeholder="Descripción"
-                                    formControlName="descripcion">
+                                <input type="text" class="form-control" id="exampleInputuname3"
+                                    placeholder="Descripción" formControlName="descripcion">
                             </div>
                         </div>
                     </div>
@@ -208,12 +207,31 @@
                         <div class="col-sm-9">
                             <div class="input-group">
                                 <div class="input-group-addon"><i class="ti-user"></i></div>
-                                <input type="text" class="form-control" id="exampleInputuname3"
-                                    placeholder="Stock" formControlName="stock">
+                                <input type="text" class="form-control" id="exampleInputuname3" placeholder="Stock"
+                                    formControlName="stock">
                             </div>
                         </div>
                     </div>
-
+                    <div class="form-group row">
+                        <label for="exampleInputuname3" class="col-sm-3 control-label">Stock Mínimo*</label>
+                        <div class="col-sm-9">
+                            <div class="input-group">
+                                <div class="input-group-addon"><i class="ti-user"></i></div>
+                                <input type="text" class="form-control" id="exampleInputuname3" placeholder="Stock Mínimo"
+                                    formControlName="stock_minimo">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="exampleInputuname3" class="col-sm-3 control-label">Stock Máximo*</label>
+                        <div class="col-sm-9">
+                            <div class="input-group">
+                                <div class="input-group-addon"><i class="ti-user"></i></div>
+                                <input type="text" class="form-control" id="exampleInputuname3" placeholder="Stock Máximo "
+                                    formControlName="stock_maximo">
+                            </div>
+                        </div>
+                    </div>
                     <div class="form-group row">
                         <label for="exampleInputuname3" class="col-sm-3 control-label">Utilidad*</label>
                         <div class="col-sm-9">
@@ -240,8 +258,8 @@
                         <div class="col-sm-9">
                             <div class="input-group">
                                 <div class="input-group-addon"><i class="ti-user"></i></div>
-                                <input type="text" class="form-control" id="exampleInputuname3" placeholder="Precio Compra"
-                                    formControlName="precio_compra">
+                                <input type="text" class="form-control" id="exampleInputuname3"
+                                    placeholder="Precio Compra" formControlName="precio_compra">
                             </div>
                         </div>
                     </div>
@@ -250,8 +268,8 @@
                         <div class="col-sm-9">
                             <div class="input-group">
                                 <div class="input-group-addon"><i class="ti-user"></i></div>
-                                <input type="text" class="form-control" id="exampleInputuname3" placeholder="Precio Venta"
-                                    formControlName="precio_venta">
+                                <input type="text" class="form-control" id="exampleInputuname3"
+                                    placeholder="Precio Venta" formControlName="precio_venta">
                             </div>
                         </div>
                     </div>

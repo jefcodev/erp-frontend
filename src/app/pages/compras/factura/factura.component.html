@@ -382,6 +382,7 @@
                             <table class="table table-hover">
                                 <thead>
                                     <th class="text-center">#</th>
+                                    <th class="text-right">Producto</th>
                                     <th class="text-right">Código Principal</th>
                                     <th class="text-right">Cantidad</th>
                                     <th class="text-right">Descripción</th>
@@ -390,43 +391,41 @@
                                     <th class="text-right">Precio Total Sin Impuesto</th>
                                     <th class="text-right">Tarifa</th>
                                     <th class="text-right">Valor</th>
+                                    <th class="text-right">ICE</th>
                                     <th class="text-right">Precio Total</th>
                                     <th class="text-right">Acción</th>
                                 </thead>
                                 <tbody>
                                     <tr *ngFor="let detalle of detalleFacturaFormulario; let i = index">
                                         <td class="text-center">{{ i + 1 }}</td>
-                                        <td>
-                                            <select class="form-control" formControlName="producto_{{i}}">
+                                        <td><select class="form-control" formControlName="producto_{{i}}">
                                                 <option *ngFor="let producto of productos"
                                                     [value]="producto.id_producto">{{
                                                     producto.id_producto + ' - ' + producto.descripcion }}</option>
                                             </select>
                                         </td>
-                                        <td>
-                                            <input type="number" class="form-control" formControlName="cantidad_{{i}}">
+                                        <td><input type="text" class="form-control"
+                                                formControlName="codigo_principal_{{i}}">
                                         </td>
-                                        <td>
-                                            <input type="text" class="form-control" formControlName="descripcion_{{i}}">
+                                        <td><input type="number" class="form-control" formControlName="cantidad_{{i}}">
                                         </td>
-                                        <td>
-                                            <input type="number" class="form-control"
+                                        <td><input type="text" class="form-control" formControlName="descripcion_{{i}}">
+                                        </td>
+                                        <td><input type="number" class="form-control"
                                                 formControlName="precio_unitario_{{i}}">
                                         </td>
-                                        <td>
-                                            <input type="number" class="form-control" formControlName="descuento_{{i}}">
+                                        <td><input type="number" class="form-control" formControlName="descuento_{{i}}">
                                         </td>
-                                        <td>
-                                            <input type="number" class="form-control" formControlName="precio_total_sin_impuesto_{{i}}">
+                                        <td><input type="number" class="form-control"
+                                                formControlName="precio_total_sin_impuesto_{{i}}">
                                         </td>
-                                        <td>
-                                            <input type="number" class="form-control" formControlName="tarifa_{{i}}">
+                                        <td><input type="number" class="form-control" formControlName="tarifa_{{i}}">
                                         </td>
-                                        <td>
-                                            <input type="number" class="form-control" formControlName="valor_{{i}}">
+                                        <td><input type="number" class="form-control" formControlName="valor_{{i}}">
                                         </td>
-                                        <td>
-                                            <input type="number" class="form-control"
+                                        <td><input type="number" class="form-control" formControlName="ice_{{i}}">
+                                        </td>
+                                        <td><input type="number" class="form-control"
                                                 formControlName="precio_total_{{i}}">
                                         </td>
                                         <td class="text-right">
@@ -495,7 +494,7 @@
                                     <p>Valor ICE:</p>
                                     <p>IVA 12.00%:</p>
                                     <h3><b>Total:</b></h3>
-                                </div>
+                                                                    </div>
                             </div>
                             <div class="col-md-3">
 
@@ -504,8 +503,9 @@
                                     <p>$ {{ total_sin_impuesto}}</p>
                                     <p>$ {{ total_descuento}}</p>
                                     <p>$ 0.00</p>
-                                    <p>$ {{ iva}}</p>
+                                    <p>$ {{ valor}}</p>
                                     <h3>$ {{ importe_total}}</h3>
+                                    <h3>$ {{ moneda}}</h3>
                                 </div>
                             </div>
                         </div>
@@ -845,7 +845,7 @@
                                     <p>$ {{ total_sin_impuesto }}</p>
                                     <p>$ {{ total_descuento }}</p>
                                     <p>$ 0.00</p>
-                                    <p>$ {{ iva}}</p>
+                                    <p>$ {{ valor}}</p>
                                     <h3>$ {{ importe_total }}</h3>
                                 </div>
                             </div>
@@ -1010,7 +1010,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let item of productosXML">
+            <tr *ngFor="let item of detallesXML">
                 <td>{{ item.codigoPrincipal }}</td>
                 <td>{{ item.cantidad }}</td>
                 <td>{{ item.descripcion }}</td>
