@@ -1,143 +1,166 @@
+<style>
+    /* CSS personalizado para espaciar los botones */
+    .float-left .btn {
+        margin-right: 10px;
+        /* Ajusta este valor según el espacio deseado */
+    }
+</style>
+
 <!-- Table data -->
-<div class="col-12">
-    <div class="card">
-        <div class="card-body">
-            <h4 class="card-title">Lista de Facturas Compra</h4>
-            <h6 class="card-subtitle"></h6>
-            <div class="float-left modal-footer">
-
-                <button class="btn btn-info waves-effect waves-light" data-toggle="modal" data-target="#exampleModal"
-                    type="button"><span class="btn-label"><i class="fa fa-plus"></i></span>Nueva Factura</button>
-                <button class="btn btn-success margin-left-10 AN__btn_imprimir_pdf___NEW_ASI hidenNew2 btn-new-version"
-                    id="btnimprimirasiento" type="button">
-                    <span class="fa fa-file-pdf-o" style="padding-left:0px;"></span>&nbsp;PDF
-                </button>
-
-                <button class="btn btn-success AN__btn_imprimir_excel___NEW_ASI hidenNew2 btn-new-version"
-                    id="btnasientoEXCEL" type="button">
-                    <span class="fa fa-file-excel-o" style="padding-left:0px;"></span>&nbsp;Excel
-                </button>
-                <button class="btn btn-success margin-left-10 AN__btn_imprimir_asiento___NEW_ASI hidenNew2 btn-print"
-                    id="btnimprimir" type="button" onclick="">
-                    <span class="fa fa-print" style="padding-left:0px;"></span>&nbsp;Imprimir
-                </button>
-                <div id="example23_filter" class="dataTables_filter"><label>Buscar:<input type="search" class=""
-                            placeholder="" aria-controls="example23"></label>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="float-left">
+                    <!--
+                    <button class="btn btn-info waves-effect waves-light" data-toggle="modal"
+                        data-target="#exampleModal" type="button"><span class="btn-label"><i
+                                class="fa fa-plus"></i></span>Nueva
+                    </button>-->
+                    <button class="btn btn-info waves-effect waves-light" data-toggle="modal"
+                        data-target="#exampleModal" type="button">
+                        <span class="fa fa-plus" style="padding-left:0px;"></span>&nbsp;Nueva
+                    </button>
+                    <button class="btn btn-new-version waves-effect waves-light" data-toggle="modal"
+                        data-target="#exampleModalXML" type="button">
+                        <span class="fa fa-upload" style="padding-left:0px;"></span>&nbsp;Subir
+                    </button>
+                    <button class="btn btn-success" type="button">
+                        <span class="fa fa-file-pdf-o" style="padding-left:0px;"></span>&nbsp;PDF
+                    </button>
+                    <button class="btn btn-success" type="button">
+                        <span class="fa fa-file-excel-o" style="padding-left:0px;"></span>&nbsp;Excel
+                    </button>
+                    <button class="btn btn-success" type="button" onclick="">
+                        <span class="fa fa-print" style="padding-left:0px;"></span>&nbsp;Imprimir
+                    </button>
+                    <div id="example23_filter" class="dataTables_filter"><label>Buscar:<input type="search" class=""
+                                placeholder="" aria-controls="example23"></label>
+                    </div>
                 </div>
-            </div>
-            <div class="table-responsive">
+                <div class="table-responsive">
 
-                <table id="demo-foo-addrow" class="table m-t-30 table-hover contact-list footable-loaded footable"
-                    data-page-size="10">
-                    <thead>
-                        <tr>
-                            <th class="footable-sortable">#<span class="footable-sort-indicator"></span></th>
-                            <th class="footable-sortable">Fecha<span class="footable-sort-indicator"></span>
-                            </th>
-                            <th class="footable-sortable">Número<span class="footable-sort-indicator"></span></th>
-                            <th class="footable-sortable">Identificación<span class="footable-sort-indicator"></span>
-                            </th>
-                            <th class="footable-sortable">Razón Social<span class="footable-sort-indicator"></span></th>
-                            <th class="footable-sortable">Fecha Vencimiento<span class="footable-sort-indicator"></span>
-                            </th>
-                            <th class="footable-sortable text-center">Valor Total<span
-                                    class="footable-sort-indicator"></span>
-                            </th>
-                            <th class="footable-sortable text-center">Abono<span class="footable-sort-indicator"></span>
-                            </th>
-                            <th class="footable-sortable">Saldo<span class="footable-sort-indicator"></span>
-                            </th>
-                            <th class="footable-sortable">Estado Pago<span class="footable-sort-indicator"></span>
-                            </th>
-                            <th class="footable-sortable">Asiento<span class="footable-sort-indicator"></span>
-                            </th>
-                            <th class="footable-sortable">Estado<span class="footable-sort-indicator"></span></th>
-                            <th class="footable-sortable text-center">Action<span
-                                    class="footable-sort-indicator"></span></th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                    <table id="demo-foo-addrow" class="table m-t-30 table-hover contact-list footable-loaded footable"
+                        data-page-size="10">
+                        <thead>
+                            <tr>
+                                <th class="footable-sortable">#<span class="footable-sort-indicator"></span></th>
+                                <th class="footable-sortable">Fecha<span class="footable-sort-indicator"></span>
+                                </th>
+                                <th class="footable-sortable">Número<span class="footable-sort-indicator"></span></th>
+                                <th class="footable-sortable">Identificación<span
+                                        class="footable-sort-indicator"></span>
+                                </th>
+                                <th class="footable-sortable">Razón Social<span class="footable-sort-indicator"></span>
+                                </th>
+                                <th class="footable-sortable">Fecha Vencimiento<span
+                                        class="footable-sort-indicator"></span>
+                                </th>
+                                <th class="footable-sortable text-center">Valor Total<span
+                                        class="footable-sort-indicator"></span>
+                                </th>
+                                <th class="footable-sortable text-center">Abono<span
+                                        class="footable-sort-indicator"></span>
+                                </th>
+                                <th class="footable-sortable">Saldo<span class="footable-sort-indicator"></span>
+                                </th>
+                                <th class="footable-sortable">Estado Pago<span class="footable-sort-indicator"></span>
+                                </th>
+                                <th class="footable-sortable">Asiento<span class="footable-sort-indicator"></span>
+                                </th>
+                                <th class="footable-sortable">Estado<span class="footable-sort-indicator"></span></th>
+                                <th class="footable-sortable text-center">Action<span
+                                        class="footable-sort-indicator"></span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
 
-                        <tr *ngFor="let factura of facturas let i = index">
-                            <td><span class="footable-toggle"></span>{{ i + 1 }}</td>
-                            <td>{{factura.fecha_emision | date:'yyyy-MM-dd' }}</td>
-                            <td>{{factura.codigo}}</td>
-                            <td>
-                                <ng-container *ngFor="let proveedor of proveedores">
-                                    <ng-container
-                                        *ngIf="proveedor.id_proveedor == factura.id_proveedor ">{{proveedor.identificacion}}</ng-container>
-                                </ng-container>
-                            </td>
-                            <td>
-                                <ng-container *ngFor="let proveedor of proveedores">
-                                    <ng-container
-                                        *ngIf="proveedor.id_proveedor == factura.id_proveedor ">{{proveedor.razon_social}}</ng-container>
-                                </ng-container>
-                            </td>
-
-                            <td>{{ factura.fecha_vencimiento | date:'yyyy-MM-dd' }}</td>
-                            <td class="text-right">{{ factura.importe_total }}</td>
-                            <td class="text-right">{{ factura.abono }}</td>
-                            <td class="text-right">{{ factura.importe_total - factura.abono }}</td>
-                            <td>
-                                <ng-container [ngSwitch]="factura.estado_pago">
-                                    <div *ngSwitchCase="'PAGADO'" class="label label-table label-success">PAGADO</div>
-                                    <div *ngSwitchCase="'PENDIENTE'" class="label label-table label-info">PENDIENTE
-                                    </div>
-                                    <div *ngSwitchCase="'VENCIDA'" class="label label-table label-warning">VENCIDA</div>
-                                    <div *ngSwitchCase="'ANULADA'" class="label label-table label-danger">ANULADA
-                                    </div>
-                                    <div *ngSwitchDefault class="label label-table label-info">{{ factura.estado_pago }}
-                                    </div>
-                                </ng-container>
-                            </td>
-
-                            <td class="text-center">{{ factura.id_asiento }}</td>
-                            <td *ngIf="factura.estado; else inactivo">
-                                <div class="label label-table label-success">ACTIVA</div>
-                            </td>
-                            <ng-template #inactivo>
+                            <tr *ngFor="let factura of facturas let i = index">
+                                <td><span class="footable-toggle"></span>{{ i + 1 }}</td>
+                                <td>{{factura.fecha_emision | date:'yyyy-MM-dd' }}</td>
+                                <td>{{factura.codigo}}</td>
                                 <td>
-                                    <div class="label label-table label-danger">ANULADA</div>
+                                    <ng-container *ngFor="let proveedor of proveedores">
+                                        <ng-container
+                                            *ngIf="proveedor.id_proveedor == factura.id_proveedor ">{{proveedor.identificacion}}</ng-container>
+                                    </ng-container>
                                 </td>
-                            </ng-template>
+                                <td>
+                                    <ng-container *ngFor="let proveedor of proveedores">
+                                        <ng-container
+                                            *ngIf="proveedor.id_proveedor == factura.id_proveedor ">{{proveedor.razon_social}}</ng-container>
+                                    </ng-container>
+                                </td>
 
-                            <td *ngIf="factura.estado else inactivoOption" class="text-nowrap text-center">
+                                <td>{{ factura.fecha_vencimiento | date:'yyyy-MM-dd' }}</td>
+                                <td class="text-right">{{ factura.importe_total }}</td>
+                                <td class="text-right">{{ factura.abono }}</td>
+                                <td class="text-right">{{ factura.importe_total - factura.abono }}</td>
+                                <td>
+                                    <ng-container [ngSwitch]="factura.estado_pago">
+                                        <div *ngSwitchCase="'PAGADO'" class="label label-table label-success">PAGADO
+                                        </div>
+                                        <div *ngSwitchCase="'PENDIENTE'" class="label label-table label-info">PENDIENTE
+                                        </div>
+                                        <div *ngSwitchCase="'VENCIDA'" class="label label-table label-warning">VENCIDA
+                                        </div>
+                                        <div *ngSwitchCase="'ANULADA'" class="label label-table label-danger">ANULADA
+                                        </div>
+                                        <div *ngSwitchDefault class="label label-table label-info">{{
+                                            factura.estado_pago }}
+                                        </div>
+                                    </ng-container>
+                                </td>
 
-                                <a class="cursor" data-toggle="modal"
-                                    (click)="cargarFacturaPorId(factura.id_factura_compra); cargarDetalleFacturas(factura.id_factura_compra)"
-                                    data-target="#exampleModalU"><span
-                                        class="fa fa-pencil text-inverse m-r-10"></span></a>
+                                <td class="text-center">{{ factura.id_asiento }}</td>
+                                <td *ngIf="factura.estado; else inactivo">
+                                    <div class="label label-table label-success">ACTIVA</div>
+                                </td>
+                                <ng-template #inactivo>
+                                    <td>
+                                        <div class="label label-table label-danger">ANULADA</div>
+                                    </td>
+                                </ng-template>
 
-                                <a class="cursor" (click)="borrarFactura(factura);" data-toggle="tooltip"
-                                    data-original-title="Close"> <i class="fa fa-close text-danger"></i> </a>
-                            </td>
-                            <ng-template #inactivoOption>
-                            </ng-template>
-                        </tr>
-                    </tbody>
-                    <tfoot>
-                        <tr>
+                                <td *ngIf="factura.estado else inactivoOption" class="text-nowrap text-center">
 
-                            <td colspan="8">
-                                <div class="text-right">
-                                    <ul class="pagination">
-                                        <li class="footable-page-arrow disabled"><a data-page="first"
-                                                href="#first">«</a></li>
-                                        <li class="footable-page-arrow disabled"><a data-page="prev" href="#prev">‹</a>
-                                        </li>
-                                        <li class="footable-page-arrow"><a data-page="next" href="#next">›</a></li>
-                                        <li class="footable-page-arrow"><a data-page="last" href="#last">»</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-                    </tfoot>
-                </table>
+                                    <a class="cursor" data-toggle="modal"
+                                        (click)="cargarFacturaPorId(factura.id_factura_compra); cargarDetalleFacturas(factura.id_factura_compra)"
+                                        data-target="#exampleModalU"><span
+                                            class="fa fa-pencil text-inverse m-r-10"></span></a>
+
+                                    <a class="cursor" (click)="borrarFactura(factura);" data-toggle="tooltip"
+                                        data-original-title="Close"> <i class="fa fa-close text-danger"></i> </a>
+                                </td>
+                                <ng-template #inactivoOption>
+                                </ng-template>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+
+                                <td colspan="8">
+                                    <div class="text-right">
+                                        <ul class="pagination">
+                                            <li class="footable-page-arrow disabled"><a data-page="first"
+                                                    href="#first">«</a></li>
+                                            <li class="footable-page-arrow disabled"><a data-page="prev"
+                                                    href="#prev">‹</a>
+                                            </li>
+                                            <li class="footable-page-arrow"><a data-page="next" href="#next">›</a></li>
+                                            <li class="footable-page-arrow"><a data-page="last" href="#last">»</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
 
 <style>
     .modal-dialog {
@@ -512,13 +535,7 @@
                     </div>
 
                 </form>
-
-
-
             </div>
-
-
-
             <div class="col-md-12">
                 <hr>
                 <div class="float-right modal-footer">
@@ -959,73 +976,382 @@
     </div>
 </div>
 
-<div>
-    <h1>{{ title }}</h1>
+<!-- Modal Upload XML -->
+<div class="modal fade modal-principal" id="exampleModalXML" tabindex="-1" role="dialog"
+    aria-labelledby="exampleModalLabel1" #miModal>
+    <div class="modal-dialog" role="document" style="width: 100%;" max-width="1000px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="exampleModalLabel1">Editar Factura</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="text-center">
+                <h3><b>FACTURA COMPRA</b></h3>
+                <h5><b># </b> {{ estab }}-{{ ptoEmi }}-{{ secuencial }}</h5>
+            </div>
+            <div class="modal-body">
 
-    <input type="file" (change)="onFileSelected($event)">
+                <!-- Factura Form -->
+                <form autocomplete="off" [formGroup]="facturaFormU">
+                    <div class="row">
 
-    <button type="button" class="btn btn-primary" (click)="crearFacturaXML();" data-dismiss="modal">Guardar
-        XML</button>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Identificación</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-id-badge"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder="{{ ruc }}" formControlName="identificacion" readonly>
+                                </div>
+                            </div>
+                        </div>
 
-    <p>Info Tributaria</p>
-    <p><b>Razón Social:</b> {{ razonSocial }}</p>
-    <p><b>RUC:</b> {{ ruc }}</p>
-    <p><b>Clave de Acceso:</b> {{ claveAcceso }}</p>
-    <p><b>No:</b> {{ estab }}-{{ ptoEmi }}-{{ secuencial }}</p>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Razó Social</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-user"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder='{{ razonSocial }}' formControlName="razon_social" readonly>
 
-    <p>Info Factura</p>
-    <p><b>Fecha Emision:</b> {{ fechaEmision }}</p>
-    <p><b>Razón Social Comprador:</b> {{ razonSocialComprador }}</p>
-    <p><b>Identificación Comprador:</b> {{ identificacionComprador }}</p>
-    <p><b>Dirección Comprador:</b> {{ direccionComprador }}</p>
-    <p><b>Total Sin Impuestos:</b> {{ totalSinImpuestos }}</p>
-    <p><b>Total Descuento:</b> {{ totalDescuento }}</p>
-    <p><b>Codigo 2:</b> {{ codigo2 }}</p>
-    <p><b>Codigo Porcentaje 2:</b> {{ codigoPorcentaje2 }}</p>
-    <p><b>Base Imponible 2:</b> {{ baseImponible2 }}</p>
-    <p><b>Valor 2:</b> {{ valor2 }}</p>
-    <p><b>Importe Total:</b> {{ importeTotal | currency: 'USD' }}</p>
-    <p><b>Forma Pago:</b> {{ formaPago }}</p>
-    <p><b>Total:</b> {{ total }}</p>
-    <p><b>Plazo:</b> {{ plazo }}</p>
-    <p><b>Unidad Tiempo:</b> {{ unidadTiempo }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Dirección</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-location-pin"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder='{{ dirEstablecimiento }}' formControlName="direccion" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Teléfono</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-mobile"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder="Télefono" formControlName="telefono" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Email</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-email"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder="Email" formControlName="email" readonly>
+                                </div>
+                            </div>
+                        </div>
 
-    <p>Calculados</p>
-    <p><b>IVA 12% (suma etiqueta valor):</b> {{ valorAux | currency: 'USD' }}</p>
-    <p><b>SUBTOTAL SIN IMPUESTOS:</b> {{ precioTotalSinImpuestoAux | currency: 'USD' }}</p>
-    <table>
-        <thead>
-            <tr>
-                <th>Código Principal</th>
-                <th>Cantidad</th>
-                <th>Descripción</th>
-                <th>Precio Unitario</th>
-                <th>Descuento</th>
-                <th>Precio Total Sin Impuesto</th>
-                <th>Código</th>
-                <th>Código Porcentaje</th>
-                <th>Tarifa</th>
-                <th>Base Imponible</th>
-                <th>Valor</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let item of detallesXML">
-                <td>{{ item.codigoPrincipal }}</td>
-                <td>{{ item.cantidad }}</td>
-                <td>{{ item.descripcion }}</td>
-                <td>{{ item.precioUnitario | currency: 'USD' }}</td>
-                <td>{{ item.descuento | currency: 'USD' }}</td>
-                <td>{{ item.precioTotalSinImpuesto | currency: 'USD' }}</td>
-                <td>{{ item.codigo }}</td>
-                <td>{{ item.codigoPorcentaje }}</td>
-                <td>{{ item.tarifa | percent }}</td>
-                <td>{{ item.baseImponible | currency: 'USD' }}</td>
-                <td>{{ item.valor | currency: 'USD' }}</td>
-            </tr>
-        </tbody>
-    </table>
-    <p><b>Teléfono:</b> {{ telefonoXML }}</p>
-    <p><b>Email:</b> {{ emailXML }}</p>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Forma de pago</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-credit-card"></i></div>
 
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder='{{ formaPago }}' formControlName="id_forma_pago" readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Fecha Emisión</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-calendar"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder="{{ fechaEmision }}" formControlName="fecha_emision"
+                                        [value]="getFormattedFechaEmision()" readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Fecha vencimiento</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-calendar"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder="Fecha Vencimiento" formControlName="fecha_vencimiento"
+                                        [value]="getFormattedFechaVencimiento()" readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Estado de pago</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-check-box"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder="Estado de Pago" formControlName="estado_pago" readonly>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="col">
+                            <div class="text-danger">
+                                <p *ngIf="campoNoValido('estado_pago',facturaFormU)">El campo es obligatorio</p>
+                            </div>
+                        </div>
+
+                        <hr>
+                    </div>
+
+                    <div class="table-responsive">
+
+                        <table id="demo-foo-addrow"
+                            class="table m-t-30 table-hover contact-list footable-loaded footable" data-page-size="10">
+                            <thead>
+                                <tr>
+                                    <th class="footable-sortable">#<span class="footable-sort-indicator"></span>
+                                    </th>
+                                    <th class="footable-sortable text-center">Código <span
+                                            class="footable-sort-indicator"></span>
+                                    </th>
+                                    <th class="footable-sortable">Cantidad<span class="footable-sort-indicator"></span>
+                                    </th>
+                                    <th class="footable-sortable">Descripcion<span
+                                            class="footable-sort-indicator"></span>
+                                    </th>
+
+                                    <th class="footable-sortable">Precio Unitario<span
+                                            class="footable-sort-indicator"></span>
+                                    </th>
+                                    <th class="footable-sortable">Descuento<span class="footable-sort-indicator"></span>
+                                    </th>
+                                    <th class="footable-sortable">Tarifa<span class="footable-sort-indicator"></span>
+                                    </th>
+                                    <th class="footable-sortable">Valor<span class="footable-sort-indicator"></span>
+                                    </th>
+                                    <th class="footable-sortable">Precio Total<span
+                                            class="footable-sort-indicator"></span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of detallesXML">
+                                    <td>{{ item.codigoPrincipal }}</td>
+                                    <td>{{ item.cantidad }}</td>
+                                    <td>{{ item.descripcion }}</td>
+                                    <td>{{ item.precioUnitario | currency: 'USD' }}</td>
+                                    <td>{{ item.descuento | currency: 'USD' }}</td>
+                                    <td>{{ item.precioTotalSinImpuesto | currency: 'USD' }}</td>
+                                    <td>{{ item.codigo }}</td>
+                                    <td>{{ item.codigoPorcentaje }}</td>
+                                    <td>{{ item.tarifa | percent }}</td>
+                                    <td>{{ item.baseImponible | currency: 'USD' }}</td>
+                                    <td>{{ item.valor | currency: 'USD' }}</td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <!--paginador-->
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <!--
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="exampleInputuname">Subtotal sin Impuestos</label>
+                                            <div class="input-group">
+                                                <div class="input-group-addon"><i class="ti-user"></i></div>
+                                                <input type="text" class="form-control text-right" id="exampleInputuname"
+                                                    placeholder="Subtotal sin Impuestos" formControlName="subtotal_sin_impuestos"
+                                                    readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+                
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="exampleInputuname">Total Descuento</label>
+                                            <div class="input-group">
+                                                <div class="input-group-addon"><i class="ti-user"></i></div>
+                                                <input type="text" class="form-control text-right" id="exampleInputuname"
+                                                    placeholder="Total Descuento" formControlName="total_descuento" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+                
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="exampleInputuname">IVA</label>
+                                            <div class="input-group">
+                                                <div class="input-group-addon"><i class="ti-user"></i></div>
+                                                <input type="text" class="form-control text-right" id="exampleInputuname"
+                                                    placeholder="IVA" formControlName="iva" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+                
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="exampleInputuname">Valor Total</label>
+                                            <div class="input-group">
+                                                <div class="input-group-addon"><i class="ti-user"></i></div>
+                                                <input type="text" class="form-control text-right" id="exampleInputuname"
+                                                    placeholder="Valor Total" formControlName="importe_total" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+                
+                                    -->
+
+
+
+                    <div class="col-md-12">
+                        <div class="clearfix"></div>
+                        <hr>
+                        <div class="row">
+
+                            <div class="col-md-3"></div> <!-- Espaciador -->
+                            <div class="col-md-3">
+                                <br>
+                                <div class="form-group">
+                                    <label for="exampleInputuname">PAGO DE FACTURA</label>
+                                    <div class="input-group">
+                                        <div class="input-group-addon"><b>Abonar:</b><i class=""></i></div>
+                                        <input type="number" class="form-control text-right" id="exampleInputuname"
+                                            placeholder="Abono" formControlName="abono">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <div class="input-group-addon"><b>Saldo:</b>&nbsp;&nbsp;&nbsp;&nbsp;<i
+                                                class=""></i></div>
+                                        <input type="number" class="form-control text-right" id="exampleInputuname"
+                                            placeholder="Saldo" formControlName="saldo" readonly>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <div class="input-group-addon"><b>Total:</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i
+                                                class=""></i></div>
+                                        <input type="number" class="form-control text-right" id="exampleInputuname"
+                                            placeholder="Valor Total" formControlName="importe_total" readonly>
+                                    </div>
+                                </div>
+
+                            </div> <!-- Espaciador -->
+                            <div class="col-md-3">
+                                <div class="pull-right m-t-30 text-right">
+                                    <h4>Detalle</h4>
+                                    <p>Subtotal sin impuestos:</p>
+                                    <p>Total descuento:</p>
+                                    <p>Valor ICE:</p>
+                                    <p>IVA 12.00%:</p>
+                                    <h3><b>Total:</b></h3>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+
+                                <div class="pull-right m-t-30 text-right">
+                                    <h4>Valores</h4>
+                                    <p>$ {{ total_sin_impuesto }}</p>
+                                    <p>$ {{ total_descuento }}</p>
+                                    <p>$ 0.00</p>
+                                    <p>$ {{ valor}}</p>
+                                    <h3>$ {{ importe_total }}</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+                <!-- Factura XML -->
+                <div>
+                    <h1>{{ title }}</h1>
+
+                    <input type="file" (change)="onFileSelected($event)">
+
+                    <button type="button" class="btn btn-primary" (click)="crearFacturaXML();"
+                        data-dismiss="modal">Guardar
+                        XML</button>
+
+                    <p>Info Tributaria</p>
+                    <p><b>Razón Social:</b> {{ razonSocial }}</p>
+                    <p><b>RUC:</b> {{ ruc }}</p>
+                    <p><b>Clave de Acceso:</b> {{ claveAcceso }}</p>
+                    <p><b>No:</b> {{ estab }}-{{ ptoEmi }}-{{ secuencial }}</p>
+
+                    <p>Info Factura</p>
+                    <p><b>Fecha Emision:</b> {{ fechaEmision }}</p>
+                    <p><b>Razón Social Comprador:</b> {{ razonSocialComprador }}</p>
+                    <p><b>Identificación Comprador:</b> {{ identificacionComprador }}</p>
+                    <p><b>Dirección Comprador:</b> {{ direccionComprador }}</p>
+                    <p><b>Total Sin Impuestos:</b> {{ totalSinImpuestos }}</p>
+                    <p><b>Total Descuento:</b> {{ totalDescuento }}</p>
+                    <p><b>Codigo 2:</b> {{ codigo2 }}</p>
+                    <p><b>Codigo Porcentaje 2:</b> {{ codigoPorcentaje2 }}</p>
+                    <p><b>Base Imponible 2:</b> {{ baseImponible2 }}</p>
+                    <p><b>Valor 2:</b> {{ valor2 }}</p>
+                    <p><b>Importe Total:</b> {{ importeTotal | currency: 'USD' }}</p>
+                    <p><b>Forma Pago:</b> {{ formaPago }}</p>
+                    <p><b>Total:</b> {{ total }}</p>
+                    <p><b>Plazo:</b> {{ plazo }}</p>
+                    <p><b>Unidad Tiempo:</b> {{ unidadTiempo }}</p>
+
+                    <p>Calculados</p>
+                    <p><b>IVA 12% (suma etiqueta valor):</b> {{ valorAux | currency: 'USD' }}</p>
+                    <p><b>SUBTOTAL SIN IMPUESTOS:</b> {{ precioTotalSinImpuestoAux | currency: 'USD' }}</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Código Principal</th>
+                                <th>Cantidad</th>
+                                <th>Descripción</th>
+                                <th>Precio Unitario</th>
+                                <th>Descuento</th>
+                                <th>Precio Total Sin Impuesto</th>
+                                <th>Código</th>
+                                <th>Código Porcentaje</th>
+                                <th>Tarifa</th>
+                                <th>Base Imponible</th>
+                                <th>Valor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of detallesXML">
+                                <td>{{ item.codigoPrincipal }}</td>
+                                <td>{{ item.cantidad }}</td>
+                                <td>{{ item.descripcion }}</td>
+                                <td>{{ item.precioUnitario | currency: 'USD' }}</td>
+                                <td>{{ item.descuento | currency: 'USD' }}</td>
+                                <td>{{ item.precioTotalSinImpuesto | currency: 'USD' }}</td>
+                                <td>{{ item.codigo }}</td>
+                                <td>{{ item.codigoPorcentaje }}</td>
+                                <td>{{ item.tarifa | percent }}</td>
+                                <td>{{ item.baseImponible | currency: 'USD' }}</td>
+                                <td>{{ item.valor | currency: 'USD' }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p><b>Teléfono:</b> {{ telefonoXML }}</p>
+                    <p><b>Email:</b> {{ emailXML }}</p>
+
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <hr>
+                <div class="float-right modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" (click)="actualizarFactura();"
+                        data-dismiss="modal">Actualizar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
