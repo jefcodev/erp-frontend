@@ -31,6 +31,9 @@ import { ProductoService } from 'src/app/services/inventario/producto.service';
 import { FormaPagoService } from 'src/app/services/contabilidad/forma-pago.service';
 
 import { EventEmitter, Output } from '@angular/core';
+import { forkJoin, Observable } from 'rxjs'; // Importa forkJoin y Observable
+import { catchError } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 
 interface DetalleFacturaFormulario {
   producto: number;
@@ -90,6 +93,20 @@ interface DetalleXML {
   baseImponible: number;
   valor: number;
 }
+
+// Define the ProductoXML interface
+/*
+interface ProductoXML {
+  codigoPrincipal: string;
+  descripcion: string;
+  cantidad: number;
+  precioUnitario: number;
+  tarifa: number;
+  //valorUnitarioAux: number;
+  //precioCompraUnitarioAux: number;
+}
+
+*/
 @Component({
   selector: 'app-factura',
   templateUrl: './factura.component.html',
@@ -141,6 +158,7 @@ export class FacturaComponent implements OnInit {
   // XML
   title = 'Read XML';
   public detallesXML: DetalleXML[] = []; // Updated to use the DetalleXML interface
+  //public productosXML: ProductoXML[] = []; // Updated to use the DetalleXML interface
   private xmlFilePath: string | null = null;
 
   // infoTributaria
@@ -187,6 +205,10 @@ export class FacturaComponent implements OnInit {
   public precioTotalSinImpuestoAux: number = 0;
   public valorAux: number = 0;
 
+  // productos
+  public valorUnitarioAux: number = 0;
+  public precioCompraUnitarioAux: number = 0;
+
   // informacioó adicional
   public telefonoXML: string = "";
   public emailXML: string = "";
@@ -232,37 +254,6 @@ export class FacturaComponent implements OnInit {
       abono: [''],
       //saldo: ['8'],
     });
-    /*
-    //Esta forma actua como si estuviera con un formulario quemado
-    this.facturaFormXML = this.fb.group({
-
-      id_factura_compra: [''],
-
-      id_proveedor: ['1', [Validators.required, Validators.minLength(0)]],
-      identificacion: ['111111', [Validators.required, Validators.minLength(0)]],
-      razon_social: ['Edison ', [Validators.required, Validators.minLength(0)]],
-      direccion: ['Cayambe', [Validators.required, Validators.minLength(0)]],
-      telefono: ['0978812129', [Validators.required, Validators.minLength(0)]],
-      email: ['eepinanjota95@utn.edu.ec', [Validators.required, Validators.email]],
-
-      id_forma_pago: ['2'],
-      id_asiento: ['1'],
-      codigo: ['1'],
-      //fecha_emision: this.fechaEmision,
-      fecha_emision: [''],
-      //fecha_emision: [''],
-      fecha_vencimiento: ['2023-01-01'],
-      //fecha_vencimiento: [''],
-      //estado_pago: ['POR PAGAR'],
-      total_sin_impuesto: ['22'],
-      total_descuento: ['22'],
-      iva: ['22'],
-      importe_total: ['22'],
-      abono: ['23'],
-      //saldo: ['8'],
-    });
-*/
-
 
     this.facturaFormU = this.fb.group({
 
@@ -564,7 +555,7 @@ export class FacturaComponent implements OnInit {
       .pipe(
         switchMap((factura: any) => {
           const { id_proveedor, id_forma_pago, id_asiento, codigo, fecha_emision, fecha_vencimiento, estado_pago,
-            total_sin_impuesto, total_descuento, iva, importe_total, abono } = factura.factura[0];
+            total_sin_impuesto, total_descuento, valor, importe_total, abono } = factura.factura[0];
 
           const saldo = factura.saldo;
           console.log("this.saldo");
@@ -574,7 +565,7 @@ export class FacturaComponent implements OnInit {
           this.codigo = codigo;
           this.total_sin_impuesto = total_sin_impuesto;
           this.total_descuento = total_descuento;
-          this.valor= this.valor2;
+          this.valor = this.valor2;
 
           this.importe_total = importe_total;
           console.log("this.importe_total");
@@ -596,7 +587,7 @@ export class FacturaComponent implements OnInit {
               const abono = "0.00";
               return of({
                 identificacion, razon_social, direccion, telefono, email, id_forma_pago, id_asiento, codigo,
-                fecha_emision, fecha_vencimiento, estado_pago, total_sin_impuesto, total_descuento, iva, importe_total, abono, saldo
+                fecha_emision, fecha_vencimiento, estado_pago, total_sin_impuesto, total_descuento, valor, importe_total, abono, saldo
               });
             })
           );
@@ -606,49 +597,6 @@ export class FacturaComponent implements OnInit {
         this.facturaFormU.setValue(data);
       });
   }
-
-  /*
-    cargarFacturaPorId2(id_factura_compra: any) {
-      //console.log('id_factura_compra')
-      //console.log(id_factura_compra)
-      this.facturaService.loadFacturaById(id_factura_compra)
-        .pipe(switchMap(factura => {
-          const { id_proveedor, id_forma_pago, id_asiento, codigo, fecha_emision, fecha_vencimiento, estado_pago,
-            total_sin_impuesto, total_descuento, iva, importe_total, abono } = factura[0];
-  
-          this.facturaSeleccionada = factura[0];
-  
-          this.codigo = codigo
-  
-          this.total_sin_impuesto = total_sin_impuesto
-          this.total_descuento = total_descuento
-          this.iva = iva
-          this.importe_total = importe_total
-          this.abono = abono
-          console.log("this.abono")
-          console.log(this.abono)
-  
-          return this.cargarProveedorPorId(id_proveedor).pipe(
-            concatMap(proveedor => {
-              const { identificacion, razon_social, apellido, nombre_comercial, direccion, telefono, email } = proveedor[0];
-              this.proveedorSeleccionado = proveedor[0];
-              this.identificacion = identificacion;
-              //console.log("identficacion this 1")
-              //console.log(this.identificacion)
-              this.razon_social = razon_social;
-              this.apellido = apellido;
-              this.direccion = direccion;
-              this.telefono = telefono;
-              this.email = email;
-              return of({ identificacion, razon_social, apellido, direccion, telefono, email, id_forma_pago, id_asiento, codigo, fecha_emision, fecha_vencimiento, estado_pago, total_sin_impuesto, total_descuento, iva, importe_total, abono });
-            })
-          );
-        })
-        )
-        .subscribe(data => {
-          this.facturaFormU.setValue(data);
-        });
-    }*/
 
   crearFactura() {
     console.log('\n\n🟩 crearFactura() {');
@@ -718,7 +666,6 @@ export class FacturaComponent implements OnInit {
       })
   }
 
-
   crearFacturaXML() {
     console.log('\n\n🟩 crearFacturaXML() {');
     this.formSubmitted = true; //OJO
@@ -737,6 +684,7 @@ export class FacturaComponent implements OnInit {
       return;
     }
 
+    // Una vez que los productos se han creado, procede a crear la factura
     const facturaData: FacturaXML = {
       id_proveedor: this.id_proveedor,
       id_forma_pago: this.id_forma_pago,
@@ -752,106 +700,114 @@ export class FacturaComponent implements OnInit {
       valor: this.valor2,
       propina: this.propina,
       importe_total: this.importeTotal,
-      /*
-      razon_social: this.razonSocialComprador,
-      ruc: '1234567890',
-      estab: 'Establecimiento',
-      ptoEmi: 'Punto de emisión',
-      secuencial: 'Secuencial',
-      */
-      abono: 0, // Valor válido
+      abono: 0,
       //saldo: 0, // Valor válido
     };
-
     this.facturaService.createFactura(facturaData).subscribe(
       (res: any) => {
         const facturaId = res.id_factura_compra; // Obtener el ID del factura guardado
         console.log('< facturaID: ', facturaId)
 
-        // Crear los detalles y asociarlos al factura
-        const detallesXML = [];
-        for (const detalleXML of this.detallesXML) {
-          const nuevoDetalle: DetalleFactura = {
-            id_factura_compra: facturaId,
-            id_producto: null,
-            codigo_principal: detalleXML.codigoPrincipal,//ver
-            descripcion: detalleXML.descripcion,
-            cantidad: detalleXML.cantidad,
-            precio_unitario: detalleXML.precioUnitario,
-            descuento: detalleXML.descuento,
-            precio_total_sin_impuesto: detalleXML.precioTotalSinImpuesto,
+        const productosObservables = this.crearProductos();
 
-            codigo: detalleXML.codigo,
-            codigo_porcentaje: detalleXML.codigoPorcentaje,
-            tarifa: detalleXML.tarifa,
-            base_imponible: detalleXML.baseImponible,
-            valor: detalleXML.valor,
-            ice: null,
-            precio_total: detalleXML.precioTotalSinImpuesto + detalleXML.valor,
-          };
-          detallesXML.push(nuevoDetalle);
-        }
-        this.detalleFacturaService.createDetalleFacturaArray(detallesXML).subscribe(
-          () => {
-            Swal.fire({
-              icon: 'success',
-              title: 'Factura y detalles creados',
-              text: 'El factura y los detalles se han creado correctamente.',
-              showConfirmButton: false,
-              timer: 1500
-            });
-            //this.recargarComponente();
-            this.cerrarModal();
-          },
-          (err) => {
-            // En caso de error en la creación del factura principal
-            let errorMessage = 'Se produjo un error al crear el factura.';
-            if (err.error && err.error.msg) {
-              errorMessage = err.error.msg;
+        forkJoin(productosObservables).subscribe((productosCreados: any[]) => {
+          console.log('🟩 PRODUCTOS CREADOS: ', productosCreados);
+
+          // Crear los detalles y asociarlos a la factura y productos
+          const detallesXML = this.detallesXML.map((detalleXML, index) => {
+
+            return {
+              id_factura_compra: facturaId,
+              id_producto: productosCreados[index].id_producto, // Aquí accedemos al primer producto en el array de productos creados
+              codigo_principal: detalleXML.codigoPrincipal,//ver
+              descripcion: detalleXML.descripcion,
+              cantidad: detalleXML.cantidad,
+              precio_unitario: detalleXML.precioUnitario,
+              descuento: detalleXML.descuento,
+              precio_total_sin_impuesto: detalleXML.precioTotalSinImpuesto,
+
+              codigo: detalleXML.codigo,
+              codigo_porcentaje: detalleXML.codigoPorcentaje,
+              tarifa: detalleXML.tarifa,
+              base_imponible: detalleXML.baseImponible,
+              valor: detalleXML.valor,
+              ice: null,
+              precio_total: detalleXML.precioTotalSinImpuesto + detalleXML.valor,
+            };
+
+            //detallesXML.push(nuevoDetalle);
+          });
+          this.detalleFacturaService.createDetalleFacturaArray(detallesXML).subscribe(
+            () => {
+              Swal.fire({
+                icon: 'success',
+                title: 'Factura y detalles creados',
+                text: 'El factura y los detalles se han creado correctamente.',
+                showConfirmButton: false,
+                timer: 1500
+              });
+              //this.recargarComponente();
+              this.cerrarModal();
+            },
+            (err) => {
+              // En caso de error en la creación del factura principal
+              let errorMessage = 'Se produjo un error al crear el factura.';
+              if (err.error && err.error.msg) {
+                errorMessage = err.error.msg;
+              }
+              Swal.fire('Error', errorMessage, 'error');
             }
-            Swal.fire('Error', errorMessage, 'error');
+          );
+          this.recargarComponente();
+        },
+          (err) => {
+            // Manejar errores
           }
         );
-
-        // Crear los productos
-        /*const productos = [];
-        for (const producto of this.detalleFactura2) {
-          const nuevoProducto: Producto = {
-            id_producto: producto.producto, // ver
-            codigo_principal: producto.descripcion,
-            descripcion: producto.descripcion,
-            stock: producto.cantidad,
-            precio_compra: producto.precio_unitario,
-            precio_venta: producto.precio_unitario,
-          };
-          productos.push(nuevoProducto);
-        }
-        this.productoService.createProductoArray(productos).subscribe(
-          () => {
-            Swal.fire({
-              icon: 'success',
-              title: 'Productos creados',
-              text: 'Los productos se han creado correctamente.',
-              showConfirmButton: false,
-              timer: 1500
-            });
-            this.recargarComponente();
-            this.cerrarModal();
-          },
-          (err) => {
-            // En caso de error en la creación del factura principal
-            let errorMessage = 'Se produjo un error al crear los productos.';
-            if (err.error && err.error.msg) {
-              errorMessage = err.error.msg;
-            }
-            Swal.fire('Error', errorMessage, 'error');
-          }
-        );
-        */
-
-        this.recargarComponente();
-      })
+      },
+      (err) => {
+        // Manejar errores
+      }
+    );
   }
+
+  crearProductos(): Observable<Producto[]>[] {
+    const productosObservables: Observable<Producto[]>[] = this.detallesXML.map((detalleXML) => {
+      const nuevoProducto: Producto = {
+        id_producto: null,
+        id_tipo_inventario: null,
+        id_marca: null,
+        id_clasificacion: null,
+        id_unidad_medida: null,
+        id_tarifa_iva: null,
+        id_tarifa_ice: null,
+        id_tipo_producto: null,
+        id_lista_precio: null,
+        codigo_principal: detalleXML.codigoPrincipal,
+        descripcion: detalleXML.descripcion,
+        stock: detalleXML.cantidad,
+        stock_minimo: null,
+        stock_maximo: null,
+        utilidad: null,
+        descuento: null,
+        iva: null,
+        ice: null,
+        precio_compra: detalleXML.precioUnitario,
+        precio_venta: null,
+        ficha: null,
+        nota: null,
+        especificacion: null,
+        fecha_registro: null,
+        fecha_caducidad: null,
+        fecha_modificacion: null,
+        imagen_producto: null,
+      };
+      return this.productoService.createProducto(nuevoProducto);
+    });
+
+    return productosObservables;
+  }
+
 
   obtenerDetalleFacturaFormulario() {
     // Obtener los valores del formulario de detalles

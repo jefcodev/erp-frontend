@@ -1,6 +1,6 @@
 export class Producto {
     constructor(
-        public id_producto: number,
+        public id_producto: number, // con esto puedo ver en html
         public id_tipo_inventario: number,
         public id_marca: number,
         public id_clasificacion: number,
