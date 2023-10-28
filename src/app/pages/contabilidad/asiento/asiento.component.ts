@@ -286,8 +286,6 @@ export class AsientoComponent implements OnInit {
   }
 
   actualizarAsiento() {
-    console.log("Actualizar: actualizarAsiento() { ")
-    //console.log(asiento.id_asiento)
     if (this.asientoFormU.invalid) {
       return;
     }
@@ -296,15 +294,9 @@ export class AsientoComponent implements OnInit {
       id_asiento: this.asientoSeleccionado.id_asiento
     }
 
-    console.log("UNO---updateAsiento()")
-    console.log(data)
-
     // realizar posteo
     this.asientoService.updateAsiento(data)
       .subscribe(res => {
-        console.log("DOS---updateAsiento()")
-        console.log(data)
-
         Swal.fire({
           icon: 'success',
           title: 'Asiento actualizado',
@@ -327,8 +319,6 @@ export class AsientoComponent implements OnInit {
   }
 
   borrarAsiento(asiento: Asiento) {
-    console.log("Borrar:   borrarAsiento(asiento: Asiento) {")
-    console.log(asiento.id_asiento)
     Swal.fire({
       title: '¿Borrar Asiento?',
       text: `Estas a punto de borrar a ${asiento.referencia}`,
@@ -385,7 +375,6 @@ export class AsientoComponent implements OnInit {
   abrirModal() {
     this.ocultarModal = false;
     this.activatedRoute.params.subscribe(params => {
-      console.log(params)
     })
   }
 

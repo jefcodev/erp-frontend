@@ -52,7 +52,6 @@ export class DetalleAsientoComponent implements OnInit {
   abrirModal() {
     this.ocultarModal = false;
     this.activatedRoute.params.subscribe(params => {
-      console.log(params)
     })
 
   }
@@ -61,30 +60,14 @@ export class DetalleAsientoComponent implements OnInit {
     this.detalleAsientoService.loadDetalleAsientos()
       .subscribe(({ detalle_asientos }) => {
         this.detalle_asientos = detalle_asientos;
-        console.log("Test (detalleAsiento.component.ts) - cargarDetalleAsientos()")
-        console.log(detalle_asientos)
       })
   }
 
   cargarDetalleAsientoPorId(id_detalle_asiento: any) {
-    //cargarDetalleAsiento(detalle_asiento: DetalleAsiento) {
-    console.log("COMPONENT - cargarDetalleAsientoPorId(id_detalle_asiento: any)")
-    //this.cargarDetalleAsientoPorId(id_detalle_asiento)
-    console.log('id_detalle_asiento')
-    console.log(id_detalle_asiento)
-    //this.detalle_asientoService.cargarDetalleAsientoById(detalle_asiento.id_detalle_asiento)
     this.detalleAsientoService.loadDetalleAsientoById(id_detalle_asiento)
       .subscribe(detalle_asiento => {
         const { codigo, descripcion} = detalle_asiento[0];
         this.detalleAsientoSeleccionado = detalle_asiento[0];
-        console.log("detalle_asiento")
-        console.log(detalle_asiento)
-        console.log("detalle_asiento[0]")
-        console.log(detalle_asiento[0])
-        console.log("codigo")
-        console.log(codigo)
-        console.log("descripcion")
-        console.log(descripcion)
         this.detalleAsientoFormU.setValue({ codigo, descripcion })
         //this.detalleAsientoFormU.setValue({ descripcion })
       })
@@ -92,7 +75,6 @@ export class DetalleAsientoComponent implements OnInit {
 
   crearDetalleAsiento() {
     this.formSubmitted = true;
-    console.log(this.detalleAsientoForm.value)
     if (this.detalleAsientoForm.invalid) {
       return;
     }
@@ -120,8 +102,6 @@ export class DetalleAsientoComponent implements OnInit {
   }
 
   actualizarDetalleAsiento() {
-    console.log("Actualizar: actualizarDetalleAsiento() { ")
-    //console.log(detalleAsiento.id_detalleAsiento)
     if (this.detalleAsientoFormU.invalid) {
       return;
     }
@@ -130,15 +110,9 @@ export class DetalleAsientoComponent implements OnInit {
       id_detalle_asiento: this.detalleAsientoSeleccionado.id_detalle_asiento
     }
 
-    console.log("UNO---updateDetalleAsiento()")
-    console.log(data)
-
     // realizar posteo
     this.detalleAsientoService.updateDetalleAsiento(data)
       .subscribe(res => {
-        console.log("DOS---updateDetalleAsiento()")
-        console.log(data)
-
         Swal.fire({
           icon: 'success',
           title: 'DetalleAsiento actualizado',

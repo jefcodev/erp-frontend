@@ -41,9 +41,6 @@ export class ProveedorService {
   }
 
   loadProveedorById(id_proveedor: any) {
-    console.log("cargarProveedorById")
-    console.log(id_proveedor)
-    //const url = `${base_url}/proveedores/${id_proveedor}`;
     const url = `${base_url}/proveedores/id/${id_proveedor}`;
     return this.hhtp.get(url, this.headers)
       .pipe(
@@ -51,8 +48,6 @@ export class ProveedorService {
       )
   }
   loadProveedorByIdentificacion(identificacion: any) {
-    console.log("\n\n-> (service) loadProveedorByIdentificacion(identificacion: any) {")
-    console.log('identidentificacion: ', identificacion)
     const url = `${base_url}/proveedores/identificacion/${identificacion}`;
     return this.hhtp.get(url, this.headers)
       .pipe(
@@ -61,10 +56,7 @@ export class ProveedorService {
   }
 
   createProveedor(formData: FormProveedor) {
-    console.log('\n\n▶ (service) createProveedor(formData: FormProveedor) {');
-    console.log('formData: ', formData);
     const url = `${base_url}/proveedores`;
-    console.log(url)
     return this.hhtp.post(url, formData, this.headers)
       .pipe(
         map((resp: { ok: boolean, proveedor: Proveedor[] }) => resp.proveedor)
@@ -72,11 +64,7 @@ export class ProveedorService {
     }
     
     updateProveedor(proveedor: Proveedor) {
-    console.log('\n\n▶ (service) updateProveedor(proveedor: Proveedor) {');
-    console.log("proveedor.id_proveedor: ", proveedor.id_proveedor)
     const url = `${base_url}/proveedores/${proveedor.id_proveedor}`;
-    console.log("Service - URL")
-    console.log(url)
     return this.hhtp.put(url, proveedor, this.headers);
   }
 

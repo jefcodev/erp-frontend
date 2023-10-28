@@ -27,8 +27,6 @@ export class DetalleFacturaComponent implements OnInit {
     this.detalleFacturaService.loadDetalleFacturas()
       .subscribe(({ detalle_facturas }) => {
         this.detalle_facturas = detalle_facturas;
-        console.log("Test (detalle_factura.component.ts) - cargarDetalleFacturas()")
-        console.log(detalle_facturas)
       })
   }
 

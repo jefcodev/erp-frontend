@@ -210,8 +210,6 @@ export class ProductoComponent implements OnInit {
   }
 
   agregarProducto(producto: any) {
-    console.log('XD--------')
-    console.log(producto.identficacion)
     this.productos.push(producto);
   }
 

@@ -55,8 +55,6 @@ export class EstadoResultadoComponent implements OnInit {
     this.estadoResultadoService.loadEstadoResultado()
       .subscribe(({ estado_resultado }) => {
         this.estado_resultado = estado_resultado;
-        console.log("Test (asiento.component.ts) - cargarLibroDiario()")
-        console.log(estado_resultado)
       })
   }
 

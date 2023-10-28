@@ -60,8 +60,6 @@ export class DetalleFacturaService {
   //createDetalleFactura(formData: FormDetalleFactura) {
   createDetalleFactura(formData: any) {
     const url = `${base_url}/detalle-facturas`;
-    console.log(url)
-    console.log("> formData: ", formData)
     return this.hhtp.post(url, formData, this.headers)
       .pipe(
         map((resp: { ok: boolean, detalle_factura: DetalleFactura[] }) => resp.detalle_factura)
@@ -69,26 +67,15 @@ export class DetalleFacturaService {
   }
 
   createDetalleFacturaArray(detalles: DetalleFactura[]) {
-    console.log('\n\n▶ (service) createDetalleFacturaArray(detalles: DetalleFactura[]) {');
     const url = `${base_url}/detalle-facturas`;
-    console.log(url);
-    console.log('> detalles: ', detalles);
-
     const formData = { detalles }; // Crear un objeto con una propiedad 'detalles' que contenga el arreglo de detalles
-    console.log('> formData: ',formData);
-
     return this.hhtp.post(url, formData, this.headers).pipe(
       map((resp: { ok: boolean; detalle_factura: DetalleFactura[] }) => resp.detalle_factura)
     );
   }
 
   updateDetalleFactura(detalle_factura: DetalleFacturaU) {
-    console.log("detalle_factura.id_detalle_factura_compra")
-    console.log(detalle_factura.id_detalle_factura_compra)
-    //const url = `${base_url}/detalle-facturas/3`;
     const url = `${base_url}/detalle-facturas/${detalle_factura.id_detalle_factura_compra}`;
-    console.log("Service - URL")
-    console.log(url)
     return this.hhtp.put(url, detalle_factura, this.headers);
   }
 

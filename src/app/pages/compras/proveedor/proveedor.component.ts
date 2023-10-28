@@ -88,7 +88,6 @@ export class ProveedorComponent implements OnInit {
   abrirModal() {
     this.ocultarModal = false;
     this.activatedRoute.params.subscribe(params => {
-      console.log(params)
     })
 
   }
@@ -101,33 +100,20 @@ export class ProveedorComponent implements OnInit {
     this.proveedorService.loadProveedores()
       .subscribe(({ proveedores }) => {
         this.proveedores = proveedores;
-        console.log("Test (proveedor.component.ts) - cargarProveedores()")
-        console.log(proveedores)
       })
   }
 
   cargarProveedorPorId(id_proveedor: any) {
-    console.log("cargarProveedorPorId(id_proveedor: any)")
-    console.log(id_proveedor)
     this.proveedorService.loadProveedorById(id_proveedor)
       .subscribe(proveedor => {
         const { identificacion, razon_social, nombre_comercial, direccion, telefono, email } = proveedor[0];
         this.proveedorSeleccionado = proveedor[0];
-        console.log("proveedor")
-        console.log(proveedor)
-        console.log("proveedor[0]")
-        console.log(proveedor[0])
-        console.log("identficacion")
-        console.log(identificacion)
-        console.log("razon_social")
-        console.log(razon_social)
         this.proveedorFormU.setValue({ identificacion, razon_social, nombre_comercial, direccion, telefono, email })
       })
   }
 
   crearProveedor() {
     this.formSubmitted = true;
-    console.log(this.proveedorForm.value)
     if (this.proveedorForm.invalid) {
       return;
     }
@@ -155,8 +141,6 @@ export class ProveedorComponent implements OnInit {
   }
 
   actualizarProveedor() {
-    console.log("Actualizar: actualizarProveedor() { ")
-    //console.log(proveedor.id_proveedor)
     if (this.proveedorFormU.invalid) {
       return;
     }
@@ -165,15 +149,9 @@ export class ProveedorComponent implements OnInit {
       id_proveedor: this.proveedorSeleccionado.id_proveedor
     }
 
-    console.log("UNO---updateProveedor()")
-    console.log(data)
-
     // realizar posteo
     this.proveedorService.updateProveedor(data)
       .subscribe(res => {
-        console.log("DOS---updateProveedor()")
-        console.log(data)
-
         Swal.fire({
           icon: 'success',
           title: 'Proveedor actualizado',
@@ -196,8 +174,6 @@ export class ProveedorComponent implements OnInit {
   }
 
   borrarProveedor(proveedor: Proveedor) {
-    console.log("Borrar:   borrarProveedor(proveedor: Proveedor) {")
-    console.log(proveedor.id_proveedor)
     Swal.fire({
       title: '¿Borrar Proveedor?',
       text: `Estas a punto de borrar a ${proveedor.razon_social}`,
@@ -250,8 +226,6 @@ export class ProveedorComponent implements OnInit {
   }
 
   agregarProveedor(proveedor: any) {
-    console.log('XD--------')
-    console.log(proveedor.identficacion)
     this.proveedores.push(proveedor);
   }
 

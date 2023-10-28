@@ -41,9 +41,6 @@ export class DetalleAsientoService {
   }
 
   loadDetalleAsientoById(id_detalle_asiento: any) {
-    console.log("SERVICE - loadDetalleAsientoById(id_detalle_asiento: any) {")
-    console.log("id_detalle_asiento")
-    console.log(id_detalle_asiento)
     const url = `${base_url}/detalle-asientos/${id_detalle_asiento}`;
     return this.hhtp.get(url, this.headers)
       .pipe(
@@ -52,19 +49,12 @@ export class DetalleAsientoService {
   }
 
   loadDetalleAsientoByAsiento(id_asiento: any) {
-    console.log(id_asiento)
     const url = `${base_url}/detalle-asientos/asiento/${id_asiento}`;
     return this.hhtp.get<LoadDetalleAsiento>(url, this.headers);
   }
 
   createDetalleAsiento(formData: FormDetalleAsiento) {
     const url = `${base_url}/detalle-asientos`;
-    console.log(url)
-    console.log("formData")
-    console.log(formData)
-    console.log("formData.referencia")
-    console.log(formData.referencia)
-
     return this.hhtp.post(url, formData, this.headers)
       .pipe(
         map((resp: { ok: boolean, detalle_asiento: DetalleAsiento[] }) => resp.detalle_asiento)
@@ -74,16 +64,7 @@ export class DetalleAsientoService {
 
   createDetalleAsiento2(detalles: DetalleAsiento[]) {
     const url = `${base_url}/detalle-asientos`;
-    console.log(url);
-    console.log("SERVICE createDetalleAsiento2");
-    console.log('detalles');
-    console.log(detalles);
-   
     const formData = { detalles }; // Crear un objeto con una propiedad 'detalles' que contenga el arreglo de detalles
-    
-    console.log('FORMDATA');
-    console.log(formData);
-   
     return this.hhtp.post(url, formData, this.headers).pipe(
       map((resp: { ok: boolean; detalle_asiento: DetalleAsiento[] }) => resp.detalle_asiento)
     );
@@ -92,12 +73,7 @@ export class DetalleAsientoService {
   
 
   updateDetalleAsiento(detalle_asiento: DetalleAsientoU) {
-    console.log("detalle_asiento.id_detalle_asiento")
-    console.log(detalle_asiento.id_detalle_asiento)
-    //const url = `${base_url}/detalle-asientos/3`;
     const url = `${base_url}/detalle-asientos/${detalle_asiento.id_detalle_asiento}`;
-    console.log("Service - URL")
-    console.log(url)
     return this.hhtp.put(url, detalle_asiento, this.headers);
   }
 

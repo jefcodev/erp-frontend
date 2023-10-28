@@ -42,8 +42,6 @@ export class ProductoService {
 
   loadProductoById(id_producto: any) {
     const url = `${base_url}/productos/${id_producto}`;
-    console.log("cargarProductoById")
-    console.log(id_producto)
     return this.hhtp.get(url, this.headers)
       .pipe(
         map((resp: { ok: boolean, producto: Producto }) => resp.producto)
@@ -52,11 +50,7 @@ export class ProductoService {
 
   //createProducto(formData: FormProducto) {
   createProducto(formData: any) {
-    console.log('\n\n➡️ createProducto(formData: FormProducto) {')
     const url = `${base_url}/productos`;
-    console.log(url)
-    console.log("(service) formData: ", formData)
-
     return this.hhtp.post(url, formData, this.headers)
       .pipe(
         map((resp: { ok: boolean, producto: Producto[] }) => resp.producto)
@@ -64,22 +58,12 @@ export class ProductoService {
   }
 
   createProductoArray(productos: Producto[]) {
-    console.log('\n\n➡️ createProductoArray(productos: Producto[]) {');
     const url = `${base_url}/productos`;
-    console.log(url);
-    console.log('> productos: ', productos);
-
     return this.hhtp.post<Producto[]>(url, productos, this.headers);
   }
   createProductoArray2(productos: Producto[]) {
-    console.log('\n\n➡️ createProductoArray(productos: Producto[]) {')
     const url = `${base_url}/productos`;
-    console.log(url)
-    console.log('> productos: ', productos)
-
     const formData = { productos }; // Crear un objeto con una propiedad 'detalles' que contenga el arreglo de detalles
-    console.log('> formData: ', formData)
-
     return this.hhtp.post(url, formData, this.headers).pipe(
       map((resp: { ok: boolean, producto: Producto[] }) => resp.producto)
     )
@@ -87,12 +71,7 @@ export class ProductoService {
 
   //updateProducto(producto: ProductoU) {
   updateProducto(producto: Producto) {
-    console.log("producto.id_producto")
-    console.log(producto.id_producto)
-    //const url = `${base_url}/productos/3`;
     const url = `${base_url}/productos/${producto.id_producto}`;
-    console.log("Service - URL")
-    console.log(url)
     return this.hhtp.put(url, producto, this.headers);
   }
 

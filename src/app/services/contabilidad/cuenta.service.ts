@@ -40,9 +40,6 @@ export class CuentaService {
   }
 
   loadCuentaById(id_cuenta: any) {
-    console.log("SERVICE - loadCuentaById(id_cuenta: any) {")
-    console.log("id_cuenta")
-    console.log(id_cuenta)
     const url = `${base_url}/cuentas/id/${id_cuenta}`;
     return this.hhtp.get(url, this.headers)
       .pipe(
@@ -51,9 +48,6 @@ export class CuentaService {
   }
 
   loadCuentaByCodigo(codigo: any) {
-    console.log("loadCuentaByCodigo")
-    console.log("codigo EDISON")
-    console.log(codigo)
     const url = `${base_url}/cuentas/codigo/${codigo}`;
     return this.hhtp.get(url, this.headers)
       .pipe(
@@ -63,16 +57,6 @@ export class CuentaService {
 
   createCuenta(formData: FormCuenta) {
     const url = `${base_url}/cuentas`;
-    console.log(url)
-    console.log("formData")
-    console.log(formData)
-    console.log("formData.codigo")
-    console.log(formData.codigo)
-    console.log("formData.descripcion")
-    console.log(formData.descripcion)
-    console.log("formData.cuenta_padre")
-    console.log(formData.cuenta_padre)
-
     return this.hhtp.post(url, formData, this.headers)
       .pipe(
         map((resp: { ok: boolean, cuenta: Cuenta[] }) => resp.cuenta)
@@ -80,12 +64,7 @@ export class CuentaService {
   }
 
   updateCuenta(cuenta: Cuenta) {
-    console.log("cuenta.id_cuenta")
-    console.log(cuenta.id_cuenta)
-    //const url = `${base_url}/cuentas/3`;
     const url = `${base_url}/cuentas/${cuenta.id_cuenta}`;
-    console.log("Service - URL")
-    console.log(url)
     return this.hhtp.put(url, cuenta, this.headers);
   }
 

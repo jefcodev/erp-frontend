@@ -40,59 +40,15 @@ export class AsientoService {
   }
 
   loadAsientoById(id_asiento: any) {
-    console.log("SERVICE - loadAsientoById(id_asiento: any) {")
-    console.log("id_asiento")
-    console.log(id_asiento)
     const url = `${base_url}/asientos/${id_asiento}`;
     return this.hhtp.get(url, this.headers)
       .pipe(
         map((resp: { ok: boolean, asiento: Asiento }) => resp.asiento)
       )
   }
-  /*
-    createAsiento2(asiento: Asiento, detalles: DetalleAsiento[]) {
-      const formData = {
-        fecha: asiento.fecha,
-        referencia: asiento.referencia,
-        documento: asiento.documento,
-        observacion: asiento.observacion,
-        detalles: detalles
-      };
-  
-      const url = `${base_url}/asientos2`;
-      console.log(url)
-      console.log("formData")
-      console.log(formData)
-      //console.log("formData.fecha")
-      //console.log(formData.fecha)
-      console.log("formData.referencia")
-      console.log(formData.referencia)
-      console.log("formData.documento")
-      console.log(formData.documento)
-      console.log("formData.observacion")
-      console.log(formData.observacion)
-  
-      return this.hhtp.post(url, formData, this.headers)
-        .pipe(
-          map((resp: { ok: boolean, asiento: Asiento[] }) => resp.asiento)
-        );
-    }*/
-
 
   createAsiento(formData: FormAsiento) {
     const url = `${base_url}/asientos`;
-    console.log(url)
-    console.log("formData")
-    console.log(formData)
-    //console.log("formData.fecha")
-    //console.log(formData.fecha)
-    console.log("formData.referencia")
-    console.log(formData.referencia)
-    console.log("formData.documento")
-    console.log(formData.documento)
-    console.log("formData.observacion")
-    console.log(formData.observacion)
-
     return this.hhtp.post(url, formData, this.headers)
       .pipe(
         map((resp: { ok: boolean, asiento: Asiento[] }) => resp.asiento)
@@ -100,11 +56,7 @@ export class AsientoService {
   }
 
   updateAsiento(asiento: Asiento) {
-    console.log("asiento.id_asiento")
-    console.log(asiento.id_asiento)
     const url = `${base_url}/asientos/${asiento.id_asiento}`;
-    console.log("Service - URL")
-    console.log(url)
     return this.hhtp.put(url, asiento, this.headers);
   }
 

@@ -40,8 +40,6 @@ export class LibroDiarioComponent implements OnInit {
     this.libroDiarioService.loadLibroDiario()
       .subscribe(({ libro_diario }) => {
         this.libro_diario = libro_diario;
-        console.log("Test (asiento.component.ts) - cargarLibroDiario()")
-        console.log(libro_diario)
       })
   }
 
@@ -94,7 +92,6 @@ export class LibroDiarioComponent implements OnInit {
   abrirModal() {
     this.ocultarModal = false;
     this.activatedRoute.params.subscribe(params => {
-      console.log(params)
     })
   }
 

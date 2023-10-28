@@ -94,19 +94,7 @@ interface DetalleXML {
   valor: number;
 }
 
-// Define the ProductoXML interface
-/*
-interface ProductoXML {
-  codigoPrincipal: string;
-  descripcion: string;
-  cantidad: number;
-  precioUnitario: number;
-  tarifa: number;
-  //valorUnitarioAux: number;
-  //precioCompraUnitarioAux: number;
-}
 
-*/
 @Component({
   selector: 'app-factura',
   templateUrl: './factura.component.html',
@@ -121,7 +109,6 @@ export class FacturaComponent implements OnInit {
   public ocultarModal: boolean = true;
 
   public facturaForm: FormGroup;
-  //public facturaFormXML: FormGroup;
   public facturaFormU: FormGroup;
   public detalleFacturaForm: FormGroup;
   public proveedorForm: FormGroup;
@@ -324,41 +311,28 @@ export class FacturaComponent implements OnInit {
   }
 
   cargarProveedorByIdentificacion(identificacion: string) {
-    console.log("\n\n-> cargarProveedorPorIdentificacion(identificacion: string) {");
-    console.log('identificacion: ' + identificacion);
-    console.log('--> Incio - Load Proveedor (service)');
     this.proveedorService.loadProveedorByIdentificacion(identificacion)
       .subscribe(
         (proveedor) => {
-          console.log('\n\n--> Incio - Load Proveedor (service - subscribe)');
           if (Array.isArray(proveedor) && proveedor.length > 0) {
             const { id_proveedor, identificacion, razon_social } = proveedor[0];
-            console.log("Se encontró el proveedor con la identificación: " + identificacion);
-            console.log("< id_proveedor: ", id_proveedor);
-            console.log("< identificacion: ", identificacion);
-            console.log("< razon_social: " + razon_social);
             this.id_proveedor = id_proveedor;
             this.identificacion = identificacion;
             this.razon_social = razon_social;
           } else {
-            console.log("No se encontró ningún proveedor con la identificación: " + identificacion);
             Swal.fire({
               title: 'Éxito 2',
               text: 'XML Cargado',
               icon: 'success',
-              timer: 1500, // Duración en milisegundos (1 segundo)
-              showConfirmButton: false, // Ocultar el botón "OK"
+              timer: 1500,
+              showConfirmButton: false,
             })
               .then(() => {
                 this.mostrarMensajeDeAdvertenciaConOpciones('Advertencia', 'Proveedor no encontrado ¿Desea crear un nuevo proveedor?');
               });
           }
-          console.log('--> Fin - Load Proveedor (service - subscribe)');
         },
         (err) => {
-          // Manejo de errores en caso de problemas con la solicitud HTTP
-          console.error("Error al buscar el proveedor: ", err);
-          // Puedes mostrar un mensaje de error al usuario o realizar otras acciones aquí
           let errorMessage = 'Se produjo un error al cargar el proveedor.';
           if (err.error && err.error.msg) {
             errorMessage = err.error.msg;
@@ -366,7 +340,6 @@ export class FacturaComponent implements OnInit {
           Swal.fire('Error', err.error.msg, 'error');
         }
       );
-    console.log('--> Fin - Load Proveedor (service)');
   }
 
   // Función para mostrar mensajes de alerta con SweetAlert2
@@ -388,7 +361,6 @@ export class FacturaComponent implements OnInit {
 
   // Función para mostrar mensajes de advertencia con opciones "Sí" o "No"
   mostrarMensajeDeAdvertenciaConOpciones(title: string, text: string) {
-    console.log('\n\n-> mostrarMensajeDeAdvertenciaConOpciones(title: string, text: string) {')
     Swal.fire({
       icon: 'warning',
       title,
@@ -446,20 +418,12 @@ export class FacturaComponent implements OnInit {
   descripcion_forma_pago: any;
 
   cargarFormaPagoByCodigo(codigo: string) {
-    console.log('\n\n-> cargarFormaPagoByCodigo(codigo: string) {');
-    console.log('codigo: ' + codigo);
-    console.log('--> Incio - Load Forma Pago (service)');
     this.formaPagoService.loadFormaPagoByCodigo(codigo)
       .subscribe(
         (forma_pago) => {
-          console.log('\n\n--> Incio - Load Forma Pago (service - subscribe)');
           if (Array.isArray(forma_pago) && forma_pago.length > 0) {
             const { id_forma_pago, codigo, descripcion } = forma_pago[0];
             console.log("Se encontró forma de pago con codigo: " + codigo);
-            console.log("< id_forma_pago: " + id_forma_pago);
-            console.log("< codigo: " + codigo);
-            console.log("< descripcion: " + descripcion);
-
             this.id_forma_pago = id_forma_pago;
             this.codigo_forma_pago = codigo;
             this.descripcion_forma_pago = descripcion;
@@ -476,12 +440,8 @@ export class FacturaComponent implements OnInit {
                 this.mostrarMensajeDeAdvertenciaConOpciones2('Advertencia', 'Forma de pago no encontrado ¿Desea crear nueva Forma de Pago?');
               });
           }
-          console.log('--> Fin - Load Forma Pago (service - subscribe)');
         },
         (err) => {
-          // Manejo de errores en caso de problemas con la solicitud HTTP
-          console.error("Error al buscar forma de pago: ", err);
-          // Puedes mostrar un mensaje de error al usuario o realizar otras acciones aquí
           let errorMessage = 'Se produjo un error al cargar forma de pago.';
           if (err.error && err.error.msg) {
             errorMessage = err.error.msg;
@@ -489,19 +449,12 @@ export class FacturaComponent implements OnInit {
           Swal.fire('Error', err.error.msg, 'error');
         }
       );
-    console.log('--> Fin - Load Forma Pago (service)');
   }
 
 
   crearFormaPagoXML() {
-    console.log('\n\n->crearFormaPagoXML() {')
-
     this.codigo_forma_pago = this.formaPago
     this.descripcion_forma_pago = "FORMA DE PAGO N " + this.formaPago + " (editar)"
-
-    console.log('> this.codigo_forma_pago', this.codigo_forma_pago)
-    console.log('> this.descripcion_forma_pago', this.descripcion_forma_pago)
-
     if (!this.codigo_forma_pago || !this.descripcion_forma_pago) {
       Swal.fire('Error', 'Falta información requerida para crear la forma de pago.', 'error');
       return;
@@ -513,8 +466,6 @@ export class FacturaComponent implements OnInit {
       descripcion: this.descripcion_forma_pago,
     };
 
-    // Realiza la solicitud POST para crear Forma Pago
-    console.log('--> Incio - Create Forma Pago (service)');
     this.formaPagoService.createFormaPago(formaPagoData).subscribe(
       (res) => {
         Swal.fire({
@@ -524,13 +475,10 @@ export class FacturaComponent implements OnInit {
           showConfirmButton: false,
           timer: 1500
         });
-        console.log('--> Inicio - this.cargarFormaPagoByCodigo(this.codigo_forma_pago)');
         this.cargarFormaPagoByCodigo(this.codigo_forma_pago);
-        console.log('--> Fin - this.cargarFormaPagoByCodigo(this.codigo_forma_pago)');
         //this.recargarComponente();
         this.cerrarModal();
       }, (err) => {
-        // En caso de error
         let errorMessage = 'Se produjo un error al crear Forma de Pago.';
         if (err.error && err.error.msg) {
           errorMessage = err.error.msg;
@@ -538,10 +486,7 @@ export class FacturaComponent implements OnInit {
         Swal.fire('Error', err.error.msg, 'error');
       });
     //this.recargarComponente();
-    console.log('--> Incio - Create Forma Pago (service)');
   }
-
-
 
   cargarProductos() {
     this.productoService.loadProductos()
@@ -653,7 +598,6 @@ export class FacturaComponent implements OnInit {
             this.cerrarModal();
           },
           (err) => {
-            // En caso de error en la creación del factura principal
             let errorMessage = 'Se produjo un error al crear el factura.';
             if (err.error && err.error.msg) {
               errorMessage = err.error.msg;
@@ -750,7 +694,6 @@ export class FacturaComponent implements OnInit {
               this.cerrarModal();
             },
             (err) => {
-              // En caso de error en la creación del factura principal
               let errorMessage = 'Se produjo un error al crear el factura.';
               if (err.error && err.error.msg) {
                 errorMessage = err.error.msg;
@@ -810,15 +753,10 @@ export class FacturaComponent implements OnInit {
 
 
   obtenerDetalleFacturaFormulario() {
-    // Obtener los valores del formulario de detalles
     const formValues = this.detalleFacturaForm.getRawValue();
-    console.log('formValues -----------');
-    console.log(formValues);
 
     // Obtener el número de detalles
     const numDetalles2 = Object.keys(formValues).filter(key => key.startsWith('producto_')).length;
-    console.log('numDetalles 2 -----------');
-    console.log(numDetalles2);
 
     // Reiniciar el arreglo detalleFacturaFormulario
     this.detalleFacturaFormulario = [];
@@ -842,7 +780,6 @@ export class FacturaComponent implements OnInit {
       };
       this.detalleFacturaFormulario.push(nuevoDetalle);
     }
-    // Limpiar el formulario de detalles
     //this.detalleFacturaForm.reset();
   }
 
@@ -916,7 +853,6 @@ export class FacturaComponent implements OnInit {
   }
 
   actualizarFactura() {
-    console.log("Actualizar: actualizarFactura() { ")
     if (this.facturaFormU.invalid) {
       return;
     }
@@ -925,15 +861,8 @@ export class FacturaComponent implements OnInit {
       id_factura_compra: this.facturaSeleccionada.id_factura_compra
     }
 
-    console.log("UNO---updateFactura()")
-    console.log(data)
-
-    // realizar posteo
     this.facturaService.updateFactura(data)
       .subscribe(res => {
-        console.log("DOS---updateFactura()")
-        console.log(data)
-
         Swal.fire({
           icon: 'success',
           title: 'Factura actualizado',
@@ -945,7 +874,6 @@ export class FacturaComponent implements OnInit {
         this.recargarComponente();
         this.cerrarModal();
       }, (err) => {
-        // En caso de error
         let errorMessage = 'Se produjo un error al actualizar el factura.';
         if (err.error && err.error.msg) {
           errorMessage = err.error.msg;
@@ -956,8 +884,6 @@ export class FacturaComponent implements OnInit {
   }
 
   borrarFactura(factura: Factura) {
-    console.log("Borrar:   borrarFactura(factura: Factura) {")
-    console.log(factura.id_factura_compra)
     Swal.fire({
       title: '¿Borrar Factura?',
       text: `Estas a punto de borrar a ${factura.codigo}`,
@@ -1014,7 +940,6 @@ export class FacturaComponent implements OnInit {
   abrirModal() {
     this.ocultarModal = false;
     this.activatedRoute.params.subscribe(params => {
-      console.log(params)
     })
   }
 
@@ -1054,21 +979,11 @@ export class FacturaComponent implements OnInit {
   }
 
   crearProveedorXML() {
-    console.log("\n\n-> crearProveedorXML() {")
-
     this.identificacion = this.identificacionComprador
     this.razon_social = this.razonSocialComprador
     this.direccion = this.direccionComprador
     this.telefono = this.telefonoXML
     this.email = this.emailXML
-
-    console.log('> this.identificacion', this.identificacion)
-    console.log('> this.razon_social (Razón Social): ', this.razon_social)
-    console.log('> this.nombre_comercial: ', this.nombre_comercial)
-    console.log('> this.direccion: ', this.direccion)
-    console.log('> this.telefono: ', this.telefono)
-    console.log('> this.email: ', this.email)
-
     if (!this.identificacion || !this.razon_social) {
       Swal.fire('Error', 'Falta información requerida para crear el proveedor.', 'error');
       return;
@@ -1085,7 +1000,6 @@ export class FacturaComponent implements OnInit {
     };
 
     // Realiza la solicitud POST para crear el proveedor
-    console.log('--> Incio - Create Proveedor (service)');
     this.proveedorService.createProveedor(proveedorData).subscribe(
       (res) => {
         Swal.fire({
@@ -1095,13 +1009,10 @@ export class FacturaComponent implements OnInit {
           showConfirmButton: false,
           timer: 1500
         });
-        console.log('--> Inicio - this.cargarProveedorByIdentificacion(this.identificacion)');
         this.cargarProveedorByIdentificacion(this.identificacion);
-        console.log('--> Fin - this.cargarProveedorByIdentificacion(this.identificacion)');
         //this.recargarComponente();
         this.cerrarModal();
       }, (err) => {
-        // En caso de error
         let errorMessage = 'Se produjo un error al crear el proveedor.';
         if (err.error && err.error.msg) {
           errorMessage = err.error.msg;
@@ -1109,12 +1020,10 @@ export class FacturaComponent implements OnInit {
         Swal.fire('Error', err.error.msg, 'error');
       });
     //this.recargarComponente();
-    console.log('--> Fin - Create Proveedor (service)');
   }
 
   crearProveedor() {
     this.formSubmitted = true;
-    console.log(this.proveedorForm.value)
     if (this.proveedorForm.invalid) {
       return;
     }
@@ -1128,35 +1037,17 @@ export class FacturaComponent implements OnInit {
           showConfirmButton: false,
           timer: 1500
         });
-        //this.nuevoProveedor = res;
         this.proveedorCreado.emit(res); // Emitir el evento proveedorCreado con el proveedor creado
-        console.log('////////////// RES')
-        console.log(res)
-
         this.nuevoProveedor = res;
-
         this.id_proveedor = this.nuevoProveedor.id_proveedor;
         this.razon_social = this.nuevoProveedor.razon_social;
         this.direccion = this.nuevoProveedor.direccion;
         this.telefono = this.nuevoProveedor.telefono;
         this.email = this.nuevoProveedor.email;
-
-        console.log('ID PROVEEDOR')
-        console.log(this.id_proveedor)
-        console.log('RAZÓN SOCIAL')
-        console.log(this.razon_social)
-        console.log('DIRECCION')
-        console.log(this.direccion)
-        console.log('TELEFONO')
-        console.log(this.telefono)
-        console.log('EMAIL')
-        console.log(this.email)
-
         //this.recargarComponente();
         this.agregarProveedor();
         this.cerrarModal();
       }, (err) => {
-        // En caso de error
         let errorMessage = 'Se produjo un error al crear el proveedor.';
         if (err.error && err.error.msg) {
           errorMessage = err.error.msg;
@@ -1189,28 +1080,12 @@ export class FacturaComponent implements OnInit {
 
   filtrarProveedores3(event: any) {
     const identficacion = event.target.value.toLowerCase();
-    console.log('A buscar')
-    console.log(identficacion)
     this.proveedoresFiltrados = this.proveedores.filter(proveedor => proveedor.identificacion.toLowerCase().includes(identficacion));
-    console.log('Encontrado')
-    console.log(this.proveedoresFiltrados)
   }
-  /*
-    filtrarProveedores2(identficacionInput: any) {
-      const identficacion = identficacionInput.target.value as string;
-      console.log('A buscar')
-      console.log(identficacion)
-      this.proveedores = this.proveedores.filter(proveedor => proveedor.identificacion.includes(identficacion));
-      console.log('Encontrado')
-      console.log(this.proveedores)
-    }*/
 
   proveedorSeleccionado: any;
 
   seleccionarProveedor3(proveedor: any) {
-    // Aquí puedes realizar alguna acción adicional con el proveedor seleccionado
-    console.log(proveedor);
-    // También puedes asignar los valores a los campos correspondientes en el formulario
     this.facturaForm.patchValue({
       id_proveedor: proveedor.id_proveedor,
       identificacion: proveedor.identificacion,
@@ -1296,7 +1171,6 @@ export class FacturaComponent implements OnInit {
   }
 
   parseXML(data: string): Promise<DetalleXML[]> {
-    console.log("\n\n-> parseXML(data: string): Promise<DetalleXML[]> {")
     return new Promise(resolve => {
       var k: string | number,
         arr: DetalleXML[] = [],
@@ -1311,7 +1185,6 @@ export class FacturaComponent implements OnInit {
           resolve(arr);
           return;
         }
-        console.log("TEST 0");
         // infoTributaria
         const infoTributaria = factura.infoTributaria[0];
         this.ambiente = infoTributaria.ambiente[0];
@@ -1466,7 +1339,6 @@ export class FacturaComponent implements OnInit {
   }
 
   onFileSelected(event: any): void {
-    console.log('\n\n-> START (Seleccionar archivo)  onFileSelected(event: any): void {');
     const file: File = event.target.files[0];
     if (file) {
       if (file.name.endsWith('.xml')) { // Verifica que el archivo sea de tipo XML

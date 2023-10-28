@@ -50,7 +50,6 @@ export class FormaPagoComponent implements OnInit {
   abrirModal() {
     this.ocultarModal = false;
     this.activatedRoute.params.subscribe(params => {
-      console.log(params)
     })
 
   }
@@ -59,36 +58,21 @@ export class FormaPagoComponent implements OnInit {
     this.formaPagoService.loadFormasPago()
       .subscribe(({ formas_pago }) => {
         this.formas_pago = formas_pago;
-        console.log("Test (forma_pago.component.ts) - cargarFormasPago()")
-        console.log(formas_pago)
       })
   }
 
   cargarFormaPagoPorId(id_forma_pago: any) {
-    console.log("cargarFormaPagoPorId(id_forma_pago: any)")
-    console.log(id_forma_pago)
     this.formaPagoService.loadFormaPagoById(id_forma_pago)
       .subscribe(forma_pago => {
         const { codigo, descripcion } = forma_pago[0];
         this.formaPagoSeleccionado = forma_pago[0];
-        console.log("forma_pago")
-        console.log(forma_pago)
-        console.log("forma_pago[0]")
-        console.log(forma_pago[0])
-        console.log("codigo")
-        console.log(codigo)
-        console.log("descripcion")
-        console.log(descripcion)
         this.formaPagoFormU.setValue({ codigo, descripcion })
       })
   }
 
   crearFormaPago() {
     this.formSubmitted = true;
-    console.log("crearFormaPago() {")
-    console.log(this.formaPagoForm.value)
     if (this.formaPagoForm.invalid) {
-      console.log("entras")
       return;
     }
     // realizar posteo
@@ -115,7 +99,6 @@ export class FormaPagoComponent implements OnInit {
   }
 
   actualizarFormaPago() {
-    console.log("Actualizar: actualizarFormaPago() { ")
     if (this.formaPagoFormU.invalid) {
       return;
     }
@@ -124,15 +107,9 @@ export class FormaPagoComponent implements OnInit {
       id_forma_pago: this.formaPagoSeleccionado.id_forma_pago
     }
 
-    console.log("UNO---updateFormaPago()")
-    console.log(data)
-
     // realizar posteo
     this.formaPagoService.updateFormaPago(data)
       .subscribe(res => {
-        console.log("DOS---updateFormaPago()")
-        console.log(data)
-
         Swal.fire({
           icon: 'success',
           title: 'Forma de Pago actualizado',
@@ -154,8 +131,6 @@ export class FormaPagoComponent implements OnInit {
   }
 
   borrarFormaPago(forma_pago: FormaPago) {
-    console.log("Borrar:   borrarFormaPago(forma_pago: FormaPago) {")
-    console.log(forma_pago.id_forma_pago)
     Swal.fire({
       title: '¿Borrar Forma de Pago?',
       text: `Estas a punto de borrar a ${forma_pago.codigo} ${forma_pago.descripcion}`,
