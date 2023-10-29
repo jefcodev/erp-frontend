@@ -670,6 +670,8 @@ export class FacturaComponent implements OnInit {
               descuento: detalleXML.descuento,
               precio_total_sin_impuesto: detalleXML.precioTotalSinImpuesto,
 
+              precio_total_sin_impuesto_mas_ice: null,
+
               codigo: detalleXML.codigo,
               codigo_porcentaje: detalleXML.codigoPorcentaje,
               tarifa: detalleXML.tarifa,
@@ -1387,6 +1389,187 @@ export class FacturaComponent implements OnInit {
     // }, error => {
     //   console.error('Error al cargar el archivo.', error);
     // });
+  }
+
+  // Cálculos en detalle factura
+
+  calcularPrecioTotal2(index: number): void {
+    const cantidadControl = this.detalleFacturaForm.get(`cantidad_${index}`);
+    const precioUnitarioControl = this.detalleFacturaForm.get(`precio_unitario_${index}`);
+    const precioTotalSinImpuestoControl = this.detalleFacturaForm.get(`precio_total_sin_impuesto_${index}`);
+
+    if (cantidadControl && precioUnitarioControl && precioTotalSinImpuestoControl) {
+      const cantidad = cantidadControl.value;
+      const precioUnitario = precioUnitarioControl.value;
+
+      // Realiza el cálculo
+      const precioTotalSinImpuesto = cantidad * precioUnitario;
+
+      // Actualiza el valor en el formulario
+      precioTotalSinImpuestoControl.setValue(precioTotalSinImpuesto);
+    }
+  }
+
+  calcularPrecioTotalSinImpuestoConDescuento(index: number): void {
+    const cantidadControl = this.detalleFacturaForm.get(`cantidad_${index}`);
+    const precioUnitarioControl = this.detalleFacturaForm.get(`precio_unitario_${index}`);
+    const descuentoControl = this.detalleFacturaForm.get(`descuento_${index}`);
+    const precioTotalSinImpuestoControl = this.detalleFacturaForm.get(`precio_total_sin_impuesto_${index}`);
+
+    if (cantidadControl && precioUnitarioControl && descuentoControl && precioTotalSinImpuestoControl) {
+      const cantidad = cantidadControl.value;
+      const precioUnitario = precioUnitarioControl.value;
+      const descuento = descuentoControl.value || 0; // Si no hay descuento, se considera 0.
+
+      // Realiza el cálculo
+      const precioTotalSinImpuesto = cantidad * precioUnitario - descuento;
+
+      // Actualiza el valor en el formulario
+      precioTotalSinImpuestoControl.setValue(precioTotalSinImpuesto);
+    }
+  }
+
+  calcularValor(index: number): void {
+    const tarifaControl = this.detalleFacturaForm.get(`tarifa_${index}`);
+    const precioTotalSinImpuestoControl = this.detalleFacturaForm.get(`precio_total_sin_impuesto_${index}`);
+    const valorControl = this.detalleFacturaForm.get(`valor_${index}`);
+
+    if (tarifaControl && precioTotalSinImpuestoControl && valorControl) {
+      const tarifa = tarifaControl.value || 0;
+      const precioTotalSinImpuesto = precioTotalSinImpuestoControl.value || 0;
+
+      // Realiza el cálculo
+      const valor = (tarifa / 100) * precioTotalSinImpuesto;
+
+      // Actualiza el valor en el formulario
+      valorControl.setValue(valor);
+    }
+  }
+
+  calcularPrecioTotal(index: number): void {
+    const precioTotalSinImpuestoControl = this.detalleFacturaForm.get(`precio_total_sin_impuesto_${index}`);
+    const tarifaControl = this.detalleFacturaForm.get(`tarifa_${index}`);
+    const valorControl = this.detalleFacturaForm.get(`valor_${index}`);
+    const iceControl = this.detalleFacturaForm.get(`ice_${index}`);
+    const precioTotalControl = this.detalleFacturaForm.get(`precio_total_${index}`);
+
+    if (precioTotalSinImpuestoControl && tarifaControl && valorControl && iceControl && precioTotalControl) {
+      const precioTotalSinImpuesto = precioTotalSinImpuestoControl.value || 0;
+      const tarifa = tarifaControl.value || 0;
+      const valor = valorControl.value || 0;
+      const ice = iceControl.value || 0;
+
+      // Realiza el cálculo
+      const iceImpuesto = (tarifa / 100) * ice;
+      const precioTotal = (precioTotalSinImpuesto + valor) + (ice + iceImpuesto);
+
+      // Actualiza el valor en el formulario
+      precioTotalControl.setValue(precioTotal);
+    }
+  }
+
+  // Sumas totales factura
+  sumaTotalImpuesto: number = 0;
+  sumaTotalImpuestoCero: number = 0;
+  sumaTotalDescuento: number = 0;
+  sumaTotalSinImpuestos: number = 0;
+  sumaTotalICE: number = 0;
+  sumaTotalIVA: number = 0;
+  sumaPrecioTotal: number = 0;
+
+  actualizarTotalesPorTarifa(): void {
+    this.sumaTotalImpuesto = 0;
+    this.sumaTotalImpuestoCero = 0;
+  
+    for (let i = 0; i < this.detalleFacturaFormulario.length; i++) {
+      const tarifaControl = this.detalleFacturaForm.get(`tarifa_${i}`);
+      const precioTotalSinImpuestoControl = this.detalleFacturaForm.get(`precio_total_sin_impuesto_${i}`);
+      const iceControl = this.detalleFacturaForm.get(`ice_${i}`);
+  
+      if (tarifaControl && precioTotalSinImpuestoControl && iceControl) {
+        const tarifa = tarifaControl.value;
+        const precioTotalSinImpuesto = precioTotalSinImpuestoControl.value || 0;
+        const ice = iceControl.value || 0;
+  
+        if (tarifa === 12) {
+          this.sumaTotalImpuesto += precioTotalSinImpuesto + ice;
+        } else if (tarifa === 0) {
+          this.sumaTotalImpuestoCero += precioTotalSinImpuesto + ice;
+        }
+      }
+    }
+  }
+
+  actualizarTotalDescuento(): void {
+    // Itera a través de los campos de detalle y suma los descuentos
+    this.sumaTotalDescuento = 0;
+    for (let i = 0; i < this.detalleFacturaFormulario.length; i++) {
+      const descuentoControl = this.detalleFacturaForm.get(`descuento_${i}`);
+      if (descuentoControl) {
+        const descuento = descuentoControl.value || 0;
+        this.sumaTotalDescuento += descuento;
+      }
+    }
+  }
+
+  actualizarTotalSinImpuestos(): void {
+    this.sumaTotalSinImpuestos = 0;
+
+    for (let i = 0; i < this.detalleFacturaFormulario.length; i++) {
+      const precioTotalSinImpuestoControl = this.detalleFacturaForm.get(`precio_total_sin_impuesto_${i}`);
+
+      if (precioTotalSinImpuestoControl) {
+        const precioTotalSinImpuesto = precioTotalSinImpuestoControl.value || 0;
+        this.sumaTotalSinImpuestos += precioTotalSinImpuesto;
+      }
+    }
+  }
+
+  actualizarTotalICE(): void {
+    // Itera a través de los campos de detalle y suma los descuentos
+    this.sumaTotalICE = 0;
+    for (let i = 0; i < this.detalleFacturaFormulario.length; i++) {
+      const iceControl = this.detalleFacturaForm.get(`ice_${i}`);
+      if (iceControl) {
+        const ice = iceControl.value || 0;
+        this.sumaTotalICE += ice;
+      }
+    }
+  }
+
+  actualizarTotalIVA(): void {
+    this.sumaTotalIVA = 0;
+    for (let i = 0; i < this.detalleFacturaFormulario.length; i++) {
+      const tarifaControl = this.detalleFacturaForm.get(`tarifa_${i}`);
+      const valorControl = this.detalleFacturaForm.get(`valor_${i}`);
+
+      if (tarifaControl && valorControl) {
+        const tarifa = tarifaControl.value;
+        const valor = valorControl.value || 0;
+
+        if (tarifa === 12) {
+          this.sumaTotalIVA += valor;
+        }
+      }
+    }
+  }
+
+  actualizarPrecioTotal(): void {
+    // Itera a través de los campos de detalle y suma los descuentos
+    this.sumaPrecioTotal = 0;
+    for (let i = 0; i < this.detalleFacturaFormulario.length; i++) {
+      const precioTotalControl = this.detalleFacturaForm.get(`precio_total_${i}`);
+      if (precioTotalControl) {
+        const precioTotal = precioTotalControl.value || 0;
+        this.sumaPrecioTotal += precioTotal;
+      }
+    }
+  }
+
+
+  formatPorcentaje(decimalValue: number): string {
+    // Multiplica por 100 y agrega el símbolo '%' al final
+    return (decimalValue * 100).toFixed(0) + '%';
   }
 
 }

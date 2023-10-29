@@ -1,96 +1,120 @@
-<!-- Lista de Proveedores -->
-<div class="col-12">
-    <div class="card">
-        <div class="card-body">
-            <h4 class="card-title">Lista de Proveedores</h4>
-            <h6 class="card-subtitle"></h6>
-            <button class="btn btn-primary waves-effect waves-light" data-toggle="modal" data-target="#exampleModal"
-                type="button"><span class="btn-label"><i class="fa fa-user-circle"></i></span>Crear Proveedor</button>
+<!-- Table data -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="float-left">
+                    <button class="btn btn-info waves-effect waves-light" data-toggle="modal"
+                        data-target="#exampleModal" type="button">
+                        <span class="fa fa-plus" style="padding-left:0px;"></span>&nbsp;Nueva
+                    </button>
+                    <button class="btn btn-new-version waves-effect waves-light" data-toggle="modal"
+                        data-target="#exampleModalXML" type="button">
+                        <span class="fa fa-upload" style="padding-left:0px;"></span>&nbsp;Subir
+                    </button>
+                    <button class="btn btn-success" type="button">
+                        <span class="fa fa-file-pdf-o" style="padding-left:0px;"></span>&nbsp;PDF
+                    </button>
+                    <button class="btn btn-success" type="button">
+                        <span class="fa fa-file-excel-o" style="padding-left:0px;"></span>&nbsp;Excel
+                    </button>
+                    <button class="btn btn-success" type="button" onclick="">
+                        <span class="fa fa-print" style="padding-left:0px;"></span>&nbsp;Imprimir
+                    </button>
+                    <div id="example23_filter" class="dataTables_filter"><label>Buscar:<input type="search" class=""
+                                placeholder="" aria-controls="example23"></label>
+                    </div>
+                </div>
+                <div class="table-responsive">
 
-            <div class="table-responsive">
+                    <table id="demo-foo-addrow" class="table m-t-30 table-hover contact-list footable-loaded footable"
+                        data-page-size="10">
+                        <thead>
+                            <tr>
+                                <th class="footable-sortable">#<span class="footable-sort-indicator"></span></th>
+                                <th class="footable-sortable">Identificación <span
+                                        class="footable-sort-indicator"></span>
+                                </th>
+                                <th class="footable-sortable">Razón Social<span class="footable-sort-indicator"></span>
+                                </th>
+                                <th class="footable-sortable">Nombre Comercial<span
+                                        class="footable-sort-indicator"></span>
+                                </th>
+                                <th class="footable-sortable">Dirección<span class="footable-sort-indicator"></span>
+                                </th>
+                                <th class="footable-sortable">Teléfono<span class="footable-sort-indicator"></span></th>
+                                <th class="footable-sortable">Email<span class="footable-sort-indicator"></span></th>
+                                <th class="footable-sortable">Estado<span class="footable-sort-indicator"></span></th>
 
-                <table id="demo-foo-addrow" class="table m-t-30 table-hover contact-list footable-loaded footable"
-                    data-page-size="10">
-                    <thead>
-                        <tr>
-                            <th class="footable-sortable">#<span class="footable-sort-indicator"></span></th>
-                            <th class="footable-sortable">Identificación <span class="footable-sort-indicator"></span>
-                            </th>
-                            <th class="footable-sortable">Razón Social<span class="footable-sort-indicator"></span></th>
-                            <th class="footable-sortable">Nombre Comercial<span class="footable-sort-indicator"></span>
-                            </th>
-                            <th class="footable-sortable">Dirección<span class="footable-sort-indicator"></span></th>
-                            <th class="footable-sortable">Teléfono<span class="footable-sort-indicator"></span></th>
-                            <th class="footable-sortable">Email<span class="footable-sort-indicator"></span></th>
-                            <th class="footable-sortable">Estado<span class="footable-sort-indicator"></span></th>
-
-                            <th class="footable-sortable">Action<span class="footable-sort-indicator"></span></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let proveedor of proveedores let i = index">
-                            <td><span class="footable-toggle"></span>{{ i + 1 }}</td>
-                            <td>{{proveedor.identificacion}}</td>
-                            <td>
-                                <a href="javascript:void(0)"><img src="../assets/images/users/8.jpg" alt="user"
-                                        width="40" class="img-circle"> {{proveedor.razon_social}}</a>
-                            </td>
-                            <td>{{proveedor.nombre_comercial}}</td>
-                            <td>{{proveedor.direccion}}</td>
-                            <td>{{proveedor.telefono}}</td>
-                            <td>{{proveedor.email}}</td>
-
-                            <td *ngIf="proveedor.estado; else inactivo">
-                                <div class="label label-table label-success">Activo</div>
-                            </td>
-                            <ng-template #inactivo>
+                                <th class="footable-sortable">Action<span class="footable-sort-indicator"></span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let proveedor of proveedores let i = index">
+                                <td><span class="footable-toggle"></span>{{ i + 1 }}</td>
+                                <td>{{proveedor.identificacion}}</td>
                                 <td>
-                                    <div class="label label-table label-danger">Inactivo</div>
+                                    <a href="javascript:void(0)"><img src="../assets/images/users/8.jpg" alt="user"
+                                            width="40" class="img-circle"> {{proveedor.razon_social}}</a>
                                 </td>
-                            </ng-template>
+                                <td>{{proveedor.nombre_comercial}}</td>
+                                <td>{{proveedor.direccion}}</td>
+                                <td>{{proveedor.telefono}}</td>
+                                <td>{{proveedor.email}}</td>
 
-                            <td *ngIf="proveedor.estado else inactivoOption" class="text-nowrap">
+                                <td *ngIf="proveedor.estado; else inactivo">
+                                    <div class="label label-table label-success">Activo</div>
+                                </td>
+                                <ng-template #inactivo>
+                                    <td>
+                                        <div class="label label-table label-danger">Inactivo</div>
+                                    </td>
+                                </ng-template>
 
-                                <a class="cursor" data-toggle="modal"
-                                    (click)="cargarProveedorPorId(proveedor.id_proveedor);"
-                                    data-target="#exampleModalU"><span
-                                        class="fa fa-pencil text-inverse m-r-10"></span></a>
+                                <td *ngIf="proveedor.estado else inactivoOption" class="text-nowrap">
 
-                                <a class="cursor" (click)="borrarProveedor(proveedor);" data-toggle="tooltip"
-                                    data-original-title="Close"> <i class="fa fa-close text-danger"></i> </a>
-                            </td>
-                            <ng-template #inactivoOption>
-                            </ng-template>
-                            <!-- <td>
+                                    <a class="cursor" data-toggle="modal"
+                                        (click)="cargarProveedorPorId(proveedor.id_proveedor);"
+                                        data-target="#exampleModalU"><span
+                                            class="fa fa-pencil text-inverse m-r-10"></span></a>
+
+                                    <a class="cursor" (click)="borrarProveedor(proveedor);" data-toggle="tooltip"
+                                        data-original-title="Close"> <i class="fa fa-close text-danger"></i> </a>
+                                </td>
+                                <ng-template #inactivoOption>
+                                </ng-template>
+                                <!-- <td>
                                 <button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn" data-toggle="tooltip" data-original-title="Delete"><i class="ti-close" aria-hidden="true"></i></button>
                             </td>
                              -->
-                        </tr>
-                    </tbody>
-                    <tfoot>
-                        <tr>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
 
-                            <td colspan="8">
-                                <div class="text-right">
-                                    <ul class="pagination">
-                                        <li class="footable-page-arrow disabled"><a data-page="first"
-                                                href="#first">«</a></li>
-                                        <li class="footable-page-arrow disabled"><a data-page="prev" href="#prev">‹</a>
-                                        </li>
+                                <td colspan="8">
+                                    <div class="text-right">
+                                        <ul class="pagination">
+                                            <li class="footable-page-arrow disabled"><a data-page="first"
+                                                    href="#first">«</a></li>
+                                            <li class="footable-page-arrow disabled"><a data-page="prev"
+                                                    href="#prev">‹</a>
+                                            </li>
 
-                                        <!-- Generar dinámicamente los elementos de la paginación -->
-                                        <!--<li *ngFor="let pagina of paginas" class="footable-page">
+                                            <!-- Generar dinámicamente los elementos de la paginación -->
+                                            <!--<li *ngFor="let pagina of paginas" class="footable-page">
                                             <a [data-page]="pagina" href="#">{{ pagina + 1 }}</a>
                                         </li>-->
 
-                                        <li class="footable-page-arrow"><a data-page="next" href="#next">›</a></li>
-                                        <li class="footable-page-arrow"><a data-page="last" href="#last">»</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-                    </tfoot>
-                </table>
+                                            <li class="footable-page-arrow"><a data-page="next" href="#next">›</a></li>
+                                            <li class="footable-page-arrow"><a data-page="last" href="#last">»</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -209,8 +233,8 @@
                         <div class="col-sm-9">
                             <div class="input-group">
                                 <div class="input-group-addon"><i class="ti-user"></i></div>
-                                <input type="text" class="form-control" id="exampleInputuname3" placeholder="Razón Social"
-                                    formControlName="razon_social">
+                                <input type="text" class="form-control" id="exampleInputuname3"
+                                    placeholder="Razón Social" formControlName="razon_social">
                             </div>
                         </div>
                     </div>
@@ -281,3 +305,12 @@
         </div>
     </div>
 </div>
+
+<!-- Style -->
+<style>
+    /* CSS personalizado para espaciar los botones */
+    .float-left .btn {
+        margin-right: 10px;
+        /* Ajusta este valor según el espacio deseado */
+    }
+</style>

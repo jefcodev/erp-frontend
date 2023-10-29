@@ -74,13 +74,14 @@ export class CuentaComponent implements OnInit {
     this.ocultarModal = true;
   }
 
+  /*
   abrirModal() {
     this.ocultarModal = false;
     this.activatedRoute.params.subscribe(params => {
       console.log(params)
     })
-
   }
+  */
 
   /*abrirModalCreate() {
     this.ocultarModalUpdate = false;
@@ -90,50 +91,23 @@ export class CuentaComponent implements OnInit {
     this.cuentaService.loadCuentas()
       .subscribe(({ cuentas }) => {
         this.cuentas = cuentas;
-        console.log("Test (cuenta.component.ts) - cargarCuentas()")
-        console.log(cuentas)
       })
   }
 
   cargarCuentaPorId(id_cuenta: any) {
-    //cargarCuenta(cuenta: Cuenta) {
-    console.log("COMPONENT - cargarCuentaPorId(id_cuenta: any)")
-    //this.cargarCuentaPorId(id_cuenta)
-    console.log('id_cuenta')
-    console.log(id_cuenta)
-    //this.cuentaService.cargarCuentaById(cuenta.id_cuenta)
     this.cuentaService.loadCuentaById(id_cuenta)
       .subscribe(cuenta => {
         const { codigo, descripcion, cuenta_padre } = cuenta[0];
         this.cuentaSeleccionado = cuenta[0];
-        console.log("cuenta")
-        console.log(cuenta)
-        console.log("cuenta[0]")
-        console.log(cuenta[0])
-        console.log("codigo")
-        console.log(codigo)
-        console.log("descripcion")
-        console.log(descripcion)
-        console.log("cuenta_padre")
-        console.log(cuenta_padre)
         this.cuentaFormU.setValue({ codigo, descripcion, cuenta_padre })
-        //this.cuentaFormU.setValue({ descripcion })
       })
   }
 
   cargarCodigo(codigo: any) {
-    console.log("COMPONENT - cargarCodigo(codigo: any) { ")
-    console.log("codigo entra")
-    console.log(codigo)
     this.cuentaService.loadCuentaByCodigo(codigo)
       .subscribe(cuenta => {
-        console.log("CUENTA by codigo")
-        console.log(cuenta)
-        if (Array.isArray(cuenta) && cuenta.length>0) {
+        if (Array.isArray(cuenta) && cuenta.length > 0) {
           const { codigo, descripcion, cuenta_padre } = cuenta[0];
-          console.log("CODIGO SALE")
-          console.log(codigo)
-
           const parts = codigo.split(".");
           const lastPart = parseInt(parts[parts.length - 1], 10);
           const newLastPart = lastPart + 1;
@@ -141,18 +115,13 @@ export class CuentaComponent implements OnInit {
           parts[parts.length - 1] = newLastPart.toString();
 
           const newCodigo = parts.join(".");
-          console.log("NEW CODIGO");
-          console.log(newCodigo);
 
           this.cuentaForm.controls['codigo'].setValue(newCodigo);
         } else {
           console.error("No se encontró ninguna cuenta con el código especificado.");
-          this.cuentaForm.controls['codigo'].setValue(codigo+".1");
+          this.cuentaForm.controls['codigo'].setValue(codigo + ".1");
         }
-
       }, (err) => {
-        console.error("Error al cargar la cuenta:", err);
-
         // En caso de error
         let errorMessage = 'Se produjo un error al cargar la cuenta.';
         if (err.error && err.error.msg) {
@@ -164,20 +133,10 @@ export class CuentaComponent implements OnInit {
   }
 
   cargarCuentaPadre(cuentaId: any) {
-    console.log("COMPONENT - cargarCuentaPadre(cuentaId: any) {")
     const value = (event.target as HTMLSelectElement).value;
-    console.log("VALUE PADRE")
-    console.log(value)
     this.cuentaService.loadCuentaById(value)
       .subscribe(cuenta => {
         const { codigo, descripcion, cuenta_padre } = cuenta[0];
-        console.log("CUENTA_PADRE")
-        console.log(cuenta_padre)
-        console.log("CODIGO")
-        console.log(codigo)
-        console.log("DESCRIPCION_PADRE")
-        console.log(descripcion)
-        //this.codigoSelected = codigo
         this.cuentaForm.controls['cuenta_padre'].setValue(codigo);
         this.cargarCodigo(codigo)
       });
@@ -185,7 +144,6 @@ export class CuentaComponent implements OnInit {
 
   crearCuenta() {
     this.formSubmitted = true;
-    console.log(this.cuentaForm.value)
     if (this.cuentaForm.invalid) {
       return;
     }
@@ -213,8 +171,6 @@ export class CuentaComponent implements OnInit {
   }
 
   actualizarCuenta() {
-    console.log("Actualizar: actualizarCuenta() { ")
-    //console.log(cuenta.id_cuenta)
     if (this.cuentaFormU.invalid) {
       return;
     }
@@ -223,15 +179,8 @@ export class CuentaComponent implements OnInit {
       id_cuenta: this.cuentaSeleccionado.id_cuenta
     }
 
-    console.log("UNO---updateCuenta()")
-    console.log(data)
-
-    // realizar posteo
     this.cuentaService.updateCuenta(data)
       .subscribe(res => {
-        console.log("DOS---updateCuenta()")
-        console.log(data)
-
         Swal.fire({
           icon: 'success',
           title: 'Cuenta actualizado',
@@ -243,7 +192,6 @@ export class CuentaComponent implements OnInit {
         this.recargarComponente();
         this.cerrarModal();
       }, (err) => {
-        // En caso de error
         let errorMessage = 'Se produjo un error al actualizar el cuenta.';
         if (err.error && err.error.msg) {
           errorMessage = err.error.msg;
@@ -254,8 +202,6 @@ export class CuentaComponent implements OnInit {
   }
 
   borrarCuenta(cuenta: Cuenta) {
-    console.log("Borrar:   borrarCuenta(cuenta: Cuenta) {")
-    console.log(cuenta.id_cuenta)
     Swal.fire({
       title: '¿Borrar Cuenta?',
       text: `Estas a punto de borrar a ${cuenta.descripcion}`,
@@ -268,11 +214,6 @@ export class CuentaComponent implements OnInit {
         this.cuentaService.deleteCuenta(cuenta.id_cuenta)
           .subscribe(resp => {
             this.cargarCuentas();
-            /*Swal.fire(
-              'Cuenta borrado',
-              `${cuenta.nombre} ${cuenta.apellido} ha sido borrado correctamente.`,
-              'success'              
-            );*/
             Swal.fire({
               icon: 'success',
               title: 'Cuenta borrado',
