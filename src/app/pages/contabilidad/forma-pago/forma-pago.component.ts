@@ -13,6 +13,7 @@ import { FormaPagoService } from 'src/app/services/contabilidad/forma-pago.servi
   styles: [
   ]
 })
+
 export class FormaPagoComponent implements OnInit {
   public formas_pago: FormaPago[] = [];
   public formaPagoSeleccionado: FormaPago;
@@ -29,8 +30,8 @@ export class FormaPagoComponent implements OnInit {
     private activatedRoute: ActivatedRoute
   ) {
     this.formaPagoForm = this.fb.group({
-      codigo: ['12', [Validators.required, Validators.minLength(2)]],
-      descripcion: ['Edison', [Validators.required, Validators.minLength(3)]],
+      codigo: ['', [Validators.required, Validators.minLength(2)]],
+      descripcion: ['', [Validators.required, Validators.minLength(3)]],
     });
 
     this.formaPagoFormU = this.fb.group({
@@ -75,7 +76,6 @@ export class FormaPagoComponent implements OnInit {
     if (this.formaPagoForm.invalid) {
       return;
     }
-    // realizar posteo
     this.formaPagoService.createFormaPago(this.formaPagoForm.value)
       .subscribe(res => {
         Swal.fire({
@@ -88,7 +88,6 @@ export class FormaPagoComponent implements OnInit {
         this.recargarComponente();
         this.cerrarModal();
       }, (err) => {
-        // En caso de error
         let errorMessage = 'Se produjo un error al crear la forma de pago.';
         if (err.error && err.error.msg) {
           errorMessage = err.error.msg;
@@ -106,8 +105,6 @@ export class FormaPagoComponent implements OnInit {
       ...this.formaPagoFormU.value,
       id_forma_pago: this.formaPagoSeleccionado.id_forma_pago
     }
-
-    // realizar posteo
     this.formaPagoService.updateFormaPago(data)
       .subscribe(res => {
         Swal.fire({
@@ -133,7 +130,7 @@ export class FormaPagoComponent implements OnInit {
   borrarFormaPago(forma_pago: FormaPago) {
     Swal.fire({
       title: '¿Borrar Forma de Pago?',
-      text: `Estas a punto de borrar a ${forma_pago.codigo} ${forma_pago.descripcion}`,
+      text: `Estas a punto de borrar a ${forma_pago.descripcion}`,
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Sí, borrar',
@@ -166,7 +163,6 @@ export class FormaPagoComponent implements OnInit {
     this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
       this.router.navigate(['/dashboard/formas-pago']);
     });
-
   }
 
   campoNoValido(campo: string, form: FormGroup): boolean {

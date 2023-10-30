@@ -128,6 +128,8 @@ export class FacturaComponent implements OnInit {
   public valor: number;
   public importe_total: number;
   public abono: number;
+  public abonoU: number;
+  public abonoXML: number;
 
   public proveedores: Proveedor[] = [];
   public formas_pago: FormaPago[] = [];
@@ -144,13 +146,13 @@ export class FacturaComponent implements OnInit {
   public detalle_facturas: DetalleFactura[] = [];
 
   // Variables para actualizar totales del formulario
-  sumaTotalImpuesto: number = 0;
-  sumaTotalImpuestoCero: number = 0;
-  sumaTotalDescuento: number = 0;
-  sumaTotalSinImpuesto: number = 0;
-  sumaTotalICE: number = 0;
-  sumaTotalIVA: number = 0;
-  sumaPrecioTotal: number = 0;
+  public sumaTotalImpuesto: number = 0;
+  public sumaTotalImpuestoCero: number = 0;
+  public sumaTotalDescuento: number = 0;
+  public sumaTotalSinImpuesto: number = 0;
+  public sumaTotalICE: number = 0;
+  public sumaTotalIVA: number = 0;
+  public sumaPrecioTotal: number = 0;
 
   // XML
   title = 'Read XML';
@@ -324,6 +326,7 @@ export class FacturaComponent implements OnInit {
     this.cargarProveedores();
     this.cargarFormasPago();
     this.cargarProductos();
+    this.cargarTarifasIVA();
     const fechaActual = new Date();
     this.fechaActual = formatDate(fechaActual, 'd-M-yyyy', 'en-US', 'UTC-5');
   }
@@ -536,7 +539,7 @@ export class FacturaComponent implements OnInit {
           const saldo = factura.saldo.toFixed(2);
           console.log("this.saldo");
           console.log(saldo);
-          this.saldo = parseFloat(saldo);
+          //this.saldo = parseFloat(saldo);
 
           this.saldoInicial = parseFloat(saldo);
 
@@ -544,15 +547,10 @@ export class FacturaComponent implements OnInit {
           this.codigo = codigo;
           this.total_sin_impuesto = total_sin_impuesto;
           this.total_descuento = total_descuento;
-          this.valor = this.valor2;
-
+          this.valor = valor;
           this.importe_total = importe_total;
-          console.log("this.importe_total");
-          console.log(this.importe_total);
 
-          this.abono = abono;
-          console.log("this.abono-----------------------");
-          console.log(this.abono);
+          this.abonoU = abono;
 
           return this.cargarProveedorPorId(id_proveedor).pipe(
             concatMap(proveedor => {
@@ -575,6 +573,13 @@ export class FacturaComponent implements OnInit {
       .subscribe(data => {
         this.facturaFormU.setValue(data);
       });
+  }
+
+  cargarTarifasIVA() {
+    this.productoService.loadProductos()
+      .subscribe(({ productos }) => {
+        this.productos = productos;
+      })
   }
 
   crearFactura() {
@@ -683,7 +688,7 @@ export class FacturaComponent implements OnInit {
       valor: this.valor2,
       propina: this.propina,
       importe_total: this.importeTotal,
-      abono: this.abono,
+      abono: this.abonoXML,
       //saldo: 0, // Valor válido
     };
     this.facturaService.createFactura(facturaData).subscribe(
@@ -1450,6 +1455,47 @@ export class FacturaComponent implements OnInit {
     //   console.error('Error al cargar el archivo.', error);
     // });
   }
+  public productoSeleccionado: number;
+
+  actualizarDescripcion(event: Event, indice: number) {
+    // Haz un casting explícito del objetivo del evento a un elemento HTMLSelectElement
+    const selectElement = event.target as HTMLSelectElement;
+    // Obtiene el valor seleccionado del elemento <select>
+    const productoId = parseInt(selectElement.value, 10);
+    // Encuentra el producto seleccionado por su ID
+    const productoSeleccionado = this.productos.find(producto => producto.id_producto === productoId);
+    if (productoSeleccionado) {
+      // Actualiza la descripción en el formulario del detalle de la factura
+      this.detalleFacturaForm.controls[`descripcion_${indice}`].setValue(productoSeleccionado.descripcion);
+    } else {
+      // Si no se encuentra el producto, puedes limpiar la descripción o mostrar un mensaje de error.
+      this.detalleFacturaForm.controls[`descripcion_${indice}`].setValue('');
+      // También puedes mostrar un mensaje de error si lo deseas.
+      // this.mostrarMensajeDeError('Producto no encontrado');
+    }
+  }
+
+  actualizarCodigoPrincipal(event: Event, indice: number) {
+    const selectElement = event.target as HTMLSelectElement;
+    const productoId = parseInt(selectElement.value, 10);
+    const productoSeleccionado = this.productos.find(producto => producto.id_producto === productoId);
+    if (productoSeleccionado) {
+      this.detalleFacturaForm.controls[`codigo_principal_${indice}`].setValue(productoSeleccionado.codigo_principal);
+    } else {
+      this.detalleFacturaForm.controls[`codigo_principal_${indice}`].setValue('');
+    }
+  }
+
+  actualizarTarifa(event: Event, indice: number) {
+    const selectElement = event.target as HTMLSelectElement;
+    const productoId = parseInt(selectElement.value, 10);
+    const productoSeleccionado = this.productos.find(producto => producto.id_producto === productoId);
+    if (productoSeleccionado) {
+      this.detalleFacturaForm.controls[`tarifa_${indice}`].setValue(productoSeleccionado.id_tarifa_iva);
+    } else {
+      this.detalleFacturaForm.controls[`tarifa_${indice}`].setValue('');
+    }
+  }
 
   calcularPrecioTotalSinImpuestoConDescuento(index: number): void {
     const cantidadControl = this.detalleFacturaForm.get(`cantidad_${index}`);
@@ -1462,10 +1508,8 @@ export class FacturaComponent implements OnInit {
       const precioUnitario = precioUnitarioControl.value;
       const descuento = descuentoControl.value || 0; // Si no hay descuento, se considera 0.
 
-      // Realiza el cálculo
       const precioTotalSinImpuesto = cantidad * precioUnitario - descuento;
 
-      // Actualiza el valor en el formulario
       precioTotalSinImpuestoControl.setValue(precioTotalSinImpuesto);
     }
   }
@@ -1479,10 +1523,8 @@ export class FacturaComponent implements OnInit {
       const tarifa = tarifaControl.value || 0;
       const precioTotalSinImpuesto = precioTotalSinImpuestoControl.value || 0;
 
-      // Realiza el cálculo
       const valor = (tarifa / 100) * precioTotalSinImpuesto;
 
-      // Actualiza el valor en el formulario
       valorControl.setValue(valor);
     }
   }
@@ -1500,11 +1542,9 @@ export class FacturaComponent implements OnInit {
       const valor = valorControl.value || 0;
       const ice = iceControl.value || 0;
 
-      // Realiza el cálculo
       const iceImpuesto = (tarifa / 100) * ice;
       const precioTotal = (precioTotalSinImpuesto + valor) + (ice + iceImpuesto);
 
-      // Actualiza el valor en el formulario
       precioTotalControl.setValue(precioTotal);
     }
   }
@@ -1533,7 +1573,6 @@ export class FacturaComponent implements OnInit {
   }
 
   actualizarTotalDescuento(): void {
-    // Itera a través de los campos de detalle y suma los descuentos
     this.sumaTotalDescuento = 0;
     for (let i = 0; i < this.detalleFacturaFormulario.length; i++) {
       const descuentoControl = this.detalleFacturaForm.get(`descuento_${i}`);
@@ -1542,15 +1581,12 @@ export class FacturaComponent implements OnInit {
         this.sumaTotalDescuento += descuento;
       }
     }
-    console.log(" 🟩 DESCUENTO: ", this.sumaTotalDescuento)
   }
 
   actualizarTotalSinImpuestos(): void {
     this.sumaTotalSinImpuesto = 0;
-
     for (let i = 0; i < this.detalleFacturaFormulario.length; i++) {
       const precioTotalSinImpuestoControl = this.detalleFacturaForm.get(`precio_total_sin_impuesto_${i}`);
-
       if (precioTotalSinImpuestoControl) {
         const precioTotalSinImpuesto = precioTotalSinImpuestoControl.value || 0;
         this.sumaTotalSinImpuesto += precioTotalSinImpuesto;
@@ -1559,7 +1595,6 @@ export class FacturaComponent implements OnInit {
   }
 
   actualizarTotalICE(): void {
-    // Itera a través de los campos de detalle y suma los descuentos
     this.sumaTotalICE = 0;
     for (let i = 0; i < this.detalleFacturaFormulario.length; i++) {
       const iceControl = this.detalleFacturaForm.get(`ice_${i}`);
@@ -1588,7 +1623,6 @@ export class FacturaComponent implements OnInit {
   }
 
   actualizarPrecioTotal(): void {
-    // Itera a través de los campos de detalle y suma los descuentos
     this.sumaPrecioTotal = 0;
     for (let i = 0; i < this.detalleFacturaFormulario.length; i++) {
       const precioTotalControl = this.detalleFacturaForm.get(`precio_total_${i}`);
@@ -1597,16 +1631,6 @@ export class FacturaComponent implements OnInit {
         this.sumaPrecioTotal += precioTotal;
       }
     }
-  }
-
-  actualizarSaldo2(): void {
-    this.abono = this.facturaForm.get('abono').value || 0; // Obtener el valor del abono, asegurándose de que sea un número
-    //const importeTotal = this.facturaFormU.get('importe_total').value || 0; // Obtener el valor del importe total, asegurándose de que sea un número
-    const saldo = this.sumaPrecioTotal - this.abono; // Calcular el saldo restando el abono del importe total
-    console.log("abono: ", this.abono)
-    console.log("importe total: ", this.sumaPrecioTotal)
-    console.log("saldo: ", saldo)
-    this.facturaForm.get('saldo').setValue(saldo.toFixed(2)); // Actualizar el campo "Saldo" en el formulario
   }
 
   actualizarSaldo(): void {
@@ -1623,39 +1647,15 @@ export class FacturaComponent implements OnInit {
     this.facturaForm.get('saldo').setValue(nuevoSaldo.toFixed(2)); // Actualizar el campo "Saldo" en el formulario
   }
 
-
-  public saldo: number;
-  actualizarSaldoU2(): void {
-    this.abono = this.facturaFormU.get('abono').value || 0; // Obtener el valor del abono, asegurándose de que sea un número
-    //const importeTotal = this.facturaFormU.get('importe_total').value || 0; // Obtener el valor del importe total, asegurándose de que sea un número
-    const saldo = this.saldo - this.abono; // Calcular el saldo restando el abono del importe total
-    console.log("2 abono: ", this.abono)
-    //console.log("2 importe total: ", this.importe_total)
-    console.log("2 saldo: ", saldo)
-    this.facturaFormU.get('saldo').setValue(saldo.toFixed(2)); // Actualizar el campo "Saldo" en el formulario
-  }
-
-  actualizarSaldoUU(): void {
-    this.abono = this.facturaFormU.get('abono').value || 0; // Obtener el valor del abono, asegurándose de que sea un número
-    const nuevoSaldo = this.saldo - this.abono; // Calcular el saldo restando el abono del saldo
-    console.log("2 abono: ", this.abono);
-    console.log("2 saldo: ", nuevoSaldo);
-
-    if (nuevoSaldo < 0) {
-      // Si el nuevo saldo es negativo, establecer el abono como igual al saldo
-      this.facturaFormU.get('abono').setValue(this.saldo.toFixed(2));
-      this.facturaFormU.get('saldo').setValue("0.00");
-    } else {
-      this.facturaFormU.get('saldo').setValue(nuevoSaldo.toFixed(2));
-    }
-  }
+  //public saldo: number;
 
   public saldoInicial: number;
+
   actualizarSaldoU(): void {
     console.log("SALDO INICIAL", this.saldoInicial)
-    this.abono = this.facturaFormU.get('abono').value || 0; // Obtener el valor del abono, asegurándose de que sea un número
-    const nuevoSaldo = this.saldoInicial - this.abono; // Calcular el nuevo saldo restando el abono del saldo inicial
-    console.log("2 abono: ", this.abono);
+    this.abonoU = this.facturaFormU.get('abono').value || 0; // Obtener el valor del abono, asegurándose de que sea un número
+    const nuevoSaldo = this.saldoInicial - this.abonoU; // Calcular el nuevo saldo restando el abono del saldo inicial
+    console.log("2 abono: ", this.abonoU);
     console.log("2 saldo: ", nuevoSaldo);
 
     if (nuevoSaldo < 0) {
@@ -1667,21 +1667,10 @@ export class FacturaComponent implements OnInit {
     }
   }
 
-
-  actualizarSaldoXML2(): void {
-    this.abono = this.facturaFormXML.get('abono').value || 0; // Obtener el valor del abono, asegurándose de que sea un número
-    //const importeTotal = this.facturaFormU.get('importe_total').value || 0; // Obtener el valor del importe total, asegurándose de que sea un número
-    const saldo = this.importeTotal - this.abono; // Calcular el saldo restando el abono del importe total
-    console.log("2 abono: ", this.abono)
-    console.log("2 importe total: ", this.importeTotal)
-    console.log("2 saldo: ", saldo)
-    this.facturaFormXML.get('saldo').setValue(saldo.toFixed(2)); // Actualizar el campo "Saldo" en el formulario
-  }
-
   actualizarSaldoXML(): void {
-    this.abono = this.facturaFormXML.get('abono').value || 0; // Obtener el valor del abono, asegurándose de que sea un número
-    const nuevoSaldo = this.importeTotal - this.abono; // Calcular el saldo restando el abono del importe total
-    console.log("2 abono: ", this.abono);
+    this.abonoXML = this.facturaFormXML.get('abono').value || 0; // Obtener el valor del abono, asegurándose de que sea un número
+    const nuevoSaldo = this.importeTotal - this.abonoXML; // Calcular el saldo restando el abono del importe total
+    console.log("2 abono: ", this.abonoXML);
     console.log("2 saldo: ", nuevoSaldo);
 
     if (nuevoSaldo < 0) {

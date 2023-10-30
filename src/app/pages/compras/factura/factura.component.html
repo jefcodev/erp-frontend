@@ -292,6 +292,8 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Input Validation -->
                         <div class="col">
                             <div class="text-danger">
                                 <p *ngIf="campoNoValido('email',facturaForm)">El campo email es obligatorio</p>
@@ -323,22 +325,37 @@
                                 <tbody>
                                     <tr *ngFor="let detalle of detalleFacturaFormulario; let i = index">
                                         <td class="text-center">{{ i + 1 }}</td>
+                                        <!-- original
                                         <td><select class="form-control" formControlName="producto_{{i}}">
                                                 <option *ngFor="let producto of productos"
                                                     [value]="producto.id_producto">{{
                                                     producto.id_producto + ' - ' + producto.descripcion }}</option>
                                             </select>
                                         </td>
+                                        -->
+
+                                        <td>
+                                            <select class="form-control" formControlName="producto_{{i}}"
+                                                (change)="actualizarDescripcion($event, i)"
+                                                (change)="actualizarCodigoPrincipal($event, i)"
+                                                (change)="actualizarTarifa($event, i)">
+                                                <option *ngFor="let producto of productos"
+                                                    [value]="producto.id_producto">
+                                                    {{ producto.id_producto + ' - ' + producto.descripcion }}
+                                                </option>
+                                            </select>
+                                        </td>
+
                                         <td><input type="text" class="form-control"
                                                 formControlName="codigo_principal_{{i}}">
                                         </td>
+
                                         <td><input type="number" class="form-control" formControlName="cantidad_{{i}}"
                                                 (input)="calcularPrecioTotalSinImpuestoConDescuento(i)"
                                                 (input)="calcularValor(i)" (input)="calcularPrecioTotal(i)"
                                                 (input)="actualizarTotalesPorTarifa()"
                                                 (input)="actualizarTotalSinImpuestos()" (input)="actualizarTotalIVA()"
-                                                (input)="actualizarPrecioTotal()" (input)="actualizarSaldo()"
-                                                min="0">
+                                                (input)="actualizarPrecioTotal()" (input)="actualizarSaldo()" min="0">
                                         </td>
                                         <td><input type="text" class="form-control" formControlName="descripcion_{{i}}">
                                         </td>
@@ -348,8 +365,7 @@
                                                 (input)="calcularValor(i)" (input)="calcularPrecioTotal(i)"
                                                 (input)="actualizarTotalesPorTarifa()"
                                                 (input)="actualizarTotalSinImpuestos()" (input)="actualizarTotalIVA()"
-                                                (input)="actualizarPrecioTotal()" (input)="actualizarSaldo()"
-                                                min="0">
+                                                (input)="actualizarPrecioTotal()" (input)="actualizarSaldo()" min="0">
                                         </td>
                                         <td><input type="number" class="form-control" formControlName="descuento_{{i}}"
                                                 (input)="calcularPrecioTotalSinImpuestoConDescuento(i)"
@@ -357,13 +373,18 @@
                                                 (input)="actualizarTotalDescuento()"
                                                 (input)="actualizarTotalesPorTarifa()"
                                                 (input)="actualizarTotalSinImpuestos()" (input)="actualizarTotalIVA()"
-                                                (input)="actualizarPrecioTotal()" (input)="actualizarSaldo()"
-                                                min="0">
+                                                (input)="actualizarPrecioTotal()" (input)="actualizarSaldo()" min="0">
                                         </td>
                                         <td><input type="number" class="form-control"
                                                 formControlName="precio_total_sin_impuesto_{{i}}" readonly></td>
 
-                                        <td><input type="number" class="form-control" formControlName="tarifa_{{i}}">
+                                        <td><input type="number" class="form-control" formControlName="tarifa_{{i}}"
+                                                (input)="calcularPrecioTotalSinImpuestoConDescuento(i)"
+                                                (input)="calcularValor(i)" (input)="calcularPrecioTotal(i)"
+                                                (input)="actualizarTotalDescuento()"
+                                                (input)="actualizarTotalesPorTarifa()"
+                                                (input)="actualizarTotalSinImpuestos()" (input)="actualizarTotalIVA()"
+                                                (input)="actualizarPrecioTotal()" (input)="actualizarSaldo()" min="0">
                                         </td>
                                         <td><input type="number" class="form-control" formControlName="valor_{{i}}"
                                                 readonly>
@@ -374,8 +395,7 @@
                                                 (input)="actualizarTotalesPorTarifa()"
                                                 (input)="actualizarTotalSinImpuestos()" (input)="actualizarTotalIVA()"
                                                 (input)="actualizarPrecioTotal()" (input)="actualizarTotalICE()"
-                                                (input)="actualizarSaldo()"
-                                                min="0">
+                                                (input)="actualizarSaldo()" min="0">
                                         </td>
 
                                         <td><input type="number" class="form-control"
@@ -417,7 +437,8 @@
                                     <div class="input-group">
                                         <div class="input-group-addon"><b>Abonar:</b><i class=""></i></div>
                                         <input type="number" class="form-control text-right" id="exampleInputuname"
-                                            placeholder="0.00" formControlName="abono" (input)="actualizarSaldo()" min="0">
+                                            placeholder="0.00" formControlName="abono" (input)="actualizarSaldo()"
+                                            min="0">
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -484,6 +505,7 @@
                         data-dismiss="modal">Guardar</button>
                 </div>
             </div>
+
         </div>
     </div>
 </div>
@@ -621,7 +643,7 @@
                             </div>
                         </div>
 
-                        <!-- Field Validation 
+                        <!-- Input Validation 
                         <div class="col">
                             <div class="text-danger">
                                 <p *ngIf="campoNoValido('estado_pago',facturaFormU)">El campo es obligatorio</p>
@@ -700,7 +722,8 @@
                                     <div class="input-group">
                                         <div class="input-group-addon"><b>Abonar:</b><i class=""></i></div>
                                         <input type="number" class="form-control text-right" id="exampleInputuname"
-                                            placeholder="0.00" formControlName="abono" (input)="actualizarSaldoXML()" min="0">
+                                            placeholder="0.00" formControlName="abono" (input)="actualizarSaldoXML()"
+                                            min="0">
                                     </div>
                                 </div>
 
@@ -709,8 +732,8 @@
                                         <div class="input-group-addon"><b>Saldo:</b>&nbsp;&nbsp;&nbsp;&nbsp;<i
                                                 class=""></i></div>
                                         <input type="number" class="form-control text-right" id="exampleInputuname"
-                                            placeholder="{{ facturaFormXML.get('saldo')?.value }}" formControlName="saldo"
-                                            readonly>
+                                            placeholder="{{ facturaFormXML.get('saldo')?.value }}"
+                                            formControlName="saldo" readonly>
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -767,6 +790,7 @@
                         data-dismiss="modal">Cargar</button>
                 </div>
             </div>
+            
         </div>
     </div>
 </div>
@@ -919,7 +943,7 @@
                             </div>
                         </div>
 
-
+                        <!-- Input Validation -->
                         <div class="col">
                             <div class="text-danger">
                                 <p *ngIf="campoNoValido('estado_pago',facturaFormU)">El campo es obligatorio</p>
@@ -998,7 +1022,8 @@
                                     <div class="input-group">
                                         <div class="input-group-addon"><b>Abonar:</b><i class=""></i></div>
                                         <input type="number" class="form-control text-right" id="exampleInputuname"
-                                            placeholder="0.00" formControlName="abono" (input)="actualizarSaldoU()" min="0">
+                                            placeholder="0.00" formControlName="abono" (input)="actualizarSaldoU()"
+                                            min="0">
                                     </div>
                                 </div>
 
@@ -1007,7 +1032,7 @@
                                         <div class="input-group-addon"><b>Saldo:</b>&nbsp;&nbsp;&nbsp;&nbsp;<i
                                                 class=""></i></div>
                                         <input type="number" class="form-control text-right" id="exampleInputuname"
-                                            placeholder="Saldo" formControlName="saldo" readonly>
+                                            placeholder="0.00" formControlName="saldo" readonly>
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -1015,7 +1040,7 @@
                                         <div class="input-group-addon"><b>Total:</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i
                                                 class=""></i></div>
                                         <input type="number" class="form-control text-right" id="exampleInputuname"
-                                            placeholder="Valor Total" formControlName="importe_total" readonly>
+                                            placeholder="0.00" formControlName="importe_total" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -1034,7 +1059,6 @@
                                 </div>
                             </div>
                             <div class="col-md-3">
-
                                 <div class="pull-right m-t-30 text-right">
                                     <p>$ {{ total_sin_impuesto }}</p>
                                     <p>$ 0.00</p>
@@ -1061,6 +1085,7 @@
                         data-dismiss="modal">Actualizar</button>
                 </div>
             </div>
+
         </div>
     </div>
 </div>
@@ -1120,6 +1145,8 @@
                                 formControlName="email">
                         </div>
                     </div>
+
+                    <!-- Input Validation -->
                     <div class="row">
                         <div class="col text-danger">
                             <p *ngIf="campoNoValido('identificacion',proveedorForm)"> El campo es obligatorio</p>
@@ -1130,6 +1157,7 @@
                             <p *ngIf="campoNoValido('email',proveedorForm)"> El campo es obligatorio</p>
                         </div>
                     </div>
+
                 </form>
             </div>
 

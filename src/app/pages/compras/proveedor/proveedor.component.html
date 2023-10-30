@@ -121,24 +121,31 @@
 </div>
 
 
-<!-- modal create -->
+<!-- Modal Create -->
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel1" #miModal>
     <div class="modal-dialog" role="document">
         <div class="modal-content">
+
+            <!-- Modal Header -->
             <div class="modal-header">
                 <h4 class="modal-title" id="exampleModalLabel1">Nuevo Proveedor</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
             </div>
+
+            <!-- Modal Body -->
             <div class="modal-body">
+
                 <form autocomplete="off" [formGroup]="proveedorForm">
+
+                    <!-- Proveedor Form -->
                     <div class="form-group">
 
                         <label for="exampleInputuname">Identificación</label>
                         <div class="input-group">
                             <div class="input-group-addon"><i class="ti-user"></i></div>
                             <input type="text" class="form-control" id="exampleInputuname" placeholder="Identificación"
-                                formControlName="identificacion">
+                                formControlName="identificacion" readonly>
                         </div>
 
                         <label for="exampleInputuname">Razón Social</label>
@@ -178,6 +185,7 @@
 
                     </div>
 
+                    <!-- Input Validation -->
                     <div class="row">
                         <div class="col text-danger">
                             <p *ngIf="campoNoValido('identificacion',proveedorForm)"> El campo es obligatorio</p>
@@ -189,30 +197,35 @@
                         </div>
                     </div>
 
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-primary" (click)="crearProveedor();"
-                            data-dismiss="modal">Crear</button>
-                    </div>
+
 
                 </form>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" (click)="crearProveedor();"
+                    data-dismiss="modal">Crear</button>
             </div>
 
         </div>
     </div>
 </div>
 
-<!-- modal  update-->
+<!-- Modal Update -->
 <div class="modal fade" id="exampleModalU" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel1" #miModal>
     <div class="modal-dialog" role="document">
         <div class="modal-content">
 
+            <!-- Modal Header -->
             <div class="modal-header">
                 <h4 class="modal-title" id="exampleModalLabel1">Actualizar Proveedor</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
             </div>
 
+            <!-- Modal Body -->
             <div class="modal-body">
 
                 <form autocomplete="off" class="form-horizontal p-t-20" [formGroup]="proveedorFormU">
@@ -283,6 +296,7 @@
                         </div>
                     </div>
 
+                    <!-- Input Validation -->
                     <div class="row">
                         <div class="col text-danger">
                             <p *ngIf="campoNoValido('identificacion',proveedorFormU)"> El campo es obligatorio</p>
@@ -294,14 +308,17 @@
                         </div>
                     </div>
 
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-primary" (click)="actualizarProveedor();"
-                            data-dismiss="modal">Actualizar</button>
-                    </div>
 
                 </form>
             </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" (click)="actualizarProveedor();"
+                    data-dismiss="modal">Actualizar</button>
+            </div>
+
         </div>
     </div>
 </div>

@@ -31,21 +31,26 @@
                         <thead>
                             <tr>
                                 <th class="footable-sortable">#<span class="footable-sort-indicator"></span></th>
-                                <th class="footable-sortable">Código <span class="footable-sort-indicator"></span>
+                                <th class="footable-sortable">Código<span class="footable-sort-indicator"></span>
                                 </th>
                                 <th class="footable-sortable">Descripción<span class="footable-sort-indicator"></span>
                                 </th>
-
-                                <th class="footable-sortable">Action<span class="footable-sort-indicator"></span></th>
+                                <th class="footable-sortable">Porcentaje<span class="footable-sort-indicator"></span>
+                                </th>
+                                <th class="footable-sortable">Estado<span class="footable-sort-indicator"></span></th>
+                                <th class="footable-sortable text-center">Action<span
+                                        class="footable-sort-indicator"></span></th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr *ngFor="let forma_pago of formas_pago let i = index">
-                                <td><span class="footable-toggle"></span>{{ i + 1 }}</td>
-                                <td>{{forma_pago.codigo}}</td>
-                                <td>{{forma_pago.descripcion}}</td>
 
-                                <td *ngIf="forma_pago.estado; else inactivo">
+                            <tr *ngFor="let tarifa_iva of tarifas_iva let i = index">
+                                <td><span class="footable-toggle"></span>{{ i + 1 }}</td>
+                                <td>{{ tarifa_iva.codigo }}</td>
+                                <td>{{ tarifa_iva.descripcion }}</td>
+                                <td>{{ tarifa_iva.porcentaje }}</td>
+
+                                <td *ngIf="tarifa_iva.estado; else inactivo">
                                     <div class="label label-table label-success">Activo</div>
                                 </td>
                                 <ng-template #inactivo>
@@ -54,20 +59,19 @@
                                     </td>
                                 </ng-template>
 
-                                <td *ngIf="forma_pago.estado else inactivoOption" class="text-nowrap">
-
+                                <td *ngIf="tarifa_iva.estado else inactivoOption" class="text-nowrap text-center">
                                     <a class="cursor" data-toggle="modal"
-                                        (click)="cargarFormaPagoPorId(forma_pago.id_forma_pago);"
+                                        (click)="cargarTarifaIVAPorId(tarifa_iva.id_tarifa_iva)"
                                         data-target="#exampleModalU"><span
                                             class="fa fa-pencil text-inverse m-r-10"></span></a>
-
-                                    <a class="cursor" (click)="borrarFormaPago(forma_pago);" data-toggle="tooltip"
+                                    <a class="cursor" (click)="borrarTarifaIVA(tarifa_iva);" data-toggle="tooltip"
                                         data-original-title="Close"> <i class="fa fa-close text-danger"></i> </a>
                                 </td>
                                 <ng-template #inactivoOption>
                                 </ng-template>
                             </tr>
                         </tbody>
+
                         <tfoot>
                             <tr>
                                 <td colspan="8">
@@ -92,26 +96,31 @@
     </div>
 </div>
 
-<!-- Modal create -->
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel1" #miModal>
-    <div class="modal-dialog" role="document">
+<!-- Modal Create -->
+<div class="modal fade modal-principal" id="exampleModal" tabindex="-1" role="dialog"
+    aria-labelledby="exampleModalLabel1" #miModal>
+    <div class="modal-dialog" role="document" style="width: 100%;" max-width="1000px;">
         <div class="modal-content">
 
             <!-- Modal Header -->
             <div class="modal-header">
-                <h4 class="modal-title" id="exampleModalLabel1">Nuevo Forma de Pago</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="exampleModalLabel1">Nueva Tarifa IVA</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
 
             <!-- Modal Body -->
             <div class="modal-body">
-                <form autocomplete="off" [formGroup]="formaPagoForm">
+
+                <form autocomplete="off" [formGroup]="tarifaIVAForm">
+
                     <div class="form-group">
+
                         <label for="exampleInputuname">Código</label>
                         <div class="input-group">
                             <div class="input-group-addon"><i class="ti-user"></i></div>
-                            <input type="text" class="form-control" id="exampleInputuname" placeholder="Código"
+                            <input type="number" class="form-control" id="exampleInputuname" placeholder="Código"
                                 formControlName="codigo">
                         </div>
                         <label for="exampleInputuname">Descripción</label>
@@ -120,45 +129,67 @@
                             <input type="text" class="form-control" id="exampleInputuname" placeholder="Descripción"
                                 formControlName="descripcion">
                         </div>
+                        <label for="exampleInputuname">Porcentaje</label>
+                        <div class="input-group">
+                            <div class="input-group-addon"><i class="ti-user"></i></div>
+                            <input type="number" class="form-control" id="exampleInputuname" placeholder="Porcentaje"
+                                formControlName="porcentaje">
+                        </div>
                     </div>
 
                     <!-- Input Validation -->
-                    <div class="row">
-                        <div class="col text-danger">
-                            <p *ngIf="campoNoValido('codigo',formaPagoForm)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('descripcion',formaPagoForm)"> El campo es obligatorio</p>
+                    <div class="col">
+                        <div class="text-danger">
+                            <p *ngIf="campoNoValido('codigo',tarifaIVAForm)">El campo código es obligatorio</p>
                         </div>
                     </div>
                 </form>
             </div>
 
             <!-- Modal Footer -->
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" (click)="crearFormaPago();"
-                    data-dismiss="modal">Crear</button>
+            <div class="col-md-12">
+                <hr>
+                <div class="float-right modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" (click)="crearTarifaIVA();"
+                        data-dismiss="modal">Crear</button>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- modal  update-->
-<div class="modal fade" id="exampleModalU" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel1" #miModal>
-    <div class="modal-dialog" role="document">
+<!-- Modal Update -->
+<div class="modal fade modal-principal" id="exampleModalU" tabindex="-1" role="dialog"
+    aria-labelledby="exampleModalLabel1" #miModal>
+    <div class="modal-dialog" role="document" style="width: 100%;" max-width="1000px;">
         <div class="modal-content">
 
             <!-- Modal Header -->
             <div class="modal-header">
-                <h4 class="modal-title" id="exampleModalLabel1">Actualizar Forma de Pago</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="exampleModalLabel1">Editar Tarifa IVA</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
 
             <!-- Modal Body -->
             <div class="modal-body">
-                <form autocomplete="off" class="form-horizontal p-t-20" [formGroup]="formaPagoFormU">
+                <form autocomplete="off" [formGroup]="tarifaIVAFormU">
+
                     <div class="form-group row">
-                        <label for="exampleInputuname3" class="col-sm-3 control-label">Descripción</label>
+                        <label for="exampleInputuname3" class="col-sm-3 control-label">Código</label>
+                        <div class="col-sm-9">
+                            <div class="input-group">
+                                <div class="input-group-addon"><i class="ti-user"></i></div>
+                                <input type="number" class="form-control" id="exampleInputuname3" placeholder="Código"
+                                    formControlName="codigo" readonly>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="exampleInputuname3" class="col-sm-3 control-label">Descripción*</label>
                         <div class="col-sm-9">
                             <div class="input-group">
                                 <div class="input-group-addon"><i class="ti-user"></i></div>
@@ -168,20 +199,37 @@
                         </div>
                     </div>
 
-                    <!-- Input Validation -->
-                    <div class="row">
-                        <div class="col text-danger">
-                            <p *ngIf="campoNoValido('descripcion',formaPagoFormU)"> El campo es obligatorio</p>
+                    <div class="form-group row">
+                        <label for="exampleInputuname3" class="col-sm-3 control-label">Porcentaje*</label>
+                        <div class="col-sm-9">
+                            <div class="input-group">
+                                <div class="input-group-addon"><i class="ti-user"></i></div>
+                                <input type="number" class="form-control" id="exampleInputuname3"
+                                    placeholder="Porcentaje" formControlName="porcentaje">
+                            </div>
                         </div>
                     </div>
+
+                    <!-- Input Validation -->
+                    <div class="col">
+                        <div class="text-danger">
+                            <p *ngIf="campoNoValido('descripcion',tarifaIVAFormU)">El campo descripción es
+                                obligatorio</p>
+                            <p *ngIf="campoNoValido('porcentaje',tarifaIVAFormU)">El campo porcentaje es
+                                obligatorio</p>
+                        </div>
+                    </div>
+
                 </form>
             </div>
 
             <!-- Modal Footer -->
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" (click)="actualizarFormaPago();"
-                    data-dismiss="modal">Actualizar</button>
+            <div class="col-md-12">
+                <div class="float-right modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" (click)="actualizarTarifaIVA();"
+                        data-dismiss="modal">Actualizar</button>
+                </div>
             </div>
         </div>
     </div>

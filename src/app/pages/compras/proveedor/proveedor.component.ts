@@ -19,7 +19,6 @@ export class ProveedorComponent implements OnInit {
 
   @Output() proveedorCreado = new EventEmitter<any>();
 
-
   public proveedores: Proveedor[] = [];
   public proveedorSeleccionado: Proveedor;
   public formSubmitted = false;

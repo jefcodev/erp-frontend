@@ -78,7 +78,7 @@ export class SidebarService {
         { titulo: 'Asientos', url: ('asientos') },
         { titulo: 'Plan de Cuentas', url: ('cuentas') },
         { titulo: 'Formas de Pago', url: ('formas-pago') },
-        { titulo: 'Tarifas IVA', url: ('') },
+        { titulo: 'Tarifas IVA', url: ('tarifas-iva') },
         { titulo: 'Tarifas ICE', url: ('') },
         { titulo: 'Cuentas por Pagar', url: ('') },
         { titulo: 'Cuentas por Cobrar', url: ('') },

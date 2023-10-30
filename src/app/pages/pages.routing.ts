@@ -48,6 +48,7 @@ import { ProductoComponent } from './inventario/producto/producto.component';
 // Contabilidad
 import { CuentaComponent } from './contabilidad/cuenta/cuenta.component';
 import { FormaPagoComponent } from './contabilidad/forma-pago/forma-pago.component';
+import { TarifaIVAComponent } from './contabilidad/tarifa-iva/tarifa-iva.component';
 import { AsientoComponent } from './contabilidad/asiento/asiento.component';
 import { DetalleAsientoComponent } from './contabilidad/detalle-asiento/detalle-asiento.component';
 import { LibroDiarioComponent } from './contabilidad/libro-diario/libro-diario.component';
@@ -115,6 +116,7 @@ const routes: Routes = [
             // Contabilidad
             { path: 'cuentas', component: CuentaComponent, data: { titulo: 'Cuentas' } },
             { path: 'formas-pago', component: FormaPagoComponent, data: { titulo: 'Formas de Pago' } },
+            { path: 'tarifas-iva', component: TarifaIVAComponent, data: { titulo: 'Tarifas IVA' } },
             { path: 'asientos', component: AsientoComponent, data: { titulo: 'Asientos' } },
             { path: 'detalle-asientos', component: DetalleAsientoComponent, data: { titulo: 'Detalle Asientos' } },
             { path: 'libro-diario', component: LibroDiarioComponent, data: { titulo: 'Libro Diario' } },

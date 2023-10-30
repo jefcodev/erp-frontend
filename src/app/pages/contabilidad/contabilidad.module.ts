@@ -6,6 +6,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { CuentaComponent } from './cuenta/cuenta.component';
 import { FormaPagoComponent } from './forma-pago/forma-pago.component';
+import { TarifaIVAComponent } from './tarifa-iva/tarifa-iva.component';
 import { AsientoComponent } from './asiento/asiento.component';
 import { DetalleAsientoComponent } from './detalle-asiento/detalle-asiento.component';
 import { LibroDiarioComponent } from './libro-diario/libro-diario.component';
@@ -17,12 +18,13 @@ import { EstadoResultadoComponent } from './estado-resultado/estado-resultado.co
   declarations: [
     CuentaComponent,
     FormaPagoComponent,
+    TarifaIVAComponent,
     AsientoComponent,
     DetalleAsientoComponent,
     LibroDiarioComponent,
     LibroMayorComponent,
     BalanceGeneralComponent,
-    EstadoResultadoComponent
+    EstadoResultadoComponent,
   ],
   imports: [
     CommonModule,
