@@ -85,7 +85,8 @@
                                 <td>{{ factura.fecha_vencimiento | date:'yyyy-MM-dd' }}</td>
                                 <td class="text-right">{{ factura.importe_total }}</td>
                                 <td class="text-right">{{ factura.abono }}</td>
-                                <td class="text-right">{{ factura.importe_total - factura.abono }}</td>
+                                <td class="text-right">{{ (factura.importe_total - factura.abono) | number:'1.2-2' }}
+                                </td>
                                 <td>
                                     <ng-container [ngSwitch]="factura.estado_pago">
                                         <div *ngSwitchCase="'PAGADO'" class="label label-table label-success">PAGADO
@@ -336,7 +337,7 @@
                                                 (input)="calcularValor(i)" (input)="calcularPrecioTotal(i)"
                                                 (input)="actualizarTotalesPorTarifa()"
                                                 (input)="actualizarTotalSinImpuestos()" (input)="actualizarTotalIVA()"
-                                                (input)="actualizarPrecioTotal()">
+                                                (input)="actualizarPrecioTotal()" (input)="actualizarSaldo()">
                                         </td>
                                         <td><input type="text" class="form-control" formControlName="descripcion_{{i}}">
                                         </td>
@@ -346,7 +347,7 @@
                                                 (input)="calcularValor(i)" (input)="calcularPrecioTotal(i)"
                                                 (input)="actualizarTotalesPorTarifa()"
                                                 (input)="actualizarTotalSinImpuestos()" (input)="actualizarTotalIVA()"
-                                                (input)="actualizarPrecioTotal()">
+                                                (input)="actualizarPrecioTotal()" (input)="actualizarSaldo()">
                                         </td>
                                         <td><input type="number" class="form-control" formControlName="descuento_{{i}}"
                                                 (input)="calcularPrecioTotalSinImpuestoConDescuento(i)"
@@ -354,7 +355,7 @@
                                                 (input)="actualizarTotalDescuento()"
                                                 (input)="actualizarTotalesPorTarifa()"
                                                 (input)="actualizarTotalSinImpuestos()" (input)="actualizarTotalIVA()"
-                                                (input)="actualizarPrecioTotal()">
+                                                (input)="actualizarPrecioTotal()" (input)="actualizarSaldo()">
                                         </td>
                                         <td><input type="number" class="form-control"
                                                 formControlName="precio_total_sin_impuesto_{{i}}" readonly></td>
@@ -368,9 +369,10 @@
                                         <td><input type="number" class="form-control" formControlName="ice_{{i}}"
                                                 (input)="calcularPrecioTotalSinImpuestoConDescuento(i)"
                                                 (input)="calcularValor(i)" (input)="calcularPrecioTotal(i)"
-                                                (input)="actualizarTotalSinImpuestos()"
-                                                (input)="actualizarTotalesPorTarifa()" (input)="actualizarTotalIVA()"
-                                                (input)="actualizarPrecioTotal()" (input)="actualizarTotalICE()">
+                                                (input)="actualizarTotalesPorTarifa()"
+                                                (input)="actualizarTotalSinImpuestos()" (input)="actualizarTotalIVA()"
+                                                (input)="actualizarPrecioTotal()" (input)="actualizarTotalICE()"
+                                                (input)="actualizarSaldo()">
                                         </td>
 
                                         <td><input type="number" class="form-control"
@@ -378,7 +380,7 @@
                                         </td>
                                         <td class="text-right">
                                             <button type="button" class="btn btn-danger btn-sm"
-                                                (click)="eliminarDetalle(i)">
+                                                (click)="eliminarDetalleForm(i)">
                                                 <i class="ti-trash"></i>
                                             </button>
                                         </td>
@@ -387,8 +389,7 @@
                             </table>
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <button id="agregarLinea" class="btn btn-success"
-                                        (click)="agregarDetalleFactura2()">
+                                    <button id="agregarLinea" class="btn btn-success" (click)="agregarDetalleForm()">
                                         Agregar <span class="fa fa-plus" style="padding-left: 10px;"></span>
                                     </button>
                                 </div>
@@ -413,7 +414,7 @@
                                     <div class="input-group">
                                         <div class="input-group-addon"><b>Abonar:</b><i class=""></i></div>
                                         <input type="number" class="form-control text-right" id="exampleInputuname"
-                                            placeholder="Abono" formControlName="abono">
+                                            placeholder="0.00" formControlName="abono" (input)="actualizarSaldo()">
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -421,7 +422,8 @@
                                         <div class="input-group-addon"><b>Saldo:</b>&nbsp;&nbsp;&nbsp;&nbsp;<i
                                                 class=""></i></div>
                                         <input type="number" class="form-control text-right" id="exampleInputuname"
-                                            placeholder="Saldo" formControlName="abono" readonly>
+                                            placeholder="{{ facturaForm.get('saldo')?.value }}" formControlName="saldo"
+                                            readonly>
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -429,9 +431,11 @@
                                         <div class="input-group-addon"><b>Total:</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i
                                                 class=""></i></div>
                                         <input type="number" class="form-control text-right" id="exampleInputuname"
-                                            placeholder="Valor Total" formControlName="abono" readonly>
+                                            placeholder="{{ sumaPrecioTotal.toFixed(2) }}"
+                                            formControlName="importe_total" readonly>
                                     </div>
                                 </div>
+
                             </div>
 
                             <!-- Detalle -->
@@ -452,7 +456,7 @@
                             <!-- Valores -->
                             <div class="col-md-3">
                                 <div class="pull-right m-t-30 text-right">
-                                    <p>$ {{ sumaTotalSinImpuestos.toFixed(2) }} </p>
+                                    <p>$ {{ sumaTotalSinImpuesto.toFixed(2) }} </p>
                                     <p>$ {{ sumaTotalImpuesto.toFixed(2) }} </p>
                                     <p>$ {{ sumaTotalImpuestoCero.toFixed(2) }} </p>
                                     <p>$ 0.00 </p> <!-- Valor fijo en 0.00 -->
@@ -967,15 +971,28 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Subir XML</label>
+                                <div class="input-group">
+                                    <input type="file" (change)="onFileSelected($event)" id="fileInput"
+                                        style="display: none;">
+                                    <label for="fileInput" class="custom-file-upload">
+                                        <i class="ti-upload"></i> Seleccionar archivo
+                                    </label>
+                                </div>
+                                <h5 id="selectedFileName"></h5>
+                            </div>
+                        </div>
 
-                        <!-- Field Validation -->
+                        <!-- Field Validation 
                         <div class="col">
                             <div class="text-danger">
                                 <p *ngIf="campoNoValido('estado_pago',facturaFormU)">El campo es obligatorio</p>
                             </div>
                         </div>
-
-                        <hr>
+                    -->
+                        <!-- <hr>-->
                     </div>
 
                     <!-- Detalle Table Form -->
@@ -1047,15 +1064,17 @@
                                     <div class="input-group">
                                         <div class="input-group-addon"><b>Abonar:</b><i class=""></i></div>
                                         <input type="number" class="form-control text-right" id="exampleInputuname"
-                                            placeholder="Abono" formControlName="abono">
+                                            placeholder="0.00" formControlName="abono" (input)="actualizarSaldoU()">
                                     </div>
                                 </div>
+
                                 <div class="form-group">
                                     <div class="input-group">
                                         <div class="input-group-addon"><b>Saldo:</b>&nbsp;&nbsp;&nbsp;&nbsp;<i
                                                 class=""></i></div>
                                         <input type="number" class="form-control text-right" id="exampleInputuname"
-                                            placeholder="Saldo" formControlName="saldo" readonly>
+                                            placeholder="{{ facturaFormU.get('saldo')?.value }}" formControlName="saldo"
+                                            readonly>
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -1063,7 +1082,8 @@
                                         <div class="input-group-addon"><b>Total:</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i
                                                 class=""></i></div>
                                         <input type="number" class="form-control text-right" id="exampleInputuname"
-                                            placeholder="Valor Total" formControlName="importe_total" readonly>
+                                            placeholder="{{ importeTotal.toFixed(2) }}" formControlName="importe_total"
+                                            readonly>
                                     </div>
                                 </div>
                             </div>
@@ -1107,8 +1127,8 @@
                 <hr>
                 <div class="float-right modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" (click)="actualizarFactura();"
-                        data-dismiss="modal">Actualizar</button>
+                    <button type="button" class="btn btn-primary" (click)="crearFacturaXML();"
+                        data-dismiss="modal">Cargar</button>
                 </div>
             </div>
         </div>
@@ -1154,5 +1174,40 @@
         max-width: 30%;
         /* Ajusta el valor según tus necesidades */
         margin: 30px auto;
+
+
+
     }
+
+    /* Modal Upload XML */
+    .custom-file-upload {
+        display: inline-block;
+        padding: 6px 20px;
+        cursor: pointer;
+        background-color: #007bff;
+        color: #fff;
+        border: 1px solid #007bff;
+        border-radius: 5px;
+    }
+
+    .custom-file-upload:hover {
+        background-color: #0056b3;
+    }
+
+    /*
+    .custom-file-upload {
+        display: inline-block;
+        padding: 6px 20px;
+        cursor: pointer;
+        background-color: #007bff;
+        color: #fff;
+        border: 1px solid #007bff;
+        border-radius: 5px;
+    }
+
+    .custom-file-upload:hover {
+        background-color: #0056b3;
+    }
+
+    */
 </style>

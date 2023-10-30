@@ -22,7 +22,7 @@ const base_url = environment.base_url;
 })
 export class DetalleFacturaService {
 
-  constructor(private hhtp: HttpClient,
+  constructor(private http: HttpClient,
     private router: Router) { }
   get token(): string {
     return localStorage.getItem('token');
@@ -37,30 +37,30 @@ export class DetalleFacturaService {
 
   loadDetalleFacturas() {
     const url = `${base_url}/detalle-facturas`;
-    return this.hhtp.get<LoadDetalleFactura>(url, this.headers);
+    return this.http.get<LoadDetalleFactura>(url, this.headers);
   }
 
   loadDetalleFacturaById(id_detalle_factura_compra: any) {
     const url = `${base_url}/detalle-facturas/id/${id_detalle_factura_compra}`;
-    return this.hhtp.get(url, this.headers)
+    return this.http.get(url, this.headers)
       .pipe(
         map((resp: { ok: boolean, detalle_factura: DetalleFactura }) => resp.detalle_factura)
       )
   }
   loadDetalleFacturaByFactura(id_factura_compra: any) {
     const url = `${base_url}/detalle-facturas/factura/${id_factura_compra}`;
-    return this.hhtp.get<LoadDetalleFactura>(url, this.headers);
+    return this.http.get<LoadDetalleFactura>(url, this.headers);
   }
 
   loadDetalleFacturaByFactura2(id_factura_compra: any) {
     const url = `${base_url}/detalle-facturas/factura/${id_factura_compra}`;
-    return this.hhtp.get<{ detalle_facturas: DetalleFactura[] }>(url, this.headers);
+    return this.http.get<{ detalle_facturas: DetalleFactura[] }>(url, this.headers);
   }
 
   //createDetalleFactura(formData: FormDetalleFactura) {
   createDetalleFactura(formData: any) {
     const url = `${base_url}/detalle-facturas`;
-    return this.hhtp.post(url, formData, this.headers)
+    return this.http.post(url, formData, this.headers)
       .pipe(
         map((resp: { ok: boolean, detalle_factura: DetalleFactura[] }) => resp.detalle_factura)
       )
@@ -69,14 +69,14 @@ export class DetalleFacturaService {
   createDetalleFacturaArray(detalles: DetalleFactura[]) {
     const url = `${base_url}/detalle-facturas`;
     const formData = { detalles }; // Crear un objeto con una propiedad 'detalles' que contenga el arreglo de detalles
-    return this.hhtp.post(url, formData, this.headers).pipe(
+    return this.http.post(url, formData, this.headers).pipe(
       map((resp: { ok: boolean; detalle_factura: DetalleFactura[] }) => resp.detalle_factura)
     );
   }
 
   updateDetalleFactura(detalle_factura: DetalleFacturaU) {
     const url = `${base_url}/detalle-facturas/${detalle_factura.id_detalle_factura_compra}`;
-    return this.hhtp.put(url, detalle_factura, this.headers);
+    return this.http.put(url, detalle_factura, this.headers);
   }
 
   logout() {
@@ -87,7 +87,7 @@ export class DetalleFacturaService {
   // Validación de token 
   validarToken(): Observable<boolean> {
     const token = localStorage.getItem('token') || '';
-    return this.hhtp.get(`${base_url}/login/renew`, {
+    return this.http.get(`${base_url}/login/renew`, {
       headers: {
         'x-token': token
       }
@@ -108,7 +108,7 @@ export class DetalleFacturaService {
   // Validación de token Fin //OJO
   login(formData: any) {
     const fomrLogin: LoginForm = formData;
-    return this.hhtp.post(`${base_url}/login`, fomrLogin)
+    return this.http.post(`${base_url}/login`, fomrLogin)
       .pipe(
         tap((resp: any) => {
           localStorage.setItem('token', resp.token)

@@ -51,7 +51,7 @@ export class FacturaService {
 
   createFactura(formData: any) {
     const url = `${base_url}/facturas`;
-    console.log("> formData: ", formData)
+    console.log("> ▶️ formData: ", formData)
     return this.hhtp.post(url, formData, this.headers)
       .pipe(
         map((resp: { ok: boolean, factura: Factura[] }) => resp.factura)
