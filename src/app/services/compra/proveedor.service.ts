@@ -22,7 +22,7 @@ const base_url = environment.base_url;
 })
 export class ProveedorService {
 
-  constructor(private hhtp: HttpClient,
+  constructor(private http: HttpClient,
     private router: Router) { }
   get token(): string {
     return localStorage.getItem('token');
@@ -35,21 +35,21 @@ export class ProveedorService {
     }
   }
 
-  loadProveedores() {
-    const url = `${base_url}/proveedores`;
-    return this.hhtp.get<LoadProveedor>(url, this.headers);
+  loadProveedores(desde: number = 0) {
+    const url = `${base_url}/proveedores?desde=${desde}`;
+    return this.http.get<LoadProveedor>(url, this.headers);
   }
 
   loadProveedorById(id_proveedor: any) {
     const url = `${base_url}/proveedores/id/${id_proveedor}`;
-    return this.hhtp.get(url, this.headers)
+    return this.http.get(url, this.headers)
       .pipe(
         map((resp: { ok: boolean, proveedor: Proveedor }) => resp.proveedor)
       )
   }
   loadProveedorByIdentificacion(identificacion: any) {
     const url = `${base_url}/proveedores/identificacion/${identificacion}`;
-    return this.hhtp.get(url, this.headers)
+    return this.http.get(url, this.headers)
       .pipe(
         map((resp: { ok: boolean, proveedor: Proveedor }) => resp.proveedor)
       )
@@ -57,7 +57,7 @@ export class ProveedorService {
 
   createProveedor(formData: FormProveedor) {
     const url = `${base_url}/proveedores`;
-    return this.hhtp.post(url, formData, this.headers)
+    return this.http.post(url, formData, this.headers)
       .pipe(
         map((resp: { ok: boolean, proveedor: Proveedor[] }) => resp.proveedor)
       )
@@ -65,12 +65,12 @@ export class ProveedorService {
     
     updateProveedor(proveedor: Proveedor) {
     const url = `${base_url}/proveedores/${proveedor.id_proveedor}`;
-    return this.hhtp.put(url, proveedor, this.headers);
+    return this.http.put(url, proveedor, this.headers);
   }
 
   deleteProveedor(id_proveedor: any) { //OJO: any
     const url = `${base_url}/proveedores/${id_proveedor}`;
-    return this.hhtp.delete(url, this.headers);
+    return this.http.delete(url, this.headers);
   }
 
   logout() {
@@ -81,7 +81,7 @@ export class ProveedorService {
   // Validación de token 
   validarToken(): Observable<boolean> {
     const token = localStorage.getItem('token') || '';
-    return this.hhtp.get(`${base_url}/login/renew`, {
+    return this.http.get(`${base_url}/login/renew`, {
       headers: {
         'x-token': token
       }
@@ -102,7 +102,7 @@ export class ProveedorService {
   // Validación de token Fin //OJO
   login(formData: any) {
     const fomrLogin: LoginForm = formData;
-    return this.hhtp.post(`${base_url}/login`, fomrLogin)
+    return this.http.post(`${base_url}/login`, fomrLogin)
       .pipe(
         tap((resp: any) => {
           localStorage.setItem('token', resp.token)

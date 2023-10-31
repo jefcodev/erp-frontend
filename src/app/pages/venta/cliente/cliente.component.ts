@@ -14,7 +14,10 @@ import { ClienteService } from 'src/app/services/venta/cliente.service';
   ]
 })
 export class ClienteComponent implements OnInit {
+
   public clientes: Cliente[] = [];
+  public totalClientes: number = 0;
+  public desde: number = 0;
   public clienteSeleccionado: Cliente;
   public formSubmitted = false;
   public ocultarModal: boolean = true;
@@ -30,8 +33,7 @@ export class ClienteComponent implements OnInit {
   ) {
     this.clienteForm = this.fb.group({
       identificacion: ['1727671628', [Validators.required, Validators.minLength(3)]],
-      nombre: ['Edison', [Validators.required, Validators.minLength(3)]],
-      apellido: ['Pinanjota', [Validators.required, Validators.minLength(3)]],
+      razon_social: ['Edison Pinanjota', [Validators.required, Validators.minLength(3)]],
       direccion: ['Cayambe', [Validators.required, Validators.minLength(3)]],
       telefono: ['0978812129', [Validators.required, Validators.minLength(3)]],
       email: ['eepinanjotac@utn.edu.ec', [Validators.required, Validators.email]],
@@ -39,8 +41,7 @@ export class ClienteComponent implements OnInit {
 
     this.clienteFormU = this.fb.group({
       identificacion: ['', [Validators.required, Validators.minLength(3)]],
-      nombre: ['', [Validators.required, Validators.minLength(3)]],
-      apellido: ['', [Validators.required, Validators.minLength(3)]],
+      razon_social: ['', [Validators.required, Validators.minLength(3)]],
       direccion: ['', [Validators.required, Validators.minLength(3)]],
       telefono: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
@@ -51,43 +52,20 @@ export class ClienteComponent implements OnInit {
     this.cargarClientes();
   }
 
-  cerrarModal() {
-    this.ocultarModal = true;
-  }
-
-  abrirModal() {
-    this.ocultarModal = false;
-    this.activatedRoute.params.subscribe(params => {
-      console.log(params)
-    })
-
-  }
-
   cargarClientes() {
-    this.clienteService.loadClientes()
-      .subscribe(({ clientes }) => {
+    this.clienteService.loadClientes(this.desde)
+      .subscribe(({ clientes, total }) => {
         this.clientes = clientes;
-        console.log("Test (cliente.component.ts) - cargarClientes()")
-        console.log(clientes)
+        this.totalClientes = total;
       })
   }
 
   cargarClientePorId(id_cliente: any) {
-    console.log("cargarClientePorId(id_cliente: any)")
-    console.log(id_cliente)
     this.clienteService.loadClienteById(id_cliente)
       .subscribe(cliente => {
-        const { identificacion, nombre, apellido, direccion, telefono, email } = cliente[0];
+        const { identificacion, razon_social, direccion, telefono, email } = cliente[0];
         this.clienteSeleccionado = cliente[0];
-        console.log("cliente")
-        console.log(cliente)
-        console.log("cliente[0]")
-        console.log(cliente[0])
-        console.log("identficacion")
-        console.log(identificacion)
-        console.log("nombre")
-        console.log(nombre)
-        this.clienteFormU.setValue({ identificacion, nombre, apellido, direccion, telefono, email })
+        this.clienteFormU.setValue({ identificacion, razon_social, direccion, telefono, email })
       })
   }
 
@@ -97,7 +75,6 @@ export class ClienteComponent implements OnInit {
     if (this.clienteForm.invalid) {
       return;
     }
-    // realizar posteo
     this.clienteService.createCliente(this.clienteForm.value)
       .subscribe(res => {
         Swal.fire({
@@ -110,7 +87,6 @@ export class ClienteComponent implements OnInit {
         this.recargarComponente();
         this.cerrarModal();
       }, (err) => {
-        // En caso de error
         let errorMessage = 'Se produjo un error al crear el cliente.';
         if (err.error && err.error.msg) {
           errorMessage = err.error.msg;
@@ -121,8 +97,6 @@ export class ClienteComponent implements OnInit {
   }
 
   actualizarCliente() {
-    console.log("Actualizar: actualizarCliente() { ")
-    //console.log(cliente.id_cliente)
     if (this.clienteFormU.invalid) {
       return;
     }
@@ -130,16 +104,8 @@ export class ClienteComponent implements OnInit {
       ...this.clienteFormU.value,
       id_cliente: this.clienteSeleccionado.id_cliente
     }
-
-    console.log("UNO---updateCliente()")
-    console.log(data)
-
-    // realizar posteo
     this.clienteService.updateCliente(data)
       .subscribe(res => {
-        console.log("DOS---updateCliente()")
-        console.log(data)
-
         Swal.fire({
           icon: 'success',
           title: 'Cliente actualizado',
@@ -151,7 +117,6 @@ export class ClienteComponent implements OnInit {
         this.recargarComponente();
         this.cerrarModal();
       }, (err) => {
-        // En caso de error
         let errorMessage = 'Se produjo un error al actualizar el cliente.';
         if (err.error && err.error.msg) {
           errorMessage = err.error.msg;
@@ -162,11 +127,9 @@ export class ClienteComponent implements OnInit {
   }
 
   borrarCliente(cliente: Cliente) {
-    console.log("Borrar:   borrarCliente(cliente: Cliente) {")
-    console.log(cliente.id_cliente)
     Swal.fire({
       title: '¿Borrar Cliente?',
-      text: `Estas a punto de borrar a ${cliente.nombre} ${cliente.apellido}`,
+      text: `Estas a punto de borrar a ${cliente.razon_social}`,
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Sí, borrar',
@@ -179,7 +142,7 @@ export class ClienteComponent implements OnInit {
             Swal.fire({
               icon: 'success',
               title: 'Cliente borrado',
-              text: `${cliente.nombre} ${cliente.apellido} ha sido borrado correctamente.`,
+              text: `${cliente.razon_social} ha sido borrado correctamente.`,
               showConfirmButton: false,
               timer: 1500
             });
@@ -195,11 +158,20 @@ export class ClienteComponent implements OnInit {
     });
   }
 
+  cambiarPagina(valor: number) {
+    this.desde += valor;
+    if (this.desde < 0) {
+      this.desde = 0;
+    } else if (this.desde > this.totalClientes) {
+      this.desde -= valor;
+    }
+    this.cargarClientes();
+  }
+
   recargarComponente() {
     this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
       this.router.navigate(['/dashboard/clientes']);
     });
-
   }
 
   campoNoValido(campo: string, form: FormGroup): boolean {
@@ -208,6 +180,17 @@ export class ClienteComponent implements OnInit {
     } else {
       return false;
     }
+  }
+
+  cerrarModal() {
+    this.ocultarModal = true;
+  }
+
+  abrirModal() {
+    this.ocultarModal = false;
+    this.activatedRoute.params.subscribe(params => {
+      console.log(params)
+    })
   }
 
 }

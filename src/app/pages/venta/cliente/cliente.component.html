@@ -1,183 +1,211 @@
-<div class="col-12">
-    <div class="card">
-        <div class="card-body">
-            <h4 class="card-title">Lista de Clientes</h4>
-            <h6 class="card-subtitle"></h6>
-            <button class="btn btn-primary waves-effect waves-light" data-toggle="modal" data-target="#exampleModal"
-                type="button"><span class="btn-label"><i class="fa fa-user-circle"></i></span>Crear Cliente</button>
+<!-- Table data -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
 
-            <div class="table-responsive">
+                <!-- Button Groups  -->
+                <div class="float-left">
+                    <button class="btn btn-info waves-effect waves-light" data-toggle="modal"
+                        data-target="#exampleModal" type="button">
+                        <span class="fa fa-plus" style="padding-left:0px;"></span>&nbsp;Nuevo
+                    </button>
+                    <button class="btn btn-new-version waves-effect waves-light" data-toggle="modal"
+                        data-target="#exampleModalXML" type="button">
+                        <span class="fa fa-upload" style="padding-left:0px;"></span>&nbsp;Subir
+                    </button>
+                    <button class="btn btn-success" type="button">
+                        <span class="fa fa-file-pdf-o" style="padding-left:0px;"></span>&nbsp;PDF
+                    </button>
+                    <button class="btn btn-success" type="button">
+                        <span class="fa fa-file-excel-o" style="padding-left:0px;"></span>&nbsp;Excel
+                    </button>
+                    <button class="btn btn-success" type="button" onclick="">
+                        <span class="fa fa-print" style="padding-left:0px;"></span>&nbsp;Imprimir
+                    </button>
+                    <div id="example23_filter" class="dataTables_filter"><label>Buscar:<input type="search" class=""
+                                placeholder="" aria-controls="example23"></label>
+                    </div>
+                </div>
 
-                <table id="demo-foo-addrow" class="table m-t-30 table-hover contact-list footable-loaded footable"
-                    data-page-size="10">
-                    <thead>
-                        <tr>
+                <!-- Table Data -->
+                <div class="table-responsive">
 
-                            <th class="footable-sortable">#<span class="footable-sort-indicator"></span></th>
-                            <th class="footable-sortable">Identificación <span class="footable-sort-indicator"></span>
-                            </th>
-                            <th class="footable-sortable">Razón Social<span class="footable-sort-indicator"></span></th>
-                            <th class="footable-sortable">Dirección<span class="footable-sort-indicator"></span></th>
-                            <th class="footable-sortable">Teléfono<span class="footable-sort-indicator"></span></th>
-                            <th class="footable-sortable">Email<span class="footable-sort-indicator"></span></th>
-                            <th class="footable-sortable">Estado<span class="footable-sort-indicator"></span></th>
-
-                            <th class="footable-sortable">Action<span class="footable-sort-indicator"></span></th>
-                            
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let cliente of clientes let i = index">
-                            <td><span class="footable-toggle"></span>{{ i + 1 }}</td>
-                            <td>{{cliente.identificacion}}</td>
-                            <td>
-                                <a href="javascript:void(0)"><img src="../assets/images/users/8.jpg" alt="user"
-                                        width="40" class="img-circle"> {{cliente.apellido}}</a>
-                                <a href="javascript:void(0)"> {{cliente.nombre}} </a>
-                            </td>
-                            <td>{{cliente.direccion}}</td>
-                            <td>{{cliente.telefono}}</td>
-                            <td>{{cliente.email}}</td>
-
-                            <td *ngIf="cliente.estado; else inactivo">
-                                <div class="label label-table label-success">Activo</div>
-                            </td>
-                            <ng-template #inactivo>
+                    <table id="demo-foo-addrow" class="table m-t-30 table-hover contact-list footable-loaded footable"
+                        data-page-size="10">
+                        <thead>
+                            <tr>
+                                <th class="footable-sortable">#<span class="footable-sort-indicator"></span></th>
+                                <th class="footable-sortable">Identificación <span
+                                        class="footable-sort-indicator"></span>
+                                </th>
+                                <th class="footable-sortable">Razón Social<span class="footable-sort-indicator"></span>
+                                </th>
+                                <th class="footable-sortable">Dirección<span class="footable-sort-indicator"></span>
+                                </th>
+                                <th class="footable-sortable">Teléfono<span class="footable-sort-indicator"></span></th>
+                                <th class="footable-sortable">Email<span class="footable-sort-indicator"></span></th>
+                                <th class="footable-sortable">Estado<span class="footable-sort-indicator"></span></th>
+                                <th class="footable-sortable">Action<span class="footable-sort-indicator"></span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let cliente of clientes let i = index">
+                                <td><span class="footable-toggle"></span>{{ i + 1 }}</td>
+                                <td>{{cliente.identificacion}}</td>
                                 <td>
-                                    <div class="label label-table label-danger">Inactivo</div>
+                                    <a href="javascript:void(0)"><img src="../assets/images/users/d4.jpg" alt="user"
+                                            width="40" class="img-circle"> {{cliente.razon_social}}</a>
                                 </td>
-                            </ng-template>
+                                <td>{{cliente.direccion}}</td>
+                                <td>{{cliente.telefono}}</td>
+                                <td>{{cliente.email}}</td>
 
-                            <td *ngIf="cliente.estado else inactivoOption" class="text-nowrap">
+                                <td *ngIf="cliente.estado; else inactivo">
+                                    <div class="label label-table label-success">Activo</div>
+                                </td>
+                                <ng-template #inactivo>
+                                    <td>
+                                        <div class="label label-table label-danger">Inactivo</div>
+                                    </td>
+                                </ng-template>
 
-                                <a class="cursor" data-toggle="modal" (click)="cargarClientePorId(cliente.id_cliente);"
-                                    data-target="#exampleModalU"><span
-                                        class="fa fa-pencil text-inverse m-r-10"></span></a>
+                                <td *ngIf="cliente.estado else inactivoOption" class="text-nowrap">
 
-                                <a class="cursor" (click)="borrarCliente(cliente);" data-toggle="tooltip"
-                                    data-original-title="Close"> <i class="fa fa-close text-danger"></i> </a>
-                            </td>
-                            <ng-template #inactivoOption>
-                            </ng-template>
-                        </tr>
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="8">
-                                <div class="text-right">
-                                    <ul class="pagination">
-                                        <li class="footable-page-arrow disabled"><a data-page="first"
-                                                href="#first">«</a></li>
-                                        <li class="footable-page-arrow disabled"><a data-page="prev" href="#prev">‹</a>
-                                        </li>
-                                        <li class="footable-page-arrow"><a data-page="next" href="#next">›</a></li>
-                                        <li class="footable-page-arrow"><a data-page="last" href="#last">»</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-                    </tfoot>
-                </table>
+                                    <a class="cursor" data-toggle="modal"
+                                        (click)="cargarClientePorId(cliente.id_cliente);"
+                                        data-target="#exampleModalU"><span
+                                            class="fa fa-pencil text-inverse m-r-10"></span></a>
+
+                                    <a class="cursor" (click)="borrarCliente(cliente);" data-toggle="tooltip"
+                                        data-original-title="Close"> <i class="fa fa-close text-danger"></i> </a>
+                                </td>
+                                <ng-template #inactivoOption>
+                                </ng-template>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+
+                        </tfoot>
+                    </table>
+                </div>
+                <hr>
+
+                <!-- Pagination-->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="dataTables_info" id="example23_info" role="status" aria-live="polite">Mostrando
+                            {{ desde+1 }}
+                            a {{ desde+5 }}
+                            de {{ totalClientes }} datos
+                        </div>
+                    </div>
+                    <div class="col-md-6" style="text-align: right;">
+                        <button class="btn btn-secondary waves-effect waves-light" type="button"
+                            (click)="cambiarPagina(-10)">
+                            <i class="mdi mdi-chevron-double-left"></i>
+                            Back
+                        </button>
+                        &nbsp;
+                        <button class="btn btn-secondary waves-effect waves-light" type="button"
+                            (click)="cambiarPagina(10)">
+                            Next
+                            <i class="mdi mdi-chevron-double-right"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-
-<!-- Modal create -->
+<!-- Modal Create -->
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel1" #miModal>
     <div class="modal-dialog" role="document">
         <div class="modal-content">
+
+            <!-- Modal Header -->
             <div class="modal-header">
                 <h4 class="modal-title" id="exampleModalLabel1">Nuevo Cliente</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
             </div>
+
+            <!-- Modal Body -->
             <div class="modal-body">
                 <form autocomplete="off" [formGroup]="clienteForm">
-                    <div class="form-group">
 
+                    <!-- Cliente Form -->
+                    <div class="form-group">
                         <label for="exampleInputuname">Identificación</label>
                         <div class="input-group">
                             <div class="input-group-addon"><i class="ti-user"></i></div>
                             <input type="text" class="form-control" id="exampleInputuname" placeholder="Identificación"
                                 formControlName="identificacion">
                         </div>
-
-                        <label for="exampleInputuname">Nombres</label>
+                        <label for="exampleInputuname">Razón Social</label>
                         <div class="input-group">
                             <div class="input-group-addon"><i class="ti-user"></i></div>
-                            <input type="text" class="form-control" id="exampleInputuname" placeholder="Nombres"
-                                formControlName="nombre">
+                            <input type="text" class="form-control" id="exampleInputuname" placeholder="Razon Soocial"
+                                formControlName="razon_social">
                         </div>
-
-                        <label for="exampleInputuname">Apellidos</label>
-                        <div class="input-group">
-                            <div class="input-group-addon"><i class="ti-user"></i></div>
-                            <input type="text" class="form-control" id="exampleInputuname" placeholder="Apellidos"
-                                formControlName="apellido">
-                        </div>
-
                         <label for="exampleInputuname">Dirección</label>
                         <div class="input-group">
                             <div class="input-group-addon"><i class="ti-user"></i></div>
                             <input type="text" class="form-control" id="exampleInputuname" placeholder="Dirección"
                                 formControlName="direccion">
                         </div>
-
                         <label for="exampleInputuname">Telefóno</label>
                         <div class="input-group">
                             <div class="input-group-addon"><i class="ti-user"></i></div>
                             <input type="text" class="form-control" id="exampleInputuname" placeholder="Telefóno"
                                 formControlName="telefono">
                         </div>
-
                         <label for="exampleInputuname">Email</label>
                         <div class="input-group">
                             <div class="input-group-addon"><i class="ti-user"></i></div>
                             <input type="text" class="form-control" id="exampleInputuname" placeholder="Email"
                                 formControlName="email">
                         </div>
-
                     </div>
 
+                    <!-- Input Validation -->
                     <div class="row">
                         <div class="col text-danger">
                             <p *ngIf="campoNoValido('identificacion',clienteForm)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('nombre',clienteForm)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('apellido',clienteForm)"> El campo es obligatorio</p>
+                            <p *ngIf="campoNoValido('razon_social',clienteForm)"> El campo es obligatorio</p>
                             <p *ngIf="campoNoValido('direccion',clienteForm)"> El campo es obligatorio</p>
                             <p *ngIf="campoNoValido('telefono',clienteForm)"> El campo es obligatorio</p>
                             <p *ngIf="campoNoValido('email',clienteForm)"> El campo es obligatorio</p>
                         </div>
                     </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-primary" (click)="crearCliente();"
-                            data-dismiss="modal">Crear</button>
-                    </div>
-
                 </form>
             </div>
 
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" (click)="crearCliente();"
+                    data-dismiss="modal">Crear</button>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- modal  update-->
+<!-- modal  Update-->
 <div class="modal fade" id="exampleModalU" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel1" #miModal>
     <div class="modal-dialog" role="document">
         <div class="modal-content">
 
+            <!-- Modal Header -->
             <div class="modal-header">
                 <h4 class="modal-title" id="exampleModalLabel1">Actualizar Cliente</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
             </div>
 
+            <!-- Modal Body -->
             <div class="modal-body">
-
                 <form autocomplete="off" class="form-horizontal p-t-20" [formGroup]="clienteFormU">
 
                     <div class="form-group row">
@@ -192,23 +220,12 @@
                     </div>
 
                     <div class="form-group row">
-                        <label for="exampleInputuname3" class="col-sm-3 control-label">Nombres*</label>
+                        <label for="exampleInputuname3" class="col-sm-3 control-label">Razón Social*</label>
                         <div class="col-sm-9">
                             <div class="input-group">
                                 <div class="input-group-addon"><i class="ti-user"></i></div>
-                                <input type="text" class="form-control" id="exampleInputuname3" placeholder="Nombres"
-                                    formControlName="nombre">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
-                        <label for="exampleInputuname3" class="col-sm-3 control-label">Apellidos*</label>
-                        <div class="col-sm-9">
-                            <div class="input-group">
-                                <div class="input-group-addon"><i class="ti-user"></i></div>
-                                <input type="text" class="form-control" id="exampleInputuname3" placeholder="Apellidos"
-                                    formControlName="apellido">
+                                <input type="text" class="form-control" id="exampleInputuname3" placeholder="Razón Social"
+                                    formControlName="razon_social">
                             </div>
                         </div>
                     </div>
@@ -246,25 +263,34 @@
                         </div>
                     </div>
 
+                    <!-- Input Validation -->
                     <div class="row">
                         <div class="col text-danger">
                             <p *ngIf="campoNoValido('identificacion',clienteFormU)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('nombre',clienteFormU)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('apellido',clienteFormU)"> El campo es obligatorio</p>
+                            <p *ngIf="campoNoValido('razon_social',clienteFormU)"> El campo es obligatorio</p>
                             <p *ngIf="campoNoValido('direccion',clienteFormU)"> El campo es obligatorio</p>
                             <p *ngIf="campoNoValido('telefono',clienteFormU)"> El campo es obligatorio</p>
                             <p *ngIf="campoNoValido('email',clienteFormU)"> El campo es obligatorio</p>
                         </div>
                     </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-primary" (click)="actualizarCliente();"
-                            data-dismiss="modal">Actualizar</button>
-                    </div>
-
                 </form>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" (click)="actualizarCliente();"
+                    data-dismiss="modal">Actualizar</button>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Style -->
+<style>
+    /* CSS personalizado para espaciar los botones */
+    .float-left .btn {
+        margin-right: 10px;
+        /* Ajusta este valor según el espacio deseado */
+    }
+</style>

@@ -61,6 +61,7 @@ export class ProductoService {
     const url = `${base_url}/productos`;
     return this.hhtp.post<Producto[]>(url, productos, this.headers);
   }
+  
   createProductoArray2(productos: Producto[]) {
     const url = `${base_url}/productos`;
     const formData = { productos }; // Crear un objeto con una propiedad 'detalles' que contenga el arreglo de detalles

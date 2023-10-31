@@ -16,7 +16,7 @@ export class Producto {
         public stock_maximo: number,
         public utilidad: number,
         public descuento: number,
-        public iva: number,
+        public tarifa: number,
         public ice: number,
         public precio_compra: number,
         public precio_venta: number,

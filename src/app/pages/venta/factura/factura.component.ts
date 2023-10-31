@@ -1033,14 +1033,9 @@ export class FacturaVentaComponent implements OnInit {
   actualizarNombre(event: any): void {
     const clienteId = event.target.value;
     const cliente = this.clientes.find(p => p.id_cliente == clienteId);
-    this.nombreCliente = cliente ? cliente.nombre : '';
+    this.nombreCliente = cliente ? cliente.razon_social : '';
   }
 
-  actualizarApellido(event: any): void {
-    const clienteId = event.target.value;
-    const cliente = this.clientes.find(p => p.id_cliente == clienteId);
-    this.apellidoCliente = cliente ? cliente.apellido : '';
-  }
 
   actualizarDireccion(event: any): void {
     const clienteId = event.target.value;

@@ -17,31 +17,17 @@ import { ProveedorService } from 'src/app/services/compra/proveedor.service';
 
 export class ProveedorComponent implements OnInit {
 
-  @Output() proveedorCreado = new EventEmitter<any>();
-
   public proveedores: Proveedor[] = [];
+  public totalProveedores: number = 0;
+  public desde: number = 0;
+
   public proveedorSeleccionado: Proveedor;
+
   public formSubmitted = false;
-  //public ocultarModalCrear: boolean = true;
-  //public ocultarModalUpdate: boolean = true;
   public ocultarModal: boolean = true;
 
   proveedorForm: FormGroup;
   proveedorFormU: FormGroup;
-
-  /*currentPage: number = 1;
-  totalDatos: number;
-  elementosPorPagina: number = 10; // Puedes ajustar este valor según tus necesidades
-  totalPaginas: number;
-  paginas: number[] = [];
-  
-  actualizarPaginas() {
-    this.paginas = [];
-    const cantidadPaginas = Math.ceil(this.totalDatos / this.elementosPorPagina);
-    for (let i = 1; i <= cantidadPaginas; i++) {
-      this.paginas.push(i);
-    }
-  }*/
 
   constructor(
     private fb: FormBuilder,
@@ -69,36 +55,14 @@ export class ProveedorComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    /*
-    // Obtener la cantidad total de datos desde tu backend o donde sea necesario
-    this.totalDatos = obtenerCantidadTotalDatos();
-    // Calcular la cantidad total de páginas
-    this.totalPaginas = Math.ceil(this.totalDatos / this.elementosPorPagina);
-
-    // Generar el arreglo de páginas
-    this.paginas = Array(this.totalPaginas).fill(0).map((x, i) => i);*/
     this.cargarProveedores();
   }
 
-  cerrarModal() {
-    this.ocultarModal = true;
-  }
-
-  abrirModal() {
-    this.ocultarModal = false;
-    this.activatedRoute.params.subscribe(params => {
-    })
-
-  }
-
-  /*abrirModalCreate() {
-    this.ocultarModalUpdate = false;
-  }*/
-
   cargarProveedores() {
-    this.proveedorService.loadProveedores()
-      .subscribe(({ proveedores }) => {
+    this.proveedorService.loadProveedores(this.desde)
+      .subscribe(({ proveedores, total }) => {
         this.proveedores = proveedores;
+        this.totalProveedores = total;
       })
   }
 
@@ -116,7 +80,6 @@ export class ProveedorComponent implements OnInit {
     if (this.proveedorForm.invalid) {
       return;
     }
-    // realizar posteo
     this.proveedorService.createProveedor(this.proveedorForm.value)
       .subscribe(res => {
         Swal.fire({
@@ -129,7 +92,6 @@ export class ProveedorComponent implements OnInit {
         this.recargarComponente();
         this.cerrarModal();
       }, (err) => {
-        // En caso de error
         let errorMessage = 'Se produjo un error al crear el proveedor.';
         if (err.error && err.error.msg) {
           errorMessage = err.error.msg;
@@ -147,8 +109,6 @@ export class ProveedorComponent implements OnInit {
       ...this.proveedorFormU.value,
       id_proveedor: this.proveedorSeleccionado.id_proveedor
     }
-
-    // realizar posteo
     this.proveedorService.updateProveedor(data)
       .subscribe(res => {
         Swal.fire({
@@ -162,7 +122,6 @@ export class ProveedorComponent implements OnInit {
         this.recargarComponente();
         this.cerrarModal();
       }, (err) => {
-        // En caso de error
         let errorMessage = 'Se produjo un error al actualizar el proveedor.';
         if (err.error && err.error.msg) {
           errorMessage = err.error.msg;
@@ -185,11 +144,6 @@ export class ProveedorComponent implements OnInit {
         this.proveedorService.deleteProveedor(proveedor.id_proveedor)
           .subscribe(resp => {
             this.cargarProveedores();
-            /*Swal.fire(
-              'Proveedor borrado',
-              `${proveedor.nombre} ha sido borrado correctamente.`,
-              'success'              
-            );*/
             Swal.fire({
               icon: 'success',
               title: 'Proveedor borrado',
@@ -209,11 +163,20 @@ export class ProveedorComponent implements OnInit {
     });
   }
 
+  cambiarPagina(valor: number) {
+    this.desde += valor;
+    if (this.desde < 0) {
+      this.desde = 0;
+    } else if (this.desde > this.totalProveedores) {
+      this.desde -= valor;
+    }
+    this.cargarProveedores();
+  }
+
   recargarComponente() {
     this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
       this.router.navigate(['/dashboard/proveedores']);
     });
-
   }
 
   campoNoValido(campo: string, form: FormGroup): boolean {
@@ -224,8 +187,14 @@ export class ProveedorComponent implements OnInit {
     }
   }
 
-  agregarProveedor(proveedor: any) {
-    this.proveedores.push(proveedor);
+  cerrarModal() {
+    this.ocultarModal = true;
+  }
+
+  abrirModal() {
+    this.ocultarModal = false;
+    this.activatedRoute.params.subscribe(params => {
+    })
   }
 
 }

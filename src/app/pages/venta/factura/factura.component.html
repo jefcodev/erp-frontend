@@ -70,9 +70,8 @@
                             </td>
                             <td>
                                 <ng-container *ngFor="let cliente of clientes">
-                                    <ng-container
-                                        *ngIf="cliente.id_cliente == factura.id_cliente ">{{cliente.apellido}}
-                                        {{cliente.nombre}}</ng-container>
+                                    <ng-container *ngIf="cliente.id_cliente == factura.id_cliente ">
+                                        {{cliente.razon_social}}</ng-container>
                                 </ng-container>
                             </td>
 
@@ -80,7 +79,7 @@
                             <td class="text-right">{{ factura.valor_total }}</td>
                             <td class="text-right">{{ factura.abono }}</td>
                             <td class="text-right">{{ factura.valor_total - factura.abono }}</td>
-                            
+
 
                             <td class="text-center">{{ factura.id_asiento }}</td>
                             <td *ngIf="factura.estado; else inactivo">
@@ -128,4 +127,3 @@
         </div>
     </div>
 </div>
-

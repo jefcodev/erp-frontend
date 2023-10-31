@@ -31,9 +31,7 @@ import { ProductoService } from 'src/app/services/inventario/producto.service';
 import { FormaPagoService } from 'src/app/services/contabilidad/forma-pago.service';
 
 import { EventEmitter, Output } from '@angular/core';
-import { forkJoin, Observable } from 'rxjs'; // Importa forkJoin y Observable
-import { catchError } from 'rxjs/operators';
-import { map } from 'rxjs/operators';
+import { forkJoin, Observable } from 'rxjs';
 
 interface DetalleFacturaFormulario {
   producto: number;
@@ -79,7 +77,6 @@ interface FacturaXML {
     */
 }
 
-// Define the DetalleXML interface
 interface DetalleXML {
   codigoPrincipal: string;
   descripcion: string;
@@ -94,13 +91,13 @@ interface DetalleXML {
   valor: number;
 }
 
-
 @Component({
   selector: 'app-factura',
   templateUrl: './factura.component.html',
   styles: [
   ]
 })
+
 export class FacturaComponent implements OnInit {
 
   @Output() proveedorCreado = new EventEmitter<any>();
@@ -779,9 +776,9 @@ export class FacturaComponent implements OnInit {
         stock_maximo: null,
         utilidad: null,
         descuento: null,
-        iva: null,
+        tarifa: detalleXML.tarifa,
         ice: null,
-        precio_compra: detalleXML.precioUnitario,
+        precio_compra: (detalleXML.precioTotalSinImpuesto + detalleXML.valor) / detalleXML.cantidad,
         precio_venta: null,
         ficha: null,
         nota: null,
@@ -1491,7 +1488,9 @@ export class FacturaComponent implements OnInit {
     const productoId = parseInt(selectElement.value, 10);
     const productoSeleccionado = this.productos.find(producto => producto.id_producto === productoId);
     if (productoSeleccionado) {
-      this.detalleFacturaForm.controls[`tarifa_${indice}`].setValue(productoSeleccionado.id_tarifa_iva);
+      // Redondear el valor a número entero antes de establecerlo en el formulario
+      const tarifaRedondeada = Math.round(productoSeleccionado.tarifa);
+      this.detalleFacturaForm.controls[`tarifa_${indice}`].setValue(tarifaRedondeada);
     } else {
       this.detalleFacturaForm.controls[`tarifa_${indice}`].setValue('');
     }

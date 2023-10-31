@@ -34,8 +34,8 @@ export class ClienteService {
     }
   }
 
-  loadClientes() {
-    const url = `${base_url}/clientes`;
+  loadClientes(desde: number = 0) {
+    const url = `${base_url}/clientes?desde=${desde}`;
     return this.hhtp.get<LoadCliente>(url, this.headers);
   }
 

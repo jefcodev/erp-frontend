@@ -4,9 +4,11 @@
         <div class="card">
             <div class="card-body">
                 <div class="float-left">
+
+                    <!-- Button Groups  -->
                     <button class="btn btn-info waves-effect waves-light" data-toggle="modal"
                         data-target="#exampleModal" type="button">
-                        <span class="fa fa-plus" style="padding-left:0px;"></span>&nbsp;Nueva
+                        <span class="fa fa-plus" style="padding-left:0px;"></span>&nbsp;Nuevo
                     </button>
                     <button class="btn btn-new-version waves-effect waves-light" data-toggle="modal"
                         data-target="#exampleModalXML" type="button">
@@ -25,10 +27,12 @@
                                 placeholder="" aria-controls="example23"></label>
                     </div>
                 </div>
-                <div class="table-responsive">
 
+                <!-- Table Data -->
+                <div class="table-responsive">
                     <table id="demo-foo-addrow" class="table m-t-30 table-hover contact-list footable-loaded footable"
                         data-page-size="10">
+
                         <thead>
                             <tr>
                                 <th class="footable-sortable">#<span class="footable-sort-indicator"></span></th>
@@ -37,18 +41,15 @@
                                 </th>
                                 <th class="footable-sortable">Razón Social<span class="footable-sort-indicator"></span>
                                 </th>
-                                <th class="footable-sortable">Nombre Comercial<span
-                                        class="footable-sort-indicator"></span>
-                                </th>
                                 <th class="footable-sortable">Dirección<span class="footable-sort-indicator"></span>
                                 </th>
                                 <th class="footable-sortable">Teléfono<span class="footable-sort-indicator"></span></th>
                                 <th class="footable-sortable">Email<span class="footable-sort-indicator"></span></th>
                                 <th class="footable-sortable">Estado<span class="footable-sort-indicator"></span></th>
-
                                 <th class="footable-sortable">Action<span class="footable-sort-indicator"></span></th>
                             </tr>
                         </thead>
+
                         <tbody>
                             <tr *ngFor="let proveedor of proveedores let i = index">
                                 <td><span class="footable-toggle"></span>{{ i + 1 }}</td>
@@ -57,7 +58,6 @@
                                     <a href="javascript:void(0)"><img src="../assets/images/users/8.jpg" alt="user"
                                             width="40" class="img-circle"> {{proveedor.razon_social}}</a>
                                 </td>
-                                <td>{{proveedor.nombre_comercial}}</td>
                                 <td>{{proveedor.direccion}}</td>
                                 <td>{{proveedor.telefono}}</td>
                                 <td>{{proveedor.email}}</td>
@@ -83,43 +83,41 @@
                                 </td>
                                 <ng-template #inactivoOption>
                                 </ng-template>
-                                <!-- <td>
-                                <button type="button" class="btn btn-sm btn-icon btn-pure btn-outline delete-row-btn" data-toggle="tooltip" data-original-title="Delete"><i class="ti-close" aria-hidden="true"></i></button>
-                            </td>
-                             -->
                             </tr>
                         </tbody>
                         <tfoot>
-                            <tr>
 
-                                <td colspan="8">
-                                    <div class="text-right">
-                                        <ul class="pagination">
-                                            <li class="footable-page-arrow disabled"><a data-page="first"
-                                                    href="#first">«</a></li>
-                                            <li class="footable-page-arrow disabled"><a data-page="prev"
-                                                    href="#prev">‹</a>
-                                            </li>
-
-                                            <!-- Generar dinámicamente los elementos de la paginación -->
-                                            <!--<li *ngFor="let pagina of paginas" class="footable-page">
-                                            <a [data-page]="pagina" href="#">{{ pagina + 1 }}</a>
-                                        </li>-->
-
-                                            <li class="footable-page-arrow"><a data-page="next" href="#next">›</a></li>
-                                            <li class="footable-page-arrow"><a data-page="last" href="#last">»</a></li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
                         </tfoot>
                     </table>
+                </div>
+                <hr>
+                
+                <!-- Pagination-->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="dataTables_info" id="example23_info" role="status" aria-live="polite">Mostrando
+                            {{ desde+1 }}
+                            a {{ desde+5 }}
+                            de {{ totalProveedores }} datos
+                        </div>
+                    </div>
+                    <div class="col-md-6" style="text-align: right;">
+                        <button class="btn btn-secondary waves-effect waves-light" type="button"
+                            (click)="cambiarPagina(-10)">
+                            <i class="mdi mdi-chevron-double-left"></i>
+                            Back
+                        </button>
+                        <button class="btn btn-secondary waves-effect waves-light" type="button"
+                            (click)="cambiarPagina(10)">
+                            Next
+                            <i class="mdi mdi-chevron-double-right"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
 
 <!-- Modal Create -->
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel1" #miModal>
@@ -135,7 +133,6 @@
 
             <!-- Modal Body -->
             <div class="modal-body">
-
                 <form autocomplete="off" [formGroup]="proveedorForm">
 
                     <!-- Proveedor Form -->
@@ -147,42 +144,36 @@
                             <input type="text" class="form-control" id="exampleInputuname" placeholder="Identificación"
                                 formControlName="identificacion" readonly>
                         </div>
-
                         <label for="exampleInputuname">Razón Social</label>
                         <div class="input-group">
                             <div class="input-group-addon"><i class="ti-user"></i></div>
                             <input type="text" class="form-control" id="exampleInputuname" placeholder="Razón Social"
                                 formControlName="razon_social">
                         </div>
-
                         <label for="exampleInputuname">Nombre Comercial</label>
                         <div class="input-group">
                             <div class="input-group-addon"><i class="ti-user"></i></div>
                             <input type="text" class="form-control" id="exampleInputuname"
                                 placeholder="Nombre Comercial" formControlName="nombre_comercial">
                         </div>
-
                         <label for="exampleInputuname">Dirección</label>
                         <div class="input-group">
                             <div class="input-group-addon"><i class="ti-user"></i></div>
                             <input type="text" class="form-control" id="exampleInputuname" placeholder="Dirección"
                                 formControlName="direccion">
                         </div>
-
                         <label for="exampleInputuname">Telefóno</label>
                         <div class="input-group">
                             <div class="input-group-addon"><i class="ti-user"></i></div>
                             <input type="text" class="form-control" id="exampleInputuname" placeholder="Telefóno"
                                 formControlName="telefono">
                         </div>
-
                         <label for="exampleInputuname">Email</label>
                         <div class="input-group">
                             <div class="input-group-addon"><i class="ti-user"></i></div>
                             <input type="text" class="form-control" id="exampleInputuname" placeholder="Email"
                                 formControlName="email">
                         </div>
-
                     </div>
 
                     <!-- Input Validation -->
@@ -190,15 +181,11 @@
                         <div class="col text-danger">
                             <p *ngIf="campoNoValido('identificacion',proveedorForm)"> El campo es obligatorio</p>
                             <p *ngIf="campoNoValido('Razon_social',proveedorForm)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('nombre_comercial',proveedorForm)"> El campo es obligatorio</p>
                             <p *ngIf="campoNoValido('direccion',proveedorForm)"> El campo es obligatorio</p>
                             <p *ngIf="campoNoValido('telefono',proveedorForm)"> El campo es obligatorio</p>
                             <p *ngIf="campoNoValido('email',proveedorForm)"> El campo es obligatorio</p>
                         </div>
                     </div>
-
-
-
                 </form>
             </div>
 
@@ -208,7 +195,6 @@
                 <button type="button" class="btn btn-primary" (click)="crearProveedor();"
                     data-dismiss="modal">Crear</button>
             </div>
-
         </div>
     </div>
 </div>
@@ -227,7 +213,6 @@
 
             <!-- Modal Body -->
             <div class="modal-body">
-
                 <form autocomplete="off" class="form-horizontal p-t-20" [formGroup]="proveedorFormU">
 
                     <div class="form-group row">
@@ -307,8 +292,6 @@
                             <p *ngIf="campoNoValido('email',proveedorFormU)"> El campo es obligatorio</p>
                         </div>
                     </div>
-
-
                 </form>
             </div>
 
@@ -318,7 +301,6 @@
                 <button type="button" class="btn btn-primary" (click)="actualizarProveedor();"
                     data-dismiss="modal">Actualizar</button>
             </div>
-
         </div>
     </div>
 </div>
@@ -329,5 +311,12 @@
     .float-left .btn {
         margin-right: 10px;
         /* Ajusta este valor según el espacio deseado */
+    }
+
+    hr {
+        border: 1px transparent #ccc;
+        /* Puedes personalizar el estilo de la línea */
+        margin: 20px 0;
+        /* Ajusta el margen superior e inferior según tus preferencias */
     }
 </style>
