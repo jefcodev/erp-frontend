@@ -1,7 +1,6 @@
 export interface FormCliente {
     identificacion: string;
-    nombre: string;
-    apellido: string;
+    razon_social: string;
     direccion: string;
     telefono: string;
     email: string;

@@ -35,8 +35,13 @@ export class ProveedorService {
     }
   }
 
-  loadProveedores(desde: number = 0) {
+  loadProveedores2(desde: number = 0) {
     const url = `${base_url}/proveedores?desde=${desde}`;
+    return this.http.get<LoadProveedor>(url, this.headers);
+  }
+
+  loadProveedores(desde: number = 0, limit: number = 10) {
+    const url = `${base_url}/proveedores?desde=${desde}&limit=${limit}`;
     return this.http.get<LoadProveedor>(url, this.headers);
   }
 

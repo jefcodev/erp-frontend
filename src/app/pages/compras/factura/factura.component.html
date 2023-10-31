@@ -64,7 +64,6 @@
                             </tr>
                         </thead>
                         <tbody>
-
                             <tr *ngFor="let factura of facturas let i = index">
                                 <td><span class="footable-toggle"></span>{{ i + 1 }}</td>
                                 <td>{{factura.fecha_emision | date:'yyyy-MM-dd' }}</td>
@@ -81,7 +80,6 @@
                                             *ngIf="proveedor.id_proveedor == factura.id_proveedor ">{{proveedor.razon_social}}</ng-container>
                                     </ng-container>
                                 </td>
-
                                 <td>{{ factura.fecha_vencimiento | date:'yyyy-MM-dd' }}</td>
                                 <td class="text-right">{{ factura.importe_total }}</td>
                                 <td class="text-right">{{ factura.abono }}</td>
@@ -102,7 +100,6 @@
                                         </div>
                                     </ng-container>
                                 </td>
-
                                 <td class="text-center">{{ factura.id_asiento }}</td>
                                 <td *ngIf="factura.estado; else inactivo">
                                     <div class="label label-table label-success">ACTIVA</div>

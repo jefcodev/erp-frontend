@@ -1,11 +1,11 @@
-<!-- Table data -->
+<!-- Table Data -->
 <div class="row">
     <div class="col-12">
         <div class="card">
             <div class="card-body">
-                <div class="float-left">
 
-                    <!-- Button Groups  -->
+                <!-- Button Groups  -->
+                <div class="float-left">
                     <button class="btn btn-info waves-effect waves-light" data-toggle="modal"
                         data-target="#exampleModal" type="button">
                         <span class="fa fa-plus" style="padding-left:0px;"></span>&nbsp;Nuevo
@@ -30,12 +30,11 @@
 
                 <!-- Table Data -->
                 <div class="table-responsive">
-                    <table id="demo-foo-addrow" class="table m-t-30 table-hover contact-list footable-loaded footable"
-                        data-page-size="10">
-
+                    <table id="demo-foo-addrow" class="table m-t-30 table-hover contact-list footable-loaded footable">
                         <thead>
                             <tr>
-                                <th class="footable-sortable">#<span class="footable-sort-indicator"></span></th>
+                                <th class="footable-sortable text-center">#<span class="footable-sort-indicator"></span>
+                                </th>
                                 <th class="footable-sortable">Identificación <span
                                         class="footable-sort-indicator"></span>
                                 </th>
@@ -49,19 +48,20 @@
                                 <th class="footable-sortable">Action<span class="footable-sort-indicator"></span></th>
                             </tr>
                         </thead>
-
                         <tbody>
                             <tr *ngFor="let proveedor of proveedores let i = index">
-                                <td><span class="footable-toggle"></span>{{ i + 1 }}</td>
+                                <td class="text-center">
+                                    <span class="footable-toggle"></span>
+                                    {{ (paginaActual - 1) * itemsPorPagina + i + 1 }}
+                                </td>
                                 <td>{{proveedor.identificacion}}</td>
                                 <td>
-                                    <a href="javascript:void(0)"><img src="../assets/images/users/8.jpg" alt="user"
+                                    <a href="javascript:void(0)"><img src="../assets/images/users/proveedor7.png" alt="user"
                                             width="40" class="img-circle"> {{proveedor.razon_social}}</a>
                                 </td>
                                 <td>{{proveedor.direccion}}</td>
                                 <td>{{proveedor.telefono}}</td>
                                 <td>{{proveedor.email}}</td>
-
                                 <td *ngIf="proveedor.estado; else inactivo">
                                     <div class="label label-table label-success">Activo</div>
                                 </td>
@@ -70,14 +70,11 @@
                                         <div class="label label-table label-danger">Inactivo</div>
                                     </td>
                                 </ng-template>
-
-                                <td *ngIf="proveedor.estado else inactivoOption" class="text-nowrap">
-
+                                <td *ngIf="proveedor.estado else inactivoOption" class="text-nowrap text-center">
                                     <a class="cursor" data-toggle="modal"
                                         (click)="cargarProveedorPorId(proveedor.id_proveedor);"
                                         data-target="#exampleModalU"><span
                                             class="fa fa-pencil text-inverse m-r-10"></span></a>
-
                                     <a class="cursor" (click)="borrarProveedor(proveedor);" data-toggle="tooltip"
                                         data-original-title="Close"> <i class="fa fa-close text-danger"></i> </a>
                                 </td>
@@ -86,30 +83,59 @@
                             </tr>
                         </tbody>
                         <tfoot>
-
                         </tfoot>
                     </table>
                 </div>
                 <hr>
-                
+
                 <!-- Pagination-->
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="dataTables_info" id="example23_info" role="status" aria-live="polite">Mostrando
-                            {{ desde+1 }}
-                            a {{ desde+5 }}
+                        <label class="form-inline">Mostrar &nbsp;
+                            <select id="demo-show-entries" [(ngModel)]="itemsPorPagina"
+                                (change)="changeItemsPorPagina()" class="mr-2">
+                                <option value="5">5</option>
+                                <option value="10">10</option>
+                                <option value="15">15</option>
+                                <option value="20">20</option>
+                            </select>entradas
+                        </label>
+                        <div class="form-inline">
+                            <label class="mr-2">Mostrando</label>
+                            {{ getMinValue() }}
+                            a {{ getMaxValue() > totalProveedores ? totalProveedores : getMaxValue() }}
                             de {{ totalProveedores }} datos
                         </div>
                     </div>
-                    <div class="col-md-6" style="text-align: right;">
+                    <div class="col-md-6 float-left" style="text-align: right;">
                         <button class="btn btn-secondary waves-effect waves-light" type="button"
-                            (click)="cambiarPagina(-10)">
+                            (click)="cambiarPagina(1)">
                             <i class="mdi mdi-chevron-double-left"></i>
-                            Back
                         </button>
                         <button class="btn btn-secondary waves-effect waves-light" type="button"
-                            (click)="cambiarPagina(10)">
-                            Next
+                            (click)="cambiarPagina(paginaActual - 1)">
+                            <i class="mdi mdi-chevron-left"></i>
+                        </button>
+                        <ng-container *ngIf="mostrarPaginacion; else showFirstPageButton">
+                            <ng-container *ngFor="let pagina of paginas">
+                                <button class="btn btn-secondary waves-effect waves-light" type="button"
+                                    (click)="cambiarPagina(pagina)">
+                                    {{ pagina }}
+                                </button>
+                            </ng-container>
+                        </ng-container>
+                        <ng-template #showFirstPageButton>
+                            <button class="btn btn-secondary waves-effect waves-light" type="button"
+                                (click)="cambiarPagina(1)">
+                                1
+                            </button>
+                        </ng-template>
+                        <button class="btn btn-secondary waves-effect waves-light" type="button"
+                            (click)="cambiarPagina(paginaActual + 1)">
+                            <i class="mdi mdi-chevron-right"></i>
+                        </button>
+                        <button class="btn btn-secondary waves-effect waves-light" type="button"
+                            (click)="cambiarPagina(totalPaginas)">
                             <i class="mdi mdi-chevron-double-right"></i>
                         </button>
                     </div>
@@ -134,15 +160,12 @@
             <!-- Modal Body -->
             <div class="modal-body">
                 <form autocomplete="off" [formGroup]="proveedorForm">
-
-                    <!-- Proveedor Form -->
                     <div class="form-group">
-
                         <label for="exampleInputuname">Identificación</label>
                         <div class="input-group">
                             <div class="input-group-addon"><i class="ti-user"></i></div>
                             <input type="text" class="form-control" id="exampleInputuname" placeholder="Identificación"
-                                formControlName="identificacion" readonly>
+                                formControlName="identificacion">
                         </div>
                         <label for="exampleInputuname">Razón Social</label>
                         <div class="input-group">
@@ -214,18 +237,16 @@
             <!-- Modal Body -->
             <div class="modal-body">
                 <form autocomplete="off" class="form-horizontal p-t-20" [formGroup]="proveedorFormU">
-
                     <div class="form-group row">
                         <label for="exampleInputuname3" class="col-sm-3 control-label">Identificación</label>
                         <div class="col-sm-9">
                             <div class="input-group">
                                 <div class="input-group-addon"><i class="ti-user"></i></div>
                                 <input type="text" class="form-control" id="exampleInputuname3"
-                                    placeholder="Identificación" formControlName="identificacion">
+                                    placeholder="Identificación" formControlName="identificacion" readonly>
                             </div>
                         </div>
                     </div>
-
                     <div class="form-group row">
                         <label for="exampleInputuname3" class="col-sm-3 control-label">Razón Social*</label>
                         <div class="col-sm-9">
@@ -236,9 +257,8 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="form-group row">
-                        <label for="exampleInputuname3" class="col-sm-3 control-label">Nombre Comercial*</label>
+                        <label for="exampleInputuname3" class="col-sm-3 control-label">Nombre Comercial</label>
                         <div class="col-sm-9">
                             <div class="input-group">
                                 <div class="input-group-addon"><i class="ti-user"></i></div>
@@ -247,7 +267,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="form-group row">
                         <label for="exampleInputuname3" class="col-sm-3 control-label">Dirección*</label>
                         <div class="col-sm-9">
@@ -258,7 +277,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="form-group row">
                         <label for="exampleInputuname3" class="col-sm-3 control-label">Telefóno*</label>
                         <div class="col-sm-9">
@@ -269,7 +287,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="form-group row">
                         <label for="exampleInputuname3" class="col-sm-3 control-label">Email*</label>
                         <div class="col-sm-9">
@@ -286,7 +303,6 @@
                         <div class="col text-danger">
                             <p *ngIf="campoNoValido('identificacion',proveedorFormU)"> El campo es obligatorio</p>
                             <p *ngIf="campoNoValido('razon_social',proveedorFormU)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('nombre_comercial',proveedorFormU)"> El campo es obligatorio</p>
                             <p *ngIf="campoNoValido('direccion',proveedorFormU)"> El campo es obligatorio</p>
                             <p *ngIf="campoNoValido('telefono',proveedorFormU)"> El campo es obligatorio</p>
                             <p *ngIf="campoNoValido('email',proveedorFormU)"> El campo es obligatorio</p>
@@ -309,7 +325,7 @@
 <style>
     /* CSS personalizado para espaciar los botones */
     .float-left .btn {
-        margin-right: 10px;
+        margin-right: 5px;
         /* Ajusta este valor según el espacio deseado */
     }
 

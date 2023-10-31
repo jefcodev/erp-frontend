@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 
 import { Cliente } from '../../../models/venta/cliente.model';
@@ -13,30 +12,36 @@ import { ClienteService } from 'src/app/services/venta/cliente.service';
   styles: [
   ]
 })
+
 export class ClienteComponent implements OnInit {
 
-  public clientes: Cliente[] = [];
-  public totalClientes: number = 0;
-  public desde: number = 0;
-  public clienteSeleccionado: Cliente;
   public formSubmitted = false;
   public ocultarModal: boolean = true;
 
-  clienteForm: FormGroup;
-  clienteFormU: FormGroup;
+  public clienteForm: FormGroup;
+  public clienteFormU: FormGroup;
+  public clientes: Cliente[] = [];
+  public clienteSeleccionado: Cliente;
+  public totalClientes: number = 0;
+
+  // Paginación
+  itemsPorPagina = 10;
+  paginaActual = 1;
+  paginas: number[] = [];
+  mostrarPaginacion: boolean = false;
+  maximoPaginasVisibles = 5;
 
   constructor(
     private fb: FormBuilder,
     private clienteService: ClienteService,
     private router: Router,
-    private activatedRoute: ActivatedRoute
   ) {
     this.clienteForm = this.fb.group({
-      identificacion: ['1727671628', [Validators.required, Validators.minLength(3)]],
-      razon_social: ['Edison Pinanjota', [Validators.required, Validators.minLength(3)]],
-      direccion: ['Cayambe', [Validators.required, Validators.minLength(3)]],
+      identificacion: ['1007671628', [Validators.required, Validators.minLength(3)]],
+      razon_social: ['ALEX LANCHIMBA', [Validators.required, Validators.minLength(3)]],
+      direccion: ['Quito', [Validators.required, Validators.minLength(3)]],
       telefono: ['0978812129', [Validators.required, Validators.minLength(3)]],
-      email: ['eepinanjotac@utn.edu.ec', [Validators.required, Validators.email]],
+      email: ['ailanchimbaa@utn.edu.ec', [Validators.required, Validators.email]],
     });
 
     this.clienteFormU = this.fb.group({
@@ -53,11 +58,14 @@ export class ClienteComponent implements OnInit {
   }
 
   cargarClientes() {
-    this.clienteService.loadClientes(this.desde)
+    const desde = (this.paginaActual - 1) * this.itemsPorPagina;
+    this.clienteService.loadClientes(desde, this.itemsPorPagina)
       .subscribe(({ clientes, total }) => {
         this.clientes = clientes;
         this.totalClientes = total;
-      })
+        this.calcularNumeroPaginas();
+        this.mostrarPaginacion = this.totalClientes > this.itemsPorPagina;
+      });
   }
 
   cargarClientePorId(id_cliente: any) {
@@ -158,14 +166,41 @@ export class ClienteComponent implements OnInit {
     });
   }
 
-  cambiarPagina(valor: number) {
-    this.desde += valor;
-    if (this.desde < 0) {
-      this.desde = 0;
-    } else if (this.desde > this.totalClientes) {
-      this.desde -= valor;
+  get totalPaginas(): number {
+    return Math.ceil(this.totalClientes / this.itemsPorPagina);
+  }
+
+  calcularNumeroPaginas() {
+    const totalPaginas = Math.ceil(this.totalClientes / this.itemsPorPagina);
+    const halfVisible = Math.floor(this.maximoPaginasVisibles / 2);
+    let startPage = Math.max(1, this.paginaActual - halfVisible);
+    let endPage = Math.min(totalPaginas, startPage + this.maximoPaginasVisibles - 1);
+    if (endPage - startPage + 1 < this.maximoPaginasVisibles) {
+      startPage = Math.max(1, endPage - this.maximoPaginasVisibles + 1);
     }
+    this.paginas = Array(endPage - startPage + 1).fill(0).map((_, i) => startPage + i);
+  }
+
+  changeItemsPorPagina() {
     this.cargarClientes();
+    this.paginaActual = 1;
+  }
+
+  cambiarPagina(page: number): void {
+    if (page >= 1 && page <= this.totalPaginas) {
+      this.paginaActual = page;
+      this.cargarClientes();
+    }
+  }
+
+  getMinValue(): number {
+    const minValue = (this.paginaActual - 1) * this.itemsPorPagina + 1;
+    return minValue;
+  }
+
+  getMaxValue(): number {
+    const maxValue = this.paginaActual * this.itemsPorPagina;
+    return maxValue;
   }
 
   recargarComponente() {
@@ -184,13 +219,6 @@ export class ClienteComponent implements OnInit {
 
   cerrarModal() {
     this.ocultarModal = true;
-  }
-
-  abrirModal() {
-    this.ocultarModal = false;
-    this.activatedRoute.params.subscribe(params => {
-      console.log(params)
-    })
   }
 
 }

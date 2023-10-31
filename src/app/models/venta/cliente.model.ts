@@ -8,7 +8,4 @@ export class Cliente {
         public email: string,
         public estado?: boolean,
     ) { }
-    imprimirCliente() {
-        console.log(this.identificacion)
-    }
 }

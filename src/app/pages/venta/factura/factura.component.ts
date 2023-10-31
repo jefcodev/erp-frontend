@@ -1091,9 +1091,7 @@ export class FacturaVentaComponent implements OnInit {
     // Crea un objeto con la información del cliente
     const clienteData = {
       identificacion: this.identificacion,
-      nombre: this.nombre,
-      apellido: this.apellido,
-      nombre_comercial: this.nombre_comercial,
+      razon_social: this.razonSocial,
       direccion: this.direccion,
       telefono: this.telefono,
       email: this.email

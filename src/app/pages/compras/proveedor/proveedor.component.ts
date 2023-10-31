@@ -1,9 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-
-import { EventEmitter, Output } from '@angular/core';
-
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 
 import { Proveedor } from '../../../models/compra/proveedor.model';
@@ -17,23 +14,26 @@ import { ProveedorService } from 'src/app/services/compra/proveedor.service';
 
 export class ProveedorComponent implements OnInit {
 
-  public proveedores: Proveedor[] = [];
-  public totalProveedores: number = 0;
-  public desde: number = 0;
-
-  public proveedorSeleccionado: Proveedor;
-
   public formSubmitted = false;
   public ocultarModal: boolean = true;
 
-  proveedorForm: FormGroup;
-  proveedorFormU: FormGroup;
+  public proveedorForm: FormGroup;
+  public proveedorFormU: FormGroup;
+  public proveedores: Proveedor[] = [];
+  public proveedorSeleccionado: Proveedor;
+  public totalProveedores: number = 0;
+
+  // Paginación
+  itemsPorPagina = 10;
+  paginaActual = 1;
+  paginas: number[] = [];
+  mostrarPaginacion: boolean = false;
+  maximoPaginasVisibles = 5;
 
   constructor(
     private fb: FormBuilder,
-    private proveedorService: ProveedorService,
     private router: Router,
-    private activatedRoute: ActivatedRoute
+    private proveedorService: ProveedorService,
   ) {
     this.proveedorForm = this.fb.group({
       identificacion: ['1727671628', [Validators.required, Validators.minLength(3)]],
@@ -59,11 +59,14 @@ export class ProveedorComponent implements OnInit {
   }
 
   cargarProveedores() {
-    this.proveedorService.loadProveedores(this.desde)
+    const desde = (this.paginaActual - 1) * this.itemsPorPagina;
+    this.proveedorService.loadProveedores(desde, this.itemsPorPagina)
       .subscribe(({ proveedores, total }) => {
         this.proveedores = proveedores;
         this.totalProveedores = total;
-      })
+        this.calcularNumeroPaginas();
+        this.mostrarPaginacion = this.totalProveedores > this.itemsPorPagina;
+      });
   }
 
   cargarProveedorPorId(id_proveedor: any) {
@@ -163,14 +166,41 @@ export class ProveedorComponent implements OnInit {
     });
   }
 
-  cambiarPagina(valor: number) {
-    this.desde += valor;
-    if (this.desde < 0) {
-      this.desde = 0;
-    } else if (this.desde > this.totalProveedores) {
-      this.desde -= valor;
+  get totalPaginas(): number {
+    return Math.ceil(this.totalProveedores / this.itemsPorPagina);
+  }
+
+  calcularNumeroPaginas() {
+    const totalPaginas = Math.ceil(this.totalProveedores / this.itemsPorPagina);
+    const halfVisible = Math.floor(this.maximoPaginasVisibles / 2);
+    let startPage = Math.max(1, this.paginaActual - halfVisible);
+    let endPage = Math.min(totalPaginas, startPage + this.maximoPaginasVisibles - 1);
+    if (endPage - startPage + 1 < this.maximoPaginasVisibles) {
+      startPage = Math.max(1, endPage - this.maximoPaginasVisibles + 1);
     }
+    this.paginas = Array(endPage - startPage + 1).fill(0).map((_, i) => startPage + i);
+  }
+
+  changeItemsPorPagina() {
     this.cargarProveedores();
+    this.paginaActual = 1;
+  }
+
+  cambiarPagina(page: number): void {
+    if (page >= 1 && page <= this.totalPaginas) {
+      this.paginaActual = page;
+      this.cargarProveedores();
+    }
+  }
+
+  getMinValue(): number {
+    const minValue = (this.paginaActual - 1) * this.itemsPorPagina + 1;
+    return minValue;
+  }
+
+  getMaxValue(): number {
+    const maxValue = this.paginaActual * this.itemsPorPagina;
+    return maxValue;
   }
 
   recargarComponente() {
@@ -189,12 +219,6 @@ export class ProveedorComponent implements OnInit {
 
   cerrarModal() {
     this.ocultarModal = true;
-  }
-
-  abrirModal() {
-    this.ocultarModal = false;
-    this.activatedRoute.params.subscribe(params => {
-    })
   }
 
 }

@@ -51,10 +51,13 @@
                         </thead>
                         <tbody>
                             <tr *ngFor="let cliente of clientes let i = index">
-                                <td><span class="footable-toggle"></span>{{ i + 1 }}</td>
+                                <td class="text-center">
+                                    <span class="footable-toggle"></span>
+                                    {{ (paginaActual - 1) * itemsPorPagina + i + 1 }}
+                                </td>
                                 <td>{{cliente.identificacion}}</td>
                                 <td>
-                                    <a href="javascript:void(0)"><img src="../assets/images/users/d4.jpg" alt="user"
+                                    <a href="javascript:void(0)"><img src="../assets/images/users/cliente6.jpg" alt="user"
                                             width="40" class="img-circle"> {{cliente.razon_social}}</a>
                                 </td>
                                 <td>{{cliente.direccion}}</td>
@@ -70,7 +73,7 @@
                                     </td>
                                 </ng-template>
 
-                                <td *ngIf="cliente.estado else inactivoOption" class="text-nowrap">
+                                <td *ngIf="cliente.estado else inactivoOption" class="text-nowrap text-center">
 
                                     <a class="cursor" data-toggle="modal"
                                         (click)="cargarClientePorId(cliente.id_cliente);"
@@ -94,22 +97,51 @@
                 <!-- Pagination-->
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="dataTables_info" id="example23_info" role="status" aria-live="polite">Mostrando
-                            {{ desde+1 }}
-                            a {{ desde+5 }}
+                        <label class="form-inline">Mostrar
+                            <select id="demo-show-entries" [(ngModel)]="itemsPorPagina"
+                                (change)="changeItemsPorPagina()" class="mr-2">
+                                <option value="5">5</option>
+                                <option value="10">10</option>
+                                <option value="15">15</option>
+                                <option value="20">20</option>
+                            </select>entradas
+                        </label>
+                        <div class="form-inline">
+                            <label class="mr-2">Mostrando</label>
+                            {{ getMinValue() }}
+                            a {{ getMaxValue() > totalClientes ? totalClientes : getMaxValue() }}
                             de {{ totalClientes }} datos
                         </div>
                     </div>
-                    <div class="col-md-6" style="text-align: right;">
+                    <div class="col-md-6 float-left" style="text-align: right;">
                         <button class="btn btn-secondary waves-effect waves-light" type="button"
-                            (click)="cambiarPagina(-10)">
+                            (click)="cambiarPagina(1)">
                             <i class="mdi mdi-chevron-double-left"></i>
-                            Back
                         </button>
-                        &nbsp;
                         <button class="btn btn-secondary waves-effect waves-light" type="button"
-                            (click)="cambiarPagina(10)">
-                            Next
+                            (click)="cambiarPagina(paginaActual - 1)">
+                            <i class="mdi mdi-chevron-left"></i>
+                        </button>
+                        <ng-container *ngIf="mostrarPaginacion; else showFirstPageButton">
+                            <ng-container *ngFor="let pagina of paginas">
+                                <button class="btn btn-secondary waves-effect waves-light" type="button"
+                                    (click)="cambiarPagina(pagina)">
+                                    {{ pagina }}
+                                </button>
+                            </ng-container>
+                        </ng-container>
+                        <ng-template #showFirstPageButton>
+                            <button class="btn btn-secondary waves-effect waves-light" type="button"
+                                (click)="cambiarPagina(1)">
+                                1
+                            </button>
+                        </ng-template>
+                        <button class="btn btn-secondary waves-effect waves-light" type="button"
+                            (click)="cambiarPagina(paginaActual + 1)">
+                            <i class="mdi mdi-chevron-right"></i>
+                        </button>
+                        <button class="btn btn-secondary waves-effect waves-light" type="button"
+                            (click)="cambiarPagina(totalPaginas)">
                             <i class="mdi mdi-chevron-double-right"></i>
                         </button>
                     </div>
@@ -192,7 +224,7 @@
     </div>
 </div>
 
-<!-- modal  Update-->
+<!-- Modal Update-->
 <div class="modal fade" id="exampleModalU" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel1" #miModal>
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -207,7 +239,6 @@
             <!-- Modal Body -->
             <div class="modal-body">
                 <form autocomplete="off" class="form-horizontal p-t-20" [formGroup]="clienteFormU">
-
                     <div class="form-group row">
                         <label for="exampleInputuname3" class="col-sm-3 control-label">Identificación</label>
                         <div class="col-sm-9">
@@ -218,18 +249,16 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="form-group row">
                         <label for="exampleInputuname3" class="col-sm-3 control-label">Razón Social*</label>
                         <div class="col-sm-9">
                             <div class="input-group">
                                 <div class="input-group-addon"><i class="ti-user"></i></div>
-                                <input type="text" class="form-control" id="exampleInputuname3" placeholder="Razón Social"
-                                    formControlName="razon_social">
+                                <input type="text" class="form-control" id="exampleInputuname3"
+                                    placeholder="Razón Social" formControlName="razon_social">
                             </div>
                         </div>
                     </div>
-
                     <div class="form-group row">
                         <label for="exampleInputuname3" class="col-sm-3 control-label">Dirección*</label>
                         <div class="col-sm-9">
@@ -240,7 +269,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="form-group row">
                         <label for="exampleInputuname3" class="col-sm-3 control-label">Telefóno*</label>
                         <div class="col-sm-9">
@@ -251,7 +279,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="form-group row">
                         <label for="exampleInputuname3" class="col-sm-3 control-label">Email*</label>
                         <div class="col-sm-9">
@@ -290,7 +317,14 @@
 <style>
     /* CSS personalizado para espaciar los botones */
     .float-left .btn {
-        margin-right: 10px;
+        margin-right: 5px;
         /* Ajusta este valor según el espacio deseado */
+    }
+
+    hr {
+        border: 1px transparent #ccc;
+        /* Puedes personalizar el estilo de la línea */
+        margin: 20px 0;
+        /* Ajusta el margen superior e inferior según tus preferencias */
     }
 </style>
