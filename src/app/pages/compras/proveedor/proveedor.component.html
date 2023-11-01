@@ -56,8 +56,8 @@
                                 </td>
                                 <td>{{proveedor.identificacion}}</td>
                                 <td>
-                                    <a href="javascript:void(0)"><img src="../assets/images/users/proveedor7.png" alt="user"
-                                            width="40" class="img-circle"> {{proveedor.razon_social}}</a>
+                                    <a href="javascript:void(0)"><img src="../assets/images/users/proveedor7.png"
+                                            alt="user" width="40" class="img-circle"> {{proveedor.razon_social}}</a>
                                 </td>
                                 <td>{{proveedor.direccion}}</td>
                                 <td>{{proveedor.telefono}}</td>
@@ -146,7 +146,8 @@
 </div>
 
 <!-- Modal Create -->
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel1" #miModal>
+<div class="modal fadeIn fast" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel1"
+    #miModal>
     <div class="modal-dialog" role="document">
         <div class="modal-content">
 
@@ -158,72 +159,65 @@
             </div>
 
             <!-- Modal Body -->
-            <div class="modal-body">
-                <form autocomplete="off" [formGroup]="proveedorForm">
-                    <div class="form-group">
-                        <label for="exampleInputuname">Identificación</label>
-                        <div class="input-group">
-                            <div class="input-group-addon"><i class="ti-user"></i></div>
-                            <input type="text" class="form-control" id="exampleInputuname" placeholder="Identificación"
-                                formControlName="identificacion">
-                        </div>
-                        <label for="exampleInputuname">Razón Social</label>
-                        <div class="input-group">
-                            <div class="input-group-addon"><i class="ti-user"></i></div>
-                            <input type="text" class="form-control" id="exampleInputuname" placeholder="Razón Social"
-                                formControlName="razon_social">
-                        </div>
-                        <label for="exampleInputuname">Nombre Comercial</label>
-                        <div class="input-group">
-                            <div class="input-group-addon"><i class="ti-user"></i></div>
-                            <input type="text" class="form-control" id="exampleInputuname"
-                                placeholder="Nombre Comercial" formControlName="nombre_comercial">
-                        </div>
-                        <label for="exampleInputuname">Dirección</label>
-                        <div class="input-group">
-                            <div class="input-group-addon"><i class="ti-user"></i></div>
-                            <input type="text" class="form-control" id="exampleInputuname" placeholder="Dirección"
-                                formControlName="direccion">
-                        </div>
-                        <label for="exampleInputuname">Telefóno</label>
-                        <div class="input-group">
-                            <div class="input-group-addon"><i class="ti-user"></i></div>
-                            <input type="text" class="form-control" id="exampleInputuname" placeholder="Telefóno"
-                                formControlName="telefono">
-                        </div>
-                        <label for="exampleInputuname">Email</label>
-                        <div class="input-group">
-                            <div class="input-group-addon"><i class="ti-user"></i></div>
-                            <input type="text" class="form-control" id="exampleInputuname" placeholder="Email"
-                                formControlName="email">
-                        </div>
-                    </div>
+            <div class="modal-body modal-body-aux">
 
-                    <!-- Input Validation -->
-                    <div class="row">
-                        <div class="col text-danger">
-                            <p *ngIf="campoNoValido('identificacion',proveedorForm)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('Razon_social',proveedorForm)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('direccion',proveedorForm)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('telefono',proveedorForm)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('email',proveedorForm)"> El campo es obligatorio</p>
+                <!-- Card -->
+                <div class="card-body">
+                    <form class="form-material m-t-0" [formGroup]="proveedorForm">
+                        <div class="form-group">
+                            <label>Identificación:</label>
+                            <input type="text" class="form-control material-aux" formControlName="identificacion">
                         </div>
-                    </div>
-                </form>
+                        <div class=" form-group">
+                            <label>Razón Social:</label>
+                            <input type="text" class="form-control material-aux" formControlName="razon_social"
+                                (input)="convertirAMayusculas($event)">
+                        </div>
+                        <div class="form-group">
+                            <label>Nombre Comercial:</label>
+                            <input type="text" class="form-control material-aux" formControlName="nombre_comercial">
+                        </div>
+                        <div class="form-group">
+                            <label>Dirección:</label>
+                            <input type="text" class="form-control material-aux" formControlName="direccion">
+                        </div>
+                        <div class="form-group">
+                            <label>Télefono:</label>
+                            <input type="text" class="form-control material-aux" formControlName="telefono">
+                        </div>
+                        <div class="form-group">
+                            <label><span>Email:</span></label>
+                            <input type="email" class="form-control material-aux" formControlName="email">
+                        </div>
+
+                        <!-- Input Validation -->
+                        <div class="row">
+                            <div class="col text-danger">
+                                <p *ngIf="campoNoValido('identificacion',proveedorForm)">La identificación es
+                                    obligatoria</p>
+                                <p *ngIf="campoNoValido('razon_social',proveedorForm)">La razón social es obligatoria
+                                </p>
+                                <p *ngIf="campoNoValido('direccion',proveedorForm)">La dirección es obligatoria</p>
+                                <p *ngIf="campoNoValido('telefono',proveedorForm)">El télefono es obligatorio</p>
+                                <p *ngIf="campoNoValido('email',proveedorForm)">El email es obligatorio</p>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
 
             <!-- Modal Footer -->
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" (click)="crearProveedor();"
-                    data-dismiss="modal">Crear</button>
+            <div class="modal-footer ">
+                <button type="button" class="btn btn-outline-danger" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-outline-success" (click)="crearProveedor()">Guardar</button>
             </div>
         </div>
     </div>
 </div>
 
 <!-- Modal Update -->
-<div class="modal fade" id="exampleModalU" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel1" #miModal>
+<div class="modal fadeIn fast" id="exampleModalU" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel1"
+    #miModal>
     <div class="modal-dialog" role="document">
         <div class="modal-content">
 
@@ -235,87 +229,57 @@
             </div>
 
             <!-- Modal Body -->
-            <div class="modal-body">
-                <form autocomplete="off" class="form-horizontal p-t-20" [formGroup]="proveedorFormU">
-                    <div class="form-group row">
-                        <label for="exampleInputuname3" class="col-sm-3 control-label">Identificación</label>
-                        <div class="col-sm-9">
-                            <div class="input-group">
-                                <div class="input-group-addon"><i class="ti-user"></i></div>
-                                <input type="text" class="form-control" id="exampleInputuname3"
-                                    placeholder="Identificación" formControlName="identificacion" readonly>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="exampleInputuname3" class="col-sm-3 control-label">Razón Social*</label>
-                        <div class="col-sm-9">
-                            <div class="input-group">
-                                <div class="input-group-addon"><i class="ti-user"></i></div>
-                                <input type="text" class="form-control" id="exampleInputuname3"
-                                    placeholder="Razón Social" formControlName="razon_social">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="exampleInputuname3" class="col-sm-3 control-label">Nombre Comercial</label>
-                        <div class="col-sm-9">
-                            <div class="input-group">
-                                <div class="input-group-addon"><i class="ti-user"></i></div>
-                                <input type="text" class="form-control" id="exampleInputuname3"
-                                    placeholder="Nombre Comercial" formControlName="nombre_comercial">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="exampleInputuname3" class="col-sm-3 control-label">Dirección*</label>
-                        <div class="col-sm-9">
-                            <div class="input-group">
-                                <div class="input-group-addon"><i class="ti-user"></i></div>
-                                <input type="text" class="form-control" id="exampleInputuname3" placeholder="Dirección"
-                                    formControlName="direccion">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="exampleInputuname3" class="col-sm-3 control-label">Telefóno*</label>
-                        <div class="col-sm-9">
-                            <div class="input-group">
-                                <div class="input-group-addon"><i class="ti-user"></i></div>
-                                <input type="text" class="form-control" id="exampleInputuname3" placeholder="Telefóno"
-                                    formControlName="telefono">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="exampleInputuname3" class="col-sm-3 control-label">Email*</label>
-                        <div class="col-sm-9">
-                            <div class="input-group">
-                                <div class="input-group-addon"><i class="ti-user"></i></div>
-                                <input type="text" class="form-control" id="exampleInputuname3" placeholder="Email"
-                                    formControlName="email">
-                            </div>
-                        </div>
-                    </div>
+            <div class="modal-body modal-body-aux">
 
-                    <!-- Input Validation -->
-                    <div class="row">
-                        <div class="col text-danger">
-                            <p *ngIf="campoNoValido('identificacion',proveedorFormU)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('razon_social',proveedorFormU)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('direccion',proveedorFormU)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('telefono',proveedorFormU)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('email',proveedorFormU)"> El campo es obligatorio</p>
+                <!-- Card -->
+                <div class="card-body">
+                    <form class="form-material m-t-0" [formGroup]="proveedorFormU">
+                        <div class="form-group">
+                            <label>Identificación:</label>
+                            <input type="text" class="form-control material-aux" formControlName="identificacion"
+                                readonly>
                         </div>
-                    </div>
-                </form>
+                        <div class=" form-group">
+                            <label>Razón Social:</label>
+                            <input type="text" class="form-control material-aux" formControlName="razon_social"
+                                (input)="convertirAMayusculas($event)">
+                        </div>
+                        <div class="form-group">
+                            <label>Nombre Comercial:</label>
+                            <input type="text" class="form-control material-aux" formControlName="nombre_comercial">
+                        </div>
+                        <div class="form-group">
+                            <label>Dirección:</label>
+                            <input type="text" class="form-control material-aux" formControlName="direccion">
+                        </div>
+                        <div class="form-group">
+                            <label>Télefono:</label>
+                            <input type="text" class="form-control material-aux" formControlName="telefono">
+                        </div>
+                        <div class="form-group">
+                            <label><span>Email:</span></label>
+                            <input type="email" class="form-control material-aux" formControlName="email">
+                        </div>
+
+                        <!-- Input Validation -->
+                        <div class="row">
+                            <div class="col text-danger">
+                                <p *ngIf="campoNoValido('razon_social',proveedorFormU)">La razón social es obligatoria
+                                </p>
+                                <p *ngIf="campoNoValido('direccion',proveedorFormU)">La dirección es obligatoria</p>
+                                <p *ngIf="campoNoValido('telefono',proveedorFormU)">El télefono es obligatorio</p>
+                                <p *ngIf="campoNoValido('email',proveedorFormU)">El email es obligatorio</p>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
 
             <!-- Modal Footer -->
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" (click)="actualizarProveedor();"
-                    data-dismiss="modal">Actualizar</button>
+                <button type="button" class="btn btn-outline-danger" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-outline-success"
+                    (click)="actualizarProveedor()">Actualizar</button>
             </div>
         </div>
     </div>
@@ -323,16 +287,20 @@
 
 <!-- Style -->
 <style>
-    /* CSS personalizado para espaciar los botones */
     .float-left .btn {
         margin-right: 5px;
-        /* Ajusta este valor según el espacio deseado */
     }
 
     hr {
         border: 1px transparent #ccc;
-        /* Puedes personalizar el estilo de la línea */
         margin: 20px 0;
-        /* Ajusta el margen superior e inferior según tus preferencias */
+    }
+
+    .modal-body-aux {
+        padding-bottom: 0px;
+    }
+
+    .material-aux {
+        font-weight: 300;
     }
 </style>

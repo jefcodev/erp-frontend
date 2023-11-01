@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Renderer2 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
@@ -16,6 +16,7 @@ export class ProveedorComponent implements OnInit {
 
   public formSubmitted = false;
   public ocultarModal: boolean = true;
+  public mostrarModal = false;
 
   public proveedorForm: FormGroup;
   public proveedorFormU: FormGroup;
@@ -34,6 +35,7 @@ export class ProveedorComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private proveedorService: ProveedorService,
+    private renderer: Renderer2,
   ) {
     this.proveedorForm = this.fb.group({
       identificacion: ['1727671628', [Validators.required, Validators.minLength(3)]],
@@ -83,8 +85,8 @@ export class ProveedorComponent implements OnInit {
     if (this.proveedorForm.invalid) {
       return;
     }
-    this.proveedorService.createProveedor(this.proveedorForm.value)
-      .subscribe(res => {
+    this.proveedorService.createProveedor(this.proveedorForm.value).subscribe(
+      () => {
         Swal.fire({
           icon: 'success',
           title: 'Proveedor creado',
@@ -95,16 +97,14 @@ export class ProveedorComponent implements OnInit {
         this.recargarComponente();
         this.cerrarModal();
       }, (err) => {
-        let errorMessage = 'Se produjo un error al crear el proveedor.';
-        if (err.error && err.error.msg) {
-          errorMessage = err.error.msg;
-        }
-        Swal.fire('Error', err.error.msg, 'error');
-      });
-    this.recargarComponente();
+        const errorMessage = err.error?.msg || 'Se produjo un error al crear el proveedor.';
+        Swal.fire('Error', errorMessage, 'error');
+      }
+    );
   }
 
   actualizarProveedor() {
+    this.formSubmitted = true;
     if (this.proveedorFormU.invalid) {
       return;
     }
@@ -112,8 +112,8 @@ export class ProveedorComponent implements OnInit {
       ...this.proveedorFormU.value,
       id_proveedor: this.proveedorSeleccionado.id_proveedor
     }
-    this.proveedorService.updateProveedor(data)
-      .subscribe(res => {
+    this.proveedorService.updateProveedor(data).subscribe(
+      () => {
         Swal.fire({
           icon: 'success',
           title: 'Proveedor actualizado',
@@ -121,17 +121,13 @@ export class ProveedorComponent implements OnInit {
           showConfirmButton: false,
           timer: 1500
         });
-        //this.router.navigateByUrl(`/dashboard/proveedores`)
         this.recargarComponente();
         this.cerrarModal();
       }, (err) => {
-        let errorMessage = 'Se produjo un error al actualizar el proveedor.';
-        if (err.error && err.error.msg) {
-          errorMessage = err.error.msg;
-        }
-        Swal.fire('Error', err.error.msg, 'error');
-      });
-    this.recargarComponente();
+        const errorMessage = err.error?.msg || 'Se produjo un error al actualizar el proveedor.';
+        Swal.fire('Error', errorMessage, 'error');
+      }
+    );
   }
 
   borrarProveedor(proveedor: Proveedor) {
@@ -144,8 +140,8 @@ export class ProveedorComponent implements OnInit {
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.value) {
-        this.proveedorService.deleteProveedor(proveedor.id_proveedor)
-          .subscribe(resp => {
+        this.proveedorService.deleteProveedor(proveedor.id_proveedor).subscribe(
+          () => {
             this.cargarProveedores();
             Swal.fire({
               icon: 'success',
@@ -155,13 +151,10 @@ export class ProveedorComponent implements OnInit {
               timer: 1500
             });
           }, (err) => {
-            let errorMessage = 'Se produjo un error al borrar el proveedor.';
-            if (err.error && err.error.msg) {
-              errorMessage = err.error.msg;
-            }
+            const errorMessage = err.error?.msg || 'Se produjo un error al borrar el proveedor.';
             Swal.fire('Error', errorMessage, 'error');
           }
-          );
+        );
       }
     });
   }
@@ -217,8 +210,24 @@ export class ProveedorComponent implements OnInit {
     }
   }
 
+  convertirAMayusculas(event: any) {
+    const inputValue = event.target.value;
+    const upperCaseValue = inputValue.toUpperCase();
+    event.target.value = upperCaseValue;
+  }
+
   cerrarModal() {
-    this.ocultarModal = true;
+    this.mostrarModal = true;
+    // Elimina la clase 'modal-open' del body para evitar que la pantalla quede congelada
+    const body = document.querySelector('body');
+    if (body) {
+      body.classList.remove('modal-open');
+    }
+    // Cierra el modal de Bootstrap programáticamente
+    const modalBackdrop = document.querySelector('.modal-backdrop');
+    if (modalBackdrop) {
+      this.renderer.removeChild(document.body, modalBackdrop);
+    }
   }
 
 }

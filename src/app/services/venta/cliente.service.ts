@@ -19,6 +19,7 @@ const base_url = environment.base_url;
 @Injectable({
   providedIn: 'root'
 })
+
 export class ClienteService {
 
   constructor(private hhtp: HttpClient,
@@ -40,9 +41,6 @@ export class ClienteService {
   }
 
   loadClienteById(id_cliente: any) {
-    console.log("cargarClienteById")
-    console.log(id_cliente)
-    //const url = `${base_url}/clientes/${id_cliente}`;
     const url = `${base_url}/clientes/id/${id_cliente}`;
     return this.hhtp.get(url, this.headers)
       .pipe(
@@ -51,8 +49,6 @@ export class ClienteService {
   }
 
   loadClienteByIdentificacion(identificacion: any) {
-    console.log("\n\n-> (service) loadClienteByIdentificacion(identificacion: any) {")
-    console.log('identidentificacion: ', identificacion)
     const url = `${base_url}/clientes/identificacion/${identificacion}`;
     return this.hhtp.get(url, this.headers)
       .pipe(

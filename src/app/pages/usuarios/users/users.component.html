@@ -36,11 +36,18 @@
                     <div class="col-md-4">
                         <!-- Acciones -->
                         <div class="dt-buttons" style="text-align: center;">
+
                             <a class="dt-button buttons-copy buttons-html5 cursor" tabindex="0"
                                 aria-controls="example23" (click)="abrirModalCreate()">
                                 <span>
                                     <i class=" mdi mdi-plus"></i>
                                     Nuevo</span></a>
+
+                            <button class="btn btn-info waves-effect waves-light" data-toggle="modal"
+                                data-target="#exampleModal" type="button">
+                                <span class="fa fa-plus" style="padding-left:0px;"></span>&nbsp;Nuevo XD
+                            </button>
+
                             <a class="dt-button buttons-excel buttons-html5" tabindex="0" aria-controls="example23"
                                 href="#">
                                 <span>
@@ -122,8 +129,8 @@
                         <button (click)="cambiarPagina(5)" type="button"
                             class="btn waves-effect waves-light btn-sm btn-primary">
                             Siguiente
-                            <i class="mdi mdi-chevron-double-right"></i> 
-                            
+                            <i class="mdi mdi-chevron-double-right"></i>
+
                         </button>
                     </div>
                 </div>
@@ -133,7 +140,7 @@
 </div>
 
 <!-- modal crear usuario-->
-<div class="fondo-modal-imagen animated fadeIn fast" [class.oculto]="ocultarModalCrear">
+<div class="fondo-modal-imagen  " [class.oculto]="ocultarModalCrear">
 
 
     <div id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel1">
@@ -226,3 +233,12 @@
 
 </div>
 <!-- /.modal crear usuario -->
+
+<style>
+    .fadeIn {
+        animation-name: fadeIn;
+        animation-duration: 0.5s;
+        /* Ajusta el valor a tu preferencia, como "0.1s" o "0.2s" */
+        animation-timing-function: ease;
+    }
+</style>

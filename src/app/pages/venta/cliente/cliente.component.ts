@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Renderer2 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
@@ -9,8 +9,7 @@ import { ClienteService } from 'src/app/services/venta/cliente.service';
 @Component({
   selector: 'app-cliente',
   templateUrl: './cliente.component.html',
-  styles: [
-  ]
+  styles: []
 })
 
 export class ClienteComponent implements OnInit {
@@ -79,12 +78,11 @@ export class ClienteComponent implements OnInit {
 
   crearCliente() {
     this.formSubmitted = true;
-    console.log(this.clienteForm.value)
     if (this.clienteForm.invalid) {
       return;
     }
-    this.clienteService.createCliente(this.clienteForm.value)
-      .subscribe(res => {
+    this.clienteService.createCliente(this.clienteForm.value).subscribe(
+      () => {
         Swal.fire({
           icon: 'success',
           title: 'Cliente creado',
@@ -95,13 +93,10 @@ export class ClienteComponent implements OnInit {
         this.recargarComponente();
         this.cerrarModal();
       }, (err) => {
-        let errorMessage = 'Se produjo un error al crear el cliente.';
-        if (err.error && err.error.msg) {
-          errorMessage = err.error.msg;
-        }
-        Swal.fire('Error', err.error.msg, 'error');
-      });
-    this.recargarComponente();
+        const errorMessage = err.error?.msg || 'Se produjo un error al crear el cliente.';
+        Swal.fire('Error', errorMessage, 'error');
+      }
+    );
   }
 
   actualizarCliente() {
@@ -112,8 +107,8 @@ export class ClienteComponent implements OnInit {
       ...this.clienteFormU.value,
       id_cliente: this.clienteSeleccionado.id_cliente
     }
-    this.clienteService.updateCliente(data)
-      .subscribe(res => {
+    this.clienteService.updateCliente(data).subscribe(
+      () => {
         Swal.fire({
           icon: 'success',
           title: 'Cliente actualizado',
@@ -121,17 +116,13 @@ export class ClienteComponent implements OnInit {
           showConfirmButton: false,
           timer: 1500
         });
-        //this.router.navigateByUrl(`/dashboard/clientes`)
         this.recargarComponente();
         this.cerrarModal();
       }, (err) => {
-        let errorMessage = 'Se produjo un error al actualizar el cliente.';
-        if (err.error && err.error.msg) {
-          errorMessage = err.error.msg;
-        }
-        Swal.fire('Error', err.error.msg, 'error');
-      });
-    this.recargarComponente();
+        const errorMessage = err.error?.msg || 'Se produjo un error al actualizar el cliente.';
+        Swal.fire('Error', errorMessage, 'error');
+      }
+    );
   }
 
   borrarCliente(cliente: Cliente) {
@@ -144,8 +135,8 @@ export class ClienteComponent implements OnInit {
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.value) {
-        this.clienteService.deleteCliente(cliente.id_cliente)
-          .subscribe(resp => {
+        this.clienteService.deleteCliente(cliente.id_cliente).subscribe(
+          () => {
             this.cargarClientes();
             Swal.fire({
               icon: 'success',
@@ -155,13 +146,10 @@ export class ClienteComponent implements OnInit {
               timer: 1500
             });
           }, (err) => {
-            let errorMessage = 'Se produjo un error al borrar el cliente.';
-            if (err.error && err.error.msg) {
-              errorMessage = err.error.msg;
-            }
+            const errorMessage = err.error?.msg || 'Se produjo un error al borrar el cliente.';
             Swal.fire('Error', errorMessage, 'error');
           }
-          );
+        );
       }
     });
   }
