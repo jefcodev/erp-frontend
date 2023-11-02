@@ -4,27 +4,33 @@
         <div class="card">
             <div class="card-body">
 
-                <!-- Button Groups  -->
+                <!-- Button Groups -->
                 <div class="float-left">
-                    <button class="btn btn-info waves-effect waves-light" data-toggle="modal"
-                        data-target="#exampleModal" type="button">
-                        <span class="fa fa-plus" style="padding-left:0px;"></span>&nbsp;Nuevo
-                    </button>
-                    <button class="btn btn-new-version waves-effect waves-light" data-toggle="modal"
-                        data-target="#exampleModalXML" type="button">
-                        <span class="fa fa-upload" style="padding-left:0px;"></span>&nbsp;Subir
-                    </button>
-                    <button class="btn btn-success" type="button">
-                        <span class="fa fa-file-pdf-o" style="padding-left:0px;"></span>&nbsp;PDF
-                    </button>
-                    <button class="btn btn-success" type="button">
-                        <span class="fa fa-file-excel-o" style="padding-left:0px;"></span>&nbsp;Excel
-                    </button>
-                    <button class="btn btn-success" type="button" onclick="">
-                        <span class="fa fa-print" style="padding-left:0px;"></span>&nbsp;Imprimir
-                    </button>
-                    <div id="example23_filter" class="dataTables_filter"><label>Buscar:<input type="search" class=""
-                                placeholder="" aria-controls="example23"></label>
+                    <button type="button" class="btn btn-info waves-effect waves-light" data-toggle="modal"
+                        data-target="#exampleModal"><i class="fa fa-plus"></i> Nuevo</button>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                            Más opciones
+                        </button>
+                        <div class="dropdown-menu" x-placement="bottom-start"
+                            style="position: absolute; transform: translate3d(0px, 36px, 0px); top: 0px; left: 0px; will-change: transform;">
+                            <a class="dropdown-item" href="#">Importar</a>
+                            <a class="dropdown-item" href="#">Exportar</a>
+                            <a class="dropdown-item" href="#">Cuentas por cobrar</a>
+                            <a class="dropdown-item" href="#">Imprimir</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#">Configuración</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Search Input -->
+                <div class="float-right">
+                    <div class="form-group" style="display: flex; align-items: center;">
+                        <label style="margin-right: 10px;">Buscar:</label>
+                        <input type="text" class="form-control" [(ngModel)]="buscarTexto" (input)="filtrarClientes()"
+                            style="width: 300px;" />
                     </div>
                 </div>
 
@@ -165,61 +171,54 @@
             </div>
 
             <!-- Modal Body -->
-            <div class="modal-body">
-                <form autocomplete="off" [formGroup]="clienteForm">
+            <div class="modal-body modal-body-aux">
 
-                    <!-- Cliente Form -->
-                    <div class="form-group">
-                        <label for="exampleInputuname">Identificación</label>
-                        <div class="input-group">
-                            <div class="input-group-addon"><i class="ti-user"></i></div>
-                            <input type="text" class="form-control" id="exampleInputuname" placeholder="Identificación"
-                                formControlName="identificacion">
+                <!-- Card -->
+                <div class="card-body">
+                    <form class="form-material m-t-0" [formGroup]="clienteForm">
+                        <div class="form-group">
+                            <label>Identificación:</label>
+                            <input type="text" class="form-control material-aux" formControlName="identificacion">
                         </div>
-                        <label for="exampleInputuname">Razón Social</label>
-                        <div class="input-group">
-                            <div class="input-group-addon"><i class="ti-user"></i></div>
-                            <input type="text" class="form-control" id="exampleInputuname" placeholder="Razon Soocial"
-                                formControlName="razon_social">
+                        <div class=" form-group">
+                            <label>Razón Social:</label>
+                            <input type="text" class="form-control material-aux" formControlName="razon_social"
+                                (input)="convertirAMayusculas($event)">
                         </div>
-                        <label for="exampleInputuname">Dirección</label>
-                        <div class="input-group">
-                            <div class="input-group-addon"><i class="ti-user"></i></div>
-                            <input type="text" class="form-control" id="exampleInputuname" placeholder="Dirección"
-                                formControlName="direccion">
+                        <div class="form-group">
+                            <label>Dirección:</label>
+                            <input type="text" class="form-control material-aux" formControlName="direccion">
                         </div>
-                        <label for="exampleInputuname">Telefóno</label>
-                        <div class="input-group">
-                            <div class="input-group-addon"><i class="ti-user"></i></div>
-                            <input type="text" class="form-control" id="exampleInputuname" placeholder="Telefóno"
-                                formControlName="telefono">
+                        <div class="form-group">
+                            <label>Télefono:</label>
+                            <input type="text" class="form-control material-aux" formControlName="telefono">
                         </div>
-                        <label for="exampleInputuname">Email</label>
-                        <div class="input-group">
-                            <div class="input-group-addon"><i class="ti-user"></i></div>
-                            <input type="text" class="form-control" id="exampleInputuname" placeholder="Email"
-                                formControlName="email">
+                        <div class="form-group">
+                            <label><span>Email:</span></label>
+                            <input type="email" class="form-control material-aux" formControlName="email">
                         </div>
-                    </div>
 
-                    <!-- Input Validation -->
-                    <div class="row">
-                        <div class="col text-danger">
-                            <p *ngIf="campoNoValido('identificacion',clienteForm)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('razon_social',clienteForm)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('direccion',clienteForm)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('telefono',clienteForm)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('email',clienteForm)"> El campo es obligatorio</p>
+                        <!-- Input Validation -->
+                        <div class="row">
+                            <div class="col text-danger">
+                                <p *ngIf="campoNoValido('identificacion', clienteForm)">La identificación es
+                                    obligatoria.
+                                <p>
+                                <p *ngIf="campoNoValido('razon_social', clienteForm)">La razón social es obligatoria.
+                                </p>
+                                <p *ngIf="campoNoValido('direccion', clienteForm)">La dirección es obligatoria.</p>
+                                <p *ngIf="campoNoValido('telefono', clienteForm)">El télefono es obligatorio.</p>
+                                <p *ngIf="campoNoValido('email', clienteForm)">El email es obligatorio.</p>
+                            </div>
                         </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
 
             <!-- Modal Footer -->
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" (click)="crearCliente();"
-                    data-dismiss="modal">Crear</button>
+                <button type="button" class="btn btn-outline-danger" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-outline-success" (click)="crearCliente()">Guardar</button>
             </div>
         </div>
     </div>
@@ -239,77 +238,52 @@
             </div>
 
             <!-- Modal Body -->
-            <div class="modal-body">
-                <form autocomplete="off" class="form-horizontal p-t-20" [formGroup]="clienteFormU">
-                    <div class="form-group row">
-                        <label for="exampleInputuname3" class="col-sm-3 control-label">Identificación</label>
-                        <div class="col-sm-9">
-                            <div class="input-group">
-                                <div class="input-group-addon"><i class="ti-user"></i></div>
-                                <input type="text" class="form-control" id="exampleInputuname3"
-                                    placeholder="Identificación" formControlName="identificacion">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="exampleInputuname3" class="col-sm-3 control-label">Razón Social*</label>
-                        <div class="col-sm-9">
-                            <div class="input-group">
-                                <div class="input-group-addon"><i class="ti-user"></i></div>
-                                <input type="text" class="form-control" id="exampleInputuname3"
-                                    placeholder="Razón Social" formControlName="razon_social">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="exampleInputuname3" class="col-sm-3 control-label">Dirección*</label>
-                        <div class="col-sm-9">
-                            <div class="input-group">
-                                <div class="input-group-addon"><i class="ti-user"></i></div>
-                                <input type="text" class="form-control" id="exampleInputuname3" placeholder="Dirección"
-                                    formControlName="direccion">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="exampleInputuname3" class="col-sm-3 control-label">Telefóno*</label>
-                        <div class="col-sm-9">
-                            <div class="input-group">
-                                <div class="input-group-addon"><i class="ti-user"></i></div>
-                                <input type="text" class="form-control" id="exampleInputuname3" placeholder="Telefóno"
-                                    formControlName="telefono">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="exampleInputuname3" class="col-sm-3 control-label">Email*</label>
-                        <div class="col-sm-9">
-                            <div class="input-group">
-                                <div class="input-group-addon"><i class="ti-user"></i></div>
-                                <input type="text" class="form-control" id="exampleInputuname3" placeholder="Email"
-                                    formControlName="email">
-                            </div>
-                        </div>
-                    </div>
+            <div class="modal-body modal-body-aux">
 
-                    <!-- Input Validation -->
-                    <div class="row">
-                        <div class="col text-danger">
-                            <p *ngIf="campoNoValido('identificacion',clienteFormU)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('razon_social',clienteFormU)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('direccion',clienteFormU)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('telefono',clienteFormU)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('email',clienteFormU)"> El campo es obligatorio</p>
+                <!-- Card -->
+                <div class="card-body">
+                    <form class="form-material m-t-0" [formGroup]="clienteFormU">
+                        <div class="form-group">
+                            <label>Identificación:</label>
+                            <input type="text" class="form-control material-aux" formControlName="identificacion"
+                                readonly>
                         </div>
-                    </div>
-                </form>
+                        <div class=" form-group">
+                            <label>Razón Social:</label>
+                            <input type="text" class="form-control material-aux" formControlName="razon_social"
+                                (input)="convertirAMayusculas($event)">
+                        </div>
+                        <div class="form-group">
+                            <label>Dirección:</label>
+                            <input type="text" class="form-control material-aux" formControlName="direccion">
+                        </div>
+                        <div class="form-group">
+                            <label>Télefono:</label>
+                            <input type="text" class="form-control material-aux" formControlName="telefono">
+                        </div>
+                        <div class="form-group">
+                            <label><span>Email:</span></label>
+                            <input type="email" class="form-control material-aux" formControlName="email">
+                        </div>
+
+                        <!-- Input Validation -->
+                        <div class="row">
+                            <div class="col text-danger">
+                                <p *ngIf="campoNoValido('razon_social', clienteFormU)">La razón social es obligatoria.
+                                </p>
+                                <p *ngIf="campoNoValido('direccion', clienteFormU)">La dirección es obligatoria.</p>
+                                <p *ngIf="campoNoValido('telefono', clienteFormU)">El télefono es obligatorio.</p>
+                                <p *ngIf="campoNoValido('email', clienteFormU)">El email es obligatorio.</p>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
 
             <!-- Modal Footer -->
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" (click)="actualizarCliente();"
-                    data-dismiss="modal">Actualizar</button>
+                <button type="button" class="btn btn-outline-danger" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-outline-success" (click)="actualizarCliente();">Actualizar</button>
             </div>
         </div>
     </div>
@@ -317,16 +291,20 @@
 
 <!-- Style -->
 <style>
-    /* CSS personalizado para espaciar los botones */
     .float-left .btn {
         margin-right: 5px;
-        /* Ajusta este valor según el espacio deseado */
     }
 
     hr {
         border: 1px transparent #ccc;
-        /* Puedes personalizar el estilo de la línea */
         margin: 20px 0;
-        /* Ajusta el margen superior e inferior según tus preferencias */
+    }
+
+    .modal-body-aux {
+        padding-bottom: 0px;
+    }
+
+    .material-aux {
+        font-weight: 300;
     }
 </style>

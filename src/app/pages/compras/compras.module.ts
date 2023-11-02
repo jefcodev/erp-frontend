@@ -5,15 +5,11 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { ProveedorComponent } from './proveedor/proveedor.component';
 import { FacturaComponent } from './factura/factura.component';
-import { DetalleFacturaComponent } from './detalle-factura/detalle-factura.component';
-
-
 
 @NgModule({
   declarations: [
     ProveedorComponent,
     FacturaComponent,
-    DetalleFacturaComponent
   ],
   imports: [
     CommonModule,
@@ -25,4 +21,5 @@ import { DetalleFacturaComponent } from './detalle-factura/detalle-factura.compo
     ProveedorComponent
   ]
 })
+
 export class ComprasModule { }

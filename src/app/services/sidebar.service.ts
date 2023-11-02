@@ -29,7 +29,6 @@ export class SidebarService {
       submenu: [
         { titulo: 'Proveedores', url: ('proveedores') },
         { titulo: 'Facturas Compra', url: ('facturas') },
-        { titulo: 'Detalle Facturas Compra', url: ('detalle-facturas') },
         { titulo: 'Orden de Compras', url: ('') },
         { titulo: 'Egresos', url: ('') },
       ]
@@ -40,8 +39,7 @@ export class SidebarService {
       submenu: [
         { titulo: 'Clientes', url: ('clientes') },
         { titulo: 'Facturas Venta', url: ('facturas-venta') },
-        { titulo: 'Detalle Facturas Venta', url: ('detalle-facturas-ventas') },
-        { titulo: 'Facturación Electrónica', url: ('facturacion') },
+        { titulo: 'Facturación Electrónica', url: ('') },
         { titulo: 'Proformas', url: ('quotation') },
         { titulo: 'Punto de Venta', url: ('') },
         { titulo: 'Ingresos', url: ('') },

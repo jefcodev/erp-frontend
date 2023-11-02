@@ -40,6 +40,13 @@ export class ClienteService {
     return this.hhtp.get<LoadCliente>(url, this.headers);
   }
 
+  loadClientesAll() {
+    const url = `${base_url}/clientes/all`;
+    return this.hhtp.get<LoadCliente>(url, this.headers);
+  }
+
+
+
   loadClienteById(id_cliente: any) {
     const url = `${base_url}/clientes/id/${id_cliente}`;
     return this.hhtp.get(url, this.headers)

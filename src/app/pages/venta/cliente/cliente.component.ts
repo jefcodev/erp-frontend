@@ -15,13 +15,16 @@ import { ClienteService } from 'src/app/services/venta/cliente.service';
 export class ClienteComponent implements OnInit {
 
   public formSubmitted = false;
-  public ocultarModal: boolean = true;
+  public mostrarModal = false;
 
   public clienteForm: FormGroup;
   public clienteFormU: FormGroup;
   public clientes: Cliente[] = [];
-  public clienteSeleccionado: Cliente;
+  public clientes_aux: Cliente[] = [];
   public totalClientes: number = 0;
+  public allClientes: Cliente[] = [];
+  public allTotalClientes: number = 0;
+  public clienteSeleccionado: Cliente;
 
   // Paginación
   itemsPorPagina = 10;
@@ -30,10 +33,14 @@ export class ClienteComponent implements OnInit {
   mostrarPaginacion: boolean = false;
   maximoPaginasVisibles = 5;
 
+  // Búsqueda
+  buscarTexto: string = '';
+
   constructor(
     private fb: FormBuilder,
-    private clienteService: ClienteService,
     private router: Router,
+    private clienteService: ClienteService,
+    private renderer: Renderer2,
   ) {
     this.clienteForm = this.fb.group({
       identificacion: ['1007671628', [Validators.required, Validators.minLength(3)]],
@@ -54,6 +61,7 @@ export class ClienteComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarClientes();
+    this.cargarClientesAll();
   }
 
   cargarClientes() {
@@ -64,6 +72,14 @@ export class ClienteComponent implements OnInit {
         this.totalClientes = total;
         this.calcularNumeroPaginas();
         this.mostrarPaginacion = this.totalClientes > this.itemsPorPagina;
+      });
+  }
+
+  cargarClientesAll() {
+    this.clienteService.loadClientesAll()
+      .subscribe(({ clientes, total }) => {
+        this.allClientes = clientes;
+        this.allTotalClientes = total;
       });
   }
 
@@ -123,6 +139,27 @@ export class ClienteComponent implements OnInit {
         Swal.fire('Error', errorMessage, 'error');
       }
     );
+  }
+
+  filtrarClientes() {
+    if (this.clientes_aux && this.clientes_aux.length > 0) {
+    } else {
+      this.clientes_aux = this.clientes;
+    }
+    if (this.buscarTexto.trim() === '') {
+      this.clientes = this.clientes_aux;
+    } else {
+      this.clientes = this.allClientes.filter(proveedor => {
+        const regex = new RegExp(this.buscarTexto, 'i'); // 'i' para que sea insensible a mayúsculas/minúsculas
+        return (
+          proveedor.razon_social.toLowerCase().includes(this.buscarTexto.toLowerCase()) ||
+          proveedor.identificacion.includes(this.buscarTexto) ||
+          proveedor.direccion.match(regex) !== null ||
+          proveedor.telefono.includes(this.buscarTexto) ||
+          proveedor.email.includes(this.buscarTexto)
+        );
+      });
+    }
   }
 
   borrarCliente(cliente: Cliente) {
@@ -205,8 +242,22 @@ export class ClienteComponent implements OnInit {
     }
   }
 
+  convertirAMayusculas(event: any) {
+    const inputValue = event.target.value;
+    const upperCaseValue = inputValue.toUpperCase();
+    event.target.value = upperCaseValue;
+  }
+
   cerrarModal() {
-    this.ocultarModal = true;
+    this.mostrarModal = true;
+    const body = document.querySelector('body');
+    if (body) {
+      body.classList.remove('modal-open');
+    }
+    const modalBackdrop = document.querySelector('.modal-backdrop');
+    if (modalBackdrop) {
+      this.renderer.removeChild(document.body, modalBackdrop);
+    }
   }
 
 }

@@ -15,14 +15,16 @@ import { ProveedorService } from 'src/app/services/compra/proveedor.service';
 export class ProveedorComponent implements OnInit {
 
   public formSubmitted = false;
-  public ocultarModal: boolean = true;
   public mostrarModal = false;
 
   public proveedorForm: FormGroup;
   public proveedorFormU: FormGroup;
   public proveedores: Proveedor[] = [];
-  public proveedorSeleccionado: Proveedor;
+  public proveedores_aux: Proveedor[] = [];
   public totalProveedores: number = 0;
+  public allProveedores: Proveedor[] = [];
+  public allTotalProveedores: number = 0;
+  public proveedorSeleccionado: Proveedor;
 
   // Paginación
   itemsPorPagina = 10;
@@ -30,6 +32,9 @@ export class ProveedorComponent implements OnInit {
   paginas: number[] = [];
   mostrarPaginacion: boolean = false;
   maximoPaginasVisibles = 5;
+
+  // Búsqueda
+  buscarTexto: string = '';
 
   constructor(
     private fb: FormBuilder,
@@ -58,6 +63,7 @@ export class ProveedorComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarProveedores();
+    this.cargarProveedoresAll();
   }
 
   cargarProveedores() {
@@ -68,6 +74,14 @@ export class ProveedorComponent implements OnInit {
         this.totalProveedores = total;
         this.calcularNumeroPaginas();
         this.mostrarPaginacion = this.totalProveedores > this.itemsPorPagina;
+      });
+  }
+
+  cargarProveedoresAll() {
+    this.proveedorService.loadProveedoresAll()
+      .subscribe(({ proveedores, total }) => {
+        this.allProveedores = proveedores;
+        this.allTotalProveedores = total;
       });
   }
 
@@ -159,11 +173,37 @@ export class ProveedorComponent implements OnInit {
     });
   }
 
+  filtrarProveedores() {
+    if (this.proveedores_aux && this.proveedores_aux.length > 0) {
+    } else {
+      this.proveedores_aux = this.proveedores;
+    }
+    if (this.buscarTexto.trim() === '') {
+      this.proveedores = this.proveedores_aux;
+    } else {
+      this.proveedores = this.allProveedores.filter(proveedor => {
+        const regex = new RegExp(this.buscarTexto, 'i'); // 'i' para que sea insensible a mayúsculas/minúsculas
+        return (
+          proveedor.razon_social.toLowerCase().includes(this.buscarTexto.toLowerCase()) ||
+          proveedor.identificacion.includes(this.buscarTexto) ||
+          proveedor.direccion.match(regex) !== null ||
+          proveedor.telefono.includes(this.buscarTexto) ||
+          proveedor.email.includes(this.buscarTexto)
+        );
+      });
+    }
+  }
+
   get totalPaginas(): number {
     return Math.ceil(this.totalProveedores / this.itemsPorPagina);
   }
 
   calcularNumeroPaginas() {
+    if (this.totalProveedores === 0 || this.itemsPorPagina <= 0) {
+      this.paginas = [];
+      return;
+    }
+
     const totalPaginas = Math.ceil(this.totalProveedores / this.itemsPorPagina);
     const halfVisible = Math.floor(this.maximoPaginasVisibles / 2);
     let startPage = Math.max(1, this.paginaActual - halfVisible);
@@ -218,12 +258,10 @@ export class ProveedorComponent implements OnInit {
 
   cerrarModal() {
     this.mostrarModal = true;
-    // Elimina la clase 'modal-open' del body para evitar que la pantalla quede congelada
     const body = document.querySelector('body');
     if (body) {
       body.classList.remove('modal-open');
     }
-    // Cierra el modal de Bootstrap programáticamente
     const modalBackdrop = document.querySelector('.modal-backdrop');
     if (modalBackdrop) {
       this.renderer.removeChild(document.body, modalBackdrop);

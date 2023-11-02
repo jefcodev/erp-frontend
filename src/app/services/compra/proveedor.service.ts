@@ -35,13 +35,13 @@ export class ProveedorService {
     }
   }
 
-  loadProveedores2(desde: number = 0) {
-    const url = `${base_url}/proveedores?desde=${desde}`;
+  loadProveedores(desde: number = 0, limit: number = 10) {
+    const url = `${base_url}/proveedores?desde=${desde}&limit=${limit}`;
     return this.http.get<LoadProveedor>(url, this.headers);
   }
 
-  loadProveedores(desde: number = 0, limit: number = 10) {
-    const url = `${base_url}/proveedores?desde=${desde}&limit=${limit}`;
+  loadProveedoresAll() {
+    const url = `${base_url}/proveedores/all`;
     return this.http.get<LoadProveedor>(url, this.headers);
   }
 
@@ -66,9 +66,9 @@ export class ProveedorService {
       .pipe(
         map((resp: { ok: boolean, proveedor: Proveedor[] }) => resp.proveedor)
       )
-    }
-    
-    updateProveedor(proveedor: Proveedor) {
+  }
+
+  updateProveedor(proveedor: Proveedor) {
     const url = `${base_url}/proveedores/${proveedor.id_proveedor}`;
     return this.http.put(url, proveedor, this.headers);
   }

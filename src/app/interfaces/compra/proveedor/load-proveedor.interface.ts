@@ -1,6 +1,6 @@
 import { Proveedor } from "../../../models/compra/proveedor.model";
 
-export interface LoadProveedor{
+export interface LoadProveedor {
     proveedores: Proveedor[];
     total: number;
 }
