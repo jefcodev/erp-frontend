@@ -7,7 +7,8 @@
                 <!-- Button Groups -->
                 <div class="float-left">
                     <button type="button" class="btn btn-info waves-effect waves-light" data-toggle="modal"
-                        data-target="#exampleModal"><i class="fa fa-plus"></i> Nuevo</button>
+                        data-target="#exampleModal"><i class="fa fa-plus"></i> Nuevo Proveedor
+                    </button>
                     <div class="btn-group">
                         <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown"
                             aria-haspopup="true" aria-expanded="false">
@@ -17,7 +18,7 @@
                             style="position: absolute; transform: translate3d(0px, 36px, 0px); top: 0px; left: 0px; will-change: transform;">
                             <a class="dropdown-item" href="#">Importar</a>
                             <a class="dropdown-item" href="#">Exportar</a>
-                            <a class="dropdown-item" href="#">Cuentas por pagar</a>
+                            <a class="dropdown-item" href="#">Cuentas por Pagar</a>
                             <a class="dropdown-item" href="#">Imprimir</a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="#">Configuración</a>
@@ -26,11 +27,11 @@
                 </div>
 
                 <!-- Search Input -->
-                <div class="float-right">
+                <div class="float-right ">
                     <div class="form-group" style="display: flex; align-items: center;">
-                        <label style="margin-right: 10px;">Buscar:</label>
+                        <label style="height: 15px; margin-right: 10px;">Buscar:</label>
                         <input type="text" class="form-control" [(ngModel)]="buscarTexto" (input)="filtrarProveedores()"
-                            style="width: 300px;" />
+                            style="width: 100%;" />
                     </div>
                 </div>
 

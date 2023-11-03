@@ -20,27 +20,28 @@ export class ProveedorComponent implements OnInit {
   public proveedorForm: FormGroup;
   public proveedorFormU: FormGroup;
   public proveedores: Proveedor[] = [];
-  public proveedores_aux: Proveedor[] = [];
-  public totalProveedores: number = 0;
-  public allProveedores: Proveedor[] = [];
-  public allTotalProveedores: number = 0;
   public proveedorSeleccionado: Proveedor;
 
   // Paginación
-  itemsPorPagina = 10;
-  paginaActual = 1;
-  paginas: number[] = [];
-  mostrarPaginacion: boolean = false;
-  maximoPaginasVisibles = 5;
+  public totalProveedores: number = 0;
+  public itemsPorPagina = 10;
+  public paginaActual = 1;
+  public paginas: number[] = [];
+  public mostrarPaginacion: boolean = false;
+  public maximoPaginasVisibles = 5;
 
   // Búsqueda
-  buscarTexto: string = '';
+  public buscarTexto: string = '';
+  public proveedores_aux: Proveedor[] = [];
+  public allProveedores: Proveedor[] = [];
+
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private proveedorService: ProveedorService,
     private renderer: Renderer2,
+
+    private proveedorService: ProveedorService,
   ) {
     this.proveedorForm = this.fb.group({
       identificacion: ['1727671628', [Validators.required, Validators.minLength(3)]],
@@ -79,9 +80,8 @@ export class ProveedorComponent implements OnInit {
 
   cargarProveedoresAll() {
     this.proveedorService.loadProveedoresAll()
-      .subscribe(({ proveedores, total }) => {
+      .subscribe(({ proveedores }) => {
         this.allProveedores = proveedores;
-        this.allTotalProveedores = total;
       });
   }
 
@@ -177,8 +177,10 @@ export class ProveedorComponent implements OnInit {
     if (this.proveedores_aux && this.proveedores_aux.length > 0) {
     } else {
       this.proveedores_aux = this.proveedores;
+      console.log("this.proveedores_aux: ", this.proveedores_aux)
     }
     if (this.buscarTexto.trim() === '') {
+      console.log("ELSE this.proveedores_aux: ", this.proveedores_aux)
       this.proveedores = this.proveedores_aux;
     } else {
       this.proveedores = this.allProveedores.filter(proveedor => {
@@ -191,6 +193,7 @@ export class ProveedorComponent implements OnInit {
           proveedor.email.includes(this.buscarTexto)
         );
       });
+      console.log("ENCONTRADOS this.proveedores: ", this.proveedores)
     }
   }
 
@@ -203,7 +206,6 @@ export class ProveedorComponent implements OnInit {
       this.paginas = [];
       return;
     }
-
     const totalPaginas = Math.ceil(this.totalProveedores / this.itemsPorPagina);
     const halfVisible = Math.floor(this.maximoPaginasVisibles / 2);
     let startPage = Math.max(1, this.paginaActual - halfVisible);
@@ -236,10 +238,10 @@ export class ProveedorComponent implements OnInit {
     return maxValue;
   }
 
-  recargarComponente() {
-    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-      this.router.navigate(['/dashboard/proveedores']);
-    });
+  convertirAMayusculas(event: any) {
+    const inputValue = event.target.value;
+    const upperCaseValue = inputValue.toUpperCase();
+    event.target.value = upperCaseValue;
   }
 
   campoNoValido(campo: string, form: FormGroup): boolean {
@@ -250,10 +252,10 @@ export class ProveedorComponent implements OnInit {
     }
   }
 
-  convertirAMayusculas(event: any) {
-    const inputValue = event.target.value;
-    const upperCaseValue = inputValue.toUpperCase();
-    event.target.value = upperCaseValue;
+  recargarComponente() {
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this.router.navigate(['/dashboard/proveedores']);
+    });
   }
 
   cerrarModal() {

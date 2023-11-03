@@ -1,37 +1,30 @@
-import { Component, OnInit } from '@angular/core';
-import { ElementRef, HostListener } from '@angular/core';
-
+import { Component, OnInit, ElementRef, HostListener, Renderer2 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import Swal from 'sweetalert2';
 import { SweetAlertIcon } from 'sweetalert2';
-
-import { formatDate } from '@angular/common';
-
+import { formatDate, DatePipe } from '@angular/common';
+import { switchMap, concatMap } from 'rxjs/operators';
 import { of } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
-import { concatMap } from 'rxjs/operators';
+import Swal from 'sweetalert2';
 
 // XML
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import * as xml2js from 'xml2js';
+import { forkJoin, Observable } from 'rxjs';
 
 // Models
-import { Factura } from 'src/app/models/compra/factura.model';
-import { DetalleFactura } from '../../../models/compra/detalle-factura.model';
 import { Proveedor } from '../../../models/compra/proveedor.model';
-import { Producto } from 'src/app/models/inventario/producto.model';
+import { Producto } from '../../../models/inventario/producto.model';
 import { FormaPago } from '../../../models/contabilidad/forma-pago.model';
+import { Factura } from '../../../models/compra/factura.model';
+import { DetalleFactura } from '../../../models/compra/detalle-factura.model';
 
 // Services
-import { FacturaService } from 'src/app/services/compra/factura.service';
-import { DetalleFacturaService } from 'src/app/services/compra/detalle-factura.service';
-import { ProveedorService } from 'src/app/services/compra/proveedor.service';
-import { ProductoService } from 'src/app/services/inventario/producto.service';
-import { FormaPagoService } from 'src/app/services/contabilidad/forma-pago.service';
-
-import { EventEmitter, Output } from '@angular/core';
-import { forkJoin, Observable } from 'rxjs';
+import { ProveedorService } from '../../../services/compra/proveedor.service';
+import { ProductoService } from '../../../services/inventario/producto.service';
+import { FormaPagoService } from '../../../services/contabilidad/forma-pago.service';
+import { FacturaService } from '../../../services/compra/factura.service';
+import { DetalleFacturaService } from '../../../services/compra/detalle-factura.service';
 
 interface DetalleFacturaFormulario {
   producto: number;
@@ -68,13 +61,11 @@ interface FacturaXML {
   abono: number;
   //saldo: number;
 
-  /*
-    razon_social: string;
-    ruc: string;
-    estab: string;
-    ptoEmi: string;
-    secuencial: string;
-    */
+  //razon_social: string;
+  //ruc: string;
+  //estab: string;
+  //ptoEmi: string;
+  //secuencial: string;
 }
 
 interface DetalleXML {
@@ -100,17 +91,16 @@ interface DetalleXML {
 
 export class FacturaComponent implements OnInit {
 
-  @Output() proveedorCreado = new EventEmitter<any>();
-
+  //@Output() proveedorCreado = new EventEmitter<any>();
   public formSubmitted = false;
-  public ocultarModal: boolean = true;
+  public mostrarModal: boolean = true;
 
   public facturaForm: FormGroup;
   public facturaFormU: FormGroup;
   public facturaFormXML: FormGroup;
   public detalleFacturaForm: FormGroup;
-  public proveedorForm: FormGroup;
 
+  public proveedorForm: FormGroup;
   public proveedorSeleccionado2: Proveedor;
 
   public facturas: Factura[] = [];
@@ -208,23 +198,36 @@ export class FacturaComponent implements OnInit {
   public telefonoXML: string = "";
   public emailXML: string = "";
 
+  // Paginación
+  public totalFacturas: number = 0;
+  public itemsPorPagina = 10;
+  public paginaActual = 1;
+  public paginas: number[] = [];
+  public mostrarPaginacion: boolean = false;
+  public maximoPaginasVisibles = 5;
+
+  // Búsqueda
+  public buscarTexto: string = '';
+  public facturas_aux: Factura[] = [];
+  public allFacturas: Factura[] = [];
+
   constructor(
     private fb: FormBuilder,
     private router: Router,
+    private renderer: Renderer2,
     private activatedRoute: ActivatedRoute,
 
-    private elementRef: ElementRef,
-
+    private proveedorService: ProveedorService,
+    private productoService: ProductoService,
+    private formaPagoService: FormaPagoService,
     private facturaService: FacturaService,
     private detalleFacturaService: DetalleFacturaService,
-    private proveedorService: ProveedorService,
-    private formaPagoService: FormaPagoService,
-    private productoService: ProductoService,
+
+    private datePipe: DatePipe,
 
     //XML
     private http: HttpClient,
-
-
+    private elementRef: ElementRef,
   ) {
     this.facturaForm = this.fb.group({
 
@@ -320,7 +323,8 @@ export class FacturaComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarFacturas();
-    this.cargarProveedores();
+    this.cargarFacturasAll();
+    this.cargarProveedoresAll();
     this.cargarFormasPago();
     this.cargarProductos();
     this.cargarTarifasIVA();
@@ -329,14 +333,25 @@ export class FacturaComponent implements OnInit {
   }
 
   cargarFacturas() {
-    this.facturaService.loadFacturas()
-      .subscribe(({ facturas }) => {
+    const desde = (this.paginaActual - 1) * this.itemsPorPagina;
+    this.facturaService.loadFacturas(desde, this.itemsPorPagina)
+      .subscribe(({ facturas, total }) => {
         this.facturas = facturas;
+        this.totalFacturas = total;
+        this.calcularNumeroPaginas();
+        this.mostrarPaginacion = this.totalFacturas > this.itemsPorPagina;
       });
   }
 
-  cargarProveedores() {
-    this.proveedorService.loadProveedores()
+  cargarFacturasAll() {
+    this.facturaService.loadFacturasAll()
+      .subscribe(({ facturas }) => {
+        this.allFacturas = facturas;
+      });
+  }
+
+  cargarProveedoresAll() {
+    this.proveedorService.loadProveedoresAll()
       .subscribe(({ proveedores }) => {
         this.proveedores = proveedores;
       })
@@ -367,8 +382,7 @@ export class FacturaComponent implements OnInit {
                 this.mostrarMensajeDeAdvertenciaConOpciones('Advertencia', 'Proveedor no encontrado ¿Desea crear un nuevo proveedor?');
               });
           }
-        },
-        (err) => {
+        }, (err) => {
           let errorMessage = 'Se produjo un error al cargar el proveedor.';
           if (err.error && err.error.msg) {
             errorMessage = err.error.msg;
@@ -385,6 +399,7 @@ export class FacturaComponent implements OnInit {
       text,
     });
   }
+
   mostrarMensajeDeAdvertencia(title: string, text: string) {
     Swal.fire({
       icon: 'warning' as SweetAlertIcon, // Cambiado a 'warning' para mostrar una advertencia
@@ -964,13 +979,6 @@ export class FacturaComponent implements OnInit {
     });
   }
 
-  campoNoValido(campo: string, form: FormGroup): boolean {
-    if (form.get(campo)?.invalid && this.formSubmitted) {
-      return true;
-    } else {
-      return false;
-    }
-  }
 
   obtenerUltimoId(): number {
     if (this.facturas.length > 0) {
@@ -979,29 +987,12 @@ export class FacturaComponent implements OnInit {
     return 0; // o cualquier valor predeterminado
   }
 
-  recargarComponente() {
-    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-      this.router.navigate(['/dashboard/facturas']);
-    });
-
-  }
-
-  abrirModal() {
-    this.ocultarModal = false;
-    this.activatedRoute.params.subscribe(params => {
-    })
-  }
-
-  cerrarModal() {
-    this.ocultarModal = true;
-  }
 
   razonSocialProveedor: string;
   direccionProveedor: string;
   telefonoProveedor: string;
   emailProveedor: string;
 
-  estadoPagoFactura: string;
 
   actualizarRazonSocial(event: any): void {
     const proveedorId = event.target.value;
@@ -1086,7 +1077,7 @@ export class FacturaComponent implements OnInit {
           showConfirmButton: false,
           timer: 1500
         });
-        this.proveedorCreado.emit(res); // Emitir el evento proveedorCreado con el proveedor creado
+        //this.proveedorCreado.emit(res); // Emitir el evento proveedorCreado con el proveedor creado
         this.nuevoProveedor = res;
         this.id_proveedor = this.nuevoProveedor.id_proveedor;
         this.razon_social = this.nuevoProveedor.razon_social;
@@ -1452,6 +1443,7 @@ export class FacturaComponent implements OnInit {
     //   console.error('Error al cargar el archivo.', error);
     // });
   }
+
   public productoSeleccionado: number;
 
   actualizarDescripcion(event: Event, indice: number) {
@@ -1684,6 +1676,112 @@ export class FacturaComponent implements OnInit {
   formatPorcentaje(decimalValue: number): string {
     // Multiplica por 100 y agrega el símbolo '%' al final
     return (decimalValue * 100).toFixed(0) + '%';
+  }
+
+  // variables para el filtrado de facturas
+  public fechaInicio: string;
+  public fechaFin: string;
+  public estadoPago: string;
+
+  filtrarFacturas() {
+    if (this.facturas_aux && this.facturas_aux.length > 0) {
+    } else {
+      this.facturas_aux = this.facturas;
+    }
+    if (this.buscarTexto.trim() === '' && !this.estadoPago && (!this.fechaInicio || !this.fechaFin)) {
+      this.facturas = this.facturas_aux;
+    } else {
+      this.facturas = this.allFacturas.filter((factura) => {
+        const regex = new RegExp(this.buscarTexto, 'i');
+        const fechaEmision = this.datePipe.transform(new Date(factura.fecha_emision), 'yyyy-MM-dd');
+        const proveedor = this.proveedores.find((prov) => prov.id_proveedor === factura.id_proveedor);
+        return (
+          (factura.codigo.match(regex) !== null ||
+            proveedor.razon_social.match(regex) !== null ||
+            proveedor.identificacion.includes(this.buscarTexto)) &&
+          (!this.estadoPago || factura.estado_pago === this.estadoPago) &&
+          (!this.fechaInicio || fechaEmision >= this.fechaInicio) &&
+          (!this.fechaFin || fechaEmision <= this.fechaFin)
+        );
+      });
+    }
+  }
+
+  borrarFechaFin() {
+    this.fechaFin = null; // O establece el valor predeterminado deseado
+    this.filtrarFacturas();
+  }
+  borrarFechaInicio() {
+    this.fechaInicio = null; // O establece el valor predeterminado deseado
+    this.filtrarFacturas();
+  }
+
+
+  get totalPaginas(): number {
+    return Math.ceil(this.totalFacturas / this.itemsPorPagina);
+  }
+
+  calcularNumeroPaginas() {
+    if (this.totalFacturas === 0 || this.itemsPorPagina <= 0) {
+      this.paginas = [];
+      return;
+    }
+    const totalPaginas = Math.ceil(this.totalFacturas / this.itemsPorPagina);
+    const halfVisible = Math.floor(this.maximoPaginasVisibles / 2);
+    let startPage = Math.max(1, this.paginaActual - halfVisible);
+    let endPage = Math.min(totalPaginas, startPage + this.maximoPaginasVisibles - 1);
+    if (endPage - startPage + 1 < this.maximoPaginasVisibles) {
+      startPage = Math.max(1, endPage - this.maximoPaginasVisibles + 1);
+    }
+    this.paginas = Array(endPage - startPage + 1).fill(0).map((_, i) => startPage + i);
+  }
+
+  changeItemsPorPagina() {
+    this.cargarFacturas();
+    this.paginaActual = 1;
+  }
+
+  cambiarPagina(page: number): void {
+    if (page >= 1 && page <= this.totalPaginas) {
+      this.paginaActual = page;
+      this.cargarFacturas();
+    }
+  }
+
+  getMinValue(): number {
+    const minValue = (this.paginaActual - 1) * this.itemsPorPagina + 1;
+    return minValue;
+  }
+
+  getMaxValue(): number {
+    const maxValue = this.paginaActual * this.itemsPorPagina;
+    return maxValue;
+  }
+
+  campoNoValido(campo: string, form: FormGroup): boolean {
+    if (form.get(campo)?.invalid && this.formSubmitted) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  recargarComponente() {
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this.router.navigate(['/dashboard/facturas']);
+    });
+  }
+
+  cerrarModal() {
+    this.mostrarModal = true;
+    const body = document.querySelector('body');
+    if (body) {
+      body.classList.remove('modal-open');
+    }
+    const modalBackdrop = document.querySelector('.modal-backdrop');
+    if (modalBackdrop) {
+      this.renderer.removeChild(document.body, modalBackdrop);
+    }
   }
 
 }

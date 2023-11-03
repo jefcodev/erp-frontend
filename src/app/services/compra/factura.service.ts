@@ -12,7 +12,6 @@ import { LoginForm } from '../../interfaces/login-form.iterface';
 
 // Models
 import { Factura } from 'src/app/models/compra/factura.model';
-//import { DetalleFactura } from 'src/app/models/compra/detalle-factura.model';
 
 // Variable API
 const base_url = environment.base_url;
@@ -20,9 +19,10 @@ const base_url = environment.base_url;
 @Injectable({
   providedIn: 'root'
 })
+
 export class FacturaService {
 
-  constructor(private hhtp: HttpClient,
+  constructor(private http: HttpClient,
     private router: Router) { }
   get token(): string {
     return localStorage.getItem('token');
@@ -35,14 +35,19 @@ export class FacturaService {
     }
   }
 
-  loadFacturas() {
-    const url = `${base_url}/facturas`;
-    return this.hhtp.get<LoadFactura>(url, this.headers);
+  loadFacturas(desde: number = 0, limit: number = 0) {
+    const url = `${base_url}/facturas?desde=${desde}&limit=${limit}`;
+    return this.http.get<LoadFactura>(url, this.headers);
+  }
+
+  loadFacturasAll() {
+    const url = `${base_url}/facturas/all`;
+    return this.http.get<LoadFactura>(url, this.headers);
   }
 
   loadFacturaById(id_factura_compra: any) {
     const url = `${base_url}/facturas/${id_factura_compra}`;
-    return this.hhtp.get(url, this.headers).pipe(
+    return this.http.get(url, this.headers).pipe(
       map((resp: { ok: boolean, factura: Factura, saldo: number }) => {
         return { factura: resp.factura, saldo: resp.saldo };
       })
@@ -52,7 +57,7 @@ export class FacturaService {
   createFactura(formData: any) {
     const url = `${base_url}/facturas`;
     console.log("> ▶️ formData: ", formData)
-    return this.hhtp.post(url, formData, this.headers)
+    return this.http.post(url, formData, this.headers)
       .pipe(
         map((resp: { ok: boolean, factura: Factura[] }) => resp.factura)
       )
@@ -60,12 +65,12 @@ export class FacturaService {
 
   updateFactura(factura: Factura) {
     const url = `${base_url}/facturas/${factura.id_factura_compra}`;
-    return this.hhtp.put(url, factura, this.headers);
+    return this.http.put(url, factura, this.headers);
   }
 
   deleteFactura(id_factura_compra: any) { //OJO: any
     const url = `${base_url}/facturas/${id_factura_compra}`;
-    return this.hhtp.delete(url, this.headers);
+    return this.http.delete(url, this.headers);
   }
 
   logout() {
@@ -76,7 +81,7 @@ export class FacturaService {
   // Validación de token 
   validarToken(): Observable<boolean> {
     const token = localStorage.getItem('token') || '';
-    return this.hhtp.get(`${base_url}/login/renew`, {
+    return this.http.get(`${base_url}/login/renew`, {
       headers: {
         'x-token': token
       }
@@ -97,7 +102,7 @@ export class FacturaService {
   // Validación de token Fin //OJO
   login(formData: any) {
     const fomrLogin: LoginForm = formData;
-    return this.hhtp.post(`${base_url}/login`, fomrLogin)
+    return this.http.post(`${base_url}/login`, fomrLogin)
       .pipe(
         tap((resp: any) => {
           localStorage.setItem('token', resp.token)

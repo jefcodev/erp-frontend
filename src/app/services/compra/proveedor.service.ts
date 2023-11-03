@@ -5,7 +5,6 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { map, Observable, tap, catchError, of } from 'rxjs';
 
-
 // Interfaces
 import { FormProveedor } from '../../interfaces/compra/proveedor/form-proveedor.interface';
 import { LoadProveedor } from '../../interfaces/compra/proveedor/load-proveedor.interface';
@@ -20,6 +19,7 @@ const base_url = environment.base_url;
 @Injectable({
   providedIn: 'root'
 })
+
 export class ProveedorService {
 
   constructor(private http: HttpClient,
@@ -35,7 +35,7 @@ export class ProveedorService {
     }
   }
 
-  loadProveedores(desde: number = 0, limit: number = 10) {
+  loadProveedores(desde: number = 0, limit: number = 0) {
     const url = `${base_url}/proveedores?desde=${desde}&limit=${limit}`;
     return this.http.get<LoadProveedor>(url, this.headers);
   }

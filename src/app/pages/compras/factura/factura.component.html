@@ -1,30 +1,135 @@
+<div class="row">
+    <div class="col-lg-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex">
+                    <div class="m-r-20 align-self-center"><img src="../assets/images/icon/staff.png" alt="Income"></div>
+                    <div class="align-self-center">
+                        <h6 class="text-muted m-t-10 m-b-0">Número Facturas</h6>
+                        <h2 class="m-t-0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;134</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex">
+                    <div class="m-r-20 align-self-center"><img src="../assets/images/icon/income.png" alt="Income">
+                    </div>
+                    <div class="align-self-center">
+                        <h6 class="text-muted m-t-10 m-b-0">Total Facturas</h6>
+                        <h2 class="m-t-0">953,260.22</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex">
+                    <div class="m-r-20 align-self-center"><img src="../assets/images/icon/expense.png" alt="Income">
+                    </div>
+                    <div class="align-self-center">
+                        <h6 class="text-muted m-t-10 m-b-0">Total Abono</h6>
+                        <h2 class="m-t-0">540,250.34</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex">
+                    <div class="m-r-20 align-self-center"><img src="../assets/images/icon/assets.png" alt="Income">
+                    </div>
+                    <div class="align-self-center">
+                        <h6 class="text-muted m-t-10 m-b-0">Total Saldo</h6>
+                        <h2 class="m-t-0">3,500.00</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Table Data Factura -->
 <div class="row">
     <div class="col-12">
+
         <div class="card">
             <div class="card-body">
 
-                <!-- Button Groups  -->
-                <div class="float-left">
-                    <button class="btn btn-info waves-effect waves-light" data-toggle="modal"
-                        data-target="#exampleModal" type="button">
-                        <span class="fa fa-plus" style="padding-left:0px;"></span>&nbsp;Nueva
-                    </button>
-                    <button class="btn btn-new-version waves-effect waves-light" data-toggle="modal"
-                        data-target="#exampleModalXML" type="button">
-                        <span class="fa fa-upload" style="padding-left:0px;"></span>&nbsp;Subir
-                    </button>
-                    <button class="btn btn-success" type="button">
-                        <span class="fa fa-file-pdf-o" style="padding-left:0px;"></span>&nbsp;PDF
-                    </button>
-                    <button class="btn btn-success" type="button">
-                        <span class="fa fa-file-excel-o" style="padding-left:0px;"></span>&nbsp;Excel
-                    </button>
-                    <button class="btn btn-success" type="button" onclick="">
-                        <span class="fa fa-print" style="padding-left:0px;"></span>&nbsp;Imprimir
-                    </button>
-                    <div id="example23_filter" class="dataTables_filter"><label>Buscar:<input type="search" class=""
-                                placeholder="" aria-controls="example23"></label>
+                <!-- Row Button  -->
+                <div class="row button-group">
+
+                    <!-- Button Groups  -->
+                    <div class="col-lg-12 col-md-12">
+                        <div class="float-left">
+                            <button type="button" class="btn btn-info waves-effect waves-light" data-toggle="modal"
+                                data-target="#exampleModal">
+                                <i class="fa fa-plus"></i> Nueva Factura
+                            </button>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown"
+                                    aria-haspopup="true" aria-expanded="false">
+                                    Más opciones
+                                </button>
+                                <div class="dropdown-menu" x-placement="bottom-start"
+                                    style="position: absolute; transform: translate3d(0px, 36px, 0px); top: 0px; left: 0px; will-change: transform;">
+                                    <a class="dropdown-item" href="#" data-toggle="modal"
+                                        data-target="#exampleModalXML">
+                                        <span class="fa fa-download"></span> Importar </a>
+                                    <a class="dropdown-item" href="#" data-toggle="modal"
+                                        data-target="#exampleModalXML">
+                                        <span class="fa fa-upload"></span> Exportar </a>
+                                    <a class="dropdown-item" href="#">
+                                        <span class="fa fa-money"></span> Cuentas por Cobrar</a>
+                                    <a class="dropdown-item" href="#">
+                                        <span class="fa fa-print"></span> Imprimir </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="#" data-toggle="modal"
+                                        data-target="#exampleModalXML">
+                                        <i class="fa fa-cog"></i> Configuración </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    &nbsp;
+
+                    <!-- Date Range Input, Select Input and Search Input -->
+                    <div class="col-lg-12 col-md-12">
+                        <div class="button-group">
+                            <label>Fecha Inicio:
+                                <input type="date" class="form-control" [(ngModel)]="fechaInicio"
+                                    (change)="filtrarFacturas()" (dblclick)="borrarFechaInicio()"
+                                    style="width: 100%;" />
+                            </label>
+                            &nbsp;
+                            <label>Fecha Fin:
+                                <input type="date" class="form-control" [(ngModel)]="fechaFin"
+                                    (change)="filtrarFacturas()" (dblclick)="borrarFechaFin()" style="width: 100%;" />
+                            </label>
+                            &nbsp;
+                            <label>Estado Pago:
+                                <select class="form-control" [(ngModel)]="estadoPago" (change)="filtrarFacturas()"
+                                    style="width: 100%;">
+                                    <option value="PAGADA">PAGADA</option>
+                                    <option value="PENDIENTE">PENDIENTE</option>
+                                    <option value="ANULADA">ANULADA</option>
+                                    <option value=""></option>
+                                </select>
+                            </label>
+                            &nbsp;
+                            <label>Buscar:
+                                <input type="text" class="form-control flex-fill" [(ngModel)]="buscarTexto"
+                                    (input)="filtrarFacturas()" style="width: 130%;" />
+                            </label>
+
+                        </div>
                     </div>
                 </div>
 
@@ -35,9 +140,11 @@
                         <thead>
                             <tr>
                                 <th class="footable-sortable">#<span class="footable-sort-indicator"></span></th>
-                                <th class="footable-sortable">Fecha<span class="footable-sort-indicator"></span>
+                                <th class="footable-sortable">Fecha Emisión<span class="footable-sort-indicator"></span>
                                 </th>
-                                <th class="footable-sortable">Número<span class="footable-sort-indicator"></span></th>
+                                <th class="footable-sortable">Número Factura<span
+                                        class="footable-sort-indicator"></span>
+                                </th>
                                 <th class="footable-sortable">Identificación<span
                                         class="footable-sort-indicator"></span>
                                 </th>
@@ -58,7 +165,8 @@
                                 </th>
                                 <th class="footable-sortable">Asiento<span class="footable-sort-indicator"></span>
                                 </th>
-                                <th class="footable-sortable">Estado<span class="footable-sort-indicator"></span></th>
+                                <th class="footable-sortable">Estado<span class="footable-sort-indicator"></span>
+                                </th>
                                 <th class="footable-sortable text-center">Action<span
                                         class="footable-sort-indicator"></span></th>
                             </tr>
@@ -83,17 +191,21 @@
                                 <td>{{ factura.fecha_vencimiento | date:'yyyy-MM-dd' }}</td>
                                 <td class="text-right">{{ factura.importe_total }}</td>
                                 <td class="text-right">{{ factura.abono }}</td>
-                                <td class="text-right">{{ (factura.importe_total - factura.abono) | number:'1.2-2' }}
+                                <td class="text-right">{{ (factura.importe_total - factura.abono) | number:'1.2-2'
+                                    }}
                                 </td>
                                 <td>
                                     <ng-container [ngSwitch]="factura.estado_pago">
                                         <div *ngSwitchCase="'PAGADO'" class="label label-table label-success">PAGADO
                                         </div>
-                                        <div *ngSwitchCase="'PENDIENTE'" class="label label-table label-info">PENDIENTE
+                                        <div *ngSwitchCase="'PENDIENTE'" class="label label-table label-info">
+                                            PENDIENTE
                                         </div>
-                                        <div *ngSwitchCase="'VENCIDA'" class="label label-table label-warning">VENCIDA
+                                        <div *ngSwitchCase="'VENCIDA'" class="label label-table label-warning">
+                                            VENCIDA
                                         </div>
-                                        <div *ngSwitchCase="'ANULADA'" class="label label-table label-danger">ANULADA
+                                        <div *ngSwitchCase="'ANULADA'" class="label label-table label-danger">
+                                            ANULADA
                                         </div>
                                         <div *ngSwitchDefault class="label label-table label-info">{{
                                             factura.estado_pago }}
@@ -125,23 +237,62 @@
                             </tr>
                         </tbody>
                         <tfoot>
-                            <tr>
-                                <td colspan="8">
-                                    <div class="text-right">
-                                        <ul class="pagination">
-                                            <li class="footable-page-arrow disabled"><a data-page="first"
-                                                    href="#first">«</a></li>
-                                            <li class="footable-page-arrow disabled"><a data-page="prev"
-                                                    href="#prev">‹</a>
-                                            </li>
-                                            <li class="footable-page-arrow"><a data-page="next" href="#next">›</a></li>
-                                            <li class="footable-page-arrow"><a data-page="last" href="#last">»</a></li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
                         </tfoot>
                     </table>
+                </div>
+                <hr>
+
+                <!-- Pagination-->
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="form-inline">Mostrar &nbsp;
+                            <select id="demo-show-entries" [(ngModel)]="itemsPorPagina"
+                                (change)="changeItemsPorPagina()" class="mr-2">
+                                <option value="5">5</option>
+                                <option value="10">10</option>
+                                <option value="15">15</option>
+                                <option value="20">20</option>
+                            </select>entradas
+                        </label>
+                        <div class="form-inline">
+                            <label class="mr-2">Mostrando</label>
+                            {{ getMinValue() }}
+                            a {{ getMaxValue() > totalFacturas ? totalFacturas : getMaxValue() }}
+                            de {{ totalFacturas }} datos
+                        </div>
+                    </div>
+                    <div class="col-md-6 float-left" style="text-align: right;">
+                        <button class="btn btn-secondary waves-effect waves-light" type="button"
+                            (click)="cambiarPagina(1)">
+                            <i class="mdi mdi-chevron-double-left"></i>
+                        </button>
+                        <button class="btn btn-secondary waves-effect waves-light" type="button"
+                            (click)="cambiarPagina(paginaActual - 1)">
+                            <i class="mdi mdi-chevron-left"></i>
+                        </button>
+                        <ng-container *ngIf="mostrarPaginacion; else showFirstPageButton">
+                            <ng-container *ngFor="let pagina of paginas">
+                                <button class="btn btn-secondary waves-effect waves-light" type="button"
+                                    (click)="cambiarPagina(pagina)">
+                                    {{ pagina }}
+                                </button>
+                            </ng-container>
+                        </ng-container>
+                        <ng-template #showFirstPageButton>
+                            <button class="btn btn-secondary waves-effect waves-light" type="button"
+                                (click)="cambiarPagina(1)">
+                                1
+                            </button>
+                        </ng-template>
+                        <button class="btn btn-secondary waves-effect waves-light" type="button"
+                            (click)="cambiarPagina(paginaActual + 1)">
+                            <i class="mdi mdi-chevron-right"></i>
+                        </button>
+                        <button class="btn btn-secondary waves-effect waves-light" type="button"
+                            (click)="cambiarPagina(totalPaginas)">
+                            <i class="mdi mdi-chevron-double-right"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -174,7 +325,7 @@
 
                     <!-- Factura Form -->
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-3">
                             <div class="form-group">
                                 <label for="exampleInputuname">Proveedor </label>
                                 <div class="input-group">
@@ -199,7 +350,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-md-3">
                             <div class="form-group">
                                 <label for="exampleInputuname">Razón Social</label>
                                 <div class="input-group">
@@ -211,7 +362,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-md-3">
                             <div class="form-group">
                                 <label for="exampleInputuname">Dirección</label>
                                 <div class="input-group">
@@ -222,7 +373,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-3">
                             <div class="form-group">
                                 <label for="exampleInputuname">Teléfono</label>
                                 <div class="input-group">
@@ -233,7 +384,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-3">
                             <div class="form-group">
                                 <label for="exampleInputuname">Email</label>
                                 <div class="input-group">
@@ -244,7 +395,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-md-3">
                             <div class="form-group">
                                 <label for="exampleInputuname">Forma de pago</label>
                                 <div class="input-group">
@@ -258,7 +409,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-md-3">
                             <div class="form-group">
                                 <label for="exampleInputuname">No. Factura</label>
                                 <div class="input-group">
@@ -268,8 +419,18 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Código Acceso</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon">#<i class=""></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder="Código de acceso" formControlName="">
+                                </div>
+                            </div>
+                        </div>
 
-                        <div class="col-md-6">
+                        <div class="col-md-3">
                             <div class="form-group">
                                 <label for="exampleInputuname">Fecha emisión</label>
                                 <div class="input-group">
@@ -279,7 +440,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-3">
                             <div class="form-group">
                                 <label for="exampleInputuname">Fecha vencimiento</label>
                                 <div class="input-group">
@@ -1161,15 +1322,13 @@
             <!-- Modal Footer -->
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" (click)="crearProveedor(); cargarProveedores()
+                <button type="button" class="btn btn-primary" (click)="crearProveedor(); cargarProveedoresAll()
                 " data-dismiss="modal">Crear</button>
             </div>
 
         </div>
     </div>
 </div>
-
-
 
 <style>
     /* Table Data Factura */
