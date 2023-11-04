@@ -195,21 +195,35 @@ export class FacturaComponent implements OnInit {
   public precioCompraUnitarioAux: number = 0;
 
   // informacioó adicional
-  public telefonoXML: string = "";
+  public telefonoXML: string = "holis";
   public emailXML: string = "";
 
   // Paginación
-  public totalFacturas: number = 0;
+  //public totalFacturas: number = 0; abajo
   public itemsPorPagina = 10;
   public paginaActual = 1;
   public paginas: number[] = [];
   public mostrarPaginacion: boolean = false;
   public maximoPaginasVisibles = 5;
 
-  // Búsqueda
+  // Búsqueda y filtrado
   public buscarTexto: string = '';
-  public facturas_aux: Factura[] = [];
   public allFacturas: Factura[] = [];
+  public fechaInicio: string;
+  public fechaFin: string;
+  public estadoPagoSelect: string;
+
+  public totalFacturas: number = 0;
+  public totalFacturasPendientes: number = 0;
+  public sumaSaldo: number = 0;
+  public sumaImporteTotal: number = 0;
+
+  public facturasAux: Factura[] = [];
+  public totalFacturasAux: number = 0;
+  public totalFacturasPendientesAux: number = 0;
+  public sumaSaldoAux: number = 0;
+  public sumaImporteTotalAux: number = 0;
+
 
   constructor(
     private fb: FormBuilder,
@@ -335,9 +349,9 @@ export class FacturaComponent implements OnInit {
   cargarFacturas() {
     const desde = (this.paginaActual - 1) * this.itemsPorPagina;
     this.facturaService.loadFacturas(desde, this.itemsPorPagina)
-      .subscribe(({ facturas, total }) => {
+      .subscribe(({ facturas, totalFacturas }) => {
         this.facturas = facturas;
-        this.totalFacturas = total;
+        this.totalFacturas = totalFacturas;
         this.calcularNumeroPaginas();
         this.mostrarPaginacion = this.totalFacturas > this.itemsPorPagina;
       });
@@ -345,8 +359,12 @@ export class FacturaComponent implements OnInit {
 
   cargarFacturasAll() {
     this.facturaService.loadFacturasAll()
-      .subscribe(({ facturas }) => {
+      .subscribe(({ facturas, totalFacturas, totalFacturasPendientes, sumaSaldo, sumaImporteTotal }) => {
         this.allFacturas = facturas;
+        this.totalFacturas = totalFacturas;
+        this.totalFacturasPendientes = totalFacturasPendientes;
+        this.sumaSaldo = sumaSaldo;
+        this.sumaImporteTotal = sumaImporteTotal;
       });
   }
 
@@ -1051,7 +1069,7 @@ export class FacturaComponent implements OnInit {
         });
         this.cargarProveedorByIdentificacion(this.identificacion);
         //this.recargarComponente();
-        this.cerrarModal();
+        //this.cerrarModal();
       }, (err) => {
         let errorMessage = 'Se produjo un error al crear el proveedor.';
         if (err.error && err.error.msg) {
@@ -1678,31 +1696,53 @@ export class FacturaComponent implements OnInit {
     return (decimalValue * 100).toFixed(0) + '%';
   }
 
-  // variables para el filtrado de facturas
-  public fechaInicio: string;
-  public fechaFin: string;
-  public estadoPago: string;
-
   filtrarFacturas() {
-    if (this.facturas_aux && this.facturas_aux.length > 0) {
-    } else {
-      this.facturas_aux = this.facturas;
+    if (!this.facturasAux || this.facturasAux.length === 0) {
+      // Inicializar las variables auxiliares una sola vez
+      this.facturasAux = this.facturas;
+      this.totalFacturasAux = this.totalFacturas;
+      this.totalFacturasPendientesAux = this.totalFacturasPendientes;
+      this.sumaImporteTotalAux = this.sumaImporteTotal;
+      this.sumaSaldoAux = this.sumaSaldo;
     }
-    if (this.buscarTexto.trim() === '' && !this.estadoPago && (!this.fechaInicio || !this.fechaFin)) {
-      this.facturas = this.facturas_aux;
+    if (this.buscarTexto.trim() === '' && !this.estadoPagoSelect && (!this.fechaInicio || !this.fechaFin)) {
+      // Restablecemos las variables principales con las auxiliares
+      this.facturas = this.facturasAux;
+      this.totalFacturas = this.totalFacturasAux;
+      this.totalFacturasPendientes = this.totalFacturasPendientesAux;
+      this.sumaImporteTotal = this.sumaImporteTotalAux;
+      this.sumaSaldo = this.sumaSaldoAux;
     } else {
+      // Reiniciamos variables
+      this.totalFacturas = 0;
+      this.totalFacturasPendientes = 0;
+      this.sumaImporteTotal = 0;
+      this.sumaSaldo = 0;
+
       this.facturas = this.allFacturas.filter((factura) => {
         const regex = new RegExp(this.buscarTexto, 'i');
         const fechaEmision = this.datePipe.transform(new Date(factura.fecha_emision), 'yyyy-MM-dd');
         const proveedor = this.proveedores.find((prov) => prov.id_proveedor === factura.id_proveedor);
-        return (
+
+        const pasaFiltro = (
           (factura.codigo.match(regex) !== null ||
             proveedor.razon_social.match(regex) !== null ||
             proveedor.identificacion.includes(this.buscarTexto)) &&
-          (!this.estadoPago || factura.estado_pago === this.estadoPago) &&
+          (!this.estadoPagoSelect || factura.estado_pago === this.estadoPagoSelect) &&
           (!this.fechaInicio || fechaEmision >= this.fechaInicio) &&
           (!this.fechaFin || fechaEmision <= this.fechaFin)
         );
+
+        if (pasaFiltro) {
+          this.sumaImporteTotal = this.sumaImporteTotal + parseFloat("" + factura.importe_total);
+          if (factura.estado_pago === "PENDIENTE") {
+            this.totalFacturasPendientes++
+          }
+
+          this.sumaSaldo = this.sumaSaldo + (parseFloat("" + factura.importe_total) - parseFloat("" + factura.abono));
+          this.totalFacturas++;
+        }
+        return pasaFiltro;
       });
     }
   }
