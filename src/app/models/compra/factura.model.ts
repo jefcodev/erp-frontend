@@ -17,6 +17,9 @@ export class Factura {
         public importe_total: number,
         public abono: number,
         //public saldo: number,
+
+        public observacion: string,
+
         public estado?: Boolean
     ) { }
 }

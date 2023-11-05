@@ -117,6 +117,7 @@ export class FacturaComponent implements OnInit {
   public abono: number;
   public abonoU: number;
   public abonoXML: number;
+  public observacion: string;
 
   public proveedores: Proveedor[] = [];
   public formas_pago: FormaPago[] = [];
@@ -224,6 +225,7 @@ export class FacturaComponent implements OnInit {
   public sumaSaldoAux: number = 0;
   public sumaImporteTotalAux: number = 0;
 
+  public today: string;
 
   constructor(
     private fb: FormBuilder,
@@ -242,6 +244,7 @@ export class FacturaComponent implements OnInit {
     //XML
     private http: HttpClient,
     private elementRef: ElementRef,
+
   ) {
     this.facturaForm = this.fb.group({
 
@@ -293,6 +296,7 @@ export class FacturaComponent implements OnInit {
 
       abono: [''],
       saldo: ['0.00'],
+      observacion: [''],
     });
 
     this.facturaFormXML = this.fb.group({
@@ -319,6 +323,7 @@ export class FacturaComponent implements OnInit {
 
       abono: [''],
       saldo: ['0.00'],
+      //observacionU: ['']
     });
 
     this.detalleFacturaForm = this.fb.group({
@@ -333,6 +338,8 @@ export class FacturaComponent implements OnInit {
       telefono: ['0978812129', [Validators.required, Validators.minLength(3)]],
       email: ['eepinanjotac@utn.edu.ec', [Validators.required, Validators.email]],
     });
+    this.today = new Date().toISOString().split('T')[0];
+    console.log("fechas", this.today)
   }
 
   ngOnInit(): void {
@@ -344,6 +351,7 @@ export class FacturaComponent implements OnInit {
     this.cargarTarifasIVA();
     const fechaActual = new Date();
     this.fechaActual = formatDate(fechaActual, 'd-M-yyyy', 'en-US', 'UTC-5');
+   
   }
 
   cargarFacturas() {
@@ -567,9 +575,7 @@ export class FacturaComponent implements OnInit {
             total_sin_impuesto, total_descuento, valor, importe_total, abono } = factura.factura[0];
 
           const saldo = factura.saldo.toFixed(2);
-          console.log("this.saldo");
-          console.log(saldo);
-          //this.saldo = parseFloat(saldo);
+          const observacion = "";
 
           this.saldoInicial = parseFloat(saldo);
 
@@ -592,9 +598,10 @@ export class FacturaComponent implements OnInit {
               this.telefono = telefono;
               this.email = email;
               const abono = "0.00";
+              //const observacion = "";
               return of({
                 identificacion, razon_social, direccion, telefono, email, id_forma_pago, id_asiento, codigo,
-                fecha_emision, fecha_vencimiento, estado_pago, total_sin_impuesto, total_descuento, valor, importe_total, abono, saldo
+                fecha_emision, fecha_vencimiento, estado_pago, total_sin_impuesto, total_descuento, valor, importe_total, abono, saldo, observacion,
               });
             })
           );
@@ -615,8 +622,9 @@ export class FacturaComponent implements OnInit {
   crearFactura() {
     console.log('\n\n🟩 crearFactura() {');
     this.formSubmitted = true;
-    console.log("▶️ this.facturaForm.value:", this.facturaForm.value);
     if (this.facturaForm.invalid) {
+      // aquí se valida los campos que están validadeso en "Input Validation"
+      console.log("▶️ VALIDA CALENDARIO this.facturaForm.value:", this.facturaForm.value);
       return;
     }
 
@@ -663,8 +671,8 @@ export class FacturaComponent implements OnInit {
           () => {
             Swal.fire({
               icon: 'success',
-              title: 'Factura y detalles creados',
-              text: 'El factura y los detalles se han creado correctamente.',
+              title: 'Factura Creada',
+              text: 'La factura se han creado correctamente.',
               showConfirmButton: false,
               timer: 1500
             });
@@ -672,7 +680,7 @@ export class FacturaComponent implements OnInit {
             this.cerrarModal();
           },
           (err) => {
-            let errorMessage = 'Se produjo un error al crear el factura.';
+            let errorMessage = 'Se produjo un error al crear el factura..';
             if (err.error && err.error.msg) {
               errorMessage = err.error.msg;
             }
@@ -680,8 +688,13 @@ export class FacturaComponent implements OnInit {
           }
         );
 
-        this.recargarComponente();
-      })
+        //this.recargarComponente();
+      },
+      (err) => {
+        const errorMessage = err.error?.msg || 'Se produjo un error al crear la factura.';
+        Swal.fire('Error', errorMessage, 'error');
+      }
+    );
   }
 
   crearFacturaXML() {
@@ -761,8 +774,8 @@ export class FacturaComponent implements OnInit {
             () => {
               Swal.fire({
                 icon: 'success',
-                title: 'Factura y detalles creados',
-                text: 'El factura y los detalles se han creado correctamente.',
+                title: 'Factura creada',
+                text: 'La factura se han creado correctamente.',
                 showConfirmButton: false,
                 timer: 1500
               });
@@ -935,14 +948,15 @@ export class FacturaComponent implements OnInit {
   }
 
   actualizarFactura() {
+    this.formSubmitted = true;
     if (this.facturaFormU.invalid) {
+      console.log("VALIDATION")
       return;
     }
     const data = {
       ...this.facturaFormU.value,
-      id_factura_compra: this.facturaSeleccionada.id_factura_compra
+      id_factura_compra: this.facturaSeleccionada.id_factura_compra,
     }
-
     this.facturaService.updateFactura(data)
       .subscribe(res => {
         Swal.fire({
@@ -956,13 +970,10 @@ export class FacturaComponent implements OnInit {
         this.recargarComponente();
         this.cerrarModal();
       }, (err) => {
-        let errorMessage = 'Se produjo un error al actualizar el factura.';
-        if (err.error && err.error.msg) {
-          errorMessage = err.error.msg;
-        }
-        Swal.fire('Error', err.error.msg, 'error');
+        const errorMessage = err.error?.msg || 'Se produjo un error al actualizar la factura.';
+        Swal.fire('Error', errorMessage, 'error');
       });
-    this.recargarComponente();
+    //this.recargarComponente();
   }
 
   borrarFactura(factura: Factura) {
@@ -996,7 +1007,6 @@ export class FacturaComponent implements OnInit {
       }
     });
   }
-
 
   obtenerUltimoId(): number {
     if (this.facturas.length > 0) {
@@ -1181,6 +1191,7 @@ export class FacturaComponent implements OnInit {
     const fechaVencimiento = this.facturaFormU.get('fecha_vencimiento')?.value;
     if (fechaVencimiento) {
       const fecha = new Date(fechaVencimiento);
+      //console.log("fecha..........", fecha)
       return fecha.toISOString().split('T')[0];
     }
     return '';
@@ -1643,33 +1654,38 @@ export class FacturaComponent implements OnInit {
   }
 
   actualizarSaldo(): void {
-    this.abono = this.facturaForm.get('abono').value || 0; // Obtener el valor del abono, asegurándose de que sea un número
-    const saldo = this.sumaPrecioTotal; // Obtener el saldo directamente
+    this.abono = this.facturaForm.get('abono').value || 0;
+    const nuevoSaldo = Math.max(this.sumaPrecioTotal - this.abono, 0);
+    if (nuevoSaldo === 0) {
+      this.abono = this.sumaPrecioTotal;
+      this.facturaForm.get('abono').setValue(this.abono.toFixed(2));
+      this.facturaForm.get('saldo').setValue("0.00"); // Actualizar el campo "Saldo" en el formulario
+    } else {
+      this.facturaForm.get('saldo').setValue(nuevoSaldo.toFixed(2));
+    }
+  }
+  actualizarSaldo2(): void {
+    this.abono = this.facturaForm.get('abono').value || 0;
+    const saldo = this.sumaPrecioTotal;
     if (this.abono > saldo) {
-      // Si el abono es mayor que el saldo, establecer el abono como igual al saldo
       this.facturaForm.get('abono').setValue(saldo.toFixed(2));
     }
-    const nuevoSaldo = saldo - this.abono; // Calcular el saldo restando el abono del importe total
+    const nuevoSaldo = saldo - this.abono;
     console.log("abono: ", this.abono);
     console.log("importe total: ", saldo);
     console.log("saldo: ", nuevoSaldo);
     this.facturaForm.get('saldo').setValue(nuevoSaldo.toFixed(2)); // Actualizar el campo "Saldo" en el formulario
   }
 
-  //public saldo: number;
-
   public saldoInicial: number;
+  public saldoInicial2: number = 0;
 
   actualizarSaldoU(): void {
-    console.log("SALDO INICIAL", this.saldoInicial)
-    this.abonoU = this.facturaFormU.get('abono').value || 0; // Obtener el valor del abono, asegurándose de que sea un número
-    const nuevoSaldo = this.saldoInicial - this.abonoU; // Calcular el nuevo saldo restando el abono del saldo inicial
-    console.log("2 abono: ", this.abonoU);
-    console.log("2 saldo: ", nuevoSaldo);
-
-    if (nuevoSaldo < 0) {
-      // Si el nuevo saldo es negativo, establecer el abono como igual al saldo inicial
-      this.facturaFormU.get('abono').setValue(this.saldoInicial.toFixed(2));
+    this.abonoU = this.facturaFormU.get('abono').value || 0;
+    const nuevoSaldo = Math.max(this.saldoInicial - this.abonoU, 0);
+    if (nuevoSaldo === 0) {
+      this.abonoU = this.saldoInicial;
+      this.facturaFormU.get('abono').setValue(this.abonoU.toFixed(2));
       this.facturaFormU.get('saldo').setValue("0.00");
     } else {
       this.facturaFormU.get('saldo').setValue(nuevoSaldo.toFixed(2));
@@ -1677,14 +1693,11 @@ export class FacturaComponent implements OnInit {
   }
 
   actualizarSaldoXML(): void {
-    this.abonoXML = this.facturaFormXML.get('abono').value || 0; // Obtener el valor del abono, asegurándose de que sea un número
-    const nuevoSaldo = this.importeTotal - this.abonoXML; // Calcular el saldo restando el abono del importe total
-    console.log("2 abono: ", this.abonoXML);
-    console.log("2 saldo: ", nuevoSaldo);
-
-    if (nuevoSaldo < 0) {
-      // Si el nuevo saldo es negativo, establecer el abono como igual al saldo
-      this.facturaFormXML.get('abono').setValue(this.importeTotal.toFixed(2));
+    this.abonoXML = this.facturaFormXML.get('abono').value || 0;
+    const nuevoSaldo = Math.max(this.importeTotal - this.abonoXML, 0);
+    if (nuevoSaldo === 0) {
+      this.abonoXML = this.importeTotal;
+      this.facturaFormXML.get('abono').setValue(this.abonoXML.toFixed(2));
       this.facturaFormXML.get('saldo').setValue("0.00");
     } else {
       this.facturaFormXML.get('saldo').setValue(nuevoSaldo.toFixed(2));

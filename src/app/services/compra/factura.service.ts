@@ -48,7 +48,7 @@ export class FacturaService {
   loadFacturaById(id_factura_compra: any) {
     const url = `${base_url}/facturas/${id_factura_compra}`;
     return this.http.get(url, this.headers).pipe(
-      map((resp: { ok: boolean, factura: Factura, saldo: number }) => {
+      map((resp: { ok: boolean, factura: Factura, saldo: number, observacion: string }) => {
         return { factura: resp.factura, saldo: resp.saldo };
       })
     );
