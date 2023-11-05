@@ -45,7 +45,6 @@ interface DetalleFacturaFormulario {
 
 interface FacturaXML {
   id_proveedor: number;
-  id_forma_pago: number;
   id_asiento: number;
   id_info_tributaria: number,
   clave_acceso: string;
@@ -60,6 +59,8 @@ interface FacturaXML {
   importe_total: number;
   abono: number;
   //saldo: number;
+  id_forma_pago: number;
+  observacion: string;
 
   //razon_social: string;
   //ruc: string;
@@ -117,7 +118,7 @@ export class FacturaComponent implements OnInit {
   public abono: number;
   public abonoU: number;
   public abonoXML: number;
-  public observacion: string;
+  //public observacion: string;
 
   public proveedores: Proveedor[] = [];
   public formas_pago: FormaPago[] = [];
@@ -257,7 +258,6 @@ export class FacturaComponent implements OnInit {
       telefono: ['', [Validators.required, Validators.minLength(0)]],
       email: ['', [Validators.required, Validators.email]],
 
-      id_forma_pago: ['2'],
       id_asiento: ['1'],
       codigo: [''],
       fecha_emision: [''],
@@ -268,8 +268,10 @@ export class FacturaComponent implements OnInit {
       propina: [],
       importe_total: [],
 
+      id_forma_pago: [''],
       abono: [],
       saldo: ['0.00'],
+      observacion: [''],
     });
 
     this.facturaFormU = this.fb.group({
@@ -283,7 +285,6 @@ export class FacturaComponent implements OnInit {
       telefono: [''],
       email: [''],
 
-      id_forma_pago: [''],
       id_asiento: [''],
       codigo: [''],
       fecha_emision: [''],
@@ -294,6 +295,7 @@ export class FacturaComponent implements OnInit {
       valor: [''],
       importe_total: [''],
 
+      id_forma_pago: [''],
       abono: [''],
       saldo: ['0.00'],
       observacion: [''],
@@ -310,8 +312,8 @@ export class FacturaComponent implements OnInit {
       telefono: [''],
       email: [''],
 
-      id_forma_pago: [''],
       id_asiento: [''],
+      clave_acceso: [''],
       codigo: [''],
       fecha_emision: [''],
       fecha_vencimiento: [''],
@@ -321,9 +323,10 @@ export class FacturaComponent implements OnInit {
       valor: [''],
       importe_total: [''],
 
+      id_forma_pago: [''],
       abono: [''],
       saldo: ['0.00'],
-      //observacionU: ['']
+      observacion: [''],
     });
 
     this.detalleFacturaForm = this.fb.group({
@@ -351,7 +354,7 @@ export class FacturaComponent implements OnInit {
     this.cargarTarifasIVA();
     const fechaActual = new Date();
     this.fechaActual = formatDate(fechaActual, 'd-M-yyyy', 'en-US', 'UTC-5');
-   
+
   }
 
   cargarFacturas() {
@@ -454,9 +457,9 @@ export class FacturaComponent implements OnInit {
         console.log('Usuario hizo clic en "No" o cerró el cuadro de diálogo');
       }
     });
-
   }
 
+  /*
   mostrarMensajeDeAdvertenciaConOpciones2(title: string, text: string) {
     console.log('\n\n-> mostrarMensajeDeAdvertenciaConOpciones2(title: string, text: string) {')
     Swal.fire({
@@ -477,7 +480,7 @@ export class FacturaComponent implements OnInit {
         console.log('Usuario hizo clic en "No" o cerró el cuadro de diálogo');
       }
     });
-  }
+  }*/
 
   cargarFormasPago() {
     this.formaPagoService.loadFormasPago()
@@ -486,6 +489,7 @@ export class FacturaComponent implements OnInit {
       })
   }
 
+  /*
   id_forma_pago: any;
   codigo_forma_pago: any;
   descripcion_forma_pago: any;
@@ -523,7 +527,9 @@ export class FacturaComponent implements OnInit {
         }
       );
   }
+  */
 
+  /*
   crearFormaPagoXML() {
     this.codigo_forma_pago = this.formaPago
     this.descripcion_forma_pago = "FORMA DE PAGO N " + this.formaPago + " (editar)"
@@ -559,6 +565,7 @@ export class FacturaComponent implements OnInit {
       });
     //this.recargarComponente();
   }
+  */
 
   cargarProductos() {
     this.productoService.loadProductos()
@@ -571,9 +578,10 @@ export class FacturaComponent implements OnInit {
     this.facturaService.loadFacturaById(id_factura_compra)
       .pipe(
         switchMap((factura: any) => {
-          const { id_proveedor, id_forma_pago, id_asiento, codigo, fecha_emision, fecha_vencimiento, estado_pago,
+          const { id_proveedor, id_asiento, codigo, fecha_emision, fecha_vencimiento, estado_pago,
             total_sin_impuesto, total_descuento, valor, importe_total, abono } = factura.factura[0];
 
+          const id_forma_pago = ""; // aqui podemos precargar un id en html
           const saldo = factura.saldo.toFixed(2);
           const observacion = "";
 
@@ -600,8 +608,8 @@ export class FacturaComponent implements OnInit {
               const abono = "0.00";
               //const observacion = "";
               return of({
-                identificacion, razon_social, direccion, telefono, email, id_forma_pago, id_asiento, codigo,
-                fecha_emision, fecha_vencimiento, estado_pago, total_sin_impuesto, total_descuento, valor, importe_total, abono, saldo, observacion,
+                identificacion, razon_social, direccion, telefono, email, id_asiento, codigo,
+                fecha_emision, fecha_vencimiento, estado_pago, total_sin_impuesto, total_descuento, valor, importe_total, id_forma_pago, abono, saldo, observacion,
               });
             })
           );
@@ -623,9 +631,20 @@ export class FacturaComponent implements OnInit {
     console.log('\n\n🟩 crearFactura() {');
     this.formSubmitted = true;
     if (this.facturaForm.invalid) {
-      // aquí se valida los campos que están validadeso en "Input Validation"
-      console.log("▶️ VALIDA CALENDARIO this.facturaForm.value:", this.facturaForm.value);
+      // Aquí se valida los campos que están validando en "Input Validation"
+      console.log("Validar Formulario", this.facturaForm.value);
       return;
+    }
+
+    const abono = this.facturaForm.get('abono').value;
+    const observacion = this.facturaForm.get('observacion').value;
+    const idFormaPago = this.facturaForm.get('id_forma_pago').value;
+    if (abono > 0 && observacion.trim() === '') {
+      alert('Debes proporcionar una observación si el abono es mayor a cero.');
+      return; // La función se detiene aquí
+    } else if (abono > 0 && idFormaPago === '') {
+      alert('Debes seleccionar una forma de pago.');
+      return; // La función se detiene aquí
     }
 
     // Obtener los detalles del formulario
@@ -636,7 +655,6 @@ export class FacturaComponent implements OnInit {
     this.facturaForm.get('valor').setValue(this.sumaTotalIVA);
     this.facturaForm.get('importe_total').setValue(this.sumaPrecioTotal);
 
-    // Realizar posteo del factura principal
     this.facturaService.createFactura(this.facturaForm.value).subscribe(
       (res: any) => {
         const facturaId = res.id_factura_compra; // Obtener el ID del factura guardado
@@ -699,13 +717,12 @@ export class FacturaComponent implements OnInit {
 
   crearFacturaXML() {
     console.log('\n\n🟩 crearFacturaXML() {');
-    this.formSubmitted = true; //OJO
+
     // Reiniciar el arreglo detallesXML
     //this.detallesXML = [];
     // Limpiar el formulario de detalles
     //this.detalleFacturaForm.reset();
 
-    console.log("this.detallesXML: ", this.detallesXML);
     if (this.detallesXML.length === 0) {
       Swal.fire({
         icon: 'warning',
@@ -715,10 +732,29 @@ export class FacturaComponent implements OnInit {
       return;
     }
 
+    this.formSubmitted = true;
+    if (this.facturaFormU.invalid) {
+      // Aquí se valida los campos que están validando en "Input Validation"
+      console.log("Validar Formulario", this.facturaForm.value);
+      return;
+    }
+
+    const abono = this.facturaFormXML.get('abono').value;
+    const observacion = this.facturaFormXML.get('observacion').value;
+    const idFormaPago = this.facturaFormXML.get('id_forma_pago').value;
+    if (abono > 0 && observacion.trim() === '') {
+      alert('Debes proporcionar una observación si el abono es mayor a cero.');
+      return; // La función se detiene aquí
+    } else if (abono > 0 && idFormaPago === '') {
+      alert('Debes seleccionar una forma de pago.');
+      return; // La función se detiene aquí
+    }
+
     // Una vez que los productos se han creado, procede a crear la factura
     const facturaData: FacturaXML = {
       id_proveedor: this.id_proveedor,
-      id_forma_pago: this.id_forma_pago,
+      //id_forma_pago: this.id_forma_pago, con esto cargamos la forma de pago del XML
+      id_forma_pago: this.facturaFormXML.get("id_forma_pago").value,
       id_asiento: 1,
       id_info_tributaria: 1,
       clave_acceso: this.claveAcceso,
@@ -731,8 +767,10 @@ export class FacturaComponent implements OnInit {
       valor: this.valor2,
       propina: this.propina,
       importe_total: this.importeTotal,
+
       abono: this.abonoXML,
       //saldo: 0, // Valor válido
+      observacion: this.facturaFormXML.get("observacion").value,
     };
     this.facturaService.createFactura(facturaData).subscribe(
       (res: any) => {
@@ -950,13 +988,27 @@ export class FacturaComponent implements OnInit {
   actualizarFactura() {
     this.formSubmitted = true;
     if (this.facturaFormU.invalid) {
-      console.log("VALIDATION")
+      // Aquí se valida los campos que están validando en "Input Validation"
+      console.log("Validar Formulario", this.facturaForm.value);
       return;
     }
+
+    const abono = this.facturaFormU.get('abono').value;
+    const observacion = this.facturaFormU.get('observacion').value;
+    const idFormaPago = this.facturaFormU.get('id_forma_pago').value;
+    if (abono > 0 && observacion.trim() === '') {
+      alert('Debes proporcionar una observación si el abono es mayor a cero.');
+      return; // La función se detiene aquí
+    } else if (abono > 0 && idFormaPago === '') {
+      alert('Debes seleccionar una forma de pago.');
+      return; // La función se detiene aquí
+    }
+
     const data = {
       ...this.facturaFormU.value,
       id_factura_compra: this.facturaSeleccionada.id_factura_compra,
     }
+
     this.facturaService.updateFactura(data)
       .subscribe(res => {
         Swal.fire({
@@ -1380,7 +1432,7 @@ export class FacturaComponent implements OnInit {
         console.log('--> Fin -  Cargar Proveedor');
 
         console.log('--> Incio - Cargar Forma Pago');
-        this.cargarFormaPagoByCodigo(this.formaPago)
+        //this.cargarFormaPagoByCodigo(this.formaPago)
         console.log('--> Fin - Cargar Forma Pago');
       });
     });

@@ -352,7 +352,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label for="exampleInputuname">Razón Social</label>
@@ -364,7 +363,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label for="exampleInputuname">Dirección</label>
@@ -409,7 +407,7 @@
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
-                                <label for="exampleInputuname">Fecha emisión</label>
+                                <label for="exampleInputuname">Fecha Emisión</label>
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="ti-calendar"></i></div>
                                     <input type="date" class="form-control" id="exampleInputuname"
@@ -417,7 +415,16 @@
                                 </div>
                             </div>
                         </div>
-
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Fecha Vencimiento</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-calendar"></i></div>
+                                    <input type="date" class="form-control" id="exampleInputuname"
+                                        placeholder="Fecha Vencimiento" formControlName="fecha_vencimiento">
+                                </div>
+                            </div>
+                        </div>
 
                         <!-- Input Validation -->
                         <div class="col">
@@ -553,6 +560,9 @@
                         <div class="row">
 
                             <!-- Espaciador -->
+                            <div class="col-md-3"></div>
+
+                            <!-- Pago de Factura -->
                             <div class="col-md-3">
                                 <br>
                                 <div class="form-group">
@@ -563,22 +573,11 @@
                                             </option>
                                         </select>
                                     </label>
-                                    <label for="exampleInputuname" style="width: 100%;">Fecha de Vencimiento
-                                        <input type="date" class="form-control" id="exampleInputuname"
-                                            formControlName="fecha_vencimiento">
-                                    </label>
                                     <label for="exampleInputuname" style="width: 100%;">Observación
                                         <input type="text" class="form-control" id="exampleInputuname"
-                                            placeholder="Nota ó número de control" formControlName="codigo">
+                                            placeholder="Nota ó número de control" formControlName="observacion">
                                     </label>
-                                </div>
-                            </div>
-
-                            <!-- Pago de Factura -->
-                            <div class="col-md-3">
-                                <br>
-                                <div class="form-group">
-                                    <label for="exampleInputuname">Pagar Factura
+                                    <label for="exampleInputuname" style="width: 100%;">Pagar Factura
                                         <div class="input-group">
                                             <div class="input-group-addon"><b>ABONAR:</b></div>
                                             <input type="number" class="form-control text-right" id="exampleInputuname"
@@ -586,21 +585,12 @@
                                                 min="0">
                                         </div>
                                     </label>
-                                    <label for="exampleInputuname">Saldo Pendiente
+                                    <label for="exampleInputuname" style="width: 100%;">Saldo Pendiente
                                         <div class="input-group">
                                             <div class="input-group-addon"><b>SALDO:</b>&nbsp;&nbsp;&nbsp;&nbsp;</div>
                                             <input type="number" class="form-control text-right" id="exampleInputuname"
                                                 placeholder="{{ facturaForm.get('saldo')?.value }}"
                                                 formControlName="saldo" readonly>
-                                        </div>
-                                    </label>
-                                    <label for="exampleInputuname">Total Factura
-                                        <div class="input-group">
-                                            <div class="input-group-addon"><b>TOTAL:</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                            </div>
-                                            <input type="number" class="form-control text-right" id="exampleInputuname"
-                                                placeholder="{{ sumaPrecioTotal.toFixed(2) }}"
-                                                formControlName="importe_total" readonly>
                                         </div>
                                     </label>
                                 </div>
@@ -617,7 +607,6 @@
                                     <p>TOTAL DESCUENTO: </p>
                                     <p>ICE:</p>
                                     <p>IVA 12%: </p>
-                                    <hr>
                                     <h3 class="left-align"><b>VALOR TOTAL: </b></h3>
                                 </div>
                             </div>
@@ -633,7 +622,6 @@
                                     <p>$ {{ sumaTotalDescuento.toFixed(2) }} </p>
                                     <p>$ {{ sumaTotalICE.toFixed(2) }} </p>
                                     <p>$ {{ sumaTotalIVA.toFixed(2) }} </p>
-                                    <hr>
                                     <h3>$ {{ sumaPrecioTotal.toFixed(2) }} </h3>
                                 </div>
                             </div>
@@ -727,6 +715,7 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- 
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label for="exampleInputuname">Forma de pago</label>
@@ -735,6 +724,17 @@
 
                                     <input type="text" class="form-control" id="exampleInputuname"
                                         placeholder='{{ formaPago }}' formControlName="id_forma_pago" readonly>
+                                </div>
+                            </div>
+                        </div>
+                    -->
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Clave Acceso</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-credit-card"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder='{{ claveAcceso }}' formControlName="clave_acceso" readonly>
                                 </div>
                             </div>
                         </div>
@@ -754,12 +754,13 @@
                                 <label for="exampleInputuname">Fecha vencimiento</label>
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="ti-calendar"></i></div>
-                                    <input type="text" class="form-control" id="exampleInputuname"
+                                    <input type="date" class="form-control" id="exampleInputuname"
                                         placeholder="Fecha Vencimiento" formControlName="fecha_vencimiento"
-                                        [value]="getFormattedFechaVencimiento()" readonly>
+                                        [value]="getFormattedFechaVencimiento()">
                                 </div>
                             </div>
                         </div>
+                        <!-- 
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label for="exampleInputuname">Estado de pago</label>
@@ -770,6 +771,7 @@
                                 </div>
                             </div>
                         </div>
+                       -->
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label for="exampleInputuname">Subir XML</label>
@@ -853,38 +855,52 @@
                         <div class="row">
 
                             <!-- Espaciador -->
-                            <div class="col-md-3"></div>
+                            <div class="col-md-3">
+                            </div>
 
                             <!-- Pago de Factura -->
                             <div class="col-md-3">
                                 <br>
                                 <div class="form-group">
-                                    <label for="exampleInputuname">PAGO DE FACTURA</label>
-                                    <div class="input-group">
-                                        <div class="input-group-addon"><b>Abonar:</b><i class=""></i></div>
-                                        <input type="number" class="form-control text-right" id="exampleInputuname"
-                                            placeholder="0.00" formControlName="abono" (input)="actualizarSaldoXML()"
-                                            min="0">
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <div class="input-group">
-                                        <div class="input-group-addon"><b>Saldo:</b>&nbsp;&nbsp;&nbsp;&nbsp;<i
-                                                class=""></i></div>
-                                        <input type="number" class="form-control text-right" id="exampleInputuname"
-                                            placeholder="{{ facturaFormXML.get('saldo')?.value }}"
-                                            formControlName="saldo" readonly>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="input-group">
-                                        <div class="input-group-addon"><b>Total:</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i
-                                                class=""></i></div>
-                                        <input type="number" class="form-control text-right" id="exampleInputuname"
-                                            placeholder="{{ importeTotal.toFixed(2) }}" formControlName="importe_total"
-                                            readonly>
-                                    </div>
+                                    <label for="exampleInputuname">Forma de Pago
+                                        <select class="form-control" formControlName="id_forma_pago">
+                                            <option *ngFor="let fp of formas_pago" [value]="fp.id_forma_pago">
+                                                {{ fp.codigo }} - {{ fp.descripcion }}
+                                            </option>
+                                        </select>
+                                    </label>
+                                    <label for="exampleInputuname" style="width: 100%;">Observación
+                                        <input type="text" class="form-control" placeholder="Nota ó número de control"
+                                            formControlName="observacion">
+                                    </label>
+                                    <label for="exampleInputuname" style="width: 100%;">Pagar Factura
+                                        <div class="input-group">
+                                            <div class="input-group-addon"><b>ABONAR:</b><i class=""></i></div>
+                                            <input type="number" class="form-control text-right" id="exampleInputuname"
+                                                placeholder="0.00" formControlName="abono"
+                                                (input)="actualizarSaldoXML()" min="0">
+                                        </div>
+                                    </label>
+                                    <label for="exampleInputuname" style="width: 100%;">Saldo Pendiente
+                                        <div class="input-group">
+                                            <div class="input-group-addon"><b>SALDO:</b>&nbsp;&nbsp;&nbsp;&nbsp;
+                                            </div>
+                                            <input type="number" class="form-control text-right" id="exampleInputuname"
+                                                placeholder="{{ facturaFormXML.get('saldo')?.value }}"
+                                                formControlName="saldo" readonly>
+                                        </div>
+                                    </label>
+                                    <!-- 
+                                    <label for="exampleInputuname">Total Factura
+                                        <div class="input-group">
+                                            <div class="input-group-addon"><b>Total:</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                            </div>
+                                            <input type="number" class="form-control text-right" id="exampleInputuname"
+                                                placeholder="{{ importeTotal.toFixed(2) }}"
+                                                formControlName="importe_total" readonly>
+                                        </div>
+                                    </label>
+                                    -->
                                 </div>
                             </div>
 
@@ -923,15 +939,10 @@
             </div>
 
             <!-- Modal Footer -->
-            <div class="col-md-12">
-                <hr>
-                <div class="float-right modal-footer">
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" (click)="crearFacturaXML();"
-                        data-dismiss="modal">Cargar</button>
-                </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-info" (click)="crearFacturaXML();">Guardar</button>
             </div>
-
         </div>
     </div>
 </div>
@@ -1120,55 +1131,41 @@
                         <hr>
                         <div class="row">
 
+                            <!-- Espaciador -->
+                            <div class="col-md-3"></div>
+
                             <!-- Pago de Factura -->
                             <div class="col-md-3">
                                 <br>
                                 <div class="form-group">
                                     <label for="exampleInputuname">Forma de Pago
-                                        <select class="form-control" formControlName="id_forma_pago">
+                                        <select class="form-control" formControlName="id_forma_pago"
+                                            [attr.disabled]="saldoInicial == 0">
                                             <option *ngFor="let fp of formas_pago" [value]="fp.id_forma_pago">
                                                 {{ fp.codigo }} - {{ fp.descripcion }}
                                             </option>
                                         </select>
                                     </label>
-                                    <!-- Pago de Factura 
-                                    <label for="exampleInputuname" style="width: 100%;">Fecha Vencimiento
-                                        <input type="date" class="form-control" id="exampleInputuname"
-                                            formControlName="fecha_vencimiento">
-                                    </label>
-
-                                    -->
                                     <label for="exampleInputuname" style="width: 100%;">Observación
                                         <input type="text" class="form-control" placeholder="Nota ó número de control"
                                             formControlName="observacion" min="0" [readonly]="saldoInicial === 0">
+                                        <!-- [readonly]="abonoU <= 0">
+                                        [readonly]="saldoInicial === 0 || abonoU <= 0"-->
                                     </label>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <br>
-                                <div class="form-group">
-                                    <label for="exampleInputuname">Pagar Factura
+                                    <label for="exampleInputuname" style="width: 100%;">Pagar Factura
                                         <div class="input-group">
-                                            <div class="input-group-addon"><b>Abonar:</b></div>
+                                            <div class="input-group-addon"><b>ABONAR:</b></div>
                                             <input type="number" class="form-control text-right" id="exampleInputuname"
                                                 placeholder="0.00" formControlName="abono" (input)="actualizarSaldoU()"
                                                 min="0" [readonly]="saldoInicial === 0">
                                         </div>
                                     </label>
-                                    <label for="exampleInputuname">Saldo Pendiente
+                                    <label for="exampleInputuname" style="width: 100%;">Saldo Pendiente
                                         <div class="input-group">
-                                            <div class="input-group-addon"><b>Saldo:</b>&nbsp;&nbsp;&nbsp;&nbsp;
+                                            <div class="input-group-addon"><b>SALDO:</b>&nbsp;&nbsp;&nbsp;&nbsp;
                                             </div>
                                             <input type="number" class="form-control text-right" id="exampleInputuname"
                                                 placeholder="0.00" formControlName="saldo" readonly>
-                                        </div>
-                                    </label>
-                                    <label for="exampleInputuname">Total Factura
-                                        <div class="input-group">
-                                            <div class="input-group-addon"><b>Total:</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                            </div>
-                                            <input type="number" class="form-control text-right" id="exampleInputuname"
-                                                placeholder="0.00" formControlName="importe_total" readonly>
                                         </div>
                                     </label>
                                 </div>
@@ -1211,7 +1208,8 @@
             <!-- Modal Footer -->
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-info" (click)="actualizarFactura();">Actualizar</button>
+                <button type="button" class="btn btn-info" (click)="actualizarFactura();"
+                    [disabled]="saldoInicial === 0">Actualizar</button>
             </div>
         </div>
     </div>
@@ -1291,8 +1289,8 @@
             <!-- Modal Footer -->
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" (click)="crearProveedor(); cargarProveedoresAll()
-                " data-dismiss="modal">Crear</button>
+                <button type="button" class="btn btn-primary"
+                    (click)="crearProveedor(); cargarProveedoresAll()">Guardar</button>
             </div>
 
         </div>
