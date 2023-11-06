@@ -228,7 +228,7 @@
                                 <td *ngIf="factura.estado else inactivoOption" class="text-nowrap text-center">
 
                                     <a class="cursor" data-toggle="modal"
-                                        (click)="cargarFacturaPorId(factura.id_factura_compra); cargarDetalleFacturas(factura.id_factura_compra)"
+                                        (click)="cargarFacturaPorId(factura.id_factura_compra); cargarDetallesFacturaByIdFactura(factura.id_factura_compra)"
                                         data-target="#exampleModalU"><span
                                             class="fa fa-pencil text-inverse m-r-10"></span></a>
 
@@ -336,7 +336,7 @@
                                     <!--se aumento id="exampleInputuname"-->
                                     <input type="text" class="form-control" id="exampleInputuname"
                                         placeholder="Buscar identificación" formControlName="identificacion"
-                                        (input)="filtrarProveedores3($event)">
+                                        (input)="filtrarProveedores($event)">
                                     <button class="btn btn-success" data-toggle="modal" data-target="#modalProveedor"
                                         type="button">
                                         Nuevo <span class="fa fa-plus" style="padding-left: 10px;"></span>
@@ -345,7 +345,7 @@
                                 <div class="proveedores-filtrados" *ngIf="proveedoresFiltrados.length > 0">
                                     <ul class="list-group">
                                         <li class="list-group-item" *ngFor="let proveedor of proveedoresFiltrados"
-                                            (click)="seleccionarProveedor3(proveedor)">
+                                            (click)="seleccionarProveedor(proveedor)">
                                             {{ proveedor.identificacion }}
                                         </li>
                                     </ul>
@@ -358,8 +358,7 @@
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="ti-user"></i></div>
                                     <input type="text" class="form-control" id="exampleInputuname"
-                                        placeholder="Razón Social" formControlName="razon_social"
-                                        [value]="razonSocialProveedor" readonly>
+                                        placeholder="Razón Social" formControlName="razon_social" readonly>
                                 </div>
                             </div>
                         </div>
@@ -369,8 +368,7 @@
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="ti-location-pin"></i></div>
                                     <input type="text" class="form-control" id="exampleInputuname"
-                                        placeholder="Dirección" formControlName="direccion" [value]="direccionProveedor"
-                                        readonly>
+                                        placeholder="Dirección" formControlName="direccion" readonly>
                                 </div>
                             </div>
                         </div>
@@ -380,8 +378,7 @@
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="ti-mobile"></i></div>
                                     <input type="text" class="form-control" id="exampleInputuname"
-                                        placeholder="Teléfono" formControlName="telefono" [value]="telefonoProveedor"
-                                        readonly>
+                                        placeholder="Teléfono" formControlName="telefono" readonly>
                                 </div>
                             </div>
                         </div>
@@ -391,7 +388,7 @@
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="ti-email"></i></div>
                                     <input type="text" class="form-control" id="exampleInputuname" placeholder="Email"
-                                        formControlName="email" [value]="emailProveedor" readonly>
+                                        formControlName="email" readonly>
                                 </div>
                             </div>
                         </div>
@@ -429,7 +426,12 @@
                         <!-- Input Validation -->
                         <div class="col">
                             <div class="text-danger">
-                                <p *ngIf="campoNoValido('email',facturaForm)">El campo email es obligatorio</p>
+                                <p *ngIf="campoNoValido('identificacion', facturaForm)">La identificación es
+                                    obligatoria.
+                                </p>
+                                <p *ngIf="campoNoValido('codigo', facturaForm)">El número de factura es obligatorio.</p>
+                                <p *ngIf="campoNoValido('fecha_emision', facturaForm)">La fecha de emisión es
+                                    obligatoria.</p>
                             </div>
                         </div>
 
@@ -456,7 +458,7 @@
                                     <th class="text-center">Acción</th>
                                 </thead>
                                 <tbody>
-                                    <tr *ngFor="let detalle of detalleFacturaFormulario; let i = index">
+                                    <tr *ngFor="let detalle of detalleFacturaFormInterface; let i = index">
                                         <td class="text-center">{{ i + 1 }}</td>
                                         <!-- original
                                         <td><select class="form-control" formControlName="producto_{{i}}">
@@ -639,7 +641,7 @@
     </div>
 </div>
 
-<!-- Modal Upload XML -->
+<!-- Modal XML -->
 <div class="modal fade modal-principal" id="exampleModalXML" tabindex="-1" role="dialog"
     aria-labelledby="exampleModalLabel1" #miModal>
     <div class="modal-dialog" role="document" style="width: 100%;" max-width="1000px;">
@@ -828,7 +830,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr *ngFor="let item of detallesXML; let i = index">
+                                <tr *ngFor="let item of detallesXMLInterface; let i = index">
                                     <td class="text-center">{{ i + 1 }}</td>
                                     <td>{{ item.codigoPrincipal }}</td>
                                     <td>{{ item.cantidad }}</td>
@@ -1103,7 +1105,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr *ngFor="let df of detalle_facturas let i = index">
+                                <tr *ngFor="let df of detalles_factura let i = index">
                                     <td class="text-center">{{ i + 1 }}</td>
                                     <td class="text-center">{{df.id_producto}}</td>
                                     <td class="text-center">{{ df.cantidad | number: '1.2-2' }}</td>
@@ -1341,7 +1343,7 @@
 
     }
 
-    /* Modal Upload XML */
+    /* Modal XML */
     .custom-file-upload {
         display: inline-block;
         padding: 6px 20px;

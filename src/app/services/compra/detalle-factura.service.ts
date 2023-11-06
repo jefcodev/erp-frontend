@@ -47,15 +47,16 @@ export class DetalleFacturaService {
         map((resp: { ok: boolean, detalle_factura: DetalleFactura }) => resp.detalle_factura)
       )
   }
-  loadDetalleFacturaByFactura(id_factura_compra: any) {
+  loadDetallesFacturaByIdFactura(id_factura_compra: any) {
     const url = `${base_url}/detalle-facturas/factura/${id_factura_compra}`;
     return this.http.get<LoadDetalleFactura>(url, this.headers);
   }
 
-  loadDetalleFacturaByFactura2(id_factura_compra: any) {
+  /*loadDetalleFacturaByFactura2(id_factura_compra: any) {
     const url = `${base_url}/detalle-facturas/factura/${id_factura_compra}`;
     return this.http.get<{ detalle_facturas: DetalleFactura[] }>(url, this.headers);
   }
+  */
 
   //createDetalleFactura(formData: FormDetalleFactura) {
   createDetalleFactura(formData: any) {
