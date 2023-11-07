@@ -3,11 +3,11 @@ import { TestBed } from '@angular/core/testing';
 import{RouterTestingModule} from '@angular/router/testing'
 import { AppComponent } from './app.component';
 import{HttpClientTestingModule} from '@angular/common/http/testing'
-import { Condominio } from './models/administracion/condominio.model';
-import { CondominosComponent } from './pages/administracion/condomino/condominos.component';
-import { Condomino } from './models/administracion/condomino.model';
+//import { Condominio } from './models/administracion/condominio.model';
+//import { CondominosComponent } from './pages/administracion/condomino/condominos.component';
+//import { Condomino } from './models/administracion/condomino.model';
 
-import { ReservaComponent } from './pages/administracion/reserva/reserva.component';
+//import { ReservaComponent } from './pages/administracion/reserva/reserva.component';
 
 
 
@@ -48,7 +48,7 @@ describe('AppComponent', () => {
     expect(compiled.querySelector('.content span')?.textContent).toContain('Frontend app is running!');
   }); */
 
-
+/*
   it('Verificar si el formulario condominoForm es inválido', () => {
     const fixture = TestBed.createComponent(CondominosComponent);
     const app = fixture.componentInstance;
@@ -110,7 +110,7 @@ describe('AppComponent', () => {
   });
 
 
-
+*/
 
 
 

@@ -1,53 +1,87 @@
-import { Component, OnInit } from '@angular/core';
-import { ElementRef, HostListener } from '@angular/core';
-
+import { Component, OnInit, ElementRef, ViewChild, HostListener, Renderer2 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import Swal from 'sweetalert2';
+import { Router } from '@angular/router';
 import { SweetAlertIcon } from 'sweetalert2';
-
-import { formatDate } from '@angular/common';
-
+import { formatDate, DatePipe } from '@angular/common';
+import { switchMap, concatMap } from 'rxjs/operators';
 import { of } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
-import { concatMap } from 'rxjs/operators';
+import Swal from 'sweetalert2';
+
 // XML
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import * as xml2js from 'xml2js';
-//import * as $ from 'jquery';
-import { forkJoin } from 'rxjs';
-import { mergeMap } from 'rxjs/operators';
-
+import { forkJoin, Observable } from 'rxjs';
 
 // Models
-import { Factura } from 'src/app/models/venta/factura.model';
-import { DetalleFactura } from '../../../models/venta/detalle-factura.model';
 import { Cliente } from '../../../models/venta/cliente.model';
-import { Producto } from 'src/app/models/inventario/producto.model';
+import { Factura } from 'src/app/models/venta/factura.model';
 import { FormaPago } from '../../../models/contabilidad/forma-pago.model';
+import { Producto } from 'src/app/models/inventario/producto.model';
+import { DetalleFactura } from '../../../models/venta/detalle-factura.model';
 
 // Services
+import { ClienteService } from 'src/app/services/venta/cliente.service';
 import { FacturaService } from 'src/app/services/venta/factura.service';
 import { DetalleFacturaService } from 'src/app/services/venta/detalle-factura.service';
-import { ClienteService } from 'src/app/services/venta/cliente.service';
 import { ProductoService } from 'src/app/services/inventario/producto.service';
 import { FormaPagoService } from 'src/app/services/contabilidad/forma-pago.service';
 
-import { EventEmitter, Output } from '@angular/core';
-
-
-
-interface DetalleFactura2 {
+interface DetalleFacturaFormInterface {
   producto: number;
-  cantidad: number;
+  codigo_principal: string;
   descripcion: string;
+  cantidad: number;
   precio_unitario: number;
-  tarifa: number;
   descuento: number;
-  valor_total: number;
-  valor_ICE: number;
+  precio_total_sin_impuesto: number;
+  //codigo: number;
+  //codigo_porcentaje: number;
+  tarifa: number;
+  //base_imponible: number;
+  valor: number;
+  ice: number;
+  precio_total: number;
 }
 
+interface FacturaXMLInterface {
+  id_cliente: number;
+  id_asiento: number;
+  id_info_tributaria: number,
+  clave_acceso: string;
+  codigo: string;
+  fecha_emision: Date;
+  fecha_vencimiento: Date;
+  estado_pago: string;
+  total_sin_impuesto: number;
+  total_descuento: number;
+  valor: number;
+  propina: number;
+  importe_total: number;
+  abono: number;
+  //saldo: number;
+  id_forma_pago: number;
+  observacion: string;
+
+  //razon_social: string;
+  //ruc: string;
+  //estab: string;
+  //ptoEmi: string;
+  //secuencial: string;
+}
+
+interface DetalleXMLInterface {
+  codigoPrincipal: string;
+  descripcion: string;
+  cantidad: number;
+  precioUnitario: number;
+  descuento: number;
+  precioTotalSinImpuesto: number;
+  codigo: string; // Add the new properties here
+  codigoPorcentaje: string;
+  tarifa: number;
+  baseImponible: number;
+  valor: number;
+}
 
 @Component({
   selector: 'app-factura',
@@ -55,101 +89,166 @@ interface DetalleFactura2 {
   styles: [
   ]
 })
+
 export class FacturaVentaComponent implements OnInit {
+
   public formSubmitted = false;
-  public ocultarModal: boolean = true;
-  public facturaForm: FormGroup;
-  public facturaFormXML: FormGroup;
-  public detalleForm: FormGroup;
-  public facturaFormU: FormGroup;
-  public clienteForm: FormGroup;
-  public clienteSeleccionado2: Cliente;
-
-
-
-  public facturas: Factura[] = [];
-  public saldo: string;
-  public detalleFactura: DetalleFactura;
-  public detalleFactura2: DetalleFactura2[] = [];  // Agrega una matriz para almacenar los detalles del asiento
-  public facturaSeleccionado: Factura;
+  public mostrarModal: boolean = true;
   public fechaActual: string;
 
-  public codigo: string;
-  //public abono: string;
-
-  public subtotal_sin_impuestos: string;
-  public total_descuento: string;
-  public iva: string;
-  public valor_total: string;
-  //public valor_total: string;
-  public abono: string;
-
+  // Datos recuperados
+  //public clientes: Cliente[] = [];
   public clientes: Cliente[] = [];
   public formas_pago: FormaPago[] = [];
   public productos: Producto[] = [];
+  public facturas: Factura[] = [];
 
+  // Modal Create Factura
+  public facturaForm: FormGroup;
+  public detalleFacturaFormInterface: DetalleFacturaFormInterface[] = [];
+  // Variables para filtrar clientes 
+  clientesFiltrados: any[] = [];
+  clienteSeleccionado: any;
+  identificacionSeleccionada: string;
+  // Variables para actualizar sumas
+  public sumaTotalImpuesto: number = 0;
+  public sumaTotalImpuestoCero: number = 0;
+  public sumaTotalDescuento: number = 0;
+  public sumaTotalSinImpuesto: number = 0;
+  public sumaTotalICE: number = 0;
+  public sumaTotalIVA: number = 0;
+  public sumaPrecioTotal: number = 0;
 
+  // Modal Update Factura
+  public facturaFormU: FormGroup;
+  public facturaSeleccionada: Factura;
+  public detalles_factura: DetalleFactura[] = [];
+  public codigo: string;
+  public total_sin_impuesto: number;
+  public total_descuento: number;
+  public valor: number;
+  public importe_total: number;
+  public abono: number;
+  public abonoU: number; // Abono recuperado
+  public saldoInicial: number; // Saldo recuperado
+
+  // Modal XML
+  public facturaFormXML: FormGroup;
+  public detalleFacturaForm: FormGroup;
+  public abonoXML: number;
+
+  // Modal Create Cliente
+  public clienteForm: FormGroup;
+  // Variables para cargar cliente por identificación
   public identificacion: string;
-  public nombre: string;
-  public apellido: string;
+  public razon_social: string;
   public nombre_comercial: string;
   public direccion: string;
   public telefono: string;
   public email: string;
-  //@Output() clienteCreado: EventEmitter<any> = new EventEmitter<any>();
-  @Output() clienteCreado = new EventEmitter<any>();
-  //@HostListener('document:click', ['$event'])
-
-  public detalle_facturas: DetalleFactura[] = [];
+  // Variables para crear cliente
+  public nuevoCliente: any;
+  public id_cliente: any;
+  //public razon_social: string; // Reutilizada 
+  //public direccion: string; // Reutilizada
+  //public telefono: string; // Reutilizada
+  //public email: string; // Reutilizada
 
   // XML
-  title = 'Read XML';
-  public xmlItems: ProductDetail[] = []; // Updated to use the ProductDetail interface
+  public detallesXMLInterface: DetalleXMLInterface[] = [];
   private xmlFilePath: string | null = null;
-
-  // info tributaria
+  // infoTributaria
+  public ambiente: string = '';
+  public tipoEmision: string = '';
   public razonSocial: string = '';
   public ruc: string = '';
   public claveAcceso: string = '';
+  public codDoc: string = '';
   public estab: string = '';
   public ptoEmi: string = '';
   public secuencial: string = '';
-  // info factura
-  public fechaEmision: string = '';
+  public dirMatriz: string = '';
+  public contribuyenteRimpe: string = '';
+  // infoFactura
+  public fechaEmision: Date = null;
+  public dirEstablecimiento: string = '';
+  public obligadoContabilidad: string = '';
+  public tipoIdentificacionComprador: string = '';
   public razonSocialComprador: string = '';
   public identificacionComprador: string = '';
   public direccionComprador: string = '';
-  public totalSinImpuestos: number = 0;
-  public totalDescuento: number = 0;
+  public totalSinImpuestos: number = 0.00;
+  public totalDescuento: number = 0.00;
+  public ivaAux: number = 0.00;
+  // infoFactura/totalConImpuestos
   public codigo2: string = '';
   public codigoPorcentaje2: string = '';
-  public baseImponible2: number = 0;
-  public valor2: number = 0;
-  public importeTotal: number = 0;
+  public baseImponible2: number = 0.00;
+  public valor2: number = 0.00;
+  // infoFactura
+  public propina: number = 0.00;
+  public importeTotal: number = 0.00;
+  public moneda: string = "";
+  // infoFactura/pagos
   public formaPago: string = '';
   public total: number = 0;
   public plazo: number = 0;
   public unidadTiempo: string = '';
-
-  // calculados
+  // variables calculadas con detalles
   public precioTotalSinImpuestoAux: number = 0;
-  public valor: number = 0;
+  public valorAux: number = 0;
+  // infoAdicional
+  public telefonoXML: string = "";
+  public emailXML: string = "";
+
+  // Paginación
+  //public totalFacturas: number = 0; abajo
+  public itemsPorPagina = 10;
+  public paginaActual = 1;
+  public paginas: number[] = [];
+  public mostrarPaginacion: boolean = false;
+  public maximoPaginasVisibles = 5;
+
+  // Búsqueda y filtrado
+  public buscarTexto: string = '';
+  public allFacturas: Factura[] = [];
+  public fechaInicio: string;
+  public fechaFin: string;
+  public estadoPagoSelect: string;
+
+  public totalFacturas: number = 0;
+  public totalFacturasPendientes: number = 0;
+  public sumaSaldo: number = 0;
+  public sumaImporteTotal: number = 0;
+
+  public facturasAux: Factura[] = [];
+  public totalFacturasAux: number = 0;
+  public totalFacturasPendientesAux: number = 0;
+  public sumaSaldoAux: number = 0;
+  public sumaImporteTotalAux: number = 0;
 
   constructor(
+    //private activatedRoute: ActivatedRoute,
+
+    //XML
     private fb: FormBuilder,
     private router: Router,
-    private activatedRoute: ActivatedRoute,
+    private renderer: Renderer2,
+
+    // Servicios 
+    //private clienteService: ClienteService,
+    private clienteService: ClienteService,
+    private productoService: ProductoService,
+    private formaPagoService: FormaPagoService,
     private facturaService: FacturaService,
     private detalleFacturaService: DetalleFacturaService,
-    private clienteService: ClienteService,
-    private formaPagoService: FormaPagoService,
-
-    private productoService: ProductoService,
-
-    private elementRef: ElementRef,
 
     //XML
     private http: HttpClient,
+    private elementRef: ElementRef,
+
+    // Filtrado de facturas
+    private datePipe: DatePipe,
 
   ) {
     this.facturaForm = this.fb.group({
@@ -158,60 +257,27 @@ export class FacturaVentaComponent implements OnInit {
 
       id_cliente: ['', [Validators.required, Validators.minLength(0)]],
       identificacion: ['', [Validators.required, Validators.minLength(0)]],
-      nombre: ['', [Validators.required, Validators.minLength(0)]],
-      apellido: ['', [Validators.required, Validators.minLength(0)]],
+      razon_social: ['', [Validators.required, Validators.minLength(0)]],
       direccion: ['', [Validators.required, Validators.minLength(0)]],
       telefono: ['', [Validators.required, Validators.minLength(0)]],
       email: ['', [Validators.required, Validators.email]],
 
-      id_forma_pago: ['2'],
       id_asiento: ['1'],
       codigo: [''],
-      //fecha_emision: ['2023-01-01'],
-      fecha_emision: [''],
-      //fecha_vencimiento: ['2023-01-01'],
-      fecha_vencimiento: [''],
-      //estado_pago: ['POR PAGAR'],
-      subtotal_sin_impuestos: ['22'],
-      total_descuento: ['22'],
-      iva: ['22'],
-      valor_total: ['22'],
-      abono: [''],
-      //saldo: ['8'],
+      fecha_emision: ['', Validators.required],
+      fecha_vencimiento: ['', [Validators.required]],
+      total_sin_impuesto: [],
+      total_descuento: [],
+      valor: [],
+      propina: [],
+      importe_total: [],
+
+      id_forma_pago: [''],
+      abono: [],
+      saldo: ['0.00'],
+      observacion: [''],
 
     });
-    /*
-    //Esta forma actua como si estuviera con un formulario quemado
-    this.facturaFormXML = this.fb.group({
-
-      id_factura_venta: [''],
-
-      id_cliente: ['1', [Validators.required, Validators.minLength(0)]],
-      identificacion: ['111111', [Validators.required, Validators.minLength(0)]],
-      nombre: ['Edison ', [Validators.required, Validators.minLength(0)]],
-      apellido: ['Pinanjota', [Validators.required, Validators.minLength(0)]],
-      direccion: ['Cayambe', [Validators.required, Validators.minLength(0)]],
-      telefono: ['0978812129', [Validators.required, Validators.minLength(0)]],
-      email: ['eepinanjota95@utn.edu.ec', [Validators.required, Validators.email]],
-
-      id_forma_pago: ['2'],
-      id_asiento: ['1'],
-      codigo: ['1'],
-      //fecha_emision: this.fechaEmision,
-      fecha_emision: [''],
-      //fecha_emision: [''],
-      fecha_vencimiento: ['2023-01-01'],
-      //fecha_vencimiento: [''],
-      //estado_pago: ['POR PAGAR'],
-      subtotal_sin_impuestos: ['22'],
-      total_descuento: ['22'],
-      iva: ['22'],
-      valor_total: ['22'],
-      abono: ['23'],
-      //saldo: ['8'],
-    });
-    */
-
 
     this.facturaFormU = this.fb.group({
 
@@ -225,22 +291,51 @@ export class FacturaVentaComponent implements OnInit {
       telefono: [''],
       email: [''],
 
-      id_forma_pago: [''],
       id_asiento: [''],
       codigo: [''],
       fecha_emision: [''],
       fecha_vencimiento: [''],
       estado_pago: [''],
-      subtotal_sin_impuestos: [''],
+      total_sin_impuesto: [''],
       total_descuento: [''],
-      iva: [''],
-      valor_total: [''],
+      valor: [''],
+      importe_total: [''],
 
+      id_forma_pago: [''],
       abono: [''],
-      saldo: [''],
+      saldo: ['0.00'],
+      observacion: [''],
     });
 
-    this.detalleForm = this.fb.group({
+    this.facturaFormXML = this.fb.group({
+
+      //id_factura_venta: [''], 
+
+      //id_cliente: [''],
+      identificacion: [''],
+      razon_social: [''],
+      direccion: [''],
+      telefono: [''],
+      email: [''],
+
+      id_asiento: [''],
+      clave_acceso: [''],
+      codigo: [''],
+      fecha_emision: [''],
+      fecha_vencimiento: [''],
+      estado_pago: [''],
+      total_sin_impuesto: [''],
+      total_descuento: [''],
+      valor: [''],
+      importe_total: [''],
+
+      id_forma_pago: [''],
+      abono: [''],
+      saldo: ['0.00'],
+      observacion: [''],
+    });
+
+    this.detalleFacturaForm = this.fb.group({
       detalles: this.fb.array([])
     });
 
@@ -254,282 +349,45 @@ export class FacturaVentaComponent implements OnInit {
       email: ['eepinanjotac@utn.edu.ec', [Validators.required, Validators.email]],
     });
 
+    // Agregar validación personalizada para fecha de vencimiento
+    this.facturaForm.get('fecha_vencimiento').setValidators((control) => {
+      const fechaEmision = this.facturaForm.get('fecha_emision').value;
+      const fechaVencimiento = control.value;
+      if (fechaEmision && fechaVencimiento && fechaVencimiento < fechaEmision) {
+        return { fechaInvalida: true };
+      }
+      return null;
+    });
+
   }
 
   ngOnInit(): void {
-    this.cargarFacturas();
-    this.cargarClientes();
+    this.cargarClientesAll();
     this.cargarFormasPago();
     this.cargarProductos();
+    this.cargarFacturasAll();
+    this.cargarFacturas();
     const fechaActual = new Date();
     this.fechaActual = formatDate(fechaActual, 'd-M-yyyy', 'en-US', 'UTC-5');
-    //this.codigo = 'CODIGO 1';
   }
 
-  cargarFacturas() {
-    this.facturaService.loadFacturas()
-      .subscribe(({ facturas }) => {
-        this.facturas = facturas;
-      });
-  }
-
-  cargarClientes() {
-    this.clienteService.loadClientes()
+  // Método para cargar todos los clientes 
+  cargarClientesAll() {
+    this.clienteService.loadClientesAll()
       .subscribe(({ clientes }) => {
         this.clientes = clientes;
       })
   }
 
-  cargarClientePorId(id_cliente: any) {
-    return this.clienteService.loadClienteById(id_cliente);
-  }
-
-  //cargarClientePorIdentificacion(identificacion: any) {
-  //return this.clienteService.loadClienteByIdentificacion(identificacion);
-  //}
-
-  /*
-
-  cargarClientePorIdentificacion(identificacion: string) {
-    console.log("  cargarClientePorIdentificacion(identificacion: any) {")
-    console.log('identificaion a CARGAR')
-    console.log(identificacion)
-    this.clienteService.loadClienteByIdentificacion(identificacion)
-      .subscribe(cliente => {
-        const { id_cliente, identificacion, nombre, apellido } = cliente[0];
-        this.clienteSeleccionado2 = cliente[0];
-        console.log("id_cliente: " + id_cliente);
-        console.log("identificacion: " + identificacion);
-        console.log("nombre: " + nombre);
-        console.log("apellido: " + apellido);
-      })
-  }
-  */
-
-  cargarClienteByIdentificacion(identificacion: string) {
-    console.log("\n\n-> cargarClientePorIdentificacion(identificacion: string) {");
-    console.log('identificacion: ' + identificacion);
-    console.log('--> Incio - Load Cliente (service)');
-    this.clienteService.loadClienteByIdentificacion(identificacion)
-      .subscribe(
-        (cliente) => {
-          console.log('\n\n--> Incio - Load Cliente (service - subscribe)');
-          if (Array.isArray(cliente) && cliente.length > 0) {
-            const { id_cliente, identificacion, nombre, apellido } = cliente[0];
-            console.log("Se encontró el cliente con la identificación: " + identificacion);
-            console.log("< id_cliente: ", id_cliente);
-            console.log("< identificacion: ", identificacion);
-            console.log("< nombre: " + nombre);
-            console.log("< apellido: " + apellido);
-            this.id_cliente = id_cliente;
-            this.identificacion = identificacion;
-            this.nombre = nombre;
-            this.apellido = apellido;
-          } else {
-            console.log("No se encontró ningún cliente con la identificación: " + identificacion);
-            Swal.fire({
-              title: 'Éxito 2',
-              text: 'XML Cargado',
-              icon: 'success',
-              timer: 1500, // Duración en milisegundos (1 segundo)
-              showConfirmButton: false, // Ocultar el botón "OK"
-            })
-              .then(() => {
-                this.mostrarMensajeDeAdvertenciaConOpciones('Advertencia', 'Cliente no encontrado ¿Desea crear un nuevo cliente?');
-              });
-          }
-          console.log('--> Fin - Load Cliente (service - subscribe)');
-        },
-        (err) => {
-          // Manejo de errores en caso de problemas con la solicitud HTTP
-          console.error("Error al buscar el cliente: ", err);
-          // Puedes mostrar un mensaje de error al usuario o realizar otras acciones aquí
-          let errorMessage = 'Se produjo un error al cargar el cliente.';
-          if (err.error && err.error.msg) {
-            errorMessage = err.error.msg;
-          }
-          Swal.fire('Error', err.error.msg, 'error');
-        }
-      );
-    console.log('--> Fin - Load Cliente (service)');
-  }
-
-  // Función para mostrar mensajes de alerta con SweetAlert2
-  mostrarMensajeDeError(title: string, text: string) {
-    Swal.fire({
-      icon: 'error' as SweetAlertIcon, // Puedes personalizar el ícono
-      title,
-      text,
-    });
-  }
-  // Función para mostrar mensajes de advertencia con SweetAlert2
-  mostrarMensajeDeAdvertencia(title: string, text: string) {
-    Swal.fire({
-      icon: 'warning' as SweetAlertIcon, // Cambiado a 'warning' para mostrar una advertencia
-      title,
-      text,
-    });
-  }
-
-  // Función para mostrar mensajes de advertencia con opciones "Sí" o "No"
-  mostrarMensajeDeAdvertenciaConOpciones(title: string, text: string) {
-    console.log('\n\n-> mostrarMensajeDeAdvertenciaConOpciones(title: string, text: string) {')
-    Swal.fire({
-      icon: 'warning',
-      title,
-      text,
-      showCancelButton: true, // Muestra los botones "Sí" y "No"
-      confirmButtonText: 'Sí', // Texto del botón "Sí"
-      cancelButtonText: 'No', // Texto del botón "No"
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // El usuario hizo clic en "Sí", puedes tomar acciones aquí
-        console.log('Usuario hizo clic en "Sí"');
-        console.log('--> Inicio - this.crearClienteXML()');
-        this.crearClienteXML();
-        console.log('--> Fin - this.crearClienteXML()');
-      } else {
-        // El usuario hizo clic en "No" o cerró el cuadro de diálogo
-        console.log('Usuario hizo clic en "No" o cerró el cuadro de diálogo');
-      }
-    });
-
-  }
-
-  // Función para mostrar mensajes de advertencia con opciones "Sí" o "No"
-  mostrarMensajeDeAdvertenciaConOpciones2(title: string, text: string) {
-    console.log('\n\n-> mostrarMensajeDeAdvertenciaConOpciones2(title: string, text: string) {')
-    Swal.fire({
-      icon: 'warning',
-      title,
-      text,
-      showCancelButton: true, // Muestra los botones "Sí" y "No"
-      confirmButtonText: 'Sí', // Texto del botón "Sí"
-      cancelButtonText: 'No', // Texto del botón "No"
-    }).then((result) => {
-      if (result.isConfirmed) {
-        console.log('Usuario hizo clic en "Sí"');
-        console.log('--> Inicio - this.crearFormaPagoXML()');
-        this.crearFormaPagoXML();
-        console.log('--> Fin - this.crearFormaPagoXML()');
-      } else {
-        // El usuario hizo clic en "No" o cerró el cuadro de diálogo
-        console.log('Usuario hizo clic en "No" o cerró el cuadro de diálogo');
-      }
-    });
-  }
-
+  // Método para cargar todas las formas de pago
   cargarFormasPago() {
     this.formaPagoService.loadFormasPago()
       .subscribe(({ formas_pago }) => {
         this.formas_pago = formas_pago;
-        console.log("")
-        console.log(formas_pago)
       })
   }
 
-  id_forma_pago: any;
-  codigo_forma_pago: any;
-  descripcion_forma_pago: any;
-
-  cargarFormaPagoByCodigo(codigo: string) {
-    console.log('\n\n-> cargarFormaPagoByCodigo(codigo: string) {');
-    console.log('codigo: ' + codigo);
-    console.log('--> Incio - Load Forma Pago (service)');
-    this.formaPagoService.loadFormaPagoByCodigo(codigo)
-      .subscribe(
-        (forma_pago) => {
-          console.log('\n\n--> Incio - Load Forma Pago (service - subscribe)');
-          if (Array.isArray(forma_pago) && forma_pago.length > 0) {
-            const { id_forma_pago, codigo, descripcion } = forma_pago[0];
-            console.log("Se encontró forma de pago con codigo: " + codigo);
-            console.log("< id_forma_pago: " + id_forma_pago);
-            console.log("< codigo: " + codigo);
-            console.log("< descripcion: " + descripcion);
-
-            this.id_forma_pago = id_forma_pago;
-            this.codigo_forma_pago = codigo;
-            this.descripcion_forma_pago = descripcion;
-          } else {
-            console.log("No se encontró ningúna forma de pago con codigo: " + this.codigo_forma_pago);
-            Swal.fire({
-              title: 'Éxito Forma Pago',
-              text: 'XML Cargado',
-              icon: 'success',
-              timer: 1500, // Duración en milisegundos (1 segundo)
-              showConfirmButton: false, // Ocultar el botón "OK"
-            })
-              .then(() => {
-                this.mostrarMensajeDeAdvertenciaConOpciones2('Advertencia', 'Forma de pago no encontrado ¿Desea crear nueva Forma de Pago?');
-              });
-          }
-          console.log('--> Fin - Load Forma Pago (service - subscribe)');
-        },
-        (err) => {
-          // Manejo de errores en caso de problemas con la solicitud HTTP
-          console.error("Error al buscar forma de pago: ", err);
-          // Puedes mostrar un mensaje de error al usuario o realizar otras acciones aquí
-          let errorMessage = 'Se produjo un error al cargar forma de pago.';
-          if (err.error && err.error.msg) {
-            errorMessage = err.error.msg;
-          }
-          Swal.fire('Error', err.error.msg, 'error');
-        }
-      );
-    console.log('--> Fin - Load Forma Pago (service)');
-  }
-
-
-  crearFormaPagoXML() {
-    console.log('\n\n->crearFormaPagoXML() {')
-
-    this.codigo_forma_pago = this.formaPago
-    this.descripcion_forma_pago = "FORMA DE PAGO N " + this.formaPago + " (editar)"
-
-    console.log('> this.codigo_forma_pago', this.codigo_forma_pago)
-    console.log('> this.descripcion_forma_pago', this.descripcion_forma_pago)
-
-    if (!this.codigo_forma_pago || !this.descripcion_forma_pago) {
-      Swal.fire('Error', 'Falta información requerida para crear la forma de pago.', 'error');
-      return;
-    }
-
-    // Crea un objeto con la información de forma pago
-    const formaPagoData = {
-      codigo: this.codigo_forma_pago,
-      descripcion: this.descripcion_forma_pago,
-    };
-
-    // Realiza la solicitud POST para crear Forma Pago
-    console.log('--> Incio - Create Forma Pago (service)');
-    this.formaPagoService.createFormaPago(formaPagoData).subscribe(
-      (res) => {
-        Swal.fire({
-          icon: 'success',
-          title: 'Forma de Pago creado',
-          text: 'Forma de Pago se ha creado correctamente.',
-          showConfirmButton: false,
-          timer: 1500
-        });
-        console.log('--> Inicio - this.cargarFormaPagoByCodigo(this.codigo_forma_pago)');
-        this.cargarFormaPagoByCodigo(this.codigo_forma_pago);
-        console.log('--> Fin - this.cargarFormaPagoByCodigo(this.codigo_forma_pago)');
-        //this.recargarComponente();
-        this.cerrarModal();
-      }, (err) => {
-        // En caso de error
-        let errorMessage = 'Se produjo un error al crear Forma de Pago.';
-        if (err.error && err.error.msg) {
-          errorMessage = err.error.msg;
-        }
-        Swal.fire('Error', err.error.msg, 'error');
-      });
-    //this.recargarComponente();
-    console.log('--> Incio - Create Forma Pago (service)');
-  }
-
-
-
+  // Método para caragar todos los productos
   cargarProductos() {
     this.productoService.loadProductos()
       .subscribe(({ productos }) => {
@@ -537,427 +395,32 @@ export class FacturaVentaComponent implements OnInit {
       })
   }
 
-
-  cargarFacturaPorId(id_factura_venta: any) {
-    this.facturaService.loadFacturaById(id_factura_venta)
-      .pipe(
-        switchMap((factura: any) => {
-          const { id_cliente, id_forma_pago, id_asiento, codigo, fecha_emision, fecha_vencimiento, estado_pago,
-            subtotal_sin_impuestos, total_descuento, iva, valor_total, abono } = factura.factura[0];
-
-          const saldo = factura.saldo;
-          console.log("this.saldo");
-          console.log(saldo);
-
-          this.facturaSeleccionado = factura.factura[0];
-          this.codigo = codigo;
-          this.subtotal_sin_impuestos = subtotal_sin_impuestos;
-          this.total_descuento = total_descuento;
-          this.iva = iva;
-
-          this.valor_total = valor_total;
-          console.log("this.valor_total");
-          console.log(this.valor_total);
-
-          this.abono = abono;
-          console.log("this.abono-----------------------");
-          console.log(this.abono);
-
-          return this.cargarClientePorId(id_cliente).pipe(
-            concatMap(cliente => {
-              const { identificacion, nombre, apellido, nombre_comercial, direccion, telefono, email } = cliente[0];
-              this.clienteSeleccionado = cliente[0];
-              this.identificacion = identificacion;
-              this.nombre = nombre;
-              this.apellido = apellido;
-              this.direccion = direccion;
-              this.telefono = telefono;
-              this.email = email;
-              const abono = "0.00";
-              return of({
-                identificacion, nombre, apellido, direccion, telefono, email, id_forma_pago, id_asiento, codigo,
-                fecha_emision, fecha_vencimiento, estado_pago, subtotal_sin_impuestos, total_descuento, iva, valor_total, abono, saldo
-              });
-            })
-          );
-        })
-      )
-      .subscribe(data => {
-        this.facturaFormU.setValue(data);
+  // Método para cargar facturas paginadas en Table Data Factura
+  cargarFacturas() {
+    const desde = (this.paginaActual - 1) * this.itemsPorPagina;
+    this.facturaService.loadFacturas(desde, this.itemsPorPagina)
+      .subscribe(({ facturas, totalFacturas }) => {
+        this.facturas = facturas;
+        this.totalFacturas = totalFacturas;
+        this.calcularNumeroPaginas();
+        this.mostrarPaginacion = this.totalFacturas > this.itemsPorPagina;
       });
   }
 
-  /*
-    cargarFacturaPorId2(id_factura_venta: any) {
-      //console.log('id_factura_venta')
-      //console.log(id_factura_venta)
-      this.facturaService.loadFacturaById(id_factura_venta)
-        .pipe(switchMap(factura => {
-          const { id_cliente, id_forma_pago, id_asiento, codigo, fecha_emision, fecha_vencimiento, estado_pago,
-            subtotal_sin_impuestos, total_descuento, iva, valor_total, abono } = factura[0];
-  
-          this.facturaSeleccionado = factura[0];
-  
-          this.codigo = codigo
-  
-          this.subtotal_sin_impuestos = subtotal_sin_impuestos
-          this.total_descuento = total_descuento
-          this.iva = iva
-          this.valor_total = valor_total
-          this.abono = abono
-          console.log("this.abono")
-          console.log(this.abono)
-  
-          return this.cargarClientePorId(id_cliente).pipe(
-            concatMap(cliente => {
-              const { identificacion, nombre, apellido, nombre_comercial, direccion, telefono, email } = cliente[0];
-              this.clienteSeleccionado = cliente[0];
-              this.identificacion = identificacion;
-              //console.log("identficacion this 1")
-              //console.log(this.identificacion)
-              this.nombre = nombre;
-              this.apellido = apellido;
-              this.direccion = direccion;
-              this.telefono = telefono;
-              this.email = email;
-              return of({ identificacion, nombre, apellido, direccion, telefono, email, id_forma_pago, id_asiento, codigo, fecha_emision, fecha_vencimiento, estado_pago, subtotal_sin_impuestos, total_descuento, iva, valor_total, abono });
-            })
-          );
-        })
-        )
-        .subscribe(data => {
-          this.facturaFormU.setValue(data);
-        });
-    }*/
-
-  crearFactura2() {
-    this.formSubmitted = true;
-    console.log('CREAR factura 2');
-    console.log(this.facturaForm.value);
-    if (this.facturaForm.invalid) {
-      return;
-    }
-
-    this.crearFactura2_aux()
-
-    // Realizar posteo del factura principal
-    this.facturaService.createFactura(this.facturaForm.value).subscribe(
-      (res: any) => {
-        const facturaId = res.id_factura_venta; // Obtener el ID del factura guardado
-        console.log('facturaID')
-        console.log(facturaId)
-        console.log('DETALLES factura 222222')
-        //console.log(this.detalleFactura2)
-        // Crear los detalles y asociarlos al factura
-        const detalles = [];
-        for (const detalle2 of this.detalleFactura2) {
-          const nuevoDetalle: DetalleFactura = {
-            id_producto: detalle2.producto,
-            id_factura_venta: facturaId,
-            codigo_principal: detalle2.descripcion,//ver
-            detalle_adicional: detalle2.descripcion,//ver
-            cantidad: detalle2.cantidad,
-            descripcion: detalle2.descripcion,
-            precio_unitario: detalle2.precio_unitario,
-            subsidio: detalle2.cantidad,//ver
-            precio_sin_subsidio: detalle2.cantidad,//ver
-            descuento: detalle2.descuento,
-            codigo_auxiliar: detalle2.descripcion,//ver
-            precio_total: detalle2.valor_total,
-            iva: detalle2.tarifa,
-            ice: detalle2.valor_ICE,
-          };
-          detalles.push(nuevoDetalle);
-        }
-        console.log('DETALLES CON ID_factura')
-        console.log(detalles)
-        this.detalleFacturaService.createDetalleFactura2(detalles).subscribe(
-          () => {
-            Swal.fire({
-              icon: 'success',
-              title: 'Factura y detalles creados',
-              text: 'El factura y los detalles se han creado correctamente.',
-              showConfirmButton: false,
-              timer: 1500
-            });
-            this.recargarComponente();
-            this.cerrarModal();
-          },
-          (err) => {
-            // En caso de error en la creación del factura principal
-            let errorMessage = 'Se produjo un error al crear el factura.';
-            if (err.error && err.error.msg) {
-              errorMessage = err.error.msg;
-            }
-            Swal.fire('Error', errorMessage, 'error');
-          }
-        );
-
-        this.recargarComponente();
-      })
-  }
-
-
-
-  /*
-  Problemas de sincronización
-  crearFactura2XML() {
-    this.formSubmitted = true;
-    console.log('Hola XML');
-  
-    // solo para ver si tiene datos cargados
-    this.crearFactura2_aux_XML()
-  
-    // busca el proveeedor por identificacion
-    console.log("this.identificacionComprador")
-    console.log(this.identificacionComprador)
-    this.cargarClientePorIdentificacion(this.identificacionComprador)
-    console.log("FINALIN 1")
-  
-    // mostramos los datos recuperado de la busqueda
-    const nombreDelCliente = this.clienteSeleccionado2.nombre;
-    console.log("Nombre del cliente: " + nombreDelCliente);
-  
-    // asiganamos el id_cliente de la identificación cargadad
-    console.log("this.id_cliente XD")
-    console.log(this.id_cliente)
-  
-    const facturaData: FormFacturaXML2 = {
-  
-      codigo: '1',
-      fecha_emision: null,
-      fecha_vencimiento: null,
-      saldo: 0, // Valor válido
-  
-      razonSocial: 'Nombre de la razón social',
-      ruc: '1234567890',
-      claveAcceso: 'clave de acceso',
-      estab: 'Establecimiento',
-      ptoEmi: 'Punto de emisión',
-      secuencial: 'Secuencial',
-      id_factura_venta: 1,
-  
-      id_cliente: 5,
-      id_forma_pago: 3,
-      id_asiento: null,
-      // Otras propiedades requeridas
-      estado_pago: 'Por pagar', // Propiedad requerida
-      subtotal_sin_impuestos: this.totalSinImpuestos, // Propiedad requerida
-      total_descuento: 10, // Propiedad requerida
-      iva: 12, // Propiedad requerida
-      valor_total: this.importeTotal, // Propiedad requerida
-      abono: 0, // Valor válido
-    };
-  
-    this.facturaService.createFactura(facturaData).subscribe(
-      (res: any) => {
-        const facturaId = res.id_factura_venta; // Obtener el ID del factura guardado
-        console.log('facturaID')
-        console.log(facturaId)
-        console.log('DETALLES factura 222222')
-        //console.log(this.detalleFactura2)
-        // Crear los detalles y asociarlos al factura
-        const detalles = [];
-        for (const detalle2 of this.xmlItems) {
-          const nuevoDetalle: DetalleFactura = {
-            id_producto: 1,
-            id_factura_venta: facturaId,
-            codigo_principal: detalle2.descripcion,//ver
-            detalle_adicional: detalle2.descripcion,//ver
-            cantidad: detalle2.cantidad,
-            descripcion: detalle2.descripcion,
-            precio_unitario: detalle2.precioUnitario,
-            subsidio: detalle2.cantidad,//ver
-            precio_sin_subsidio: detalle2.cantidad,//ver
-            descuento: detalle2.descuento,
-            codigo_auxiliar: detalle2.descripcion,//ver
-            precio_total: detalle2.precioTotalSinImpuesto,
-            iva: detalle2.tarifa,
-            ice: detalle2.cantidad,
-          };
-          detalles.push(nuevoDetalle);
-        }
-        console.log('DETALLES CON ID_factura')
-        console.log(detalles)
-        this.detalleFacturaService.createDetalleFactura2(detalles).subscribe(
-          () => {
-            Swal.fire({
-              icon: 'success',
-              title: 'Factura y detalles creados',
-              text: 'El factura y los detalles se han creado correctamente.',
-              showConfirmButton: false,
-              timer: 1500
-            });
-            this.recargarComponente();
-            this.cerrarModal();
-          },
-          (err) => {
-            // En caso de error en la creación del factura principal
-            let errorMessage = 'Se produjo un error al crear el factura.';
-            if (err.error && err.error.msg) {
-              errorMessage = err.error.msg;
-            }
-            Swal.fire('Error', errorMessage, 'error');
-          }
-        );
-  
-        this.recargarComponente();
-      })
-  }
-  */
-
-  crearFactura2_aux() {
-    // Obtener los valores del formulario de detalles
-    const formValues = this.detalleForm.getRawValue();
-    console.log('formValues -----------');
-    console.log(formValues);
-
-    // Obtener el número de detalles
-    const numDetalles2 = Object.keys(formValues).filter(key => key.startsWith('producto_')).length;
-    console.log('numDetalles 2 -----------');
-    console.log(numDetalles2);
-
-    // Reiniciar el arreglo detalleFactura2
-    this.detalleFactura2 = [];
-
-    for (let i = 0; i < numDetalles2; i++) {
-      const nuevoDetalle: DetalleFactura2 = {
-        producto: formValues[`producto_${i}`],
-        cantidad: formValues[`cantidad_${i}`],
-        descripcion: formValues[`descripcion_${i}`],
-        precio_unitario: formValues[`precio_unitario_${i}`],
-        tarifa: formValues[`tarifa_${i}`],
-        descuento: formValues[`descuento_${i}`],
-        valor_total: formValues[`valor_total_${i}`],
-        valor_ICE: formValues[`valor_ICE_${i}`],
-      };
-
-      this.detalleFactura2.push(nuevoDetalle);
-    }
-
-    console.log('detalleFactura2 -----------');
-    console.log(this.detalleFactura2);
-    // Limpiar el formulario de detalles
-    //this.detalleForm.reset();
-  }
-
-  crearFactura2_aux_XML() {
-
-    // Reiniciar el arreglo xmlItems
-    //this.xmlItems = [];
-
-    console.log('PROBANDO DATOS 1 en xmlItems -----------');
-    console.log(this.xmlItems);
-    // Limpiar el formulario de detalles
-    //this.detalleForm.reset();
-  }
-
-
-
-  agregarDetalleFactura2(): void {
-    if (this.detalleForm.invalid) {
-      console.log('RETURN')
-      return;
-    }
-
-    const nuevoDetalle2: DetalleFactura2 = {
-      producto: null,
-      cantidad: null,
-      descripcion: '',
-      precio_unitario: null,
-      tarifa: null,
-      descuento: null,
-      valor_total: null,
-      valor_ICE: null
-    };
-
-    // Crear instancias de FormControl para cada propiedad del detalle
-    const productoControl = new FormControl(nuevoDetalle2.producto);
-    const cantidadControl = new FormControl(nuevoDetalle2.cantidad);
-    const descripcionControl = new FormControl(nuevoDetalle2.descripcion);
-    const precioUnitarioControl = new FormControl(nuevoDetalle2.precio_unitario);
-    const tarifaControl = new FormControl(nuevoDetalle2.tarifa);
-    const descuentoControl = new FormControl(nuevoDetalle2.descuento);
-    const valorTotalControl = new FormControl(nuevoDetalle2.valor_total);
-    const valorICEControl = new FormControl(nuevoDetalle2.valor_ICE);
-
-    // Agregar los controles al formulario
-    this.detalleForm.addControl('producto_' + this.detalleFactura2.length, productoControl);
-    this.detalleForm.addControl('cantidad_' + this.detalleFactura2.length, cantidadControl);
-    this.detalleForm.addControl('descripcion_' + this.detalleFactura2.length, descripcionControl);
-    this.detalleForm.addControl('precio_unitario_' + this.detalleFactura2.length, precioUnitarioControl);
-    this.detalleForm.addControl('tarifa_' + this.detalleFactura2.length, tarifaControl);
-    this.detalleForm.addControl('descuento_' + this.detalleFactura2.length, descuentoControl);
-    this.detalleForm.addControl('valor_total_' + this.detalleFactura2.length, valorTotalControl);
-    this.detalleForm.addControl('valor_ICE_' + this.detalleFactura2.length, valorICEControl);
-
-    nuevoDetalle2.producto = productoControl.value;
-    nuevoDetalle2.cantidad = cantidadControl.value;
-    nuevoDetalle2.descripcion = descripcionControl.value;
-    nuevoDetalle2.precio_unitario = precioUnitarioControl.value;
-    nuevoDetalle2.tarifa = tarifaControl.value;
-    nuevoDetalle2.descuento = descuentoControl.value;
-    nuevoDetalle2.valor_total = valorTotalControl.value;
-    nuevoDetalle2.valor_ICE = valorICEControl.value;
-
-    // Agregar el detalle al arreglo
-    this.detalleFactura2.push(nuevoDetalle2);
-    console.log('DETALLE ----------- detalleFactura2')
-    console.log(this.detalleFactura2)
-    // Calcular los totales
-    //this.calcularTotales();
-  }
-
-  eliminarDetalle(index: number): void {
-    this.detalleFactura2.splice(index, 1);
-    // Calcular los totales
-    //this.calcularTotales();
-  }
-
-  actualizarFactura() {
-    console.log("Actualizar: actualizarFactura() { ")
-    //console.log(factura.id_factura_venta)
-    if (this.facturaFormU.invalid) {
-      return;
-    }
-    const data = {
-      ...this.facturaFormU.value,
-      id_factura_venta: this.facturaSeleccionado.id_factura_venta
-    }
-
-    console.log("UNO---updateFactura()")
-    console.log(data)
-
-    // realizar posteo
-    this.facturaService.updateFactura(data)
-      .subscribe(res => {
-        console.log("DOS---updateFactura()")
-        console.log(data)
-
-        Swal.fire({
-          icon: 'success',
-          title: 'Factura actualizado',
-          text: 'Factura se ha actualizado correctamente',
-          showConfirmButton: false,
-          timer: 1500
-        });
-        //this.router.navigateByUrl(`/dashboard/facturas`)
-        this.recargarComponente();
-        this.cerrarModal();
-      }, (err) => {
-        // En caso de error
-        let errorMessage = 'Se produjo un error al actualizar el factura.';
-        if (err.error && err.error.msg) {
-          errorMessage = err.error.msg;
-        }
-        Swal.fire('Error', err.error.msg, 'error');
+  // Método para cargar todas facturas en Table Data Factura
+  cargarFacturasAll() {
+    this.facturaService.loadFacturasAll()
+      .subscribe(({ facturas, totalFacturas, totalFacturasPendientes, sumaSaldo, sumaImporteTotal }) => {
+        this.allFacturas = facturas;
+        this.totalFacturas = totalFacturas;
+        this.totalFacturasPendientes = totalFacturasPendientes;
+        this.sumaSaldo = sumaSaldo;
+        this.sumaImporteTotal = sumaImporteTotal;
       });
-    this.recargarComponente();
   }
 
+  // Método para borrar factura en Table Date Factura
   borrarFactura(factura: Factura) {
-    console.log("Borrar:   borrarFactura(factura: Factura) {")
-    console.log(factura.id_factura_venta)
     Swal.fire({
       title: '¿Borrar Factura?',
       text: `Estas a punto de borrar a ${factura.codigo}`,
@@ -989,117 +452,211 @@ export class FacturaVentaComponent implements OnInit {
     });
   }
 
-  campoNoValido(campo: string, form: FormGroup): boolean {
-    if (form.get(campo)?.invalid && this.formSubmitted) {
-      return true;
+  // Método para filtrar facturas en Table Date Factura
+  filtrarFacturas() {
+    if (!this.facturasAux || this.facturasAux.length === 0) {
+      // Inicializar las variables auxiliares una sola vez
+      this.facturasAux = this.facturas;
+      this.totalFacturasAux = this.totalFacturas;
+      this.totalFacturasPendientesAux = this.totalFacturasPendientes;
+      this.sumaImporteTotalAux = this.sumaImporteTotal;
+      this.sumaSaldoAux = this.sumaSaldo;
+    }
+    if (this.buscarTexto.trim() === '' && !this.estadoPagoSelect && (!this.fechaInicio || !this.fechaFin)) {
+      // Restablecemos las variables principales con las auxiliares
+      this.facturas = this.facturasAux;
+      this.totalFacturas = this.totalFacturasAux;
+      this.totalFacturasPendientes = this.totalFacturasPendientesAux;
+      this.sumaImporteTotal = this.sumaImporteTotalAux;
+      this.sumaSaldo = this.sumaSaldoAux;
     } else {
-      return false;
+      // Reiniciamos variables
+      this.totalFacturas = 0;
+      this.totalFacturasPendientes = 0;
+      this.sumaImporteTotal = 0;
+      this.sumaSaldo = 0;
+
+      this.facturas = this.allFacturas.filter((factura) => {
+        const regex = new RegExp(this.buscarTexto, 'i');
+        const fechaEmision = this.datePipe.transform(new Date(factura.fecha_emision), 'yyyy-MM-dd');
+        const cliente = this.clientes.find((prov) => prov.id_cliente === factura.id_cliente);
+
+        const pasaFiltro = (
+          (factura.codigo.match(regex) !== null ||
+            cliente.razon_social.match(regex) !== null ||
+            cliente.identificacion.includes(this.buscarTexto)) &&
+          (!this.estadoPagoSelect || factura.estado_pago === this.estadoPagoSelect) &&
+          (!this.fechaInicio || fechaEmision >= this.fechaInicio) &&
+          (!this.fechaFin || fechaEmision <= this.fechaFin)
+        );
+
+        if (pasaFiltro) {
+          this.sumaImporteTotal = this.sumaImporteTotal + parseFloat("" + factura.importe_total);
+          if (factura.estado_pago === "PENDIENTE") {
+            this.totalFacturasPendientes++
+          }
+
+          this.sumaSaldo = this.sumaSaldo + (parseFloat("" + factura.importe_total) - parseFloat("" + factura.abono));
+          this.totalFacturas++;
+        }
+        return pasaFiltro;
+      });
     }
   }
 
-  obtenerUltimoId(): number {
-    if (this.facturas.length > 0) {
-      return (this.facturas[this.facturas.length - 1].id_factura_venta) + 1;
+  // Método para borrar fecha fin en Table Date Factura
+  borrarFechaFin() {
+    this.fechaFin = null; // O establece el valor predeterminado deseado
+    this.filtrarFacturas();
+  }
+
+  // Método para borrar fecha inicio en Table Date Factura
+  borrarFechaInicio() {
+    this.fechaInicio = null; // O establece el valor predeterminado deseado
+    this.filtrarFacturas();
+  }
+
+  // Método para obtener total páginas en Table Date Factura
+  get totalPaginas(): number {
+    return Math.ceil(this.totalFacturas / this.itemsPorPagina);
+  }
+
+  // Método para calcular número de páginas en Table Date Factura
+  calcularNumeroPaginas() {
+    if (this.totalFacturas === 0 || this.itemsPorPagina <= 0) {
+      this.paginas = [];
+      return;
     }
-    return 0; // o cualquier valor predeterminado
+    const totalPaginas = Math.ceil(this.totalFacturas / this.itemsPorPagina);
+    const halfVisible = Math.floor(this.maximoPaginasVisibles / 2);
+    let startPage = Math.max(1, this.paginaActual - halfVisible);
+    let endPage = Math.min(totalPaginas, startPage + this.maximoPaginasVisibles - 1);
+    if (endPage - startPage + 1 < this.maximoPaginasVisibles) {
+      startPage = Math.max(1, endPage - this.maximoPaginasVisibles + 1);
+    }
+    this.paginas = Array(endPage - startPage + 1).fill(0).map((_, i) => startPage + i);
   }
 
-  recargarComponente() {
-    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-      this.router.navigate(['/dashboard/facturas']);
-    });
-
+  // Método para cambiar items en Table Date Factura
+  changeItemsPorPagina() {
+    this.cargarFacturas();
+    this.paginaActual = 1;
   }
 
-  abrirModal() {
-    this.ocultarModal = false;
-    this.activatedRoute.params.subscribe(params => {
-      console.log(params)
-    })
+  // Método para cambiar página en Table Date Factura
+  cambiarPagina(page: number): void {
+    if (page >= 1 && page <= this.totalPaginas) {
+      this.paginaActual = page;
+      this.cargarFacturas();
+    }
   }
 
-  cerrarModal() {
-    this.ocultarModal = true;
+  // Método para obtener mínimo en Table Date Factura
+  getMinValue(): number {
+    const minValue = (this.paginaActual - 1) * this.itemsPorPagina + 1;
+    return minValue;
   }
 
-  nombreCliente: string;
-  apellidoCliente: string;
-  direccionCliente: string;
-  telefonoCliente: string;
-  emailCliente: string;
-
-  estadoPagoFactura: string;
-
-  actualizarNombre(event: any): void {
-    const clienteId = event.target.value;
-    const cliente = this.clientes.find(p => p.id_cliente == clienteId);
-    this.nombreCliente = cliente ? cliente.razon_social : '';
+  // Método para obtener máximo en Table Date Factura
+  getMaxValue(): number {
+    const maxValue = this.paginaActual * this.itemsPorPagina;
+    return maxValue;
   }
 
-
-  actualizarDireccion(event: any): void {
-    const clienteId = event.target.value;
-    const cliente = this.clientes.find(p => p.id_cliente == clienteId);
-    this.direccionCliente = cliente ? cliente.direccion : '';
-  }
-
-  actualizarTelefono(event: any): void {
-    const clienteId = event.target.value;
-    const cliente = this.clientes.find(p => p.id_cliente == clienteId);
-    this.telefonoCliente = cliente ? cliente.telefono : '';
-  }
-
-  actualizarEmail(event: any): void {
-    const clienteId = event.target.value;
-    const cliente = this.clientes.find(p => p.id_cliente == clienteId);
-    this.emailCliente = cliente ? cliente.email : '';
-  }
-
-  crearClienteXML() {
-    console.log("\n\n-> crearClienteXML() {")
-    //this.formSubmitted = true;
-    /*
-    this.identificacion = "1727671630"
-    this.nombre = "Edison"
-    this.apellido = "Pinanjota"
-    this.nombre_comercial = "SystemCode"
-    this.direccion = "Cayambe"
-    this.telefono = "0978812130"
-    this.email = "eepinanjotac30@utn.edu.ec"
-    */
-    this.identificacion = this.identificacionComprador
-    this.nombre = this.razonSocialComprador
-    this.apellido = ""
-    this.nombre_comercial = ""
-    this.direccion = this.direccionComprador
-    this.telefono = ""
-    this.email = this.identificacionComprador + "@example.com"
-
-    console.log('> this.identificacion', this.identificacion)
-    console.log('> this.nombre (Razón Social): ', this.nombre)
-    console.log('> this.apellido: ', this.apellido)
-    console.log('> this.nombre_comercial: ', this.nombre_comercial)
-    console.log('> this.direccion: ', this.direccion)
-    console.log('> this.telefono: ', this.telefono)
-    console.log('> this.email: ', this.email)
-
-    if (!this.identificacion || !this.nombre || !this.direccion) {
-      Swal.fire('Error', 'Falta información requerida para crear el cliente.', 'error');
+  // Método para crear factura en Modal Create Factura
+  crearFactura() {
+    this.formSubmitted = true;
+    if (this.facturaForm.invalid) {
+      console.log("Validar Formulario", this.facturaForm.value);
       return;
     }
 
-    // Crea un objeto con la información del cliente
-    const clienteData = {
-      identificacion: this.identificacion,
-      razon_social: this.razonSocial,
-      direccion: this.direccion,
-      telefono: this.telefono,
-      email: this.email
-    };
+    const abono = this.facturaForm.get('abono').value;
+    const observacion = this.facturaForm.get('observacion').value;
+    const idFormaPago = this.facturaForm.get('id_forma_pago').value;
+    if (abono > 0 && observacion.trim() === '') {
+      alert('Debes proporcionar una observación si el abono es mayor a cero.');
+      return; // La función se detiene aquí
+    } else if (abono > 0 && idFormaPago === '') {
+      alert('Debes seleccionar una forma de pago.');
+      return; // La función se detiene aquí
+    }
 
-    // Realiza la solicitud POST para crear el cliente
-    console.log('--> Incio - Create Cliente (service)');
-    this.clienteService.createCliente(clienteData).subscribe(
+    // Obtener los detalles del formulario
+    this.obtenerDetallesForm()
+
+    this.facturaForm.get('total_sin_impuesto').setValue(this.sumaTotalSinImpuesto);
+    this.facturaForm.get('total_descuento').setValue(this.sumaTotalDescuento);
+    this.facturaForm.get('valor').setValue(this.sumaTotalIVA);
+    this.facturaForm.get('importe_total').setValue(this.sumaPrecioTotal);
+
+    this.facturaService.createFactura(this.facturaForm.value).subscribe(
+      (res: any) => {
+        const facturaId = res.id_factura_venta; // Obtener el ID del factura guardado
+        console.log('facturaID: ', facturaId)
+
+        // Crear los detalles y asociarlos a la factura
+        const detalles = [];
+        for (const detalle of this.detalleFacturaFormInterface) {
+          const nuevoDetalle: DetalleFactura = {
+            id_factura_venta: facturaId,
+            id_producto: detalle.producto,
+            codigo_principal: detalle.codigo_principal,//ver
+            descripcion: detalle.descripcion,
+            cantidad: detalle.cantidad,
+            precio_unitario: detalle.precio_unitario,
+            descuento: detalle.descuento,
+            precio_total_sin_impuesto: detalle.precio_total_sin_impuesto,
+
+            codigo: null,
+            codigo_porcentaje: null,
+            tarifa: detalle.tarifa,
+            base_imponible: detalle.precio_total_sin_impuesto, // reutilizamos valor
+            valor: detalle.valor,
+            ice: detalle.ice,
+            precio_total: detalle.precio_total,
+          };
+          detalles.push(nuevoDetalle);
+        }
+        console.log('DETALLES CON ID_factura')
+        console.log(detalles)
+        this.detalleFacturaService.createDetalleFacturaArray(detalles).subscribe(
+          () => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Factura Creada',
+              text: 'La factura se han creado correctamente.',
+              showConfirmButton: false,
+              timer: 1500
+            });
+            this.recargarComponente();
+            this.cerrarModal();
+          },
+          (err) => {
+            let errorMessage = 'Se produjo un error al crear el factura..';
+            if (err.error && err.error.msg) {
+              errorMessage = err.error.msg;
+            }
+            Swal.fire('Error', errorMessage, 'error');
+          }
+        );
+
+        //this.recargarComponente();
+      },
+      (err) => {
+        const errorMessage = err.error?.msg || 'Se produjo un error al crear la factura.';
+        Swal.fire('Error', errorMessage, 'error');
+      }
+    );
+  }
+
+  // Método para crear cliente en Modal Create Factura
+  crearCliente() {
+    this.formSubmitted = true;
+    if (this.clienteForm.invalid) {
+      return;
+    }
+    this.clienteService.createCliente(this.clienteForm.value).subscribe(
       (res) => {
         Swal.fire({
           icon: 'success',
@@ -1108,153 +665,465 @@ export class FacturaVentaComponent implements OnInit {
           showConfirmButton: false,
           timer: 1500
         });
-        console.log('--> Inicio - this.cargarClienteByIdentificacion(this.identificacion)');
-        this.cargarClienteByIdentificacion(this.identificacion);
-        console.log('--> Fin - this.cargarClienteByIdentificacion(this.identificacion)');
-        //this.recargarComponente();
-        this.cerrarModal();
-      }, (err) => {
-        // En caso de error
-        let errorMessage = 'Se produjo un error al crear el cliente.';
-        if (err.error && err.error.msg) {
-          errorMessage = err.error.msg;
-        }
-        Swal.fire('Error', err.error.msg, 'error');
-      });
-    //this.recargarComponente();
-    console.log('--> Fin - Create Cliente (service)');
-  }
-
-  crearCliente() {
-    this.formSubmitted = true;
-    console.log(this.clienteForm.value)
-    if (this.clienteForm.invalid) {
-      return;
-    }
-    // realizar posteo
-    this.clienteService.createCliente(this.clienteForm.value)
-      .subscribe(res => {
-        Swal.fire({
-          icon: 'success',
-          title: 'Cliente creado',
-          text: 'Cliente se ha creado correctamente.',
-          showConfirmButton: false,
-          timer: 1500
-        });
-        //this.nuevoCliente = res;
-        this.clienteCreado.emit(res); // Emitir el evento clienteCreado con el cliente creado
-        console.log('////////////// RES')
-        console.log(res)
-
         this.nuevoCliente = res;
-
         this.id_cliente = this.nuevoCliente.id_cliente;
-        this.nombre = this.nuevoCliente.nombre;
-        this.apellido = this.nuevoCliente.apellido;
+        this.identificacion = this.nuevoCliente.identificacion;
+        this.razon_social = this.nuevoCliente.razon_social;
         this.direccion = this.nuevoCliente.direccion;
         this.telefono = this.nuevoCliente.telefono;
         this.email = this.nuevoCliente.email;
-
-        console.log('ID CLIENTE')
-        console.log(this.id_cliente)
-        console.log('NOMBRE')
-        console.log(this.nombre)
-        console.log('APELLIDO')
-        console.log(this.apellido)
-        console.log('DIRECCION')
-        console.log(this.direccion)
-        console.log('TELEFONO')
-        console.log(this.telefono)
-        console.log('EMAIL')
-        console.log(this.email)
-
-        //this.recargarComponente();
+        // Una vez creado el cliente llenamos(set) el formulario  
         this.agregarCliente();
         this.cerrarModal();
+
       }, (err) => {
-        // En caso de error
-        let errorMessage = 'Se produjo un error al crear el cliente.';
-        if (err.error && err.error.msg) {
-          errorMessage = err.error.msg;
-        }
-        Swal.fire('Error', err.error.msg, 'error');
-      });
+        const errorMessage = err.error?.msg || 'Se produjo un error al crear el cliente.';
+        Swal.fire('Error', errorMessage, 'error');
+      }
+    );
     //this.recargarComponente();
   }
 
-  nuevoCliente: any;
-  id_cliente: any;
-  /* OJO ver si esta ingresadon correctamente por que fueron comentadas estas lienas
-  nombre: any;
-  apellido: any;
-  direccion: any;
-  telefono: any;
-  email: any;*/
-
+  // Método para agregar cliente en Modal Create Factura
   agregarCliente() {
     // Seleccionar automáticamente el nuevo cliente en el selector
     this.facturaForm.get('id_cliente').setValue(this.id_cliente);
     this.facturaForm.get('identificacion').setValue(this.identificacion);
-    //this.facturaForm.get('identificacion').setValue(this.identificacionSeleccionada);
-    this.facturaForm.get('nombre').setValue(this.nombre);
-    this.facturaForm.get('apellido').setValue(this.apellido);
+    this.facturaForm.get('razon_social').setValue(this.razon_social);
     this.facturaForm.get('direccion').setValue(this.direccion);
     this.facturaForm.get('telefono').setValue(this.telefono);
     this.facturaForm.get('email').setValue(this.email);
   }
 
-  clientesFiltrados: any[] = [];
+  public mostrarListaClientes: boolean = false;
 
-  filtrarClientes3(event: any) {
+  // Método para filtrar clientes en Modal Create Factura
+  filtrarClientes(event: any) {
     const identficacion = event.target.value.toLowerCase();
-    console.log('A buscar')
-    console.log(identficacion)
     this.clientesFiltrados = this.clientes.filter(cliente => cliente.identificacion.toLowerCase().includes(identficacion));
-    console.log('Encontrado')
-    console.log(this.clientesFiltrados)
+    this.mostrarListaClientes = this.clientesFiltrados.length > 0;
   }
-  /*
-    filtrarClientes2(identficacionInput: any) {
-      const identficacion = identficacionInput.target.value as string;
-      console.log('A buscar')
-      console.log(identficacion)
-      this.clientes = this.clientes.filter(cliente => cliente.identificacion.includes(identficacion));
-      console.log('Encontrado')
-      console.log(this.clientes)
-    }*/
 
-  clienteSeleccionado: any;
+  // Método para cerra lista de clientes en Modal Create Factura
+  @ViewChild('clienteesLista', { read: ElementRef }) clienteesLista: ElementRef;
+  @HostListener('document:click', ['$event'])
+  cerrarListaClientes(event: Event): void {
+    if (this.clienteesLista && this.clienteesLista.nativeElement && !this.clienteesLista.nativeElement.contains(event.target)) {
+      this.mostrarListaClientes = false;
+    }
+  }
 
-  seleccionarCliente3(cliente: any) {
-    // Aquí puedes realizar alguna acción adicional con el cliente seleccionado
-    console.log(cliente);
-    // También puedes asignar los valores a los campos correspondientes en el formulario
+  // Método para convertir a mayúsculas en Modal Create Factura
+  convertirAMayusculas(event: any) {
+    const inputValue = event.target.value;
+    const upperCaseValue = inputValue.toUpperCase();
+    event.target.value = upperCaseValue;
+  }
+
+  // Método para seleccionar cliente en Modal Create Factura
+  seleccionarCliente(cliente: any) {
+    // Actualizamos valores del formulario
     this.facturaForm.patchValue({
       id_cliente: cliente.id_cliente,
       identificacion: cliente.identificacion,
-      nombre: cliente.nombre,
-      apellido: cliente.apellido,
+      razon_social: cliente.razon_social,
       direccion: cliente.direccion,
       telefono: cliente.telefono,
       email: cliente.email
     });
   }
 
-  identificacionSeleccionada: string;
+  // Método para obtener detalles en Modal Create Factura
+  obtenerDetallesForm() {
+    const formValues = this.detalleFacturaForm.getRawValue();
 
-  actualizarIdentificacion(identificacion: string) {
-    this.identificacionSeleccionada = identificacion;
+    // Obtener el número de detalles
+    const numDetalles2 = Object.keys(formValues).filter(key => key.startsWith('producto_')).length;
+
+    // Reiniciar el arreglo detalleFacturaFormInterface
+    this.detalleFacturaFormInterface = [];
+
+    for (let i = 0; i < numDetalles2; i++) {
+      const nuevoDetalle: DetalleFacturaFormInterface = {
+        producto: formValues[`producto_${i}`],
+        cantidad: formValues[`cantidad_${i}`],
+        codigo_principal: formValues[`codigo_principal_${i}`],
+        descripcion: formValues[`descripcion_${i}`],
+        precio_unitario: formValues[`precio_unitario_${i}`],
+        descuento: formValues[`descuento_${i}`],
+        precio_total_sin_impuesto: formValues[`precio_total_sin_impuesto_${i}`],
+        //codigo: null,
+        //codigo_porcentaje: null,
+        tarifa: formValues[`tarifa_${i}`],
+        //base_imponible: null, // estamos reutilizando información
+        valor: formValues[`valor_${i}`],
+        ice: formValues[`ice_${i}`],
+        precio_total: formValues[`precio_total_${i}`],
+      };
+      this.detalleFacturaFormInterface.push(nuevoDetalle);
+    }
+    //this.detalleFacturaForm.reset();
   }
 
-  showClientesFiltrados: boolean = false;
+  // Método agregar detalle en Modal Create Factura
+  agregarDetalleForm(): void {
+    if (this.detalleFacturaForm.invalid) {
+      console.log('RETURN')
+      return;
+    }
 
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent) {
-    const clickedInside = this.elementRef.nativeElement.contains(event.target);
-    this.showClientesFiltrados = clickedInside;
+    const nuevoDetalle: DetalleFacturaFormInterface = {
+      producto: null,
+      codigo_principal: null,
+      descripcion: null,
+      cantidad: null,
+      precio_unitario: null,
+      descuento: null,
+      precio_total_sin_impuesto: null,
+      tarifa: null,
+      valor: null,
+      ice: null,
+      precio_total: null,
+    };
+
+    // Crear instancias de FormControl para cada propiedad del detalle
+    const productoControl = new FormControl(nuevoDetalle.producto);
+    const codigoPrincipalControl = new FormControl(nuevoDetalle.codigo_principal);
+    const descripcionControl = new FormControl(nuevoDetalle.descripcion);
+    const cantidadControl = new FormControl(nuevoDetalle.cantidad);
+    const precioUnitarioControl = new FormControl(nuevoDetalle.precio_unitario);
+    const descuentoControl = new FormControl(nuevoDetalle.descuento);
+    const precioTotalSinImpuestoControl = new FormControl(nuevoDetalle.precio_total_sin_impuesto);
+    const tarifaControl = new FormControl(nuevoDetalle.tarifa);
+    const valorControl = new FormControl(nuevoDetalle.valor);
+    const iceControl = new FormControl(nuevoDetalle.ice);
+    const precioTotalControl = new FormControl(nuevoDetalle.precio_total);
+
+    // Agregar los controles al formulario
+    this.detalleFacturaForm.addControl('producto_' + this.detalleFacturaFormInterface.length, productoControl);
+    this.detalleFacturaForm.addControl('codigo_principal_' + this.detalleFacturaFormInterface.length, codigoPrincipalControl);
+    this.detalleFacturaForm.addControl('descripcion_' + this.detalleFacturaFormInterface.length, descripcionControl);
+    this.detalleFacturaForm.addControl('cantidad_' + this.detalleFacturaFormInterface.length, cantidadControl);
+    this.detalleFacturaForm.addControl('precio_unitario_' + this.detalleFacturaFormInterface.length, precioUnitarioControl);
+    this.detalleFacturaForm.addControl('descuento_' + this.detalleFacturaFormInterface.length, descuentoControl);
+    this.detalleFacturaForm.addControl('precio_total_sin_impuesto_' + this.detalleFacturaFormInterface.length, precioTotalSinImpuestoControl);
+    this.detalleFacturaForm.addControl('tarifa_' + this.detalleFacturaFormInterface.length, tarifaControl);
+    this.detalleFacturaForm.addControl('valor_' + this.detalleFacturaFormInterface.length, valorControl);
+    this.detalleFacturaForm.addControl('ice_' + this.detalleFacturaFormInterface.length, iceControl);
+    this.detalleFacturaForm.addControl('precio_total_' + this.detalleFacturaFormInterface.length, precioTotalControl);
+
+    nuevoDetalle.producto = productoControl.value;
+    nuevoDetalle.codigo_principal = codigoPrincipalControl.value;
+    nuevoDetalle.descripcion = descripcionControl.value;
+    nuevoDetalle.cantidad = cantidadControl.value;
+    nuevoDetalle.precio_unitario = precioUnitarioControl.value;
+    nuevoDetalle.descuento = descuentoControl.value;
+    nuevoDetalle.precio_total_sin_impuesto = precioTotalSinImpuestoControl.value;// es igual a 
+    nuevoDetalle.tarifa = tarifaControl.value;
+    nuevoDetalle.valor = valorControl.value;
+    nuevoDetalle.ice = iceControl.value;
+    nuevoDetalle.precio_total = precioTotalControl.value;
+
+    // Agregar el detalle al arreglo
+    this.detalleFacturaFormInterface.push(nuevoDetalle);
   }
 
+  // Método para eliminar detalle en Modal Create Factura
+  eliminarDetalleForm(index: number): void {
+    this.detalleFacturaFormInterface.splice(index, 1);
+    // Volver a calcular los totales
+    this.calcularPrecioTotalSinImpuestoConDescuento(index);
+    this.calcularValor(index);
+    this.actualizarTotalDescuento();
+    this.actualizarTotalesPorTarifa();
+    this.actualizarTotalSinImpuestos();
+    this.actualizarTotalIVA();
+    this.actualizarPrecioTotal();
+    this.actualizarTotalICE();
+    this.actualizarSaldo();
+  }
 
+  // Método para actualizar en Modal Create Factura
+  actualizarDescripcion(event: Event, indice: number) {
+    const selectElement = event.target as HTMLSelectElement;
+    const productoId = parseInt(selectElement.value, 10);
+    const productoSeleccionado = this.productos.find(producto => producto.id_producto === productoId);
+    if (productoSeleccionado) {
+      // Actualiza la descripción en el formulario del detalle de la factura
+      this.detalleFacturaForm.controls[`descripcion_${indice}`].setValue(productoSeleccionado.descripcion);
+    } else {
+      this.detalleFacturaForm.controls[`descripcion_${indice}`].setValue('');
+    }
+  }
+
+  // Método para actualizar en Modal Create Factura
+  actualizarCodigoPrincipal(event: Event, indice: number) {
+    const selectElement = event.target as HTMLSelectElement;
+    const productoId = parseInt(selectElement.value, 10);
+    const productoSeleccionado = this.productos.find(producto => producto.id_producto === productoId);
+    if (productoSeleccionado) {
+      this.detalleFacturaForm.controls[`codigo_principal_${indice}`].setValue(productoSeleccionado.codigo_principal);
+    } else {
+      this.detalleFacturaForm.controls[`codigo_principal_${indice}`].setValue('');
+    }
+  }
+
+  // Método para actualizar en Modal Create Factura
+  actualizarTarifa(event: Event, indice: number) {
+    const selectElement = event.target as HTMLSelectElement;
+    const productoId = parseInt(selectElement.value, 10);
+    const productoSeleccionado = this.productos.find(producto => producto.id_producto === productoId);
+    if (productoSeleccionado) {
+      const tarifaRedondeada = Math.round(productoSeleccionado.tarifa);
+      this.detalleFacturaForm.controls[`tarifa_${indice}`].setValue(tarifaRedondeada);
+    } else {
+      this.detalleFacturaForm.controls[`tarifa_${indice}`].setValue('');
+    }
+  }
+
+  // Método para calcular en Modal Create Factura
+  calcularPrecioTotalSinImpuestoConDescuento(index: number): void {
+    const cantidadControl = this.detalleFacturaForm.get(`cantidad_${index}`);
+    const precioUnitarioControl = this.detalleFacturaForm.get(`precio_unitario_${index}`);
+    const descuentoControl = this.detalleFacturaForm.get(`descuento_${index}`);
+    const precioTotalSinImpuestoControl = this.detalleFacturaForm.get(`precio_total_sin_impuesto_${index}`);
+
+    if (cantidadControl && precioUnitarioControl && descuentoControl && precioTotalSinImpuestoControl) {
+      const cantidad = cantidadControl.value;
+      const precioUnitario = precioUnitarioControl.value;
+      const descuento = descuentoControl.value || 0; // Si no hay descuento, se considera 0.
+
+      const precioTotalSinImpuesto = cantidad * precioUnitario - descuento;
+
+      precioTotalSinImpuestoControl.setValue(precioTotalSinImpuesto);
+    }
+  }
+
+  // Método para calcular en Modal Create Factura
+  calcularValor(index: number): void {
+    const tarifaControl = this.detalleFacturaForm.get(`tarifa_${index}`);
+    const precioTotalSinImpuestoControl = this.detalleFacturaForm.get(`precio_total_sin_impuesto_${index}`);
+    const valorControl = this.detalleFacturaForm.get(`valor_${index}`);
+    if (tarifaControl && precioTotalSinImpuestoControl && valorControl) {
+      const tarifa = tarifaControl.value || 0;
+      const precioTotalSinImpuesto = precioTotalSinImpuestoControl.value || 0;
+      const valor = (tarifa / 100) * precioTotalSinImpuesto;
+      valorControl.setValue(valor);
+    }
+  }
+
+  // Método para calcular en Modal Create Factura
+  calcularPrecioTotal(index: number): void {
+    const precioTotalSinImpuestoControl = this.detalleFacturaForm.get(`precio_total_sin_impuesto_${index}`);
+    const tarifaControl = this.detalleFacturaForm.get(`tarifa_${index}`);
+    const valorControl = this.detalleFacturaForm.get(`valor_${index}`);
+    const iceControl = this.detalleFacturaForm.get(`ice_${index}`);
+    const precioTotalControl = this.detalleFacturaForm.get(`precio_total_${index}`);
+    if (precioTotalSinImpuestoControl && tarifaControl && valorControl && iceControl && precioTotalControl) {
+      const precioTotalSinImpuesto = precioTotalSinImpuestoControl.value || 0;
+      const tarifa = tarifaControl.value || 0;
+      const valor = valorControl.value || 0;
+      const ice = iceControl.value || 0;
+      const iceImpuesto = (tarifa / 100) * ice;
+      const precioTotal = (precioTotalSinImpuesto + valor) + (ice + iceImpuesto);
+      precioTotalControl.setValue(precioTotal);
+    }
+  }
+
+  // Método para actualizar en Modal Create Factura
+  actualizarTotalesPorTarifa(): void {
+    this.sumaTotalImpuesto = 0;
+    this.sumaTotalImpuestoCero = 0;
+    for (let i = 0; i < this.detalleFacturaFormInterface.length; i++) {
+      const tarifaControl = this.detalleFacturaForm.get(`tarifa_${i}`);
+      const precioTotalSinImpuestoControl = this.detalleFacturaForm.get(`precio_total_sin_impuesto_${i}`);
+      const iceControl = this.detalleFacturaForm.get(`ice_${i}`);
+      if (tarifaControl && precioTotalSinImpuestoControl && iceControl) {
+        const tarifa = tarifaControl.value;
+        const precioTotalSinImpuesto = precioTotalSinImpuestoControl.value || 0;
+        const ice = iceControl.value || 0;
+        if (tarifa === 12) {
+          this.sumaTotalImpuesto += precioTotalSinImpuesto + ice;
+        } else if (tarifa === 0) {
+          this.sumaTotalImpuestoCero += precioTotalSinImpuesto + ice;
+        }
+      }
+    }
+  }
+
+  // Método para actualizar en Modal Create Factura
+  actualizarTotalDescuento(): void {
+    this.sumaTotalDescuento = 0;
+    for (let i = 0; i < this.detalleFacturaFormInterface.length; i++) {
+      const descuentoControl = this.detalleFacturaForm.get(`descuento_${i}`);
+      if (descuentoControl) {
+        const descuento = descuentoControl.value || 0;
+        this.sumaTotalDescuento += descuento;
+      }
+    }
+  }
+
+  // Método para actualizar en Modal Create Factura
+  actualizarTotalSinImpuestos(): void {
+    this.sumaTotalSinImpuesto = 0;
+    for (let i = 0; i < this.detalleFacturaFormInterface.length; i++) {
+      const precioTotalSinImpuestoControl = this.detalleFacturaForm.get(`precio_total_sin_impuesto_${i}`);
+      if (precioTotalSinImpuestoControl) {
+        const precioTotalSinImpuesto = precioTotalSinImpuestoControl.value || 0;
+        this.sumaTotalSinImpuesto += precioTotalSinImpuesto;
+      }
+    }
+  }
+
+  // Método para actualizar en Modal Create Factura
+  actualizarTotalICE(): void {
+    this.sumaTotalICE = 0;
+    for (let i = 0; i < this.detalleFacturaFormInterface.length; i++) {
+      const iceControl = this.detalleFacturaForm.get(`ice_${i}`);
+      if (iceControl) {
+        const ice = iceControl.value || 0;
+        this.sumaTotalICE += ice;
+      }
+    }
+  }
+
+  // Método para actualizar en Modal Create Factura
+  actualizarTotalIVA(): void {
+    this.sumaTotalIVA = 0;
+    for (let i = 0; i < this.detalleFacturaFormInterface.length; i++) {
+      const tarifaControl = this.detalleFacturaForm.get(`tarifa_${i}`);
+      const valorControl = this.detalleFacturaForm.get(`valor_${i}`);
+
+      if (tarifaControl && valorControl) {
+        const tarifa = tarifaControl.value;
+        const valor = valorControl.value || 0;
+
+        if (tarifa === 12) {
+          this.sumaTotalIVA += valor;
+        }
+      }
+    }
+  }
+
+  // Método para actualizar en Modal Create Factura
+  actualizarPrecioTotal(): void {
+    this.sumaPrecioTotal = 0;
+    for (let i = 0; i < this.detalleFacturaFormInterface.length; i++) {
+      const precioTotalControl = this.detalleFacturaForm.get(`precio_total_${i}`);
+      if (precioTotalControl) {
+        const precioTotal = precioTotalControl.value || 0;
+        this.sumaPrecioTotal += precioTotal;
+      }
+    }
+  }
+
+  // Método para actualizar en Modal Create Factura
+  actualizarSaldo(): void {
+    this.abono = this.facturaForm.get('abono').value || 0;
+    const nuevoSaldo = Math.max(this.sumaPrecioTotal - this.abono, 0);
+    console.log("entra")
+    if (nuevoSaldo === 0) {
+      this.abono = this.sumaPrecioTotal;
+      this.facturaForm.get('abono').setValue(this.abono.toFixed(2));
+      this.facturaForm.get('saldo').setValue("0.00"); // Actualizar el campo "Saldo" en el formulario
+    } else {
+      this.facturaForm.get('saldo').setValue(nuevoSaldo.toFixed(2));
+    }
+  }
+
+  // Método para actualizar factura en Modal Update Factura
+  actualizarFactura() {
+    this.formSubmitted = true;
+    if (this.facturaFormU.invalid) {
+      console.log("Validar Formulario", this.facturaForm.value);
+      return;
+    }
+
+    const abono = this.facturaFormU.get('abono').value;
+    const observacion = this.facturaFormU.get('observacion').value;
+    const idFormaPago = this.facturaFormU.get('id_forma_pago').value;
+    if (abono > 0 && observacion.trim() === '') {
+      alert('Debes proporcionar una observación si el abono es mayor a cero.');
+      return; // La función se detiene aquí
+    } else if (abono > 0 && idFormaPago === '') {
+      alert('Debes seleccionar una forma de pago.');
+      return; // La función se detiene aquí
+    }
+
+    const data = {
+      ...this.facturaFormU.value,
+      id_factura_venta: this.facturaSeleccionada.id_factura_venta,
+    }
+
+    this.facturaService.updateFactura(data)
+      .subscribe(res => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Factura actualizado',
+          text: 'Factura se ha actualizado correctamente',
+          showConfirmButton: false,
+          timer: 1500
+        });
+        //this.router.navigateByUrl(`/dashboard/facturas`)
+        this.recargarComponente();
+        this.cerrarModal();
+      }, (err) => {
+        const errorMessage = err.error?.msg || 'Se produjo un error al actualizar la factura.';
+        Swal.fire('Error', errorMessage, 'error');
+      });
+  }
+
+  // Método para cargar factura por id en Modal Update Factura
+  cargarFacturaPorId(id_factura_venta: any) {
+    this.facturaService.loadFacturaById(id_factura_venta)
+      .pipe(
+        switchMap((factura: any) => {
+          const { id_cliente, id_asiento, codigo, fecha_emision, fecha_vencimiento, estado_pago,
+            total_sin_impuesto, total_descuento, valor, importe_total, abono } = factura.factura[0];
+          this.facturaSeleccionada = factura.factura[0];
+          this.codigo = codigo;
+          this.total_sin_impuesto = total_sin_impuesto;
+          this.total_descuento = total_descuento;
+          this.valor = valor;
+          this.importe_total = importe_total;
+
+          const saldo = factura.saldo.toFixed(2);
+          this.saldoInicial = parseFloat(saldo); // Saldo recuperado
+          this.abonoU = abono; // Abono recuperado
+
+          const id_forma_pago = ""; // Precargar un id_forma_pago en html
+          const observacion = ""; // Precargar una observación en html
+
+          return this.cargarClientePorId(id_cliente).pipe(
+            concatMap(cliente => {
+              const { identificacion, razon_social, nombre_comercial, direccion, telefono, email } = cliente[0];
+              this.clienteSeleccionado = cliente[0];
+              this.identificacion = identificacion;
+              this.razon_social = razon_social;
+              this.direccion = direccion;
+              this.telefono = telefono;
+              this.email = email;
+              const abono = "0.00"; // Precargar abono en html
+              return of({
+                identificacion, razon_social, direccion, telefono, email,
+                id_asiento, codigo, fecha_emision, fecha_vencimiento, estado_pago, total_sin_impuesto, total_descuento, valor, importe_total, abono, saldo,
+                id_forma_pago, observacion,
+              });
+            })
+          );
+        })
+      )
+      .subscribe(data => {
+        this.facturaFormU.setValue(data);
+      });
+  }
+
+  // Método para cargar cliente por id en Modal Update Factura
+  cargarClientePorId(id_cliente: any) {
+    return this.clienteService.loadClienteById(id_cliente);
+  }
+
+  // Método para formatear fecha en Modal Update Factura
   getFormattedFechaEmision(): string {
     const fechaEmision = this.facturaFormU.get('fecha_emision')?.value;
     if (fechaEmision) {
@@ -1264,6 +1133,7 @@ export class FacturaVentaComponent implements OnInit {
     return '';
   }
 
+  // Método para formatear fecha en Modal Update Factura
   getFormattedFechaVencimiento(): string {
     const fechaVencimiento = this.facturaFormU.get('fecha_vencimiento')?.value;
     if (fechaVencimiento) {
@@ -1273,31 +1143,154 @@ export class FacturaVentaComponent implements OnInit {
     return '';
   }
 
-  /*
-  cargarDetalleFacturas(id_factura_venta: any) {
-    this.detalleFacturaService.loadDetalleFacturaByFactura(id_factura_venta)
-      .subscribe(({ detalle_facturas }) => {
-        this.detalle_facturas = detalle_facturas;
-      })
-  }
-  calcularAbono(id_factura_venta: any) {
-    this.detalleFacturaService.loadDetalleFacturaByFactura(id_factura_venta)
-      .subscribe(({ detalle_facturas }) => {
-        this.detalle_facturas = detalle_facturas;
+  // Método para cargar detalles factura por id factura en Modal Update Factura
+  cargarDetallesFacturaByIdFactura(id_factura_venta: any) {
+    this.detalleFacturaService.loadDetallesFacturaByIdFactura(id_factura_venta)
+      .subscribe(({ detalles_factura }) => {
+        this.detalles_factura = detalles_factura;
       })
   }
 
-
-  cargarDetalleFacturas2(id_factura_venta: any) {
-    this.detalleFacturaService.loadDetalleFacturaByFactura2(id_factura_venta)
-      .subscribe(response => {
-        this.detalle_facturas = response.detalle_facturas;
-      });
+  // Método para actualizar saldo en Modal Update Factura
+  actualizarSaldoU(): void {
+    this.abonoU = this.facturaFormU.get('abono').value || 0;
+    const nuevoSaldo = Math.max(this.saldoInicial - this.abonoU, 0);
+    if (nuevoSaldo === 0) {
+      this.abonoU = this.saldoInicial;
+      this.facturaFormU.get('abono').setValue(this.abonoU.toFixed(2));
+      this.facturaFormU.get('saldo').setValue("0.00");
+    } else {
+      this.facturaFormU.get('saldo').setValue(nuevoSaldo.toFixed(2));
+    }
   }
-*/
 
-  // XML
   
+  // Método para crear factura en Modal XML
+  crearFacturaXML() {
+    // Reiniciar el arreglo detallesXMLInterface
+    //this.detallesXMLInterface = [];
+    // Limpiar el formulario de detalles
+    //this.detalleFacturaForm.reset();
+    if (this.detallesXMLInterface.length === 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Advertencia',
+        text: 'No ha cargado un archivo XML.',
+      });
+      return;
+    }
+
+    this.formSubmitted = true;
+    if (this.facturaFormU.invalid) {
+      // Aquí se valida los campos que están validando en "Input Validation"
+      console.log("Validar Formulario", this.facturaForm.value);
+      return;
+    }
+
+    const abono = this.facturaFormXML.get('abono').value;
+    const observacion = this.facturaFormXML.get('observacion').value;
+    const idFormaPago = this.facturaFormXML.get('id_forma_pago').value;
+    if (abono > 0 && observacion.trim() === '') {
+      alert('Debes proporcionar una observación si el abono es mayor a cero.');
+      return; // La función se detiene aquí
+    } else if (abono > 0 && idFormaPago === '') {
+      alert('Debes seleccionar una forma de pago.');
+      return; // La función se detiene aquí
+    }
+
+    // Una vez que los productos se han creado, procede a crear la factura
+    const facturaData: FacturaXMLInterface = {
+      id_cliente: this.id_cliente,
+      //id_forma_pago: this.id_forma_pago, con esto cargamos la forma de pago del XML
+      id_forma_pago: this.facturaFormXML.get("id_forma_pago").value,
+      id_asiento: 1,
+      id_info_tributaria: 1,
+      clave_acceso: this.claveAcceso,
+      codigo: this.estab + "-" + this.ptoEmi + "-" + this.secuencial,
+      fecha_emision: this.fechaEmision,
+      fecha_vencimiento: this.fechaEmision,
+      estado_pago: '',
+      total_sin_impuesto: this.totalSinImpuestos,
+      total_descuento: this.totalDescuento,
+      valor: this.valor2,
+      propina: this.propina,
+      importe_total: this.importeTotal,
+
+      abono: this.abonoXML,
+      //saldo: 0, // Valor válido
+      observacion: this.facturaFormXML.get("observacion").value,
+    };
+    this.facturaService.createFactura(facturaData).subscribe(
+      (res: any) => {
+        const facturaId = res.id_factura_venta; // Obtener el ID del factura guardado
+        console.log('< facturaID: ', facturaId)
+
+        const productosObservables = this.crearProductosXML();
+
+        forkJoin(productosObservables).subscribe((productosCreados: any[]) => {
+          console.log('🟩 PRODUCTOS CREADOS: ', productosCreados);
+
+          // Crear los detalles y asociarlos a la factura y productos
+          const detallesXMLInterface = this.detallesXMLInterface.map((detalleXML, index) => {
+
+            return {
+              id_factura_venta: facturaId,
+              id_producto: productosCreados[index].id_producto, // Aquí accedemos al primer producto en el array de productos creados
+              codigo_principal: detalleXML.codigoPrincipal,//ver
+              descripcion: detalleXML.descripcion,
+              cantidad: detalleXML.cantidad,
+              precio_unitario: detalleXML.precioUnitario,
+              descuento: detalleXML.descuento,
+              precio_total_sin_impuesto: detalleXML.precioTotalSinImpuesto,
+
+              precio_total_sin_impuesto_mas_ice: null,
+
+              codigo: detalleXML.codigo,
+              codigo_porcentaje: detalleXML.codigoPorcentaje,
+              tarifa: detalleXML.tarifa,
+              base_imponible: detalleXML.baseImponible,
+              valor: detalleXML.valor,
+              ice: null,
+              precio_total: detalleXML.precioTotalSinImpuesto + detalleXML.valor,
+            };
+
+            //detallesXMLInterface.push(nuevoDetalle);
+          });
+          this.detalleFacturaService.createDetalleFacturaArray(detallesXMLInterface).subscribe(
+            () => {
+              Swal.fire({
+                icon: 'success',
+                title: 'Factura creada',
+                text: 'La factura se han creado correctamente.',
+                showConfirmButton: false,
+                timer: 1500
+              });
+              //this.recargarComponente();
+              this.cerrarModal();
+            },
+            (err) => {
+              let errorMessage = 'Se produjo un error al crear el factura.';
+              if (err.error && err.error.msg) {
+                errorMessage = err.error.msg;
+              }
+              Swal.fire('Error', errorMessage, 'error');
+            }
+          );
+          this.recargarComponente();
+        },
+          (err) => {
+            // Manejar errores
+          }
+        );
+      },
+      (err) => {
+        // Manejar errores
+      }
+    );
+  }
+
+
+  // Método para cargar xml en Modal XML
   loadXML() {
     if (this.xmlFilePath) {
       this.http.get(this.xmlFilePath, {
@@ -1310,19 +1303,17 @@ export class FacturaVentaComponent implements OnInit {
         responseType: 'text'
       }).subscribe((data) => {
         this.parseXML(data).then((data) => {
-          this.xmlItems = data;
+          this.detallesXMLInterface = data;
         });
       });
     }
   }
-  
 
-  
-  parseXML(data: string): Promise<ProductDetail[]> {
-    console.log("\n\n-> parseXML(data: string): Promise<ProductDetail[]> {")
+  // Método para parsear xml en Modal XML
+  parseXML(data: string): Promise<DetalleXMLInterface[]> {
     return new Promise(resolve => {
       var k: string | number,
-        arr: ProductDetail[] = [],
+        arr: DetalleXMLInterface[] = [],
         parser = new xml2js.Parser({
           trim: true,
           explicitArray: true
@@ -1334,42 +1325,81 @@ export class FacturaVentaComponent implements OnInit {
           resolve(arr);
           return;
         }
-
+        // infoTributaria
         const infoTributaria = factura.infoTributaria[0];
+        this.ambiente = infoTributaria.ambiente[0];
+        this.tipoEmision = infoTributaria.tipoEmision[0];
         this.razonSocial = infoTributaria.razonSocial[0];
         this.ruc = infoTributaria.ruc[0];
         this.claveAcceso = infoTributaria.claveAcceso[0];
+        this.codDoc = infoTributaria.codDoc[0];
         this.estab = infoTributaria.estab[0];
         this.ptoEmi = infoTributaria.ptoEmi[0];
         this.secuencial = infoTributaria.secuencial[0];
+        this.dirMatriz = infoTributaria.dirMatriz[0];
+        if ('contribuyenteRimpe' in infoTributaria) {
+          this.contribuyenteRimpe = infoTributaria.contribuyenteRimpe[0];
+        } else {
+          this.contribuyenteRimpe = null; // O establecerlo en null o un valor predeterminado
+        }
 
+        // infoFactura
         const infoFactura = factura.infoFactura[0];
-        this.fechaEmision = infoFactura.fechaEmision[0];
+        const fecha_aux = infoFactura.fechaEmision[0];
+        this.fechaEmision = this.formatDate(fecha_aux);
+        this.dirEstablecimiento = infoFactura.dirEstablecimiento[0];
+        this.obligadoContabilidad = infoFactura.obligadoContabilidad[0];
+        this.tipoIdentificacionComprador = infoFactura.tipoIdentificacionComprador[0];
         this.razonSocialComprador = infoFactura.razonSocialComprador[0];
         this.identificacionComprador = infoFactura.identificacionComprador[0];
-        this.direccionComprador = infoFactura.direccionComprador[0];
+        if ('direccionComprador' in infoFactura) {
+          this.direccionComprador = infoFactura.direccionComprador[0];
+        } else {
+          this.direccionComprador = null; // O establecerlo en null o un valor predeterminado
+        }
         this.totalSinImpuestos = parseFloat(infoFactura.totalSinImpuestos[0]);
         this.totalDescuento = parseFloat(infoFactura.totalDescuento[0]);
 
-        const totalImpuestos = infoFactura.totalConImpuestos[0].totalImpuesto[0];
-
-        if (totalImpuestos.codigo[0] === '2' && totalImpuestos.codigoPorcentaje[0] === '2') {
-          this.codigo2 = totalImpuestos.codigo[0];
-          this.codigoPorcentaje2 = totalImpuestos.codigoPorcentaje[0];
-          this.baseImponible2 = parseFloat(totalImpuestos.baseImponible[0]);
-          this.valor2 = parseFloat(totalImpuestos.valor[0]);
+        // infoFactura/totalConImpuestos
+        const totalConImpuestos = infoFactura.totalConImpuestos[0].totalImpuesto[0];
+        if (totalConImpuestos.codigo[0] === '2' && totalConImpuestos.codigoPorcentaje[0] === '2') {
+          this.codigo2 = totalConImpuestos.codigo[0];
+          this.codigoPorcentaje2 = totalConImpuestos.codigoPorcentaje[0];
+          this.baseImponible2 = parseFloat(totalConImpuestos.baseImponible[0]);
+          this.valor2 = parseFloat(totalConImpuestos.valor[0]);
         }
 
-        this.importeTotal = parseFloat(result.factura.infoFactura[0].importeTotal[0]);
+        // infoFactura
+        this.propina = parseFloat(infoFactura.propina[0]);
+        this.importeTotal = parseFloat(infoFactura.importeTotal[0]);
+        console.log("this.importeTotal--------------------", this.importeTotal)
+        //this.importeTotal = parseFloat(result.factura.infoFactura[0].importeTotal[0]);
+        this.ivaAux = this.importeTotal - this.totalSinImpuestos
+        this.moneda = infoFactura.moneda[0];
 
-        const pago = result.factura.infoFactura[0].pagos[0].pago[0];
-        this.formaPago = pago.formaPago[0];
-        this.total = parseFloat(pago.total[0]);
-        this.plazo = parseInt(pago.plazo[0]);
-        this.unidadTiempo = pago.unidadTiempo[0];
+        // infoFactura/pagos
+        const pagos = result.factura.infoFactura[0].pagos[0].pago[0];
+        this.formaPago = pagos.formaPago[0];
+        this.total = parseFloat(pagos.total[0]);
 
-        this.precioTotalSinImpuestoAux = 0;
-        this.valor = 0;
+        //this.plazo = parseInt(pagos.plazo[0]);
+        if (result?.factura?.infoFactura?.pagos?.[0]?.pago?.[0]?.plazo) {
+          this.plazo = parseInt(result.factura.infoFactura.pagos[0].pago[0].plazo[0]);
+        } else {
+          console.log("plazo no diponible");
+          this.plazo = null; // O un valor predeterminado
+        }
+        //this.unidadTiempo = pagos.unidadTiempo[0];
+        if (result?.factura?.infoFactura?.pagos?.[0]?.pago?.[0]?.unidadTiempo) {
+          this.unidadTiempo = result.factura.infoFactura.pagos[0].pago[0].unidadTiempo[0];
+        } else {
+          console.log("unidadTiempo no diponible");
+          this.unidadTiempo = null; // O un valor predeterminado
+        }
+
+        // reiniciar valores
+        this.precioTotalSinImpuestoAux = 0.00;
+        this.valorAux = 0.00;
 
         if (result && result.factura) {
           if (result.factura.detalles && result.factura.detalles[0] && result.factura.detalles[0].detalle) {
@@ -1377,51 +1407,237 @@ export class FacturaVentaComponent implements OnInit {
             for (k in detalles) {
               var item = detalles[k];
               arr.push({
+                // detalles/detalle
                 codigoPrincipal: item.codigoPrincipal[0],
                 descripcion: item.descripcion[0],
                 cantidad: parseFloat(item.cantidad[0]),
                 precioUnitario: parseFloat(item.precioUnitario[0]),
                 descuento: parseFloat(item.descuento[0]),
                 precioTotalSinImpuesto: parseFloat(item.precioTotalSinImpuesto[0]),
-                // Add the new properties here
+                // detalles/detalle/impuestos
                 codigo: item.impuestos[0].impuesto[0].codigo[0],
                 codigoPorcentaje: item.impuestos[0].impuesto[0].codigoPorcentaje[0],
                 tarifa: parseFloat(item.impuestos[0].impuesto[0].tarifa[0]),
                 baseImponible: parseFloat(item.impuestos[0].impuesto[0].baseImponible[0]),
                 valor: parseFloat(item.impuestos[0].impuesto[0].valor[0]),
               });
-              // calculados
+              // calculados con detalles
               this.precioTotalSinImpuestoAux += parseFloat(item.precioTotalSinImpuesto[0]);
               if (item.impuestos[0].impuesto[0].codigoPorcentaje[0] === '2') {
-                this.valor += parseFloat(item.impuestos[0].impuesto[0].valor[0]);
+                this.valorAux += parseFloat(item.impuestos[0].impuesto[0].valor[0]);
               }
 
             }
           }
         }
-        this.xmlItems = arr; // Updated to assign to xmlItems
-        console.log('this.xmlItems: ', this.xmlItems);
 
+        // infoAdicional
+        const infoAdicional = result?.factura?.infoAdicional;
+        if (infoAdicional && infoAdicional[0]?.campoAdicional) {
+          for (const campo of infoAdicional[0].campoAdicional) {
+            const nombre = campo.$.nombre;
+            const valor = campo._;
+            if (nombre === 'Telefono') {
+              this.telefonoXML = valor
+            } else if (nombre === 'Email') {
+              this.emailXML = valor
+            }
+          }
+        }
+
+        this.detallesXMLInterface = arr; // Updated to assign to detallesXMLInterface
+        console.log('this.detallesXMLInterface: ', this.detallesXMLInterface);
         resolve(arr);
 
-        
         console.log('--> Inicio -  Cargar Cliente');
         this.cargarClienteByIdentificacion(this.identificacionComprador)
         console.log('--> Fin -  Cargar Cliente');
 
         console.log('--> Incio - Cargar Forma Pago');
-        this.cargarFormaPagoByCodigo(this.formaPago)
+        //this.cargarFormaPagoByCodigo(this.formaPago)
         console.log('--> Fin - Cargar Forma Pago');
-
       });
     });
   }
-  
 
+  // Método para crear cliente en Modal XML
+  crearClienteXML() {
+    this.identificacion = this.identificacionComprador
+    this.razon_social = this.razonSocialComprador
+    this.direccion = this.direccionComprador
+    this.telefono = this.telefonoXML
+    this.email = this.emailXML
+    if (!this.identificacion || !this.razon_social) {
+      Swal.fire('Error', 'Falta información requerida para crear el cliente.', 'error');
+      return;
+    }
 
+    // Crea un objeto con la información del cliente
+    const clienteData = {
+      identificacion: this.identificacion,
+      razon_social: this.razon_social,
+      nombre_comercial: this.nombre_comercial,
+      direccion: this.direccion,
+      telefono: this.telefono,
+      email: this.email
+    };
 
+    // Realiza la solicitud POST para crear el cliente
+    this.clienteService.createCliente(clienteData).subscribe(
+      (res) => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Cliente creado',
+          text: 'Cliente se ha creado correctamente.',
+          showConfirmButton: false,
+          timer: 1500
+        });
+        this.cargarClienteByIdentificacion(this.identificacion);
+        //this.recargarComponente();
+        //this.cerrarModal();
+      }, (err) => {
+        let errorMessage = 'Se produjo un error al crear el cliente.';
+        if (err.error && err.error.msg) {
+          errorMessage = err.error.msg;
+        }
+        Swal.fire('Error', err.error.msg, 'error');
+      });
+    //this.recargarComponente();
+  }
+
+  // Método para cargar cliente por identificación en Modal XML
+  cargarClienteByIdentificacion(identificacion: string) {
+    this.clienteService.loadClienteByIdentificacion(identificacion)
+      .subscribe(
+        (cliente) => {
+          if (Array.isArray(cliente) && cliente.length > 0) {
+            const { id_cliente, identificacion, razon_social } = cliente[0];
+            this.id_cliente = id_cliente;
+            this.identificacion = identificacion;
+            this.razon_social = razon_social;
+          } else {
+            Swal.fire({
+              title: 'Éxito 2',
+              text: 'XML Cargado',
+              icon: 'success',
+              timer: 1500,
+              showConfirmButton: false,
+            })
+              .then(() => {
+                this.mostrarMensajeDeAdvertenciaConOpciones('Advertencia', 'Cliente no encontrado ¿Desea crear un nuevo cliente?');
+              });
+          }
+        }, (err) => {
+          let errorMessage = 'Se produjo un error al cargar el cliente.';
+          if (err.error && err.error.msg) {
+            errorMessage = err.error.msg;
+          }
+          Swal.fire('Error', err.error.msg, 'error');
+        }
+      );
+  }
+
+  // Método para mostrar adevertencia en Modal XML
+  mostrarMensajeDeAdvertenciaConOpciones(title: string, text: string) {
+    Swal.fire({
+      icon: 'warning',
+      title,
+      text,
+      showCancelButton: true, // Muestra los botones "Sí" y "No"
+      confirmButtonText: 'Sí', // Texto del botón "Sí"
+      cancelButtonText: 'No', // Texto del botón "No"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // El usuario hizo clic en "Sí", puedes tomar acciones aquí
+        console.log('Usuario hizo clic en "Sí"');
+        console.log('--> Inicio - this.crearClienteXML()');
+        this.crearClienteXML();
+        console.log('--> Fin - this.crearClienteXML()');
+      } else {
+        // El usuario hizo clic en "No" o cerró el cuadro de diálogo
+        console.log('Usuario hizo clic en "No" o cerró el cuadro de diálogo');
+      }
+    });
+  }
+
+  // Método para crear productos en Modal XML
+  crearProductosXML(): Observable<Producto[]>[] {
+    const productosObservables: Observable<Producto[]>[] = this.detallesXMLInterface.map((detalleXML) => {
+      const nuevoProducto: Producto = {
+        id_producto: null,
+        id_tipo_inventario: null,
+        id_marca: null,
+        id_clasificacion: null,
+        id_unidad_medida: null,
+        id_tarifa_iva: null,
+        id_tarifa_ice: null,
+        id_tipo_producto: null,
+        id_lista_precio: null,
+        codigo_principal: detalleXML.codigoPrincipal,
+        descripcion: detalleXML.descripcion,
+        stock: detalleXML.cantidad,
+        stock_minimo: null,
+        stock_maximo: null,
+        utilidad: null,
+        descuento: null,
+        tarifa: detalleXML.tarifa,
+        ice: null,
+        precio_compra: (detalleXML.precioTotalSinImpuesto + detalleXML.valor) / detalleXML.cantidad,
+        precio_venta: null,
+        ficha: null,
+        nota: null,
+        especificacion: null,
+        fecha_registro: null,
+        fecha_caducidad: null,
+        fecha_modificacion: null,
+        imagen_producto: null,
+      };
+      return this.productoService.createProducto(nuevoProducto);
+    });
+
+    return productosObservables;
+  }
+
+  // Método para formatear fecha en Modal XML
+  formatDate(fechaAux: any): Date | null {
+    // Dividir la fecha en partes (día, mes, año)
+    const partesFecha = fechaAux.split('/');
+    if (partesFecha.length === 3) {
+      // Obtener las partes de la fecha
+      const dia = partesFecha[0];
+      const mes = partesFecha[1];
+      const año = partesFecha[2];
+      // Construir la nueva cadena de fecha en el formato "YYYY-MM-DD"
+      const fechaFormateada = `${año}-${mes}-${dia}`;
+      const fechaFormateadaAux = new Date(fechaFormateada);
+      return fechaFormateadaAux;
+    } else {
+      console.log("Formato de fecha no válido");
+      return null;
+    }
+  }
+
+  // Método para cargar la data en Modal XML
   onFileSelected(event: any): void {
-    console.log('\n\n-> START (Seleccionar archivo)  onFileSelected(event: any): void {');
+    /*
+        const fileInput = document.getElementById('fileInput');
+        const customFileLabel = document.getElementById('custom-file-label');
+        
+        if (fileInput && customFileLabel) {
+            const fileName = event.target.files[0].name;
+            customFileLabel.textContent = `Archivo seleccionado: ${fileName}`;
+        }
+        */
+
+    const selectedFile = event.target.files[0];
+    const fileNameSpan = document.getElementById("selectedFileName");
+
+    if (selectedFile) {
+      fileNameSpan.textContent = selectedFile.name;
+    } else {
+      fileNameSpan.textContent = "Ninguno";
+    }
+
     const file: File = event.target.files[0];
     if (file) {
       if (file.name.endsWith('.xml')) { // Verifica que el archivo sea de tipo XML
@@ -1433,7 +1649,7 @@ export class FacturaVentaComponent implements OnInit {
               const xmlData: string | ArrayBuffer = result as string | ArrayBuffer; // Verifica si result no es nulo
               this.parseXML(xmlData as string)
                 .then((data) => {
-                  this.xmlItems = data;
+                  this.detallesXMLInterface = data;
                 });
             }
           }
@@ -1455,8 +1671,17 @@ export class FacturaVentaComponent implements OnInit {
       }
     }
   }
-  
 
+  // Método para mostrar mensaje de error en Modal XML
+  mostrarMensajeDeError(title: string, text: string) {
+    Swal.fire({
+      icon: 'error' as SweetAlertIcon, // Puedes personalizar el ícono
+      title,
+      text,
+    });
+  }
+
+  // Método para subir un xml al servidor en Modal XML
   uploadFile(file: File): void {
     const formData = new FormData();
     formData.append('xmlFile', file, file.name);
@@ -1472,47 +1697,45 @@ export class FacturaVentaComponent implements OnInit {
     // });
   }
 
+  // Método para actualizar saldo en Modal XML
+  actualizarSaldoXML(): void {
+    this.abonoXML = this.facturaFormXML.get('abono').value || 0;
+    const nuevoSaldo = Math.max(this.importeTotal - this.abonoXML, 0);
+    if (nuevoSaldo === 0) {
+      this.abonoXML = this.importeTotal;
+      this.facturaFormXML.get('abono').setValue(this.abonoXML.toFixed(2));
+      this.facturaFormXML.get('saldo').setValue("0.00");
+    } else {
+      this.facturaFormXML.get('saldo').setValue(nuevoSaldo.toFixed(2));
+    }
+  }
 
+  // Método para validar las entradas en formularios
+  campoNoValido(campo: string, form: FormGroup): boolean {
+    if (form.get(campo)?.invalid && this.formSubmitted) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  // Método para recargar componente
+  recargarComponente() {
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this.router.navigate(['/dashboard/facturas']);
+    });
+  }
 
+  // Método para cerrar modal
+  cerrarModal() {
+    this.mostrarModal = true;
+    const body = document.querySelector('body');
+    if (body) {
+      body.classList.remove('modal-open');
+    }
+    const modalBackdrop = document.querySelector('.modal-backdrop');
+    if (modalBackdrop) {
+      this.renderer.removeChild(document.body, modalBackdrop);
+    }
+  }
 
-}
-
-// Define the ProductDetail interface
-interface ProductDetail {
-  codigoPrincipal: string;
-  descripcion: string;
-  cantidad: number;
-  precioUnitario: number;
-  descuento: number;
-  precioTotalSinImpuesto: number;
-  codigo: string; // Add the new properties here
-  codigoPorcentaje: string;
-  tarifa: number;
-  baseImponible: number;
-  valor: number;
-}
-
-interface FormFacturaXML2 {
-
-  codigo: string;
-  fecha_emision: Date;
-  fecha_vencimiento: Date;
-  saldo: number;
-  razonSocial: string;
-  ruc: string;
-  claveAcceso: string;
-  estab: string;
-  ptoEmi: string;
-  secuencial: string;
-  id_factura_venta: number;
-  id_cliente: number;
-  id_forma_pago: number;
-  id_asiento: number;
-  estado_pago: string;
-  subtotal_sin_impuestos: number;
-  total_descuento: number;
-  iva: number;
-  valor_total: number;
-  abono: number;
-  // Otras propiedades necesarias
 }

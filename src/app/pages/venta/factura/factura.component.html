@@ -1,129 +1,1400 @@
-<!-- table data-->
-<div class="col-12">
-    <div class="card">
-        <div class="card-body">
-            <h4 class="card-title">Lista de Facturas Compra</h4>
-            <h6 class="card-subtitle"></h6>
-            <div class="float-left modal-footer">
-
-                <button class="btn btn-info waves-effect waves-light" data-toggle="modal" data-target="#exampleModal"
-                    type="button"><span class="btn-label"><i class="fa fa-plus"></i></span>Nueva Factura</button>
-                <button class="btn btn-success margin-left-10 AN__btn_imprimir_pdf___NEW_ASI hidenNew2 btn-new-version"
-                    id="btnimprimirasiento" type="button">
-                    <span class="fa fa-file-pdf-o" style="padding-left:0px;"></span>&nbsp;PDF
-                </button>
-
-                <button class="btn btn-success AN__btn_imprimir_excel___NEW_ASI hidenNew2 btn-new-version"
-                    id="btnasientoEXCEL" type="button">
-                    <span class="fa fa-file-excel-o" style="padding-left:0px;"></span>&nbsp;Excel
-                </button>
-                <button class="btn btn-success margin-left-10 AN__btn_imprimir_asiento___NEW_ASI hidenNew2 btn-print"
-                    id="btnimprimir" type="button" onclick="">
-                    <span class="fa fa-print" style="padding-left:0px;"></span>&nbsp;Imprimir
-                </button>
-                <div id="example23_filter" class="dataTables_filter"><label>Buscar:<input type="search" class=""
-                            placeholder="" aria-controls="example23"></label>
+<!-- Dashboard -->
+<div class="row">
+    <div class="col-lg-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex">
+                    <div class="m-r-20 align-self-center">
+                        <img src="../assets/images/icon/total-facturas-256.png" alt="Income"
+                            style="max-width: 50px; max-height: 50px;">
+                    </div>
+                    <div class="align-self-center">
+                        <h6 class="text-muted m-t-10 m-b-0">Número Facturas</h6>
+                        <h2 class="m-t-0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ totalFacturas }}</h2>
+                    </div>
                 </div>
             </div>
-            <div class="table-responsive">
+        </div>
+    </div>
+    <div class="col-lg-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex">
+                    <div class="m-r-20 align-self-center">
+                        <img src="../assets/images/icon/importe-total-256-2.png" alt="Income"
+                            style="max-width: 50px; max-height: 50px;">
+                    </div>
+                    <div class="align-self-center">
+                        <h6 class="text-muted m-t-10 m-b-0">Total Facturas</h6>
+                        <h2 class="m-t-0">{{ sumaImporteTotal | currency: 'USD': 'symbol' }}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                <table id="demo-foo-addrow" class="table m-t-30 table-hover contact-list footable-loaded footable"
-                    data-page-size="10">
-                    <thead>
-                        <tr>
-                            <th class="footable-sortable">#<span class="footable-sort-indicator"></span></th>
-                            <th class="footable-sortable">Fecha Emisión<span class="footable-sort-indicator"></span>
-                            </th>
-                            <th class="footable-sortable">Factura<span class="footable-sort-indicator"></span></th>
-                            <th class="footable-sortable">Identificación<span class="footable-sort-indicator"></span>
-                            </th>
-                            <th class="footable-sortable">Razón Social<span class="footable-sort-indicator"></span></th>
-                            <th class="footable-sortable">Fecha Vencimiento<span class="footable-sort-indicator"></span>
-                            </th>
-                            <th class="footable-sortable text-center">Valor Total<span
-                                    class="footable-sort-indicator"></span>
-                            </th>
-                            <th class="footable-sortable text-center">Abono<span class="footable-sort-indicator"></span>
-                            </th>
-                            <th class="footable-sortable">Saldo<span class="footable-sort-indicator"></span>
-                            </th>
-                            <th class="footable-sortable">Estado Pago<span class="footable-sort-indicator"></span>
-                            </th>
-                            <th class="footable-sortable">Asiento<span class="footable-sort-indicator"></span>
-                            </th>
-                            <th class="footable-sortable">Estado<span class="footable-sort-indicator"></span></th>
-                            <th class="footable-sortable text-center">Action<span
-                                    class="footable-sort-indicator"></span></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-
-                        <tr *ngFor="let factura of facturas let i = index">
-                            <td><span class="footable-toggle"></span>{{ i + 1 }}</td>
-                            <td>{{factura.fecha_emision }}</td>
-                            <td>{{factura.codigo}}</td>
-                            <td>
-                                <ng-container *ngFor="let cliente of clientes">
-                                    <ng-container
-                                        *ngIf="cliente.id_cliente == factura.id_cliente ">{{cliente.identificacion}}</ng-container>
-                                </ng-container>
-                            </td>
-                            <td>
-                                <ng-container *ngFor="let cliente of clientes">
-                                    <ng-container *ngIf="cliente.id_cliente == factura.id_cliente ">
-                                        {{cliente.razon_social}}</ng-container>
-                                </ng-container>
-                            </td>
-
-                            <td>{{ factura.fecha_vencimiento }}</td>
-                            <td class="text-right">{{ factura.valor_total }}</td>
-                            <td class="text-right">{{ factura.abono }}</td>
-                            <td class="text-right">{{ factura.valor_total - factura.abono }}</td>
-
-
-                            <td class="text-center">{{ factura.id_asiento }}</td>
-                            <td *ngIf="factura.estado; else inactivo">
-                                <div class="label label-table label-success">ACTIVA</div>
-                            </td>
-                            <ng-template #inactivo>
-                                <td>
-                                    <div class="label label-table label-danger">ANULADA</div>
-                                </td>
-                            </ng-template>
-
-                            <td *ngIf="factura.estado else inactivoOption" class="text-nowrap text-center">
-
-                                <a class="cursor" data-toggle="modal"
-                                    (click)="cargarFacturaPorId(factura.id_factura_venta); "
-                                    data-target="#exampleModalU"><span
-                                        class="fa fa-pencil text-inverse m-r-10"></span></a>
-
-                                <a class="cursor" (click)="borrarFactura(factura);" data-toggle="tooltip"
-                                    data-original-title="Close"> <i class="fa fa-close text-danger"></i> </a>
-                            </td>
-                            <ng-template #inactivoOption>
-                            </ng-template>
-                        </tr>
-                    </tbody>
-                    <tfoot>
-                        <tr>
-
-                            <td colspan="8">
-                                <div class="text-right">
-                                    <ul class="pagination">
-                                        <li class="footable-page-arrow disabled"><a data-page="first"
-                                                href="#first">«</a></li>
-                                        <li class="footable-page-arrow disabled"><a data-page="prev" href="#prev">‹</a>
-                                        </li>
-                                        <li class="footable-page-arrow"><a data-page="next" href="#next">›</a></li>
-                                        <li class="footable-page-arrow"><a data-page="last" href="#last">»</a></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-                    </tfoot>
-                </table>
+    <div class="col-lg-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex">
+                    <div class="m-r-20 align-self-center">
+                        <img src="../assets/images/icon/facturas-pendientes-256.png" alt="Income"
+                            style="max-width: 50px; max-height: 50px;">
+                    </div>
+                    <div class="align-self-center">
+                        <h6 class="text-muted m-t-10 m-b-0">Facturas Pendientes</h6>
+                        <h2 class="m-t-0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ totalFacturasPendientes }}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex">
+                    <div class="m-r-20 align-self-center">
+                        <img src="../assets/images/icon/total-pendiente-256.png" alt="Income"
+                            style="max-width: 50px; max-height: 50px;">
+                    </div>
+                    <div class="align-self-center">
+                        <h6 class="text-muted m-t-10 m-b-0">Saldo Pendiente</h6>
+                        <h2 class="m-t-0">{{ sumaSaldo | currency: 'USD': 'symbol' }}</h2>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Table Data Factura -->
+<div class="row">
+    <div class="col-12">
+
+        <div class="card">
+            <div class="card-body">
+
+                <!-- Row Button  -->
+                <div class="row button-group">
+
+                    <!-- Button Groups  -->
+                    <div class="col-lg-12 col-md-12">
+                        <div class="float-left">
+                            <button type="button" class="btn btn-info waves-effect waves-light" data-toggle="modal"
+                                data-target="#exampleModal">
+                                <i class="fa fa-plus"></i> Nueva Factura
+                            </button>
+                            <button type="button" class="btn waves-effect waves-light btn-secondary" data-toggle="modal"
+                                data-target="#exampleModalXML">
+                                <span class="fa fa-download"></span> Importar XML
+                            </button>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown"
+                                    aria-haspopup="true" aria-expanded="false">
+                                    Más opciones
+                                </button>
+                                <div class="dropdown-menu" x-placement="bottom-start"
+                                    style="position: absolute; transform: translate3d(0px, 36px, 0px); top: 0px; left: 0px; will-change: transform;">
+                                    <a class="dropdown-item" href="#" data-toggle="modal"
+                                        data-target="#exampleModalXML">
+                                        <span class="fa fa-download"></span> Importar </a>
+                                    <a class="dropdown-item" href="#" data-toggle="modal"
+                                        data-target="#exampleModalXML">
+                                        <span class="fa fa-upload"></span> Exportar </a>
+                                    <a class="dropdown-item" href="#">
+                                        <span class="fa fa-money"></span> Cuentas por Cobrar</a>
+                                    <a class="dropdown-item" href="#">
+                                        <span class="fa fa-print"></span> Imprimir </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="#" data-toggle="modal"
+                                        data-target="#exampleModalXML">
+                                        <i class="fa fa-cog"></i> Configuración </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    &nbsp;
+
+                    <!-- Date Range Input, Select Input and Search Input -->
+                    <div class="col-lg-12 col-md-12">
+                        <div class="button-group">
+                            <label>Fecha Inicio:
+                                <input type="date" class="form-control" [(ngModel)]="fechaInicio"
+                                    (change)="filtrarFacturas()" (dblclick)="borrarFechaInicio()"
+                                    style="width: 100%;" />
+                            </label>
+                            &nbsp;
+                            <label>Fecha Fin:
+                                <input type="date" class="form-control" [(ngModel)]="fechaFin"
+                                    (change)="filtrarFacturas()" (dblclick)="borrarFechaFin()" style="width: 100%;" />
+                            </label>
+                            &nbsp;
+                            <label>Estado Pago:
+                                <select class="form-control" [(ngModel)]="estadoPagoSelect" (change)="filtrarFacturas()"
+                                    style="width: 100%;">
+                                    <option value="">TODOS</option>
+                                    <option value="PAGADA">PAGADA</option>
+                                    <option value="PENDIENTE">PENDIENTE</option>
+                                    <option value="ANULADA">ANULADA</option>
+                                </select>
+                            </label>
+                            &nbsp;
+                            <label>Buscar:
+                                <input type="text" class="form-control flex-fill" [(ngModel)]="buscarTexto"
+                                    (input)="filtrarFacturas()" style="width: 100%;" />
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table Data -->
+                <div class="table-responsive">
+                    <table id="demo-foo-addrow" class="table m-t-30 table-hover contact-list footable-loaded footable"
+                        data-page-size="10">
+                        <thead>
+                            <tr>
+                                <th class="text-center">#</th>
+                                <th class="text-left">Fecha Emisión</th>
+                                <th class="text-left">Número Factura</th>
+                                <th class="text-left">Identificación</th>
+                                <th class="text-left">Razón Social</th>
+                                <th class="text-center">Fecha Vencimiento</th>
+                                <th class="text-right">Valor Total</th>
+                                <th class="text-right">Abono</th>
+                                <th class="text-right">Saldo</th>
+                                <th class="text-left">Estado Pago</th>
+                                <th class="text-center">Asiento</th>
+                                <th class="text-left">Estado</th>
+                                <th class="text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let factura of facturas let i = index">
+                                <td class="text-center">
+                                    <span class="footable-toggle"></span>
+                                    {{ (paginaActual - 1) * itemsPorPagina + i + 1 }}
+                                </td>
+                                <td>{{ factura.fecha_emision | date:'yyyy-MM-dd' }}</td>
+                                <td>{{ factura.codigo}}</td>
+                                <td>
+                                    <ng-container *ngFor="let cliente of clientes">
+                                        <ng-container
+                                            *ngIf="cliente.id_cliente == factura.id_cliente ">{{cliente.identificacion}}</ng-container>
+                                    </ng-container>
+                                </td>
+                                <td>
+                                    <ng-container *ngFor="let cliente of clientes">
+                                        <ng-container
+                                            *ngIf="cliente.id_cliente == factura.id_cliente ">{{cliente.razon_social}}</ng-container>
+                                    </ng-container>
+                                </td>
+                                <td class="text-center">{{ factura.fecha_vencimiento | date:'yyyy-MM-dd' }}</td>
+                                <td class="text-right">{{ factura.importe_total }}</td>
+                                <td class="text-right">{{ factura.abono }}</td>
+                                <td class="text-right">{{ (factura.importe_total - factura.abono) | number:'1.2-2'
+                                    }}
+                                </td>
+                                <td>
+                                    <ng-container [ngSwitch]="factura.estado_pago">
+                                        <div *ngSwitchCase="'PAGADA'" class="label label-table label-success">PAGADA
+                                        </div>
+                                        <div *ngSwitchCase="'PENDIENTE'" class="label label-table label-info">
+                                            PENDIENTE
+                                        </div>
+                                        <div *ngSwitchCase="'VENCIDA'" class="label label-table label-warning">
+                                            VENCIDA
+                                        </div>
+                                        <div *ngSwitchCase="'ANULADA'" class="label label-table label-danger">
+                                            ANULADA
+                                        </div>
+                                        <div *ngSwitchDefault class="label label-table label-info">{{
+                                            factura.estado_pago }}
+                                        </div>
+                                    </ng-container>
+                                </td>
+                                <td class="text-center">{{ factura.id_asiento }}</td>
+                                <td *ngIf="factura.estado; else inactivo">
+                                    <div class="label label-table label-success">ACTIVA</div>
+                                </td>
+                                <ng-template #inactivo>
+                                    <td>
+                                        <div class="label label-table label-danger">ANULADA</div>
+                                    </td>
+                                </ng-template>
+
+                                <td *ngIf="factura.estado else inactivoOption" class="text-nowrap text-center">
+
+                                    <a class="cursor" data-toggle="modal"
+                                        (click)="cargarFacturaPorId(factura.id_factura_venta); cargarDetallesFacturaByIdFactura(factura.id_factura_venta);"
+                                        data-target="#exampleModalU"><span
+                                            class="fa fa-pencil text-inverse m-r-10"></span></a>
+
+                                    <a class="cursor" (click)="borrarFactura(factura);" data-toggle="tooltip"
+                                        data-original-title="Close"> <i class="fa fa-close text-danger"></i> </a>
+                                </td>
+                                <ng-template #inactivoOption>
+                                </ng-template>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                        </tfoot>
+                    </table>
+                </div>
+                <hr>
+
+                <!-- Pagination-->
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="form-inline">Mostrar &nbsp;
+                            <select id="demo-show-entries" [(ngModel)]="itemsPorPagina"
+                                (change)="changeItemsPorPagina()" class="mr-2">
+                                <option value="5">5</option>
+                                <option value="10">10</option>
+                                <option value="15">15</option>
+                                <option value="20">20</option>
+                            </select>entradas
+                        </label>
+                        <div class="form-inline">
+                            <label class="mr-2">Mostrando</label>
+                            {{ getMinValue() }}
+                            a {{ getMaxValue() > totalFacturas ? totalFacturas : getMaxValue() }}
+                            de {{ totalFacturas }} datos
+                        </div>
+                    </div>
+                    <div class="col-md-6 float-left" style="text-align: right;">
+                        <button class="btn btn-secondary waves-effect waves-light" type="button"
+                            (click)="cambiarPagina(1)">
+                            <i class="mdi mdi-chevron-double-left"></i>
+                        </button>
+                        <button class="btn btn-secondary waves-effect waves-light" type="button"
+                            (click)="cambiarPagina(paginaActual - 1)">
+                            <i class="mdi mdi-chevron-left"></i>
+                        </button>
+                        <ng-container *ngIf="mostrarPaginacion; else showFirstPageButton">
+                            <ng-container *ngFor="let pagina of paginas">
+                                <button class="btn btn-secondary waves-effect waves-light" type="button"
+                                    (click)="cambiarPagina(pagina)">
+                                    {{ pagina }}
+                                </button>
+                            </ng-container>
+                        </ng-container>
+                        <ng-template #showFirstPageButton>
+                            <button class="btn btn-secondary waves-effect waves-light" type="button"
+                                (click)="cambiarPagina(1)">
+                                1
+                            </button>
+                        </ng-template>
+                        <button class="btn btn-secondary waves-effect waves-light" type="button"
+                            (click)="cambiarPagina(paginaActual + 1)">
+                            <i class="mdi mdi-chevron-right"></i>
+                        </button>
+                        <button class="btn btn-secondary waves-effect waves-light" type="button"
+                            (click)="cambiarPagina(totalPaginas)">
+                            <i class="mdi mdi-chevron-double-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Create Factura -->
+<div class="modal fadeIn fast modal-principal" id="exampleModal" tabindex="-1" role="dialog"
+    aria-labelledby="exampleModalLabel1" #miModal>
+    <div class="modal-dialog" role="document" style="width: 100%;" max-width="1000px;">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title" id="exampleModalLabel1">Nueva Factura</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body">
+
+                <div class="text-center">
+                    <h3><b>FACTURA COMPRA</b></h3>
+                    <h5><b>#</b></h5>
+                </div>
+
+                <form autocomplete="off" [formGroup]="facturaForm">
+
+                    <!-- Factura Form -->
+                    <div class="row">
+
+                        <!-- Filtrar clientes -->
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Cliente </label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-id-badge"></i></div>
+                                    <!--se aumento id="exampleInputuname"-->
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder="Buscar identificación" formControlName="identificacion"
+                                        (input)="filtrarClientes($event)">
+                                    <button class="btn btn-success" data-toggle="modal" data-target="#modalCliente"
+                                        type="button">
+                                        Nuevo <span class="fa fa-plus" style="padding-left: 10px;"></span>
+                                    </button>
+                                </div>
+                                <div class="clientes-filtrados"
+                                    *ngIf="mostrarListaClientes && clientesFiltrados.length > 0"
+                                    #clientesLista>
+                                    <ul class="list-group">
+                                        <li class="list-group-item" *ngFor="let cliente of clientesFiltrados"
+                                            (click)="seleccionarCliente(cliente)">
+                                            {{ cliente.identificacion }}
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Razón Social</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-user"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder="Razón Social" formControlName="razon_social" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Dirección</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-location-pin"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder="Dirección" formControlName="direccion" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Teléfono</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-mobile"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder="Teléfono" formControlName="telefono" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Email</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-email"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname" placeholder="Email"
+                                        formControlName="email" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">No. Factura</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon">#<i class=""></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder="Número de factura" formControlName="codigo">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Fecha Emisión</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-calendar"></i></div>
+                                    <input type="date" class="form-control" id="exampleInputuname"
+                                        placeholder="Fecha Emisión" formControlName="fecha_emision">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Fecha Vencimiento</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-calendar"></i></div>
+                                    <input type="date" class="form-control" id="exampleInputuname"
+                                        placeholder="Fecha Vencimiento" formControlName="fecha_vencimiento">
+                                </div>
+                                <div class="error-message text-danger"
+                                    *ngIf="facturaForm.get('fecha_vencimiento').hasError('fechaInvalida')">
+                                    La fecha de vencimiento no puede ser mayor que la fecha de emisión.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Input Validation -->
+                        <div class="col">
+                            <div class="text-danger">
+                                <p *ngIf="campoNoValido('identificacion', facturaForm)">La identificación es
+                                    obligatoria.
+                                </p>
+                                <p *ngIf="campoNoValido('codigo', facturaForm)">El número de factura es obligatorio.</p>
+                                <p *ngIf="campoNoValido('fecha_emision', facturaForm)">La fecha de emisión es
+                                    obligatoria.</p>
+                                <p *ngIf="campoNoValido('fecha_vencimiento', facturaForm)">La fecha de vencimiento es
+                                    obligatoria.</p>
+                            </div>
+                        </div>
+
+                        <hr>
+                    </div>
+
+                    <!-- Detalle Table Form -->
+                    <form autocomplete="off" [formGroup]="detalleFacturaForm">
+                        <div class="table-responsive m-t-5" style="clear: both;">
+                            <table class="table table-hover">
+                                <thead>
+                                    <th class="text-center">#</th>
+                                    <th class="text-center">Producto</th>
+                                    <th class="text-left">Código Principal</th>
+                                    <th class="text-left">Cantidad</th>
+                                    <th class="text-left">Descripción</th>
+                                    <th class="text-left">Precio Unitario</th>
+                                    <th class="text-left">Descuento</th>
+                                    <th class="text-left">Valor Total</th>
+                                    <th class="text-center">Tarifa</th>
+                                    <th class="text-left">Valor</th>
+                                    <th class="text-center">ICE</th>
+                                    <th class="text-left">Precio Total</th>
+                                    <th class="text-center">Acción</th>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let detalle of detalleFacturaFormInterface; let i = index">
+                                        <td class="text-center">{{ i + 1 }}</td>
+                                        <!-- original
+                                        <td><select class="form-control" formControlName="producto_{{i}}">
+                                                <option *ngFor="let producto of productos"
+                                                    [value]="producto.id_producto">{{
+                                                    producto.id_producto + ' - ' + producto.descripcion }}</option>
+                                            </select>
+                                        </td>
+                                        -->
+
+                                        <td>
+                                            <select class="form-control" formControlName="producto_{{i}}"
+                                                (change)="actualizarDescripcion($event, i)"
+                                                (change)="actualizarCodigoPrincipal($event, i)"
+                                                (change)="actualizarTarifa($event, i)">
+                                                <option *ngFor="let producto of productos"
+                                                    [value]="producto.id_producto">
+                                                    {{ producto.id_producto + ' - ' + producto.descripcion }}
+                                                </option>
+                                            </select>
+                                        </td>
+
+                                        <td><input type="text" class="form-control"
+                                                formControlName="codigo_principal_{{i}}">
+                                        </td>
+
+                                        <td><input type="number" class="form-control" formControlName="cantidad_{{i}}"
+                                                (input)="calcularPrecioTotalSinImpuestoConDescuento(i)"
+                                                (input)="calcularValor(i)" (input)="calcularPrecioTotal(i)"
+                                                (input)="actualizarTotalesPorTarifa()"
+                                                (input)="actualizarTotalSinImpuestos()" (input)="actualizarTotalIVA()"
+                                                (input)="actualizarPrecioTotal()" (input)="actualizarSaldo()" min="0">
+                                        </td>
+                                        <td><input type="text" class="form-control" formControlName="descripcion_{{i}}">
+                                        </td>
+                                        <td><input type="number" class="form-control"
+                                                formControlName="precio_unitario_{{i}}"
+                                                (input)="calcularPrecioTotalSinImpuestoConDescuento(i)"
+                                                (input)="calcularValor(i)" (input)="calcularPrecioTotal(i)"
+                                                (input)="actualizarTotalesPorTarifa()"
+                                                (input)="actualizarTotalSinImpuestos()" (input)="actualizarTotalIVA()"
+                                                (input)="actualizarPrecioTotal()" (input)="actualizarSaldo()" min="0">
+                                        </td>
+                                        <td><input type="number" class="form-control" formControlName="descuento_{{i}}"
+                                                (input)="calcularPrecioTotalSinImpuestoConDescuento(i)"
+                                                (input)="calcularValor(i)" (input)="calcularPrecioTotal(i)"
+                                                (input)="actualizarTotalDescuento()"
+                                                (input)="actualizarTotalesPorTarifa()"
+                                                (input)="actualizarTotalSinImpuestos()" (input)="actualizarTotalIVA()"
+                                                (input)="actualizarPrecioTotal()" (input)="actualizarSaldo()" min="0">
+                                        </td>
+                                        <td><input type="number" class="form-control"
+                                                formControlName="precio_total_sin_impuesto_{{i}}" readonly></td>
+
+                                        <td><input type="number" class="form-control" formControlName="tarifa_{{i}}"
+                                                (input)="calcularPrecioTotalSinImpuestoConDescuento(i)"
+                                                (input)="calcularValor(i)" (input)="calcularPrecioTotal(i)"
+                                                (input)="actualizarTotalDescuento()"
+                                                (input)="actualizarTotalesPorTarifa()"
+                                                (input)="actualizarTotalSinImpuestos()" (input)="actualizarTotalIVA()"
+                                                (input)="actualizarPrecioTotal()" (input)="actualizarSaldo()" min="0">
+                                        </td>
+                                        <td><input type="number" class="form-control" formControlName="valor_{{i}}"
+                                                readonly>
+                                        </td>
+                                        <td><input type="number" class="form-control" formControlName="ice_{{i}}"
+                                                (input)="calcularPrecioTotalSinImpuestoConDescuento(i)"
+                                                (input)="calcularValor(i)" (input)="calcularPrecioTotal(i)"
+                                                (input)="actualizarTotalesPorTarifa()"
+                                                (input)="actualizarTotalSinImpuestos()" (input)="actualizarTotalIVA()"
+                                                (input)="actualizarPrecioTotal()" (input)="actualizarTotalICE()"
+                                                (input)="actualizarSaldo()" min="0">
+                                        </td>
+
+                                        <td><input type="number" class="form-control"
+                                                formControlName="precio_total_{{i}}" readonly>
+                                        </td>
+                                        <td class="text-center">
+                                            <button type="button" class="btn btn-danger btn-sm"
+                                                (click)="eliminarDetalleForm(i)">
+                                                <i class="ti-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <button id="agregarLinea" class="btn btn-success" (click)="agregarDetalleForm()">
+                                        Agregar <span class="fa fa-plus" style="padding-left: 10px;"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Factura Form 2 -->
+                    <div class="col-md-12">
+                        <div class="clearfix"></div>
+                        <hr>
+                        <div class="row">
+
+                            <!-- Espaciador -->
+                            <div class="col-md-3"></div>
+
+                            <!-- Pago de Factura -->
+                            <div class="col-md-3">
+                                <br>
+                                <div class="form-group">
+                                    <label for="exampleInputuname">Forma de Pago
+                                        <select class="form-control" formControlName="id_forma_pago">
+                                            <option *ngFor="let fp of formas_pago" [value]="fp.id_forma_pago">
+                                                {{ fp.codigo }} - {{ fp.descripcion }}
+                                            </option>
+                                        </select>
+                                    </label>
+                                    <label for="exampleInputuname" style="width: 100%;">Observación
+                                        <input type="text" class="form-control" id="exampleInputuname"
+                                            placeholder="Nota ó número de control" formControlName="observacion">
+                                    </label>
+                                    <label for="exampleInputuname" style="width: 100%;">Pagar Factura
+                                        <div class="input-group">
+                                            <div class="input-group-addon"><b>ABONAR:</b></div>
+                                            <input type="number" class="form-control text-right" id="exampleInputuname"
+                                                placeholder="0.00" formControlName="abono" (input)="actualizarSaldo()"
+                                                min="0">
+                                        </div>
+                                    </label>
+                                    <label for="exampleInputuname" style="width: 100%;">Saldo Pendiente
+                                        <div class="input-group">
+                                            <div class="input-group-addon"><b>SALDO:</b>&nbsp;&nbsp;&nbsp;&nbsp;</div>
+                                            <input type="number" class="form-control text-right" id="exampleInputuname"
+                                                placeholder="{{ facturaForm.get('saldo')?.value }}"
+                                                formControlName="saldo" readonly>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Detalle -->
+                            <div class="col-md-3">
+                                <div class="pull-right m-t-30 text-right">
+                                    <p>SUBTOTAL SIN IMPUESTOS: </p>
+                                    <p>SUBTOTAL 12%: </p>
+                                    <p>SUBTOTAL 0%: </p>
+                                    <p>SUBTOTAL NO OBJETO DE IVA: </p>
+                                    <p>SUBTOTAL EXCENTO DE IVA: </p>
+                                    <p>TOTAL DESCUENTO: </p>
+                                    <p>ICE:</p>
+                                    <p>IVA 12%: </p>
+                                    <h3 class="left-align"><b>VALOR TOTAL: </b></h3>
+                                </div>
+                            </div>
+
+                            <!-- Valores -->
+                            <div class="col-md-3">
+                                <div class="pull-right m-t-30 text-right">
+                                    <p>$ {{ sumaTotalSinImpuesto.toFixed(2) }} </p>
+                                    <p>$ {{ sumaTotalImpuesto.toFixed(2) }} </p>
+                                    <p>$ {{ sumaTotalImpuestoCero.toFixed(2) }} </p>
+                                    <p>$ 0.00 </p> <!-- Valor fijo en 0.00 -->
+                                    <p>$ 0.00 </p> <!-- Valor fijo en 0.00 -->
+                                    <p>$ {{ sumaTotalDescuento.toFixed(2) }} </p>
+                                    <p>$ {{ sumaTotalICE.toFixed(2) }} </p>
+                                    <p>$ {{ sumaTotalIVA.toFixed(2) }} </p>
+                                    <h3>$ {{ sumaPrecioTotal.toFixed(2) }} </h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-info" (click)="crearFactura();">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal XML -->
+<div class="modal fadeIn fast modal-principal" id="exampleModalXML" tabindex="-1" role="dialog"
+    aria-labelledby="exampleModalLabel1" #miModal>
+    <div class="modal-dialog" role="document" style="width: 100%;" max-width="1000px;">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title" id="exampleModalLabel1">Cargar Factura</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body">
+
+                <div class="text-center">
+                    <h3><b>FACTURA COMPRA</b></h3>
+                    <h5><b># </b> {{ estab }}-{{ ptoEmi }}-{{ secuencial }}</h5>
+                </div>
+
+                <form autocomplete="off" [formGroup]="facturaFormXML">
+
+                    <!-- Factura Form -->
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Identificación</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-id-badge"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder="{{ ruc }}" formControlName="identificacion" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Razó Social</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-user"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder='{{ razonSocial }}' formControlName="razon_social" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Dirección</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-location-pin"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder='{{ dirEstablecimiento }}' formControlName="direccion" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Teléfono</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-mobile"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder="Télefono" formControlName="telefono" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Email</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-email"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname" placeholder="Email"
+                                        formControlName="email" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Forma de pago</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-credit-card"></i></div>
+
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder='{{ formaPago }}' formControlName="id_forma_pago" readonly>
+                                </div>
+                            </div>
+                        </div>
+                    -->
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Clave Acceso</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-credit-card"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder='{{ claveAcceso }}' formControlName="clave_acceso" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Fecha Emisión</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-calendar"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder="{{ fechaEmision }}" formControlName="fecha_emision"
+                                        [value]="getFormattedFechaEmision()" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Fecha vencimiento</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-calendar"></i></div>
+                                    <input type="date" class="form-control" id="exampleInputuname"
+                                        placeholder="Fecha Vencimiento" formControlName="fecha_vencimiento"
+                                        [value]="getFormattedFechaVencimiento()">
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Estado de pago</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-check-box"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder="Estado de Pago" formControlName="estado_pago" readonly>
+                                </div>
+                            </div>
+                        </div>
+                       -->
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Subir XML</label>
+                                <div class="input-group">
+                                    <input type="file" (change)="onFileSelected($event)" id="fileInput"
+                                        style="display: none;">
+                                    <label for="fileInput" class="custom-file-upload">
+                                        <i class="ti-upload"></i> Seleccionar archivo
+                                    </label>
+                                </div>
+                                <h5 id="selectedFileName"></h5>
+                            </div>
+                        </div>
+
+                        <!-- Input Validation 
+                        <div class="col">
+                            <div class="text-danger">
+                                <p *ngIf="campoNoValido('estado_pago',facturaFormU)">El campo es obligatorio</p>
+                            </div>
+                        </div>
+                    -->
+                        <!-- <hr>-->
+                    </div>
+
+                    <!-- Detalle Table Form -->
+                    <div class="table-responsive">
+
+                        <table id="demo-foo-addrow"
+                            class="table m-t-30 table-hover contact-list footable-loaded footable" data-page-size="10">
+                            <thead>
+                                <tr>
+                                    <th class="footable-sortable">#<span class="footable-sort-indicator"></span>
+                                    </th>
+                                    <th class="footable-sortable text-center">Código <span
+                                            class="footable-sort-indicator"></span>
+                                    </th>
+                                    <th class="footable-sortable">Cant.<span class="footable-sort-indicator"></span>
+                                    </th>
+                                    <th class="footable-sortable">Descripcion<span
+                                            class="footable-sort-indicator"></span>
+                                    </th>
+                                    <th class="footable-sortable">Precio Unitario<span
+                                            class="footable-sort-indicator"></span>
+                                    </th>
+                                    <th class="footable-sortable">Descuento<span class="footable-sort-indicator"></span>
+                                    </th>
+                                    <th class="footable-sortable">Valor Total<span
+                                            class="footable-sort-indicator"></span>
+                                    </th>
+                                    <th class="footable-sortable">Tarifa<span class="footable-sort-indicator"></span>
+                                    </th>
+                                    <th class="footable-sortable">Valor<span class="footable-sort-indicator"></span>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of detallesXMLInterface; let i = index">
+                                    <td class="text-center">{{ i + 1 }}</td>
+                                    <td>{{ item.codigoPrincipal }}</td>
+                                    <td>{{ item.cantidad }}</td>
+                                    <td>{{ item.descripcion }}</td>
+                                    <td>{{ item.precioUnitario }}</td>
+                                    <td>{{ item.descuento }}</td>
+                                    <td>{{ item.precioTotalSinImpuesto }}</td>
+                                    <td>{{ item.tarifa }}%</td>
+                                    <td>{{ item.valor }}</td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <!--paginador-->
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <!-- Factura Form 2 -->
+                    <div class="col-md-12">
+                        <div class="clearfix"></div>
+                        <hr>
+                        <div class="row">
+
+                            <!-- Espaciador -->
+                            <div class="col-md-3">
+                            </div>
+
+                            <!-- Pago de Factura -->
+                            <div class="col-md-3">
+                                <br>
+                                <div class="form-group">
+                                    <label for="exampleInputuname">Forma de Pago
+                                        <select class="form-control" formControlName="id_forma_pago">
+                                            <option *ngFor="let fp of formas_pago" [value]="fp.id_forma_pago">
+                                                {{ fp.codigo }} - {{ fp.descripcion }}
+                                            </option>
+                                        </select>
+                                    </label>
+                                    <label for="exampleInputuname" style="width: 100%;">Observación
+                                        <input type="text" class="form-control" placeholder="Nota ó número de control"
+                                            formControlName="observacion">
+                                    </label>
+                                    <label for="exampleInputuname" style="width: 100%;">Pagar Factura
+                                        <div class="input-group">
+                                            <div class="input-group-addon"><b>ABONAR:</b><i class=""></i></div>
+                                            <input type="number" class="form-control text-right" id="exampleInputuname"
+                                                placeholder="0.00" formControlName="abono"
+                                                (input)="actualizarSaldoXML()" min="0">
+                                        </div>
+                                    </label>
+                                    <label for="exampleInputuname" style="width: 100%;">Saldo Pendiente
+                                        <div class="input-group">
+                                            <div class="input-group-addon"><b>SALDO:</b>&nbsp;&nbsp;&nbsp;&nbsp;
+                                            </div>
+                                            <input type="number" class="form-control text-right" id="exampleInputuname"
+                                                placeholder="{{ facturaFormXML.get('saldo')?.value }}"
+                                                formControlName="saldo" readonly>
+                                        </div>
+                                    </label>
+                                    <!-- 
+                                    <label for="exampleInputuname">Total Factura
+                                        <div class="input-group">
+                                            <div class="input-group-addon"><b>Total:</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                            </div>
+                                            <input type="number" class="form-control text-right" id="exampleInputuname"
+                                                placeholder="{{ importeTotal.toFixed(2) }}"
+                                                formControlName="importe_total" readonly>
+                                        </div>
+                                    </label>
+                                    -->
+                                </div>
+                            </div>
+
+                            <!-- Detalle -->
+                            <div class="col-md-3">
+                                <div class="pull-right m-t-30 text-right">
+                                    <p>SUBTOTAL SIN IMPUESTOS: </p>
+                                    <p>SUBTOTAL 12%: </p>
+                                    <p>SUBTOTAL 0%: </p>
+                                    <p>SUBTOTAL NO OBJETO DE IVA: </p>
+                                    <p>SUBTOTAL EXCENTO DE IVA: </p>
+                                    <p>TOTAL DESCUENTO: </p>
+                                    <p>ICE:</p>
+                                    <p>IVA 12%: </p>
+                                    <h3 class="left-align"><b>VALOR TOTAL: </b></h3>
+                                </div>
+                            </div>
+
+                            <!-- Valores -->
+                            <div class="col-md-3">
+                                <div class="pull-right m-t-30 text-right">
+                                    <p>$ {{ totalSinImpuestos.toFixed(2) }} </p>
+                                    <p>$ 0.00 </p>
+                                    <p>$ 0.00 </p>
+                                    <p>$ 0.00 </p>
+                                    <p>$ 0.00 </p>
+                                    <p>$ 0.00 </p>
+                                    <p>$ {{ totalDescuento.toFixed(2) }}</p>
+                                    <p>$ {{ valor2.toFixed(2) }}</p>
+                                    <h3>$ {{ importeTotal.toFixed(2) }}</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-info" (click)="crearFacturaXML();">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Update Factura -->
+<div class="modal fadeIn fast modal-principal" id="exampleModalU" tabindex="-1" role="dialog"
+    aria-labelledby="exampleModalLabel1" #miModal>
+    <div class="modal-dialog" role="document" style="width: 100%;" max-width="1000px;">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title" id="exampleModalLabel1">Editar Factura</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <div class="text-center">
+                    <h3><b>FACTURA COMPRA</b></h3>
+                    <h5><b># </b> {{ codigo}}</h5>
+                </div>
+                <form autocomplete="off" [formGroup]="facturaFormU">
+
+                    <!-- Factura Form Data-->
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Identificación</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-id-badge"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder="Identificación" formControlName="identificacion" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Razó Social</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-user"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder="Razón Social" formControlName="razon_social" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Dirección</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-location-pin"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder="Dirección" formControlName="direccion" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Teléfono</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-mobile"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder="Teléfono" formControlName="telefono" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Email</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-email"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname" placeholder="Email"
+                                        formControlName="email" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Asiento</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-file"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname" placeholder="Asiento"
+                                        formControlName="id_asiento" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Fecha Emisión</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-calendar"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder="Fecha Emisión" formControlName="fecha_emision"
+                                        [value]="getFormattedFechaEmision()" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Fecha vencimiento</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-calendar"></i></div>
+                                    <input type="date" class="form-control" id="exampleInputuname"
+                                        placeholder="Fecha Vencimiento" formControlName="fecha_vencimiento"
+                                        [value]="getFormattedFechaVencimiento()" [readonly]="saldoInicial === 0">
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Fecha vencimiento</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-calendar"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder="Fecha Vencimiento" formControlName="fecha_vencimiento"
+                                        [value]="getFormattedFechaVencimiento()"  readonly>
+                                </div>
+                            </div>
+                        </div>
+                         -->
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Estado de pago</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-check-box"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder="Estado de Pago" formControlName="estado_pago" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Input Validation -->
+                        <div class="col">
+                            <div class="text-danger">
+                                <p *ngIf="campoNoValido('estado_pago',facturaFormU)">El campo es obligatorio</p>
+                            </div>
+                        </div>
+                        <hr>
+                    </div>
+
+                    <!-- Detalle Table Data -->
+                    <div class="table-responsive">
+                        <table id="demo-foo-addrow"
+                            class="table m-t-30 table-hover contact-list footable-loaded footable" data-page-size="10">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">#</th>
+                                    <th class="text-right">Código</th>
+                                    <th class="text-center">Cantidad</th>
+                                    <th class="text-center">Descripción </th>
+                                    <th class="text-right">Precio Unitario</th>
+                                    <th class="text-right">Descuento</th>
+                                    <th class="text-center">Tarifa</th>
+                                    <th class="text-right">Valor</th>
+                                    <th class="text-right">Precio Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let df of detalles_factura let i = index">
+                                    <td class="text-center">{{ i + 1 }}</td>
+                                    <td class="text-center">{{df.id_producto}}</td>
+                                    <td class="text-center">{{ df.cantidad | number: '1.2-2' }}</td>
+                                    <td>{{df.descripcion}}</td>
+                                    <td class="text-right">{{df.precio_unitario | number: '1.2-2' }}</td>
+                                    <td class="text-right">{{df.descuento}}</td>
+                                    <td class="text-right">{{df.tarifa}}</td>
+                                    <td class="text-right">{{df.valor}}</td>
+                                    <td class="text-right">{{df.precio_total_sin_impuesto}}</td>
+                                    <ng-template #inactivoOption>
+                                    </ng-template>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <!--paginador-->
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <!-- Factura Form 2 -->
+                    <div class="col-md-12">
+                        <div class="clearfix"></div>
+                        <hr>
+                        <div class="row">
+
+                            <!-- Espaciador -->
+                            <div class="col-md-3"></div>
+
+                            <!-- Pago de Factura -->
+                            <div class="col-md-3">
+                                <br>
+                                <div class="form-group">
+                                    <label for="exampleInputuname">Forma de Pago
+                                        <select class="form-control" formControlName="id_forma_pago"
+                                            [disabled]="saldoInicial === 0">
+                                            <!--  [attr.disabled]="saldoInicial === 0" -->
+                                            <option *ngFor="let fp of formas_pago" [value]="fp.id_forma_pago">
+                                                {{ fp.codigo }} - {{ fp.descripcion }}
+                                            </option>
+                                        </select>
+                                    </label>
+                                    <label for="exampleInputuname" style="width: 100%;">Observación
+                                        <input type="text" class="form-control" placeholder="Nota ó número de control"
+                                            formControlName="observacion" min="0" [readonly]="saldoInicial === 0">
+                                        <!-- [readonly]="abonoU <= 0">
+                                        [readonly]="saldoInicial === 0 || abonoU <= 0"-->
+                                    </label>
+                                    <label for="exampleInputuname" style="width: 100%;">Pagar Factura
+                                        <div class="input-group">
+                                            <div class="input-group-addon"><b>ABONAR:</b></div>
+                                            <input type="number" class="form-control text-right" id="exampleInputuname"
+                                                placeholder="0.00" formControlName="abono" (input)="actualizarSaldoU()"
+                                                min="0" [readonly]="saldoInicial === 0">
+                                        </div>
+                                    </label>
+                                    <label for="exampleInputuname" style="width: 100%;">Saldo Pendiente
+                                        <div class="input-group">
+                                            <div class="input-group-addon"><b>SALDO:</b>&nbsp;&nbsp;&nbsp;&nbsp;
+                                            </div>
+                                            <input type="number" class="form-control text-right" id="exampleInputuname"
+                                                placeholder="0.00" formControlName="saldo" readonly>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Detalle -->
+                            <div class="col-md-3">
+                                <div class="pull-right m-t-30 text-right">
+                                    <p>SUBTOTAL SIN IMPUESTOS: </p>
+                                    <p>SUBTOTAL 12%: </p>
+                                    <p>SUBTOTAL 0%: </p>
+                                    <p>SUBTOTAL NO OBJETO DE IVA: </p>
+                                    <p>SUBTOTAL EXCENTO DE IVA: </p>
+                                    <p>TOTAL DESCUENTO: </p>
+                                    <p>ICE:</p>
+                                    <p>IVA 12%: </p>
+                                    <h3 class="left-align"><b>VALOR TOTAL: </b></h3>
+                                </div>
+                            </div>
+
+                            <!-- Valores -->
+                            <div class="col-md-3">
+                                <div class="pull-right m-t-30 text-right">
+                                    <p>$ {{ total_sin_impuesto }}</p>
+                                    <p>$ 0.00</p>
+                                    <p>$ 0.00</p>
+                                    <p>$ 0.00</p>
+                                    <p>$ 0.00</p>
+                                    <p>$ {{ total_descuento }}</p>
+                                    <p>$ 0.00</p>
+                                    <p>$ {{ valor}}</p>
+                                    <h3>$ {{ importe_total }}</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-info" (click)="actualizarFactura();"
+                    [disabled]="saldoInicial === 0">Actualizar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Create Cliente -->
+<div class="modal fadeIn fast custom-width-modal" id="modalCliente" tabindex="-1" role="dialog"
+    aria-labelledby="modalClienteLabel1" #miModalCliente>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title" id="modalClienteLabel">Nuevo Cliente</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body modal-body-aux">
+
+                <!-- Card -->
+                <div class="card-body">
+                    <form class="form-material m-t-0" [formGroup]="clienteForm">
+                        <div class="form-group">
+                            <label>Identificación:</label>
+                            <input type="text" class="form-control material-aux" formControlName="identificacion">
+                        </div>
+                        <div class=" form-group">
+                            <label>Razón Social:</label>
+                            <input type="text" class="form-control material-aux" formControlName="razon_social"
+                                (input)="convertirAMayusculas($event)">
+                        </div>
+                        <div class="form-group">
+                            <label>Nombre Comercial:</label>
+                            <input type="text" class="form-control material-aux" formControlName="nombre_comercial">
+                        </div>
+                        <div class="form-group">
+                            <label>Dirección:</label>
+                            <input type="text" class="form-control material-aux" formControlName="direccion">
+                        </div>
+                        <div class="form-group">
+                            <label>Télefono:</label>
+                            <input type="text" class="form-control material-aux" formControlName="telefono">
+                        </div>
+                        <div class="form-group">
+                            <label><span>Email:</span></label>
+                            <input type="email" class="form-control material-aux" formControlName="email">
+                        </div>
+
+                        <!-- Input Validation -->
+                        <div class="row">
+                            <div class="col text-danger">
+                                <p *ngIf="campoNoValido('identificacion', clienteForm)">La identificación es
+                                    obligatoria.</p>
+                                <p *ngIf="campoNoValido('razon_social', clienteForm)">La razón social es obligatoria.
+                                </p>
+                                <p *ngIf="campoNoValido('direccion', clienteForm)">La dirección es obligatoria.</p>
+                                <p *ngIf="campoNoValido('telefono', clienteForm)">El télefono es obligatorio.</p>
+                                <p *ngIf="campoNoValido('email', clienteForm)">El email es obligatorio.</p>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-danger" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-outline-success" data-dismiss="modal"
+                    (click)="crearCliente(); cargarClientesAll()">Guardar</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Table Data Factura */
+
+    /* CSS personalizado para espaciar los botones */
+    .float-left .btn {
+        margin-right: 10px;
+        /* Ajusta este valor según el espacio deseado */
+    }
+
+    /* Modal Create Factura */
+
+    .modal-dialog {
+        max-width: 80%;
+        /* Ajusta el valor según tus necesidades */
+        margin: 30px auto;
+    }
+
+    .left-align {
+        /* Alinea a la izquierda la etiqueta  VALOR TOTAL */
+        text-align: left;
+    }
+
+    /* Modal Create Cliente */
+
+    .clientes-filtrados {
+        position: absolute;
+        z-index: 9999;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    /* Modal Create Cliente */
+    .modal-custom .modal-dialog {
+        max-width: 30%;
+        /* Ajusta el valor según tus necesidades */
+        margin: 30px auto;
+    }
+
+    /* Modal XML */
+    .custom-file-upload {
+        display: inline-block;
+        padding: 6px 20px;
+        cursor: pointer;
+        background-color: #007bff;
+        color: #fff;
+        border: 1px solid #007bff;
+        border-radius: 5px;
+    }
+
+    .custom-file-upload:hover {
+        background-color: #0056b3;
+    }
+
+    /*
+    .custom-file-upload {
+        display: inline-block;
+        padding: 6px 20px;
+        cursor: pointer;
+        background-color: #007bff;
+        color: #fff;
+        border: 1px solid #007bff;
+        border-radius: 5px;
+    }
+
+    .custom-file-upload:hover {
+        background-color: #0056b3;
+    }
+
+    */
+
+    /* Modal Cliente */
+    .modal-body-aux {
+        padding-bottom: 0px;
+    }
+
+    .material-aux {
+        font-weight: 300;
+    }
+
+    .custom-width-modal .modal-content {
+        max-width: 500px;
+        /* Cambia este valor al ancho deseado */
+        margin: 0 auto;
+        /* Centra el modal en la ventana */
+    }
+
+    /* fecha de vencimiento  */
+    .fecha-vencida {
+        color: red;
+        /* O cualquier estilo que desees para fechas vencidas */
+    }
+
+    .fecha-no-vencida {
+        color: rgb(29, 0, 215);
+        /* O cualquier estilo que desees para fechas no vencidas */
+    }
+</style>
+

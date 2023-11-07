@@ -1,6 +1,6 @@
 import { Component, OnInit, ElementRef, ViewChild, HostListener, Renderer2 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { SweetAlertIcon } from 'sweetalert2';
 import { formatDate, DatePipe } from '@angular/common';
 import { switchMap, concatMap } from 'rxjs/operators';
@@ -92,7 +92,6 @@ interface DetalleXMLInterface {
 
 export class FacturaComponent implements OnInit {
 
-  //@Output() proveedorCreado = new EventEmitter<any>();
   public formSubmitted = false;
   public mostrarModal: boolean = true;
   public fechaActual: string;

@@ -22,7 +22,7 @@ const base_url = environment.base_url;
 
 export class ClienteService {
 
-  constructor(private hhtp: HttpClient,
+  constructor(private http: HttpClient,
     private router: Router) { }
   get token(): string {
     return localStorage.getItem('token');
@@ -35,29 +35,26 @@ export class ClienteService {
     }
   }
 
-  loadClientes(desde: number = 0, limit: number = 10) {
+  loadClientes(desde: number = 0, limit: number = 0) {
     const url = `${base_url}/clientes?desde=${desde}&limit=${limit}`;
-    return this.hhtp.get<LoadCliente>(url, this.headers);
+    return this.http.get<LoadCliente>(url, this.headers);
   }
 
   loadClientesAll() {
     const url = `${base_url}/clientes/all`;
-    return this.hhtp.get<LoadCliente>(url, this.headers);
+    return this.http.get<LoadCliente>(url, this.headers);
   }
-
-
 
   loadClienteById(id_cliente: any) {
     const url = `${base_url}/clientes/id/${id_cliente}`;
-    return this.hhtp.get(url, this.headers)
+    return this.http.get(url, this.headers)
       .pipe(
         map((resp: { ok: boolean, cliente: Cliente }) => resp.cliente)
       )
   }
-
   loadClienteByIdentificacion(identificacion: any) {
     const url = `${base_url}/clientes/identificacion/${identificacion}`;
-    return this.hhtp.get(url, this.headers)
+    return this.http.get(url, this.headers)
       .pipe(
         map((resp: { ok: boolean, cliente: Cliente }) => resp.cliente)
       )
@@ -65,26 +62,20 @@ export class ClienteService {
 
   createCliente(formData: FormCliente) {
     const url = `${base_url}/clientes`;
-    console.log(url)
-    return this.hhtp.post(url, formData, this.headers)
+    return this.http.post(url, formData, this.headers)
       .pipe(
         map((resp: { ok: boolean, cliente: Cliente[] }) => resp.cliente)
       )
   }
 
   updateCliente(cliente: Cliente) {
-    console.log("cliente.id_cliente")
-    console.log(cliente.id_cliente)
-    //const url = `${base_url}/clientes/3`;
     const url = `${base_url}/clientes/${cliente.id_cliente}`;
-    console.log("Service - URL")
-    console.log(url)
-    return this.hhtp.put(url, cliente, this.headers);
+    return this.http.put(url, cliente, this.headers);
   }
 
   deleteCliente(id_cliente: any) { //OJO: any
     const url = `${base_url}/clientes/${id_cliente}`;
-    return this.hhtp.delete(url, this.headers);
+    return this.http.delete(url, this.headers);
   }
 
   logout() {
@@ -95,7 +86,7 @@ export class ClienteService {
   // Validación de token 
   validarToken(): Observable<boolean> {
     const token = localStorage.getItem('token') || '';
-    return this.hhtp.get(`${base_url}/login/renew`, {
+    return this.http.get(`${base_url}/login/renew`, {
       headers: {
         'x-token': token
       }
@@ -116,7 +107,7 @@ export class ClienteService {
   // Validación de token Fin //OJO
   login(formData: any) {
     const fomrLogin: LoginForm = formData;
-    return this.hhtp.post(`${base_url}/login`, fomrLogin)
+    return this.http.post(`${base_url}/login`, fomrLogin)
       .pipe(
         tap((resp: any) => {
           localStorage.setItem('token', resp.token)
