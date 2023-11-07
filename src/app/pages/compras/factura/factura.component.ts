@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, HostListener, Renderer2 } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, HostListener, Renderer2 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SweetAlertIcon } from 'sweetalert2';
@@ -95,14 +95,13 @@ export class FacturaComponent implements OnInit {
   //@Output() proveedorCreado = new EventEmitter<any>();
   public formSubmitted = false;
   public mostrarModal: boolean = true;
-
-
-
   public fechaActual: string;
+
+  // Datos recuperados
+  public proveedores: Proveedor[] = [];
+  public formas_pago: FormaPago[] = [];
+  public productos: Producto[] = [];
   public facturas: Factura[] = [];
-
-
-
 
   // Modal Create Factura
   public facturaForm: FormGroup;
@@ -120,7 +119,6 @@ export class FacturaComponent implements OnInit {
   public sumaTotalIVA: number = 0;
   public sumaPrecioTotal: number = 0;
 
-
   // Modal Update Factura
   public facturaFormU: FormGroup;
   public facturaSeleccionada: Factura;
@@ -134,17 +132,13 @@ export class FacturaComponent implements OnInit {
   public abonoU: number; // Abono recuperado
   public saldoInicial: number; // Saldo recuperado
 
-
   // Modal XML
   public facturaFormXML: FormGroup;
   public detalleFacturaForm: FormGroup;
   public abonoXML: number;
 
-
-
   // Modal Create Proveedor
   public proveedorForm: FormGroup;
-  public proveedores: Proveedor[] = [];
   // Variables para cargar proveedor por identificación
   public identificacion: string;
   public razon_social: string;
@@ -154,20 +148,11 @@ export class FacturaComponent implements OnInit {
   public email: string;
   // Variables para crear proveedor
   public nuevoProveedor: any;
-  public id_proveedor: any; //ver reutilizacion de variables
-  //public razon_social: string;
-  //public direccion: string;
-  //public telefono: string;
-  //public email: string;
-
-  // Formas de pago
-  public formas_pago: FormaPago[] = [];
-
-
-
-  // Productos
-  public productos: Producto[] = [];
-
+  public id_proveedor: any;
+  //public razon_social: string; // Reutilizada 
+  //public direccion: string; // Reutilizada
+  //public telefono: string; // Reutilizada
+  //public email: string; // Reutilizada
 
   // XML
   public detallesXMLInterface: DetalleXMLInterface[] = [];
@@ -275,8 +260,8 @@ export class FacturaComponent implements OnInit {
 
       id_asiento: ['1'],
       codigo: [''],
-      fecha_emision: [''],
-      fecha_vencimiento: [''],
+      fecha_emision: ['', Validators.required],
+      fecha_vencimiento: ['', [Validators.required]],
       total_sin_impuesto: [],
       total_descuento: [],
       valor: [],
@@ -356,16 +341,54 @@ export class FacturaComponent implements OnInit {
       telefono: ['0978812129', [Validators.required, Validators.minLength(3)]],
       email: ['eepinanjotac@utn.edu.ec', [Validators.required, Validators.email]],
     });
+
+    // Agregar validación personalizada para fecha de vencimiento
+    this.facturaForm.get('fecha_vencimiento').setValidators((control) => {
+      const fechaEmision = this.facturaForm.get('fecha_emision').value;
+      const fechaVencimiento = control.value;
+      if (fechaEmision && fechaVencimiento && fechaVencimiento < fechaEmision) {
+        return { fechaInvalida: true };
+      }
+      return null;
+    });
+
+    // Actualizar la validación
+    //this.facturaForm.get('fecha_vencimiento').updateValueAndValidity();
+
   }
 
   ngOnInit(): void {
-    this.cargarFacturas();
-    this.cargarFacturasAll();
     this.cargarProveedoresAll();
     this.cargarFormasPago();
     this.cargarProductos();
+    this.cargarFacturasAll();
+    this.cargarFacturas();
     const fechaActual = new Date();
     this.fechaActual = formatDate(fechaActual, 'd-M-yyyy', 'en-US', 'UTC-5');
+  }
+
+  // Método para cargar todos los proveedores 
+  cargarProveedoresAll() {
+    this.proveedorService.loadProveedoresAll()
+      .subscribe(({ proveedores }) => {
+        this.proveedores = proveedores;
+      })
+  }
+
+  // Método para cargar todas las formas de pago
+  cargarFormasPago() {
+    this.formaPagoService.loadFormasPago()
+      .subscribe(({ formas_pago }) => {
+        this.formas_pago = formas_pago;
+      })
+  }
+
+  // Método para caragar todos los productos
+  cargarProductos() {
+    this.productoService.loadProductos()
+      .subscribe(({ productos }) => {
+        this.productos = productos;
+      })
   }
 
   // Método para cargar facturas paginadas en Table Data Factura
@@ -536,90 +559,6 @@ export class FacturaComponent implements OnInit {
     return maxValue;
   }
 
-  // Método para cargar todos los proveedores
-  cargarProveedoresAll() {
-    this.proveedorService.loadProveedoresAll()
-      .subscribe(({ proveedores }) => {
-        this.proveedores = proveedores;
-      })
-  }
-
-  // Método para cargar formas de pago
-  cargarFormasPago() {
-    this.formaPagoService.loadFormasPago()
-      .subscribe(({ formas_pago }) => {
-        this.formas_pago = formas_pago;
-      })
-  }
-
-  // Método para caragar productos
-  cargarProductos() {
-    this.productoService.loadProductos()
-      .subscribe(({ productos }) => {
-        this.productos = productos;
-      })
-  }
-
-  // Método para cargar proveedor por id
-  cargarProveedorPorId(id_proveedor: any) {
-    return this.proveedorService.loadProveedorById(id_proveedor);
-  }
-
-  // Método para cargar proveedor por identificación
-  cargarProveedorByIdentificacion(identificacion: string) {
-    this.proveedorService.loadProveedorByIdentificacion(identificacion)
-      .subscribe(
-        (proveedor) => {
-          if (Array.isArray(proveedor) && proveedor.length > 0) {
-            const { id_proveedor, identificacion, razon_social } = proveedor[0];
-            this.id_proveedor = id_proveedor;
-            this.identificacion = identificacion;
-            this.razon_social = razon_social;
-          } else {
-            Swal.fire({
-              title: 'Éxito 2',
-              text: 'XML Cargado',
-              icon: 'success',
-              timer: 1500,
-              showConfirmButton: false,
-            })
-              .then(() => {
-                this.mostrarMensajeDeAdvertenciaConOpciones('Advertencia', 'Proveedor no encontrado ¿Desea crear un nuevo proveedor?');
-              });
-          }
-        }, (err) => {
-          let errorMessage = 'Se produjo un error al cargar el proveedor.';
-          if (err.error && err.error.msg) {
-            errorMessage = err.error.msg;
-          }
-          Swal.fire('Error', err.error.msg, 'error');
-        }
-      );
-  }
-
-  // Método para mostrar adevertencia
-  mostrarMensajeDeAdvertenciaConOpciones(title: string, text: string) {
-    Swal.fire({
-      icon: 'warning',
-      title,
-      text,
-      showCancelButton: true, // Muestra los botones "Sí" y "No"
-      confirmButtonText: 'Sí', // Texto del botón "Sí"
-      cancelButtonText: 'No', // Texto del botón "No"
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // El usuario hizo clic en "Sí", puedes tomar acciones aquí
-        console.log('Usuario hizo clic en "Sí"');
-        console.log('--> Inicio - this.crearProveedorXML()');
-        this.crearProveedorXML();
-        console.log('--> Fin - this.crearProveedorXML()');
-      } else {
-        // El usuario hizo clic en "No" o cerró el cuadro de diálogo
-        console.log('Usuario hizo clic en "No" o cerró el cuadro de diálogo');
-      }
-    });
-  }
-
   // Método para crear factura en Modal Create Factura
   crearFactura() {
     this.formSubmitted = true;
@@ -713,8 +652,8 @@ export class FacturaComponent implements OnInit {
     if (this.proveedorForm.invalid) {
       return;
     }
-    this.proveedorService.createProveedor(this.proveedorForm.value)
-      .subscribe(res => {
+    this.proveedorService.createProveedor(this.proveedorForm.value).subscribe(
+      (res) => {
         Swal.fire({
           icon: 'success',
           title: 'Proveedor creado',
@@ -724,20 +663,20 @@ export class FacturaComponent implements OnInit {
         });
         this.nuevoProveedor = res;
         this.id_proveedor = this.nuevoProveedor.id_proveedor;
+        this.identificacion = this.nuevoProveedor.identificacion;
         this.razon_social = this.nuevoProveedor.razon_social;
         this.direccion = this.nuevoProveedor.direccion;
         this.telefono = this.nuevoProveedor.telefono;
         this.email = this.nuevoProveedor.email;
         // Una vez creado el proveedor llenamos(set) el formulario  
         this.agregarProveedor();
-        //this.cerrarModal();
+        this.cerrarModal();
+
       }, (err) => {
-        let errorMessage = 'Se produjo un error al crear el proveedor.';
-        if (err.error && err.error.msg) {
-          errorMessage = err.error.msg;
-        }
-        Swal.fire('Error', err.error.msg, 'error');
-      });
+        const errorMessage = err.error?.msg || 'Se produjo un error al crear el proveedor.';
+        Swal.fire('Error', errorMessage, 'error');
+      }
+    );
     //this.recargarComponente();
   }
 
@@ -752,10 +691,29 @@ export class FacturaComponent implements OnInit {
     this.facturaForm.get('email').setValue(this.email);
   }
 
+  public mostrarListaProveedores: boolean = false;
+
   // Método para filtrar proveedores en Modal Create Factura
   filtrarProveedores(event: any) {
     const identficacion = event.target.value.toLowerCase();
     this.proveedoresFiltrados = this.proveedores.filter(proveedor => proveedor.identificacion.toLowerCase().includes(identficacion));
+    this.mostrarListaProveedores = this.proveedoresFiltrados.length > 0;
+  }
+
+  // Método para cerra lista de proveedores en Modal Create Factura
+  @ViewChild('proveedoresLista', { read: ElementRef }) proveedoresLista: ElementRef;
+  @HostListener('document:click', ['$event'])
+  cerrarListaProveedores(event: Event): void {
+    if (this.proveedoresLista && this.proveedoresLista.nativeElement && !this.proveedoresLista.nativeElement.contains(event.target)) {
+      this.mostrarListaProveedores = false;
+    }
+  }
+
+  // Método para convertir a mayúsculas en Modal Create Factura
+  convertirAMayusculas(event: any) {
+    const inputValue = event.target.value;
+    const upperCaseValue = inputValue.toUpperCase();
+    event.target.value = upperCaseValue;
   }
 
   // Método para seleccionar proveedor en Modal Create Factura
@@ -1069,6 +1027,139 @@ export class FacturaComponent implements OnInit {
     }
   }
 
+  // Método para actualizar factura en Modal Update Factura
+  actualizarFactura() {
+    this.formSubmitted = true;
+    if (this.facturaFormU.invalid) {
+      console.log("Validar Formulario", this.facturaForm.value);
+      return;
+    }
+
+    const abono = this.facturaFormU.get('abono').value;
+    const observacion = this.facturaFormU.get('observacion').value;
+    const idFormaPago = this.facturaFormU.get('id_forma_pago').value;
+    if (abono > 0 && observacion.trim() === '') {
+      alert('Debes proporcionar una observación si el abono es mayor a cero.');
+      return; // La función se detiene aquí
+    } else if (abono > 0 && idFormaPago === '') {
+      alert('Debes seleccionar una forma de pago.');
+      return; // La función se detiene aquí
+    }
+
+    const data = {
+      ...this.facturaFormU.value,
+      id_factura_compra: this.facturaSeleccionada.id_factura_compra,
+    }
+
+    this.facturaService.updateFactura(data)
+      .subscribe(res => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Factura actualizado',
+          text: 'Factura se ha actualizado correctamente',
+          showConfirmButton: false,
+          timer: 1500
+        });
+        //this.router.navigateByUrl(`/dashboard/facturas`)
+        this.recargarComponente();
+        this.cerrarModal();
+      }, (err) => {
+        const errorMessage = err.error?.msg || 'Se produjo un error al actualizar la factura.';
+        Swal.fire('Error', errorMessage, 'error');
+      });
+  }
+
+  // Método para cargar factura por id en Modal Update Factura
+  cargarFacturaPorId(id_factura_compra: any) {
+    this.facturaService.loadFacturaById(id_factura_compra)
+      .pipe(
+        switchMap((factura: any) => {
+          const { id_proveedor, id_asiento, codigo, fecha_emision, fecha_vencimiento, estado_pago,
+            total_sin_impuesto, total_descuento, valor, importe_total, abono } = factura.factura[0];
+          this.facturaSeleccionada = factura.factura[0];
+          this.codigo = codigo;
+          this.total_sin_impuesto = total_sin_impuesto;
+          this.total_descuento = total_descuento;
+          this.valor = valor;
+          this.importe_total = importe_total;
+
+          const saldo = factura.saldo.toFixed(2);
+          this.saldoInicial = parseFloat(saldo); // Saldo recuperado
+          this.abonoU = abono; // Abono recuperado
+
+          const id_forma_pago = ""; // Precargar un id_forma_pago en html
+          const observacion = ""; // Precargar una observación en html
+
+          return this.cargarProveedorPorId(id_proveedor).pipe(
+            concatMap(proveedor => {
+              const { identificacion, razon_social, nombre_comercial, direccion, telefono, email } = proveedor[0];
+              this.proveedorSeleccionado = proveedor[0];
+              this.identificacion = identificacion;
+              this.razon_social = razon_social;
+              this.direccion = direccion;
+              this.telefono = telefono;
+              this.email = email;
+              const abono = "0.00"; // Precargar abono en html
+              return of({
+                identificacion, razon_social, direccion, telefono, email,
+                id_asiento, codigo, fecha_emision, fecha_vencimiento, estado_pago, total_sin_impuesto, total_descuento, valor, importe_total, abono, saldo,
+                id_forma_pago, observacion,
+              });
+            })
+          );
+        })
+      )
+      .subscribe(data => {
+        this.facturaFormU.setValue(data);
+      });
+  }
+
+  // Método para cargar proveedor por id en Modal Update Factura
+  cargarProveedorPorId(id_proveedor: any) {
+    return this.proveedorService.loadProveedorById(id_proveedor);
+  }
+
+  // Método para formatear fecha en Modal Update Factura
+  getFormattedFechaEmision(): string {
+    const fechaEmision = this.facturaFormU.get('fecha_emision')?.value;
+    if (fechaEmision) {
+      const fecha = new Date(fechaEmision);
+      return fecha.toISOString().split('T')[0];
+    }
+    return '';
+  }
+
+  // Método para formatear fecha en Modal Update Factura
+  getFormattedFechaVencimiento(): string {
+    const fechaVencimiento = this.facturaFormU.get('fecha_vencimiento')?.value;
+    if (fechaVencimiento) {
+      const fecha = new Date(fechaVencimiento);
+      return fecha.toISOString().split('T')[0];
+    }
+    return '';
+  }
+
+  // Método para cargar detalles factura por id factura en Modal Update Factura
+  cargarDetallesFacturaByIdFactura(id_factura_compra: any) {
+    this.detalleFacturaService.loadDetallesFacturaByIdFactura(id_factura_compra)
+      .subscribe(({ detalles_factura }) => {
+        this.detalles_factura = detalles_factura;
+      })
+  }
+
+  // Método para actualizar saldo en Modal Update Factura
+  actualizarSaldoU(): void {
+    this.abonoU = this.facturaFormU.get('abono').value || 0;
+    const nuevoSaldo = Math.max(this.saldoInicial - this.abonoU, 0);
+    if (nuevoSaldo === 0) {
+      this.abonoU = this.saldoInicial;
+      this.facturaFormU.get('abono').setValue(this.abonoU.toFixed(2));
+      this.facturaFormU.get('saldo').setValue("0.00");
+    } else {
+      this.facturaFormU.get('saldo').setValue(nuevoSaldo.toFixed(2));
+    }
+  }
+
   // Método para crear factura en Modal XML
   crearFacturaXML() {
     // Reiniciar el arreglo detallesXMLInterface
@@ -1191,218 +1282,6 @@ export class FacturaComponent implements OnInit {
         // Manejar errores
       }
     );
-  }
-
-  // Método para crear proveedor en Modal XML
-  crearProveedorXML() {
-    this.identificacion = this.identificacionComprador
-    this.razon_social = this.razonSocialComprador
-    this.direccion = this.direccionComprador
-    this.telefono = this.telefonoXML
-    this.email = this.emailXML
-    if (!this.identificacion || !this.razon_social) {
-      Swal.fire('Error', 'Falta información requerida para crear el proveedor.', 'error');
-      return;
-    }
-
-    // Crea un objeto con la información del proveedor
-    const proveedorData = {
-      identificacion: this.identificacion,
-      razon_social: this.razon_social,
-      nombre_comercial: this.nombre_comercial,
-      direccion: this.direccion,
-      telefono: this.telefono,
-      email: this.email
-    };
-
-    // Realiza la solicitud POST para crear el proveedor
-    this.proveedorService.createProveedor(proveedorData).subscribe(
-      (res) => {
-        Swal.fire({
-          icon: 'success',
-          title: 'Proveedor creado',
-          text: 'Proveedor se ha creado correctamente.',
-          showConfirmButton: false,
-          timer: 1500
-        });
-        this.cargarProveedorByIdentificacion(this.identificacion);
-        //this.recargarComponente();
-        //this.cerrarModal();
-      }, (err) => {
-        let errorMessage = 'Se produjo un error al crear el proveedor.';
-        if (err.error && err.error.msg) {
-          errorMessage = err.error.msg;
-        }
-        Swal.fire('Error', err.error.msg, 'error');
-      });
-    //this.recargarComponente();
-  }
-
-  // Método para crear productos en Modal XML
-  crearProductosXML(): Observable<Producto[]>[] {
-    const productosObservables: Observable<Producto[]>[] = this.detallesXMLInterface.map((detalleXML) => {
-      const nuevoProducto: Producto = {
-        id_producto: null,
-        id_tipo_inventario: null,
-        id_marca: null,
-        id_clasificacion: null,
-        id_unidad_medida: null,
-        id_tarifa_iva: null,
-        id_tarifa_ice: null,
-        id_tipo_producto: null,
-        id_lista_precio: null,
-        codigo_principal: detalleXML.codigoPrincipal,
-        descripcion: detalleXML.descripcion,
-        stock: detalleXML.cantidad,
-        stock_minimo: null,
-        stock_maximo: null,
-        utilidad: null,
-        descuento: null,
-        tarifa: detalleXML.tarifa,
-        ice: null,
-        precio_compra: (detalleXML.precioTotalSinImpuesto + detalleXML.valor) / detalleXML.cantidad,
-        precio_venta: null,
-        ficha: null,
-        nota: null,
-        especificacion: null,
-        fecha_registro: null,
-        fecha_caducidad: null,
-        fecha_modificacion: null,
-        imagen_producto: null,
-      };
-      return this.productoService.createProducto(nuevoProducto);
-    });
-
-    return productosObservables;
-  }
-
-  // Método para actualizar factura en Modal Update Factura
-  actualizarFactura() {
-    this.formSubmitted = true;
-    if (this.facturaFormU.invalid) {
-      console.log("Validar Formulario", this.facturaForm.value);
-      return;
-    }
-
-    const abono = this.facturaFormU.get('abono').value;
-    const observacion = this.facturaFormU.get('observacion').value;
-    const idFormaPago = this.facturaFormU.get('id_forma_pago').value;
-    if (abono > 0 && observacion.trim() === '') {
-      alert('Debes proporcionar una observación si el abono es mayor a cero.');
-      return; // La función se detiene aquí
-    } else if (abono > 0 && idFormaPago === '') {
-      alert('Debes seleccionar una forma de pago.');
-      return; // La función se detiene aquí
-    }
-
-    const data = {
-      ...this.facturaFormU.value,
-      id_factura_compra: this.facturaSeleccionada.id_factura_compra,
-    }
-
-    this.facturaService.updateFactura(data)
-      .subscribe(res => {
-        Swal.fire({
-          icon: 'success',
-          title: 'Factura actualizado',
-          text: 'Factura se ha actualizado correctamente',
-          showConfirmButton: false,
-          timer: 1500
-        });
-        //this.router.navigateByUrl(`/dashboard/facturas`)
-        this.recargarComponente();
-        this.cerrarModal();
-      }, (err) => {
-        const errorMessage = err.error?.msg || 'Se produjo un error al actualizar la factura.';
-        Swal.fire('Error', errorMessage, 'error');
-      });
-    //this.recargarComponente();
-  }
-
-  // Método para cargar factura por id en Table Update Factura
-  cargarFacturaPorId(id_factura_compra: any) {
-    this.facturaService.loadFacturaById(id_factura_compra)
-      .pipe(
-        switchMap((factura: any) => {
-          const { id_proveedor, id_asiento, codigo, fecha_emision, fecha_vencimiento, estado_pago,
-            total_sin_impuesto, total_descuento, valor, importe_total, abono } = factura.factura[0];
-          this.facturaSeleccionada = factura.factura[0];
-          this.codigo = codigo;
-          this.total_sin_impuesto = total_sin_impuesto;
-          this.total_descuento = total_descuento;
-          this.valor = valor;
-          this.importe_total = importe_total;
-
-          const saldo = factura.saldo.toFixed(2);
-          this.saldoInicial = parseFloat(saldo); // Saldo recuperado
-          this.abonoU = abono; // Abono recuperado
-
-          const id_forma_pago = ""; // Precargar un id_forma_pago en html
-          const observacion = ""; // Precargar una observación en html
-
-          return this.cargarProveedorPorId(id_proveedor).pipe(
-            concatMap(proveedor => {
-              const { identificacion, razon_social, nombre_comercial, direccion, telefono, email } = proveedor[0];
-              this.proveedorSeleccionado = proveedor[0];
-              this.identificacion = identificacion;
-              this.razon_social = razon_social;
-              this.direccion = direccion;
-              this.telefono = telefono;
-              this.email = email;
-              const abono = "0.00"; // Precargar abono en html
-              return of({
-                identificacion, razon_social, direccion, telefono, email,
-                id_asiento, codigo, fecha_emision, fecha_vencimiento, estado_pago, total_sin_impuesto, total_descuento, valor, importe_total, abono, saldo,
-                id_forma_pago, observacion,
-              });
-            })
-          );
-        })
-      )
-      .subscribe(data => {
-        this.facturaFormU.setValue(data);
-      });
-  }
-
-  // Método para formatear fecha en Modal Update Factura
-  getFormattedFechaEmision(): string {
-    const fechaEmision = this.facturaFormU.get('fecha_emision')?.value;
-    if (fechaEmision) {
-      const fecha = new Date(fechaEmision);
-      return fecha.toISOString().split('T')[0];
-    }
-    return '';
-  }
-
-  // Método para formatear fecha en Modal Update Factura
-  getFormattedFechaVencimiento(): string {
-    const fechaVencimiento = this.facturaFormU.get('fecha_vencimiento')?.value;
-    if (fechaVencimiento) {
-      const fecha = new Date(fechaVencimiento);
-      return fecha.toISOString().split('T')[0];
-    }
-    return '';
-  }
-
-  // Método para cargar detalles factura por id factura en Modal Update Factura
-  cargarDetallesFacturaByIdFactura(id_factura_compra: any) {
-    this.detalleFacturaService.loadDetallesFacturaByIdFactura(id_factura_compra)
-      .subscribe(({ detalles_factura }) => {
-        this.detalles_factura = detalles_factura;
-      })
-  }
-
-  // Método para actualizar saldo en Modal Update Factura
-  actualizarSaldoU(): void {
-    this.abonoU = this.facturaFormU.get('abono').value || 0;
-    const nuevoSaldo = Math.max(this.saldoInicial - this.abonoU, 0);
-    if (nuevoSaldo === 0) {
-      this.abonoU = this.saldoInicial;
-      this.facturaFormU.get('abono').setValue(this.abonoU.toFixed(2));
-      this.facturaFormU.get('saldo').setValue("0.00");
-    } else {
-      this.facturaFormU.get('saldo').setValue(nuevoSaldo.toFixed(2));
-    }
   }
 
   // Método para cargar xml en Modal XML
@@ -1575,6 +1454,144 @@ export class FacturaComponent implements OnInit {
     });
   }
 
+  // Método para crear proveedor en Modal XML
+  crearProveedorXML() {
+    this.identificacion = this.identificacionComprador
+    this.razon_social = this.razonSocialComprador
+    this.direccion = this.direccionComprador
+    this.telefono = this.telefonoXML
+    this.email = this.emailXML
+    if (!this.identificacion || !this.razon_social) {
+      Swal.fire('Error', 'Falta información requerida para crear el proveedor.', 'error');
+      return;
+    }
+
+    // Crea un objeto con la información del proveedor
+    const proveedorData = {
+      identificacion: this.identificacion,
+      razon_social: this.razon_social,
+      nombre_comercial: this.nombre_comercial,
+      direccion: this.direccion,
+      telefono: this.telefono,
+      email: this.email
+    };
+
+    // Realiza la solicitud POST para crear el proveedor
+    this.proveedorService.createProveedor(proveedorData).subscribe(
+      (res) => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Proveedor creado',
+          text: 'Proveedor se ha creado correctamente.',
+          showConfirmButton: false,
+          timer: 1500
+        });
+        this.cargarProveedorByIdentificacion(this.identificacion);
+        //this.recargarComponente();
+        //this.cerrarModal();
+      }, (err) => {
+        let errorMessage = 'Se produjo un error al crear el proveedor.';
+        if (err.error && err.error.msg) {
+          errorMessage = err.error.msg;
+        }
+        Swal.fire('Error', err.error.msg, 'error');
+      });
+    //this.recargarComponente();
+  }
+
+  // Método para cargar proveedor por identificación en Modal XML
+  cargarProveedorByIdentificacion(identificacion: string) {
+    this.proveedorService.loadProveedorByIdentificacion(identificacion)
+      .subscribe(
+        (proveedor) => {
+          if (Array.isArray(proveedor) && proveedor.length > 0) {
+            const { id_proveedor, identificacion, razon_social } = proveedor[0];
+            this.id_proveedor = id_proveedor;
+            this.identificacion = identificacion;
+            this.razon_social = razon_social;
+          } else {
+            Swal.fire({
+              title: 'Éxito 2',
+              text: 'XML Cargado',
+              icon: 'success',
+              timer: 1500,
+              showConfirmButton: false,
+            })
+              .then(() => {
+                this.mostrarMensajeDeAdvertenciaConOpciones('Advertencia', 'Proveedor no encontrado ¿Desea crear un nuevo proveedor?');
+              });
+          }
+        }, (err) => {
+          let errorMessage = 'Se produjo un error al cargar el proveedor.';
+          if (err.error && err.error.msg) {
+            errorMessage = err.error.msg;
+          }
+          Swal.fire('Error', err.error.msg, 'error');
+        }
+      );
+  }
+
+  // Método para mostrar adevertencia en Modal XML
+  mostrarMensajeDeAdvertenciaConOpciones(title: string, text: string) {
+    Swal.fire({
+      icon: 'warning',
+      title,
+      text,
+      showCancelButton: true, // Muestra los botones "Sí" y "No"
+      confirmButtonText: 'Sí', // Texto del botón "Sí"
+      cancelButtonText: 'No', // Texto del botón "No"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // El usuario hizo clic en "Sí", puedes tomar acciones aquí
+        console.log('Usuario hizo clic en "Sí"');
+        console.log('--> Inicio - this.crearProveedorXML()');
+        this.crearProveedorXML();
+        console.log('--> Fin - this.crearProveedorXML()');
+      } else {
+        // El usuario hizo clic en "No" o cerró el cuadro de diálogo
+        console.log('Usuario hizo clic en "No" o cerró el cuadro de diálogo');
+      }
+    });
+  }
+
+  // Método para crear productos en Modal XML
+  crearProductosXML(): Observable<Producto[]>[] {
+    const productosObservables: Observable<Producto[]>[] = this.detallesXMLInterface.map((detalleXML) => {
+      const nuevoProducto: Producto = {
+        id_producto: null,
+        id_tipo_inventario: null,
+        id_marca: null,
+        id_clasificacion: null,
+        id_unidad_medida: null,
+        id_tarifa_iva: null,
+        id_tarifa_ice: null,
+        id_tipo_producto: null,
+        id_lista_precio: null,
+        codigo_principal: detalleXML.codigoPrincipal,
+        descripcion: detalleXML.descripcion,
+        stock: detalleXML.cantidad,
+        stock_minimo: null,
+        stock_maximo: null,
+        utilidad: null,
+        descuento: null,
+        tarifa: detalleXML.tarifa,
+        ice: null,
+        precio_compra: (detalleXML.precioTotalSinImpuesto + detalleXML.valor) / detalleXML.cantidad,
+        precio_venta: null,
+        ficha: null,
+        nota: null,
+        especificacion: null,
+        fecha_registro: null,
+        fecha_caducidad: null,
+        fecha_modificacion: null,
+        imagen_producto: null,
+      };
+      return this.productoService.createProducto(nuevoProducto);
+    });
+
+    return productosObservables;
+  }
+
   // Método para formatear fecha en Modal XML
   formatDate(fechaAux: any): Date | null {
     // Dividir la fecha en partes (día, mes, año)
@@ -1649,6 +1666,15 @@ export class FacturaComponent implements OnInit {
     }
   }
 
+  // Método para mostrar mensaje de error en Modal XML
+  mostrarMensajeDeError(title: string, text: string) {
+    Swal.fire({
+      icon: 'error' as SweetAlertIcon, // Puedes personalizar el ícono
+      title,
+      text,
+    });
+  }
+
   // Método para subir un xml al servidor en Modal XML
   uploadFile(file: File): void {
     const formData = new FormData();
@@ -1677,29 +1703,8 @@ export class FacturaComponent implements OnInit {
       this.facturaFormXML.get('saldo').setValue(nuevoSaldo.toFixed(2));
     }
   }
-  // Método para mostrar mensaje de error
-  mostrarMensajeDeError(title: string, text: string) {
-    Swal.fire({
-      icon: 'error' as SweetAlertIcon, // Puedes personalizar el ícono
-      title,
-      text,
-    });
-  }
 
-  // Método para mostrar mensaje de advertencia
-  mostrarMensajeDeAdvertencia(title: string, text: string) {
-    Swal.fire({
-      icon: 'warning' as SweetAlertIcon, // Cambiado a 'warning' para mostrar una advertencia
-      title,
-      text,
-    });
-  }
-
-  formatPorcentaje(decimalValue: number): string {
-    // Multiplica por 100 y agrega el símbolo '%' al final
-    return (decimalValue * 100).toFixed(0) + '%';
-  }
-
+  // Método para validar las entradas en formularios
   campoNoValido(campo: string, form: FormGroup): boolean {
     if (form.get(campo)?.invalid && this.formSubmitted) {
       return true;
@@ -1707,13 +1712,14 @@ export class FacturaComponent implements OnInit {
       return false;
     }
   }
-
+  // Método para recargar componente
   recargarComponente() {
     this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
       this.router.navigate(['/dashboard/facturas']);
     });
   }
 
+  // Método para cerrar modal
   cerrarModal() {
     this.mostrarModal = true;
     const body = document.querySelector('body');

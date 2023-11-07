@@ -228,7 +228,7 @@
                                 <td *ngIf="factura.estado else inactivoOption" class="text-nowrap text-center">
 
                                     <a class="cursor" data-toggle="modal"
-                                        (click)="cargarFacturaPorId(factura.id_factura_compra); cargarDetallesFacturaByIdFactura(factura.id_factura_compra)"
+                                        (click)="cargarFacturaPorId(factura.id_factura_compra); cargarDetallesFacturaByIdFactura(factura.id_factura_compra);"
                                         data-target="#exampleModalU"><span
                                             class="fa fa-pencil text-inverse m-r-10"></span></a>
 
@@ -303,7 +303,7 @@
 </div>
 
 <!-- Modal Create Factura -->
-<div class="modal fade modal-principal" id="exampleModal" tabindex="-1" role="dialog"
+<div class="modal fadeIn fast modal-principal" id="exampleModal" tabindex="-1" role="dialog"
     aria-labelledby="exampleModalLabel1" #miModal>
     <div class="modal-dialog" role="document" style="width: 100%;" max-width="1000px;">
         <div class="modal-content">
@@ -328,6 +328,8 @@
 
                     <!-- Factura Form -->
                     <div class="row">
+
+                        <!-- Filtrar proveedores -->
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label for="exampleInputuname">Proveedor </label>
@@ -342,7 +344,9 @@
                                         Nuevo <span class="fa fa-plus" style="padding-left: 10px;"></span>
                                     </button>
                                 </div>
-                                <div class="proveedores-filtrados" *ngIf="proveedoresFiltrados.length > 0">
+                                <div class="proveedores-filtrados"
+                                    *ngIf="mostrarListaProveedores && proveedoresFiltrados.length > 0"
+                                    #proveedoresLista>
                                     <ul class="list-group">
                                         <li class="list-group-item" *ngFor="let proveedor of proveedoresFiltrados"
                                             (click)="seleccionarProveedor(proveedor)">
@@ -420,6 +424,10 @@
                                     <input type="date" class="form-control" id="exampleInputuname"
                                         placeholder="Fecha Vencimiento" formControlName="fecha_vencimiento">
                                 </div>
+                                <div class="error-message text-danger"
+                                    *ngIf="facturaForm.get('fecha_vencimiento').hasError('fechaInvalida')">
+                                    La fecha de vencimiento no puede ser mayor que la fecha de emisión.
+                                </div>
                             </div>
                         </div>
 
@@ -431,6 +439,8 @@
                                 </p>
                                 <p *ngIf="campoNoValido('codigo', facturaForm)">El número de factura es obligatorio.</p>
                                 <p *ngIf="campoNoValido('fecha_emision', facturaForm)">La fecha de emisión es
+                                    obligatoria.</p>
+                                <p *ngIf="campoNoValido('fecha_vencimiento', facturaForm)">La fecha de vencimiento es
                                     obligatoria.</p>
                             </div>
                         </div>
@@ -536,7 +546,7 @@
                                         <td><input type="number" class="form-control"
                                                 formControlName="precio_total_{{i}}" readonly>
                                         </td>
-                                        <td class="text-right">
+                                        <td class="text-center">
                                             <button type="button" class="btn btn-danger btn-sm"
                                                 (click)="eliminarDetalleForm(i)">
                                                 <i class="ti-trash"></i>
@@ -642,7 +652,7 @@
 </div>
 
 <!-- Modal XML -->
-<div class="modal fade modal-principal" id="exampleModalXML" tabindex="-1" role="dialog"
+<div class="modal fadeIn fast modal-principal" id="exampleModalXML" tabindex="-1" role="dialog"
     aria-labelledby="exampleModalLabel1" #miModal>
     <div class="modal-dialog" role="document" style="width: 100%;" max-width="1000px;">
         <div class="modal-content">
@@ -950,7 +960,7 @@
 </div>
 
 <!-- Modal Update Factura -->
-<div class="modal fade modal-principal" id="exampleModalU" tabindex="-1" role="dialog"
+<div class="modal fadeIn fast modal-principal" id="exampleModalU" tabindex="-1" role="dialog"
     aria-labelledby="exampleModalLabel1" #miModal>
     <div class="modal-dialog" role="document" style="width: 100%;" max-width="1000px;">
         <div class="modal-content">
@@ -1142,7 +1152,8 @@
                                 <div class="form-group">
                                     <label for="exampleInputuname">Forma de Pago
                                         <select class="form-control" formControlName="id_forma_pago"
-                                            [attr.disabled]="saldoInicial == 0">
+                                            [disabled]="saldoInicial === 0">
+                                            <!--  [attr.disabled]="saldoInicial === 0" -->
                                             <option *ngFor="let fp of formas_pago" [value]="fp.id_forma_pago">
                                                 {{ fp.codigo }} - {{ fp.descripcion }}
                                             </option>
@@ -1218,7 +1229,7 @@
 </div>
 
 <!-- Modal Create Proveedor -->
-<div class="modal fade modal-custom" id="modalProveedor" tabindex="-1" role="dialog"
+<div class="modal fadeIn fast custom-width-modal" id="modalProveedor" tabindex="-1" role="dialog"
     aria-labelledby="modalProveedorLabel1" #miModalProveedor>
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -1232,66 +1243,57 @@
             </div>
 
             <!-- Modal Body -->
-            <div class="modal-body">
-                <form autocomplete="off" [formGroup]="proveedorForm">
-                    <div class="form-group">
-                        <label for="exampleInputuname">Identificación</label>
-                        <div class="input-group">
-                            <div class="input-group-addon"><i class="ti-user"></i></div>
-                            <input type="text" class="form-control" id="exampleInputuname" placeholder="Identificación"
-                                formControlName="identificacion">
-                        </div>
-                        <label for="exampleInputuname">Razón Social</label>
-                        <div class="input-group">
-                            <div class="input-group-addon"><i class="ti-user"></i></div>
-                            <input type="text" class="form-control" id="exampleInputuname" placeholder="Razón Social"
-                                formControlName="razon_social">
-                        </div>
-                        <label for="exampleInputuname">Nombre Comercial</label>
-                        <div class="input-group">
-                            <div class="input-group-addon"><i class="ti-user"></i></div>
-                            <input type="text" class="form-control" id="exampleInputuname"
-                                placeholder="Nombre Comercial" formControlName="nombre_comercial">
-                        </div>
-                        <label for="exampleInputuname">Dirección</label>
-                        <div class="input-group">
-                            <div class="input-group-addon"><i class="ti-user"></i></div>
-                            <input type="text" class="form-control" id="exampleInputuname" placeholder="Dirección"
-                                formControlName="direccion">
-                        </div>
-                        <label for="exampleInputuname">Telefóno</label>
-                        <div class="input-group">
-                            <div class="input-group-addon"><i class="ti-user"></i></div>
-                            <input type="text" class="form-control" id="exampleInputuname" placeholder="Telefóno"
-                                formControlName="telefono">
-                        </div>
-                        <label for="exampleInputuname">Email</label>
-                        <div class="input-group">
-                            <div class="input-group-addon"><i class="ti-user"></i></div>
-                            <input type="text" class="form-control" id="exampleInputuname" placeholder="Email"
-                                formControlName="email">
-                        </div>
-                    </div>
+            <div class="modal-body modal-body-aux">
 
-                    <!-- Input Validation -->
-                    <div class="row">
-                        <div class="col text-danger">
-                            <p *ngIf="campoNoValido('identificacion',proveedorForm)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('razon_social',proveedorForm)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('nombre_comercial',proveedorForm)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('direccion',proveedorForm)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('telefono',proveedorForm)"> El campo es obligatorio</p>
-                            <p *ngIf="campoNoValido('email',proveedorForm)"> El campo es obligatorio</p>
+                <!-- Card -->
+                <div class="card-body">
+                    <form class="form-material m-t-0" [formGroup]="proveedorForm">
+                        <div class="form-group">
+                            <label>Identificación:</label>
+                            <input type="text" class="form-control material-aux" formControlName="identificacion">
                         </div>
-                    </div>
+                        <div class=" form-group">
+                            <label>Razón Social:</label>
+                            <input type="text" class="form-control material-aux" formControlName="razon_social"
+                                (input)="convertirAMayusculas($event)">
+                        </div>
+                        <div class="form-group">
+                            <label>Nombre Comercial:</label>
+                            <input type="text" class="form-control material-aux" formControlName="nombre_comercial">
+                        </div>
+                        <div class="form-group">
+                            <label>Dirección:</label>
+                            <input type="text" class="form-control material-aux" formControlName="direccion">
+                        </div>
+                        <div class="form-group">
+                            <label>Télefono:</label>
+                            <input type="text" class="form-control material-aux" formControlName="telefono">
+                        </div>
+                        <div class="form-group">
+                            <label><span>Email:</span></label>
+                            <input type="email" class="form-control material-aux" formControlName="email">
+                        </div>
 
-                </form>
+                        <!-- Input Validation -->
+                        <div class="row">
+                            <div class="col text-danger">
+                                <p *ngIf="campoNoValido('identificacion', proveedorForm)">La identificación es
+                                    obligatoria.</p>
+                                <p *ngIf="campoNoValido('razon_social', proveedorForm)">La razón social es obligatoria.
+                                </p>
+                                <p *ngIf="campoNoValido('direccion', proveedorForm)">La dirección es obligatoria.</p>
+                                <p *ngIf="campoNoValido('telefono', proveedorForm)">El télefono es obligatorio.</p>
+                                <p *ngIf="campoNoValido('email', proveedorForm)">El email es obligatorio.</p>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
 
             <!-- Modal Footer -->
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary"
+                <button type="button" class="btn btn-outline-danger" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-outline-success" data-dismiss="modal"
                     (click)="crearProveedor(); cargarProveedoresAll()">Guardar</button>
             </div>
 
@@ -1333,14 +1335,10 @@
     }
 
     /* Modal Create Proveedor */
-
     .modal-custom .modal-dialog {
         max-width: 30%;
         /* Ajusta el valor según tus necesidades */
         margin: 30px auto;
-
-
-
     }
 
     /* Modal XML */
@@ -1374,4 +1372,31 @@
     }
 
     */
+
+    /* Modal Proveedor */
+    .modal-body-aux {
+        padding-bottom: 0px;
+    }
+
+    .material-aux {
+        font-weight: 300;
+    }
+
+    .custom-width-modal .modal-content {
+        max-width: 500px;
+        /* Cambia este valor al ancho deseado */
+        margin: 0 auto;
+        /* Centra el modal en la ventana */
+    }
+
+    /* fecha de vencimiento  */
+    .fecha-vencida {
+        color: red;
+        /* O cualquier estilo que desees para fechas vencidas */
+    }
+
+    .fecha-no-vencida {
+        color: rgb(29, 0, 215);
+        /* O cualquier estilo que desees para fechas no vencidas */
+    }
 </style>
