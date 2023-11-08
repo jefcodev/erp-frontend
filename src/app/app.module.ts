@@ -7,12 +7,14 @@ import { AuthModule } from './auth/auth.module';
 import { NopagefoundComponent } from './nopagefound/nopagefound.component';
 import { HttpClientModule } from '@angular/common/http';
 import { PagesModule } from './pages/pages.module';
+import { ShowForRolesDirective } from './directivas/show-for-roles.directive';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     NopagefoundComponent,
+    ShowForRolesDirective,
    
     
   ],
@@ -23,6 +25,9 @@ import { PagesModule } from './pages/pages.module';
     AuthModule,
     HttpClientModule
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  exports: [
+    ShowForRolesDirective
+  ]
 })
 export class AppModule { }

@@ -12,6 +12,10 @@ import { UserForm } from '../interfaces/user-form.interface';
 
 // Modelo
 import { Usuario } from '../models/usuario.model';
+import { Role } from '../models/role.model';
+import { Rol } from '../models/rol.model';
+import { RolForm } from '../interfaces/rol-form.iterface';
+
 
 // Variable API
 const base_url = environment.base_url;
@@ -23,6 +27,8 @@ const base_url = environment.base_url;
 export class UserService {
 
 public usuario: Usuario;
+public rol: Role;
+
 
   constructor(private hhtp: HttpClient,
               private router: Router) {}
@@ -43,6 +49,13 @@ get uid(): number{
 
   return this.usuario.id || 0;
 }
+
+
+get role(): number {
+ return this.usuario.rol_id;
+}
+
+
 
 // Crear llamado a la API
   crearUsuario(formData: UserForm) {
@@ -82,6 +95,20 @@ get uid(): number{
     return this.hhtp.delete(url,this.headers);
   }
 
+  /* cargarRol(): Observable<Role> {
+    const url = `${base_url}/usuarios/role`; // Reemplaza base_url con la URL correcta
+    return this.hhtp.get<RolForm>(url);
+  } */
+/* 
+  cargarRol(){
+    const url = `${base_url}/usuarios/role`;
+    return this.hhtp.get<RolForm>(url,this.headers)
+    .pipe(
+      map((resp:{ ok:boolean, rol: Role}) => resp.rol)
+    )
+  } */
+
+
   cargarUsuarios(desde: number = 0){
     const url = `${base_url}/usuarios?desde=${desde}`;
     return this.hhtp.get<CargarUsuario>(url,this.headers)
@@ -92,6 +119,8 @@ get uid(): number{
             user => new Usuario (user.nombre,user.apellido,user.email,user.rol_id, user.img,user.id,user.estado)
             );
 
+            console.log(usuarios);
+
           return {
             total: resp.total,
             usuarios
@@ -100,9 +129,15 @@ get uid(): number{
       )
   }
 
-  logout() {
 
+  guardarLocalStorage(token: string , menu :any){
+    localStorage.setItem('token', token);
+    localStorage.setItem('menu', JSON.stringify(menu));
+  }
+
+  logout() {
     localStorage.removeItem('token');
+    localStorage.removeItem('menu');
     this.router.navigateByUrl('/login');
   }
 
@@ -120,7 +155,8 @@ get uid(): number{
       const {nombre, apellido,email,estado ,img='',rol_id, id} = resp.usuario;
       this.usuario = new Usuario(nombre,apellido,email,rol_id,img,id,estado);
       // console.log(this.usuario.id)
-      localStorage.setItem('token', resp.token);
+      this.guardarLocalStorage(resp.token, resp.menu);
+
         return true;
       }),
       
@@ -135,7 +171,7 @@ get uid(): number{
     return this.hhtp.post(`${base_url}/login`, fomrLogin)
       .pipe(
         tap((resp: any) => {
-          localStorage.setItem('token', resp.token)
+          this.guardarLocalStorage(resp.token, resp.menu);
         })
       )
   }
