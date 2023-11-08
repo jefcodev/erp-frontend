@@ -53,6 +53,7 @@ import { LibroDiarioComponent } from './contabilidad/libro-diario/libro-diario.c
 import { LibroMayorComponent } from './contabilidad/libro-mayor/libro-mayor.component';
 import { BalanceGeneralComponent } from './contabilidad/balance-general/balance-general.component';
 import { EstadoResultadoComponent } from './contabilidad/estado-resultado/estado-resultado.component';
+import { AdminGuard } from '../guards/admin.guard';
 
 const routes: Routes = [
     {
@@ -70,7 +71,7 @@ const routes: Routes = [
 
             /* Users */
             { path: 'roles', component: RolesComponent, data: { titulo: 'Roles' } },
-            { path: 'users', component: UsersComponent, data: { titulo: 'Usuarios' } },
+            { path: 'users', canActivate:[AdminGuard],  component: UsersComponent, data: { titulo: 'Usuarios' } },
             { path: 'user/:id', component: UserComponent, data: { titulo: 'Usuarios' } },
 
             /* Inventory */

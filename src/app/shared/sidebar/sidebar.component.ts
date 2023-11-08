@@ -10,12 +10,12 @@ import { UserService } from 'src/app/services/user.service';
   ]
 })
 export class SidebarComponent implements OnInit{
-  public menuItem!: any[];
+  //public menuItem!: any[];
 
   public usuario : Usuario;
-    constructor( private serviseSidebar: SidebarService, 
+    constructor( public serviseSidebar: SidebarService, 
                  private serviceUser: UserService){
-      this.menuItem = serviseSidebar.menu;
+     // this.menuItem = serviseSidebar.menu;
       this.usuario = serviceUser.usuario;
     }
 
