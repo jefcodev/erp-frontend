@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+/*import { Component, OnInit } from '@angular/core';
 
 import { DetalleFactura } from 'src/app/models/compra/detalle-factura.model';
 import { DetalleFacturaService } from 'src/app/services/compra/detalle-factura.service';
@@ -11,7 +11,7 @@ import { DetalleFacturaService } from 'src/app/services/compra/detalle-factura.s
 })
 export class DetalleFacturaComponent implements OnInit {
 
-  public detalle_facturas: DetalleFactura[] = [];
+  public detalles_factura: DetalleFactura[] = [];
 
   constructor(
     private detalleFacturaService: DetalleFacturaService,
@@ -25,9 +25,11 @@ export class DetalleFacturaComponent implements OnInit {
 
   cargarDetalleFacturas() {
     this.detalleFacturaService.loadDetalleFacturas()
-      .subscribe(({ detalle_facturas }) => {
-        this.detalle_facturas = detalle_facturas;
+      .subscribe(({ detalles_factura }) => {
+        this.detalles_factura = detalles_factura;
       })
   }
 
+
 }
+*/

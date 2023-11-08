@@ -435,6 +435,7 @@ export class FacturaComponent implements OnInit {
               showConfirmButton: false,
               timer: 1500
             });
+            this.recargarComponente();
           }, (err) => {
             let errorMessage = 'Se produjo un error al borrar el factura.';
             if (err.error && err.error.msg) {
@@ -490,8 +491,7 @@ export class FacturaComponent implements OnInit {
           if (factura.estado_pago === "PENDIENTE") {
             this.totalFacturasPendientes++
           }
-
-          this.sumaSaldo = this.sumaSaldo + (parseFloat("" + factura.importe_total) - parseFloat("" + factura.abono));
+          this.sumaSaldo = this.sumaSaldo + (parseFloat("" + factura.importe_total) - (factura.abono ? parseFloat("" + factura.abono) : 0));
           this.totalFacturas++;
         }
         return pasaFiltro;
@@ -1054,12 +1054,11 @@ export class FacturaComponent implements OnInit {
       .subscribe(res => {
         Swal.fire({
           icon: 'success',
-          title: 'Factura actualizado',
+          title: 'Factura actualizada',
           text: 'Factura se ha actualizado correctamente',
           showConfirmButton: false,
           timer: 1500
         });
-        //this.router.navigateByUrl(`/dashboard/facturas`)
         this.recargarComponente();
         this.cerrarModal();
       }, (err) => {
@@ -1109,12 +1108,14 @@ export class FacturaComponent implements OnInit {
         })
       )
       .subscribe(data => {
+        console.log("DATA COMPRA: ", data)
         this.facturaFormU.setValue(data);
       });
   }
 
   // Método para cargar proveedor por id en Modal Update Factura
   cargarProveedorPorId(id_proveedor: any) {
+    console.log("id?proveedor", id_proveedor)
     return this.proveedorService.loadProveedorById(id_proveedor);
   }
 
@@ -1214,11 +1215,12 @@ export class FacturaComponent implements OnInit {
       //saldo: 0, // Valor válido
       observacion: this.facturaFormXML.get("observacion").value,
     };
+    console.log("EDISON 1")
     this.facturaService.createFactura(facturaData).subscribe(
       (res: any) => {
         const facturaId = res.id_factura_compra; // Obtener el ID del factura guardado
         console.log('< facturaID: ', facturaId)
-
+        console.log("EDISON 2")
         const productosObservables = this.crearProductosXML();
 
         forkJoin(productosObservables).subscribe((productosCreados: any[]) => {
@@ -1345,6 +1347,7 @@ export class FacturaComponent implements OnInit {
         this.tipoIdentificacionComprador = infoFactura.tipoIdentificacionComprador[0];
         this.razonSocialComprador = infoFactura.razonSocialComprador[0];
         this.identificacionComprador = infoFactura.identificacionComprador[0];
+        console.log("this.identificacionComprador: ", this.identificacionComprador)
         if ('direccionComprador' in infoFactura) {
           this.direccionComprador = infoFactura.direccionComprador[0];
         } else {
@@ -1442,6 +1445,8 @@ export class FacturaComponent implements OnInit {
         console.log('this.detallesXMLInterface: ', this.detallesXMLInterface);
         resolve(arr);
 
+        console.log("this.identificacionComprador 2: ", this.identificacionComprador)
+
         console.log('--> Inicio -  Cargar Proveedor');
         this.cargarProveedorByIdentificacion(this.identificacionComprador)
         console.log('--> Fin -  Cargar Proveedor');
@@ -1508,6 +1513,8 @@ export class FacturaComponent implements OnInit {
             this.id_proveedor = id_proveedor;
             this.identificacion = identificacion;
             this.razon_social = razon_social;
+            console.log("this.identificacion 3: ", this.identificacion)
+
           } else {
             Swal.fire({
               title: 'Éxito 2',
@@ -1517,6 +1524,7 @@ export class FacturaComponent implements OnInit {
               showConfirmButton: false,
             })
               .then(() => {
+                console.log("this.identificacion 4: ", this.identificacion)
                 this.mostrarMensajeDeAdvertenciaConOpciones('Advertencia', 'Proveedor no encontrado ¿Desea crear un nuevo proveedor?');
               });
           }

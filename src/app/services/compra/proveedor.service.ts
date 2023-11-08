@@ -52,6 +52,7 @@ export class ProveedorService {
         map((resp: { ok: boolean, proveedor: Proveedor }) => resp.proveedor)
       )
   }
+
   loadProveedorByIdentificacion(identificacion: any) {
     const url = `${base_url}/proveedores/identificacion/${identificacion}`;
     return this.http.get(url, this.headers)
@@ -116,7 +117,3 @@ export class ProveedorService {
   }
 
 }
-
-
-
-

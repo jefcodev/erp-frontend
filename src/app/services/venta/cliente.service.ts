@@ -52,6 +52,7 @@ export class ClienteService {
         map((resp: { ok: boolean, cliente: Cliente }) => resp.cliente)
       )
   }
+
   loadClienteByIdentificacion(identificacion: any) {
     const url = `${base_url}/clientes/identificacion/${identificacion}`;
     return this.http.get(url, this.headers)
@@ -116,7 +117,3 @@ export class ClienteService {
   }
 
 }
-
-
-
-

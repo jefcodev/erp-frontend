@@ -142,7 +142,7 @@ export class FacturaVentaComponent implements OnInit {
   // Variables para cargar cliente por identificación
   public identificacion: string;
   public razon_social: string;
-  public nombre_comercial: string;
+  //public nombre_comercial: string;
   public direccion: string;
   public telefono: string;
   public email: string;
@@ -285,8 +285,7 @@ export class FacturaVentaComponent implements OnInit {
 
       //id_cliente: [''],
       identificacion: [''],
-      nombre: [''],
-      apellido: [''],
+      razon_social: [''],
       direccion: [''],
       telefono: [''],
       email: [''],
@@ -340,13 +339,11 @@ export class FacturaVentaComponent implements OnInit {
     });
 
     this.clienteForm = this.fb.group({
-      identificacion: ['1727671628', [Validators.required, Validators.minLength(3)]],
-      nombre: ['Edison', [Validators.required, Validators.minLength(3)]],
-      apellido: ['Pinanjota', [Validators.required, Validators.minLength(3)]],
-      nombre_comercial: ['Systemcode', [Validators.required, Validators.minLength(3)]],
-      direccion: ['Cayambe', [Validators.required, Validators.minLength(3)]],
+      identificacion: ['1727671629', [Validators.required, Validators.minLength(3)]],
+      razon_social: ['ALEX LANCHIMBA', [Validators.required, Validators.minLength(3)]],
+      direccion: ['QUITO', [Validators.required, Validators.minLength(3)]],
       telefono: ['0978812129', [Validators.required, Validators.minLength(3)]],
-      email: ['eepinanjotac@utn.edu.ec', [Validators.required, Validators.email]],
+      email: ['ailanchimbaa@utn.edu.ec', [Validators.required, Validators.email]],
     });
 
     // Agregar validación personalizada para fecha de vencimiento
@@ -440,6 +437,7 @@ export class FacturaVentaComponent implements OnInit {
               showConfirmButton: false,
               timer: 1500
             });
+            this.recargarComponente();
           }, (err) => {
             let errorMessage = 'Se produjo un error al borrar el factura.';
             if (err.error && err.error.msg) {
@@ -495,8 +493,7 @@ export class FacturaVentaComponent implements OnInit {
           if (factura.estado_pago === "PENDIENTE") {
             this.totalFacturasPendientes++
           }
-
-          this.sumaSaldo = this.sumaSaldo + (parseFloat("" + factura.importe_total) - parseFloat("" + factura.abono));
+          this.sumaSaldo = this.sumaSaldo + (parseFloat("" + factura.importe_total) - (factura.abono ? parseFloat("" + factura.abono) : 0));
           this.totalFacturas++;
         }
         return pasaFiltro;
@@ -1059,12 +1056,11 @@ export class FacturaVentaComponent implements OnInit {
       .subscribe(res => {
         Swal.fire({
           icon: 'success',
-          title: 'Factura actualizado',
+          title: 'Factura actualizada',
           text: 'Factura se ha actualizado correctamente',
           showConfirmButton: false,
           timer: 1500
         });
-        //this.router.navigateByUrl(`/dashboard/facturas`)
         this.recargarComponente();
         this.cerrarModal();
       }, (err) => {
@@ -1096,7 +1092,7 @@ export class FacturaVentaComponent implements OnInit {
 
           return this.cargarClientePorId(id_cliente).pipe(
             concatMap(cliente => {
-              const { identificacion, razon_social, nombre_comercial, direccion, telefono, email } = cliente[0];
+              const { identificacion, razon_social, direccion, telefono, email } = cliente[0];
               this.clienteSeleccionado = cliente[0];
               this.identificacion = identificacion;
               this.razon_social = razon_social;
@@ -1114,12 +1110,14 @@ export class FacturaVentaComponent implements OnInit {
         })
       )
       .subscribe(data => {
+        console.log("DATA VENTA: ", data)
         this.facturaFormU.setValue(data);
       });
   }
 
   // Método para cargar cliente por id en Modal Update Factura
   cargarClientePorId(id_cliente: any) {
+    console.log("id?cliente", id_cliente)
     return this.clienteService.loadClienteById(id_cliente);
   }
 
@@ -1164,7 +1162,7 @@ export class FacturaVentaComponent implements OnInit {
     }
   }
 
-  
+
   // Método para crear factura en Modal XML
   crearFacturaXML() {
     // Reiniciar el arreglo detallesXMLInterface
@@ -1220,11 +1218,12 @@ export class FacturaVentaComponent implements OnInit {
       //saldo: 0, // Valor válido
       observacion: this.facturaFormXML.get("observacion").value,
     };
+    console.log("EDISON 1")
     this.facturaService.createFactura(facturaData).subscribe(
       (res: any) => {
         const facturaId = res.id_factura_venta; // Obtener el ID del factura guardado
         console.log('< facturaID: ', facturaId)
-
+        console.log("EDISON 2")
         const productosObservables = this.crearProductosXML();
 
         forkJoin(productosObservables).subscribe((productosCreados: any[]) => {
@@ -1352,6 +1351,7 @@ export class FacturaVentaComponent implements OnInit {
         this.tipoIdentificacionComprador = infoFactura.tipoIdentificacionComprador[0];
         this.razonSocialComprador = infoFactura.razonSocialComprador[0];
         this.identificacionComprador = infoFactura.identificacionComprador[0];
+        console.log("this.identificacionComprador: ", this.identificacionComprador)
         if ('direccionComprador' in infoFactura) {
           this.direccionComprador = infoFactura.direccionComprador[0];
         } else {
@@ -1449,6 +1449,8 @@ export class FacturaVentaComponent implements OnInit {
         console.log('this.detallesXMLInterface: ', this.detallesXMLInterface);
         resolve(arr);
 
+        console.log("this.identificacionComprador 2: ", this.identificacionComprador)
+
         console.log('--> Inicio -  Cargar Cliente');
         this.cargarClienteByIdentificacion(this.identificacionComprador)
         console.log('--> Fin -  Cargar Cliente');
@@ -1476,7 +1478,7 @@ export class FacturaVentaComponent implements OnInit {
     const clienteData = {
       identificacion: this.identificacion,
       razon_social: this.razon_social,
-      nombre_comercial: this.nombre_comercial,
+      //nombre_comercial: this.nombre_comercial,
       direccion: this.direccion,
       telefono: this.telefono,
       email: this.email
@@ -1515,6 +1517,8 @@ export class FacturaVentaComponent implements OnInit {
             this.id_cliente = id_cliente;
             this.identificacion = identificacion;
             this.razon_social = razon_social;
+            console.log("this.identificacion 3: ", this.identificacion)
+
           } else {
             Swal.fire({
               title: 'Éxito 2',
@@ -1524,6 +1528,7 @@ export class FacturaVentaComponent implements OnInit {
               showConfirmButton: false,
             })
               .then(() => {
+                console.log("this.identificacion 4: ", this.identificacion)
                 this.mostrarMensajeDeAdvertenciaConOpciones('Advertencia', 'Cliente no encontrado ¿Desea crear un nuevo cliente?');
               });
           }
@@ -1721,7 +1726,7 @@ export class FacturaVentaComponent implements OnInit {
   // Método para recargar componente
   recargarComponente() {
     this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-      this.router.navigate(['/dashboard/facturas']);
+      this.router.navigate(['/dashboard/facturas-ventas']);
     });
   }
 

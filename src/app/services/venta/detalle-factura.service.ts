@@ -53,7 +53,7 @@ export class DetalleFacturaService {
   }
 
   /*loadDetalleFacturaByFactura2(id_factura_venta: any) {
-    const url = `${base_url}/detalle-facturas/factura/${id_factura_venta}`;
+    const url = `${base_url}/detalle-facturas-ventas/factura/${id_factura_venta}`;
     return this.http.get<{ detalle_facturas: DetalleFactura[] }>(url, this.headers);
   }
   */
