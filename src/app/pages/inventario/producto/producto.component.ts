@@ -20,6 +20,7 @@ export class ProductoComponent implements OnInit {
   @Output() productoCreado = new EventEmitter<any>();
 
   public productos: Producto[] = [];
+  public productosAll: Producto[] = [];
   public productoSeleccionado: Producto;
   public formSubmitted = false;
   public ocultarModal: boolean = true;
@@ -57,6 +58,7 @@ export class ProductoComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarProductos();
+    this.cargarProductosAll();
   }
 
   cerrarModal() {
@@ -75,7 +77,13 @@ export class ProductoComponent implements OnInit {
     this.productoService.loadProductos()
       .subscribe(({ productos }) => {
         this.productos = productos;
-        console.log("< this.productos", this.productos)
+      })
+  }
+  
+  cargarProductosAll() {
+    this.productoService.loadProductosAll()
+      .subscribe(({ productos }) => {
+        this.productosAll = productos;
       })
   }
 
