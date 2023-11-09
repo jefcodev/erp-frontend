@@ -36,17 +36,17 @@ export class FacturaService {
   }
 
   loadFacturas(desde: number = 0, limit: number = 0) {
-    const url = `${base_url}/facturas-venta?desde=${desde}&limit=${limit}`;
+    const url = `${base_url}/facturas-ventas?desde=${desde}&limit=${limit}`;
     return this.http.get<LoadFactura>(url, this.headers);
   }
 
   loadFacturasAll() {
-    const url = `${base_url}/facturas-venta/all`;
+    const url = `${base_url}/facturas-ventas/all`;
     return this.http.get<LoadFactura>(url, this.headers);
   }
 
   loadFacturaById(id_factura_venta: any) {
-    const url = `${base_url}/facturas-venta/${id_factura_venta}`;
+    const url = `${base_url}/facturas-ventas/${id_factura_venta}`;
     return this.http.get(url, this.headers).pipe(
       map((resp: { ok: boolean, factura: Factura, saldo: number, observacion: string }) => {
         return { factura: resp.factura, saldo: resp.saldo };
@@ -55,7 +55,7 @@ export class FacturaService {
   }
 
   createFactura(formData: any) {
-    const url = `${base_url}/facturas-venta`;
+    const url = `${base_url}/facturas-ventas`;
     return this.http.post(url, formData, this.headers)
       .pipe(
         map((resp: { ok: boolean, factura: Factura[] }) => resp.factura)
@@ -63,12 +63,12 @@ export class FacturaService {
   }
 
   updateFactura(factura: Factura) {
-    const url = `${base_url}/facturas-venta/${factura.id_factura_venta}`;
+    const url = `${base_url}/facturas-ventas/${factura.id_factura_venta}`;
     return this.http.put(url, factura, this.headers);
   }
 
   deleteFactura(id_factura_venta: any) { //OJO: any
-    const url = `${base_url}/facturas-venta/${id_factura_venta}`;
+    const url = `${base_url}/facturas-ventas/${id_factura_venta}`;
     return this.http.delete(url, this.headers);
   }
 

@@ -124,6 +124,8 @@ export class FacturaVentaComponent implements OnInit {
   public facturaSeleccionada: Factura;
   public detalles_factura: DetalleFactura[] = [];
   public codigo: string;
+  public fechaEmisionU: Date;
+  public fechaVencimientoU: Date;
   public total_sin_impuesto: number;
   public total_descuento: number;
   public valor: number;
@@ -142,7 +144,7 @@ export class FacturaVentaComponent implements OnInit {
   // Variables para cargar cliente por identificación
   public identificacion: string;
   public razon_social: string;
-  public nombre_comercial: string;
+  //public nombre_comercial: string;
   public direccion: string;
   public telefono: string;
   public email: string;
@@ -198,8 +200,8 @@ export class FacturaVentaComponent implements OnInit {
   public precioTotalSinImpuestoAux: number = 0;
   public valorAux: number = 0;
   // infoAdicional
-  public telefonoXML: string = "";
-  public emailXML: string = "";
+  public telefonoComprador: string = "";
+  public emailComprador: string = "";
 
   // Paginación
   //public totalFacturas: number = 0; abajo
@@ -285,15 +287,14 @@ export class FacturaVentaComponent implements OnInit {
 
       //id_cliente: [''],
       identificacion: [''],
-      nombre: [''],
-      apellido: [''],
+      razon_social: [''],
       direccion: [''],
       telefono: [''],
       email: [''],
 
       id_asiento: [''],
       codigo: [''],
-      fecha_emision: [''],
+      fecha_emision: [],
       fecha_vencimiento: [''],
       estado_pago: [''],
       total_sin_impuesto: [''],
@@ -321,8 +322,8 @@ export class FacturaVentaComponent implements OnInit {
       id_asiento: [''],
       clave_acceso: [''],
       codigo: [''],
-      fecha_emision: [''],
-      fecha_vencimiento: [''],
+      fecha_emision: [],
+      fecha_vencimiento: [],
       estado_pago: [''],
       total_sin_impuesto: [''],
       total_descuento: [''],
@@ -340,18 +341,28 @@ export class FacturaVentaComponent implements OnInit {
     });
 
     this.clienteForm = this.fb.group({
-      identificacion: ['1727671628', [Validators.required, Validators.minLength(3)]],
-      nombre: ['Edison', [Validators.required, Validators.minLength(3)]],
-      apellido: ['Pinanjota', [Validators.required, Validators.minLength(3)]],
-      nombre_comercial: ['Systemcode', [Validators.required, Validators.minLength(3)]],
-      direccion: ['Cayambe', [Validators.required, Validators.minLength(3)]],
+      identificacion: ['1727671629', [Validators.required, Validators.minLength(3)]],
+      razon_social: ['ALEX LANCHIMBA', [Validators.required, Validators.minLength(3)]],
+      direccion: ['QUITO', [Validators.required, Validators.minLength(3)]],
       telefono: ['0978812129', [Validators.required, Validators.minLength(3)]],
-      email: ['eepinanjotac@utn.edu.ec', [Validators.required, Validators.email]],
+      email: ['ailanchimbaa@utn.edu.ec', [Validators.required, Validators.email]],
     });
 
     // Agregar validación personalizada para fecha de vencimiento
     this.facturaForm.get('fecha_vencimiento').setValidators((control) => {
       const fechaEmision = this.facturaForm.get('fecha_emision').value;
+      const fechaVencimiento = control.value;
+      console.log("Fecha Emision ", fechaEmision)
+      console.log("Fecha Vencimiento ", fechaVencimiento)
+      if (fechaEmision && fechaVencimiento && fechaVencimiento < fechaEmision) {
+        return { fechaInvalida: true };
+      }
+      return null;
+    });
+
+    // Agregar validación personalizada para fecha de vencimiento
+    this.facturaFormXML.get('fecha_vencimiento').setValidators((control) => {
+      const fechaEmision = this.facturaFormXML.get('fecha_emision').value;
       const fechaVencimiento = control.value;
       if (fechaEmision && fechaVencimiento && fechaVencimiento < fechaEmision) {
         return { fechaInvalida: true };
@@ -359,6 +370,17 @@ export class FacturaVentaComponent implements OnInit {
       return null;
     });
 
+    // Agregar validación personalizada para fecha de vencimiento
+    this.facturaFormU.get('fecha_vencimiento').setValidators((control) => {
+      const fechaEmision = this.facturaFormU.get('fecha_emision').value;
+      const fechaVencimiento = control.value;
+      console.log("Fecha Emision ", fechaEmision)
+      console.log("Fecha Vencimiento ", fechaVencimiento)
+      if (fechaEmision && fechaVencimiento && fechaVencimiento < fechaEmision) {
+        return { fechaInvalida: true };
+      }
+      return null;
+    });
   }
 
   ngOnInit(): void {
@@ -440,6 +462,7 @@ export class FacturaVentaComponent implements OnInit {
               showConfirmButton: false,
               timer: 1500
             });
+            this.recargarComponente();
           }, (err) => {
             let errorMessage = 'Se produjo un error al borrar el factura.';
             if (err.error && err.error.msg) {
@@ -495,8 +518,7 @@ export class FacturaVentaComponent implements OnInit {
           if (factura.estado_pago === "PENDIENTE") {
             this.totalFacturasPendientes++
           }
-
-          this.sumaSaldo = this.sumaSaldo + (parseFloat("" + factura.importe_total) - parseFloat("" + factura.abono));
+          this.sumaSaldo = this.sumaSaldo + (parseFloat("" + factura.importe_total) - (factura.abono ? parseFloat("" + factura.abono) : 0));
           this.totalFacturas++;
         }
         return pasaFiltro;
@@ -705,10 +727,10 @@ export class FacturaVentaComponent implements OnInit {
   }
 
   // Método para cerra lista de clientes en Modal Create Factura
-  @ViewChild('clienteesLista', { read: ElementRef }) clienteesLista: ElementRef;
+  @ViewChild('clientesLista', { read: ElementRef }) clientesLista: ElementRef;
   @HostListener('document:click', ['$event'])
   cerrarListaClientes(event: Event): void {
-    if (this.clienteesLista && this.clienteesLista.nativeElement && !this.clienteesLista.nativeElement.contains(event.target)) {
+    if (this.clientesLista && this.clientesLista.nativeElement && !this.clientesLista.nativeElement.contains(event.target)) {
       this.mostrarListaClientes = false;
     }
   }
@@ -1059,12 +1081,11 @@ export class FacturaVentaComponent implements OnInit {
       .subscribe(res => {
         Swal.fire({
           icon: 'success',
-          title: 'Factura actualizado',
+          title: 'Factura actualizada',
           text: 'Factura se ha actualizado correctamente',
           showConfirmButton: false,
           timer: 1500
         });
-        //this.router.navigateByUrl(`/dashboard/facturas`)
         this.recargarComponente();
         this.cerrarModal();
       }, (err) => {
@@ -1072,6 +1093,7 @@ export class FacturaVentaComponent implements OnInit {
         Swal.fire('Error', errorMessage, 'error');
       });
   }
+
 
   // Método para cargar factura por id en Modal Update Factura
   cargarFacturaPorId(id_factura_venta: any) {
@@ -1082,6 +1104,8 @@ export class FacturaVentaComponent implements OnInit {
             total_sin_impuesto, total_descuento, valor, importe_total, abono } = factura.factura[0];
           this.facturaSeleccionada = factura.factura[0];
           this.codigo = codigo;
+          this.fechaEmisionU = fecha_emision; // Así mantenemos la fecha original
+          this.fechaVencimientoU = fecha_vencimiento
           this.total_sin_impuesto = total_sin_impuesto;
           this.total_descuento = total_descuento;
           this.valor = valor;
@@ -1093,10 +1117,9 @@ export class FacturaVentaComponent implements OnInit {
 
           const id_forma_pago = ""; // Precargar un id_forma_pago en html
           const observacion = ""; // Precargar una observación en html
-
           return this.cargarClientePorId(id_cliente).pipe(
             concatMap(cliente => {
-              const { identificacion, razon_social, nombre_comercial, direccion, telefono, email } = cliente[0];
+              const { identificacion, razon_social, direccion, telefono, email } = cliente[0];
               this.clienteSeleccionado = cliente[0];
               this.identificacion = identificacion;
               this.razon_social = razon_social;
@@ -1114,17 +1137,22 @@ export class FacturaVentaComponent implements OnInit {
         })
       )
       .subscribe(data => {
+        console.log("DATA VENTA: ", data)
         this.facturaFormU.setValue(data);
+        this.facturaFormU.get('fecha_emision').setValue(this.datePipe.transform(this.fechaEmisionU, 'dd/MM/yyyy'));
+        //this.facturaFormU.get('fecha_vencimiento').setValue(this.datePipe.transform(this.fechaVencimientoU, 'dd/MM/yyyy'));
       });
   }
 
   // Método para cargar cliente por id en Modal Update Factura
   cargarClientePorId(id_cliente: any) {
+    console.log("id?cliente", id_cliente)
     return this.clienteService.loadClienteById(id_cliente);
   }
 
   // Método para formatear fecha en Modal Update Factura
-  getFormattedFechaEmision(): string {
+  /*
+  getFormattedFechaEmisionU(): string {
     const fechaEmision = this.facturaFormU.get('fecha_emision')?.value;
     if (fechaEmision) {
       const fecha = new Date(fechaEmision);
@@ -1132,12 +1160,23 @@ export class FacturaVentaComponent implements OnInit {
     }
     return '';
   }
+  */
 
   // Método para formatear fecha en Modal Update Factura
-  getFormattedFechaVencimiento(): string {
+  getFormattedFechaVencimientoU(): string {
     const fechaVencimiento = this.facturaFormU.get('fecha_vencimiento')?.value;
     if (fechaVencimiento) {
       const fecha = new Date(fechaVencimiento);
+      return fecha.toISOString().split('T')[0];
+    }
+    return '';
+  }
+
+  // Método para formatear fecha en Modal Update Factura
+  getFormattedFechaEmisionXML(): string {
+    const fechaEmision = this.facturaFormXML.get('fecha_emision')?.value;
+    if (fechaEmision) {
+      const fecha = new Date(fechaEmision);
       return fecha.toISOString().split('T')[0];
     }
     return '';
@@ -1164,7 +1203,7 @@ export class FacturaVentaComponent implements OnInit {
     }
   }
 
-  
+
   // Método para crear factura en Modal XML
   crearFacturaXML() {
     // Reiniciar el arreglo detallesXMLInterface
@@ -1197,7 +1236,6 @@ export class FacturaVentaComponent implements OnInit {
       alert('Debes seleccionar una forma de pago.');
       return; // La función se detiene aquí
     }
-
     // Una vez que los productos se han creado, procede a crear la factura
     const facturaData: FacturaXMLInterface = {
       id_cliente: this.id_cliente,
@@ -1208,7 +1246,7 @@ export class FacturaVentaComponent implements OnInit {
       clave_acceso: this.claveAcceso,
       codigo: this.estab + "-" + this.ptoEmi + "-" + this.secuencial,
       fecha_emision: this.fechaEmision,
-      fecha_vencimiento: this.fechaEmision,
+      fecha_vencimiento: this.facturaFormXML.get("fecha_vencimiento").value,
       estado_pago: '',
       total_sin_impuesto: this.totalSinImpuestos,
       total_descuento: this.totalDescuento,
@@ -1220,16 +1258,12 @@ export class FacturaVentaComponent implements OnInit {
       //saldo: 0, // Valor válido
       observacion: this.facturaFormXML.get("observacion").value,
     };
+    console.log("Data: ", facturaData)
     this.facturaService.createFactura(facturaData).subscribe(
       (res: any) => {
         const facturaId = res.id_factura_venta; // Obtener el ID del factura guardado
-        console.log('< facturaID: ', facturaId)
-
         const productosObservables = this.crearProductosXML();
-
         forkJoin(productosObservables).subscribe((productosCreados: any[]) => {
-          console.log('🟩 PRODUCTOS CREADOS: ', productosCreados);
-
           // Crear los detalles y asociarlos a la factura y productos
           const detallesXMLInterface = this.detallesXMLInterface.map((detalleXML, index) => {
 
@@ -1242,9 +1276,7 @@ export class FacturaVentaComponent implements OnInit {
               precio_unitario: detalleXML.precioUnitario,
               descuento: detalleXML.descuento,
               precio_total_sin_impuesto: detalleXML.precioTotalSinImpuesto,
-
               precio_total_sin_impuesto_mas_ice: null,
-
               codigo: detalleXML.codigo,
               codigo_porcentaje: detalleXML.codigoPorcentaje,
               tarifa: detalleXML.tarifa,
@@ -1253,7 +1285,6 @@ export class FacturaVentaComponent implements OnInit {
               ice: null,
               precio_total: detalleXML.precioTotalSinImpuesto + detalleXML.valor,
             };
-
             //detallesXMLInterface.push(nuevoDetalle);
           });
           this.detalleFacturaService.createDetalleFacturaArray(detallesXMLInterface).subscribe(
@@ -1288,7 +1319,6 @@ export class FacturaVentaComponent implements OnInit {
       }
     );
   }
-
 
   // Método para cargar xml en Modal XML
   loadXML() {
@@ -1352,6 +1382,7 @@ export class FacturaVentaComponent implements OnInit {
         this.tipoIdentificacionComprador = infoFactura.tipoIdentificacionComprador[0];
         this.razonSocialComprador = infoFactura.razonSocialComprador[0];
         this.identificacionComprador = infoFactura.identificacionComprador[0];
+        console.log("this.identificacionComprador: ", this.identificacionComprador)
         if ('direccionComprador' in infoFactura) {
           this.direccionComprador = infoFactura.direccionComprador[0];
         } else {
@@ -1438,24 +1469,15 @@ export class FacturaVentaComponent implements OnInit {
             const nombre = campo.$.nombre;
             const valor = campo._;
             if (nombre === 'Telefono') {
-              this.telefonoXML = valor
+              this.telefonoComprador = valor
             } else if (nombre === 'Email') {
-              this.emailXML = valor
+              this.emailComprador = valor
             }
           }
         }
-
         this.detallesXMLInterface = arr; // Updated to assign to detallesXMLInterface
-        console.log('this.detallesXMLInterface: ', this.detallesXMLInterface);
         resolve(arr);
-
-        console.log('--> Inicio -  Cargar Cliente');
         this.cargarClienteByIdentificacion(this.identificacionComprador)
-        console.log('--> Fin -  Cargar Cliente');
-
-        console.log('--> Incio - Cargar Forma Pago');
-        //this.cargarFormaPagoByCodigo(this.formaPago)
-        console.log('--> Fin - Cargar Forma Pago');
       });
     });
   }
@@ -1465,8 +1487,8 @@ export class FacturaVentaComponent implements OnInit {
     this.identificacion = this.identificacionComprador
     this.razon_social = this.razonSocialComprador
     this.direccion = this.direccionComprador
-    this.telefono = this.telefonoXML
-    this.email = this.emailXML
+    this.telefono = this.telefonoComprador
+    this.email = this.emailComprador
     if (!this.identificacion || !this.razon_social) {
       Swal.fire('Error', 'Falta información requerida para crear el cliente.', 'error');
       return;
@@ -1476,7 +1498,7 @@ export class FacturaVentaComponent implements OnInit {
     const clienteData = {
       identificacion: this.identificacion,
       razon_social: this.razon_social,
-      nombre_comercial: this.nombre_comercial,
+      //nombre_comercial: this.nombre_comercial,
       direccion: this.direccion,
       telefono: this.telefono,
       email: this.email
@@ -1515,6 +1537,8 @@ export class FacturaVentaComponent implements OnInit {
             this.id_cliente = id_cliente;
             this.identificacion = identificacion;
             this.razon_social = razon_social;
+            console.log("this.identificacion 3: ", this.identificacion)
+
           } else {
             Swal.fire({
               title: 'Éxito 2',
@@ -1524,7 +1548,8 @@ export class FacturaVentaComponent implements OnInit {
               showConfirmButton: false,
             })
               .then(() => {
-                this.mostrarMensajeDeAdvertenciaConOpciones('Advertencia', 'Cliente no encontrado ¿Desea crear un nuevo cliente?');
+                console.log("this.identificacion 4: ", this.identificacion)
+                this.mostrarMensajeDeAdvertenciaConOpciones('Advertencia', 'Cliente no encontrado. ¿Desea crear un nuevo cliente?');
               });
           }
         }, (err) => {
@@ -1721,7 +1746,7 @@ export class FacturaVentaComponent implements OnInit {
   // Método para recargar componente
   recargarComponente() {
     this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-      this.router.navigate(['/dashboard/facturas']);
+      this.router.navigate(['/dashboard/facturas-ventas']);
     });
   }
 

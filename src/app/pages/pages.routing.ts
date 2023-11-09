@@ -91,11 +91,11 @@ const routes: Routes = [
 
             // Compras
             { path: 'proveedores', component: ProveedorComponent, data: { titulo: 'Proveedores' } },
-            { path: 'facturas', component: FacturaComponent, data: { titulo: 'Facturas' } },
+            { path: 'facturas', component: FacturaComponent, data: { titulo: 'Facturas Compra' } },
 
             // Venta
             { path: 'clientes', component: ClienteComponent, data: { titulo: 'Clientes' } },
-            { path: 'facturas-venta', component: FacturaVentaComponent, data: { titulo: 'Facturas Venta' } },
+            { path: 'facturas-ventas', component: FacturaVentaComponent, data: { titulo: 'Facturas Ventas' } },
 
             // Inventario
             { path: 'productos', canActivate: [BodegueroGuard], component: ProductoComponent, data: { titulo: 'Productos' } },

@@ -118,18 +118,18 @@
                     <!-- Date Range Input, Select Input and Search Input -->
                     <div class="col-lg-12 col-md-12">
                         <div class="button-group">
-                            <label>Fecha Inicio:
+                            <label>Fecha Emisión Inicio
                                 <input type="date" class="form-control" [(ngModel)]="fechaInicio"
                                     (change)="filtrarFacturas()" (dblclick)="borrarFechaInicio()"
                                     style="width: 100%;" />
                             </label>
                             &nbsp;
-                            <label>Fecha Fin:
+                            <label>Fecha Emisión Fin
                                 <input type="date" class="form-control" [(ngModel)]="fechaFin"
                                     (change)="filtrarFacturas()" (dblclick)="borrarFechaFin()" style="width: 100%;" />
                             </label>
                             &nbsp;
-                            <label>Estado Pago:
+                            <label>Estado Pago
                                 <select class="form-control" [(ngModel)]="estadoPagoSelect" (change)="filtrarFacturas()"
                                     style="width: 100%;">
                                     <option value="">TODOS</option>
@@ -139,9 +139,10 @@
                                 </select>
                             </label>
                             &nbsp;
-                            <label>Buscar:
+                            <label>Buscar
                                 <input type="text" class="form-control flex-fill" [(ngModel)]="buscarTexto"
-                                    (input)="filtrarFacturas()" style="width: 100%;" />
+                                    placeholder="Factura, RUC/CI, Razón Social " (input)="filtrarFacturas()"
+                                    style="width: 100%;" />
                             </label>
                         </div>
                     </div>
@@ -317,7 +318,7 @@
             <div class="modal-body">
 
                 <div class="text-center">
-                    <h3><b>FACTURA COMPRA</b></h3>
+                    <h3><b>FACTURA VENTA</b></h3>
                     <h5><b>#</b></h5>
                 </div>
 
@@ -342,8 +343,7 @@
                                     </button>
                                 </div>
                                 <div class="clientes-filtrados"
-                                    *ngIf="mostrarListaClientes && clientesFiltrados.length > 0"
-                                    #clientesLista>
+                                    *ngIf="mostrarListaClientes && clientesFiltrados.length > 0" #clientesLista>
                                     <ul class="list-group">
                                         <li class="list-group-item" *ngFor="let cliente of clientesFiltrados"
                                             (click)="seleccionarCliente(cliente)">
@@ -666,7 +666,7 @@
             <div class="modal-body">
 
                 <div class="text-center">
-                    <h3><b>FACTURA COMPRA</b></h3>
+                    <h3><b>FACTURA VENTA</b></h3>
                     <h5><b># </b> {{ estab }}-{{ ptoEmi }}-{{ secuencial }}</h5>
                 </div>
 
@@ -680,7 +680,8 @@
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="ti-id-badge"></i></div>
                                     <input type="text" class="form-control" id="exampleInputuname"
-                                        placeholder="{{ ruc }}" formControlName="identificacion" readonly>
+                                        placeholder="{{ identificacionComprador }}" formControlName="identificacion"
+                                        readonly>
                                 </div>
                             </div>
                         </div>
@@ -690,7 +691,8 @@
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="ti-user"></i></div>
                                     <input type="text" class="form-control" id="exampleInputuname"
-                                        placeholder='{{ razonSocial }}' formControlName="razon_social" readonly>
+                                        placeholder='{{ razonSocialComprador }}' formControlName="razon_social"
+                                        readonly>
                                 </div>
                             </div>
                         </div>
@@ -700,7 +702,7 @@
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="ti-location-pin"></i></div>
                                     <input type="text" class="form-control" id="exampleInputuname"
-                                        placeholder='{{ dirEstablecimiento }}' formControlName="direccion" readonly>
+                                        placeholder='{{ direccionComprador }}' formControlName="direccion" readonly>
                                 </div>
                             </div>
                         </div>
@@ -710,7 +712,7 @@
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="ti-mobile"></i></div>
                                     <input type="text" class="form-control" id="exampleInputuname"
-                                        placeholder="Télefono" formControlName="telefono" readonly>
+                                        placeholder='{{ telefonoComprador }}' formControlName="telefono" readonly>
                                 </div>
                             </div>
                         </div>
@@ -719,8 +721,8 @@
                                 <label for="exampleInputuname">Email</label>
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="ti-email"></i></div>
-                                    <input type="text" class="form-control" id="exampleInputuname" placeholder="Email"
-                                        formControlName="email" readonly>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder='{{ emailComprador }}' formControlName="email" readonly>
                                 </div>
                             </div>
                         </div>
@@ -754,7 +756,7 @@
                                     <div class="input-group-addon"><i class="ti-calendar"></i></div>
                                     <input type="text" class="form-control" id="exampleInputuname"
                                         placeholder="{{ fechaEmision }}" formControlName="fecha_emision"
-                                        [value]="getFormattedFechaEmision()" readonly>
+                                         readonly>
                                 </div>
                             </div>
                         </div>
@@ -764,8 +766,11 @@
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="ti-calendar"></i></div>
                                     <input type="date" class="form-control" id="exampleInputuname"
-                                        placeholder="Fecha Vencimiento" formControlName="fecha_vencimiento"
-                                        [value]="getFormattedFechaVencimiento()">
+                                        placeholder="Fecha Vencimiento" formControlName="fecha_vencimiento">
+                                </div>
+                                <div class="error-message text-danger"
+                                    *ngIf="facturaFormXML.get('fecha_vencimiento').hasError('fechaInvalida')">
+                                    La fecha de vencimiento no puede ser mayor que la fecha de emisión.
                                 </div>
                             </div>
                         </div>
@@ -973,7 +978,7 @@
             <!-- Modal Body -->
             <div class="modal-body">
                 <div class="text-center">
-                    <h3><b>FACTURA COMPRA</b></h3>
+                    <h3><b>FACTURA VENTA</b></h3>
                     <h5><b># </b> {{ codigo}}</h5>
                 </div>
                 <form autocomplete="off" [formGroup]="facturaFormU">
@@ -1046,8 +1051,7 @@
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="ti-calendar"></i></div>
                                     <input type="text" class="form-control" id="exampleInputuname"
-                                        placeholder="Fecha Emisión" formControlName="fecha_emision"
-                                        [value]="getFormattedFechaEmision()" readonly>
+                                        placeholder="Fecha Emisión" formControlName="fecha_emision" readonly>
                                 </div>
                             </div>
                         </div>
@@ -1058,7 +1062,11 @@
                                     <div class="input-group-addon"><i class="ti-calendar"></i></div>
                                     <input type="date" class="form-control" id="exampleInputuname"
                                         placeholder="Fecha Vencimiento" formControlName="fecha_vencimiento"
-                                        [value]="getFormattedFechaVencimiento()" [readonly]="saldoInicial === 0">
+                                        [value]="getFormattedFechaVencimientoU()" [readonly]="saldoInicial === 0">
+                                </div>
+                                <div class="error-message text-danger"
+                                    *ngIf="facturaFormU.get('fecha_vencimiento').hasError('fechaInvalida')">
+                                    La fecha de vencimiento no puede ser menor que la fecha de emisión.
                                 </div>
                             </div>
                         </div>
@@ -1254,10 +1262,12 @@
                             <input type="text" class="form-control material-aux" formControlName="razon_social"
                                 (input)="convertirAMayusculas($event)">
                         </div>
+                        <!-- Card 
                         <div class="form-group">
                             <label>Nombre Comercial:</label>
                             <input type="text" class="form-control material-aux" formControlName="nombre_comercial">
                         </div>
+                    -->
                         <div class="form-group">
                             <label>Dirección:</label>
                             <input type="text" class="form-control material-aux" formControlName="direccion">
@@ -1397,4 +1407,3 @@
         /* O cualquier estilo que desees para fechas no vencidas */
     }
 </style>
-
