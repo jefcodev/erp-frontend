@@ -54,6 +54,7 @@ import { LibroMayorComponent } from './contabilidad/libro-mayor/libro-mayor.comp
 import { BalanceGeneralComponent } from './contabilidad/balance-general/balance-general.component';
 import { EstadoResultadoComponent } from './contabilidad/estado-resultado/estado-resultado.component';
 import { AdminGuard } from '../guards/admin.guard';
+import { BodegueroGuard } from '../guards/bodeguero.guard';
 
 const routes: Routes = [
     {
@@ -76,7 +77,7 @@ const routes: Routes = [
 
             /* Inventory */
             { path: 'inventory/categories', component: CategoriesComponent, data: { titulo: 'Categorías' } },
-            { path: 'inventory/products', component: ProductsComponent, data: { titulo: 'Productos' } },
+            { path: 'inventory/products', canActivate:[BodegueroGuard], component: ProductsComponent, data: { titulo: 'Productos' } },
             { path: 'inventory/product', component: ProductComponent, data: { titulo: 'Nuevo Producto' } },
             { path: 'inventory/units', component: UnitsComponent, data: { titulo: 'Unidades' } },
             { path: 'inventory/import-products', component: ImportInventoryComponent, data: { titulo: 'Importar Productos' } },
@@ -97,7 +98,7 @@ const routes: Routes = [
             { path: 'facturas-venta', component: FacturaVentaComponent, data: { titulo: 'Facturas Venta' } },
 
             // Inventario
-            { path: 'productos', component: ProductoComponent, data: { titulo: 'Productos' } },
+            { path: 'productos', canActivate: [BodegueroGuard], component: ProductoComponent, data: { titulo: 'Productos' } },
 
             /* Quotations */
             { path: 'quotations', component: QuotationsComponent, data: { titulo: 'Proformas' } },
