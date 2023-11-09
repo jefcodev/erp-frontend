@@ -680,7 +680,8 @@
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="ti-id-badge"></i></div>
                                     <input type="text" class="form-control" id="exampleInputuname"
-                                        placeholder="{{ ruc }}" formControlName="identificacion" readonly>
+                                        placeholder="{{ identificacionComprador }}" formControlName="identificacion"
+                                        readonly>
                                 </div>
                             </div>
                         </div>
@@ -690,7 +691,8 @@
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="ti-user"></i></div>
                                     <input type="text" class="form-control" id="exampleInputuname"
-                                        placeholder='{{ razonSocial }}' formControlName="razon_social" readonly>
+                                        placeholder='{{ razonSocialComprador }}' formControlName="razon_social"
+                                        readonly>
                                 </div>
                             </div>
                         </div>
@@ -700,7 +702,7 @@
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="ti-location-pin"></i></div>
                                     <input type="text" class="form-control" id="exampleInputuname"
-                                        placeholder='{{ dirEstablecimiento }}' formControlName="direccion" readonly>
+                                        placeholder='{{ direccionComprador }}' formControlName="direccion" readonly>
                                 </div>
                             </div>
                         </div>
@@ -710,7 +712,7 @@
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="ti-mobile"></i></div>
                                     <input type="text" class="form-control" id="exampleInputuname"
-                                        placeholder="Télefono" formControlName="telefono" readonly>
+                                        placeholder='{{ telefonoComprador }}' formControlName="telefono" readonly>
                                 </div>
                             </div>
                         </div>
@@ -719,8 +721,8 @@
                                 <label for="exampleInputuname">Email</label>
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="ti-email"></i></div>
-                                    <input type="text" class="form-control" id="exampleInputuname" placeholder="Email"
-                                        formControlName="email" readonly>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder='{{ emailComprador }}' formControlName="email" readonly>
                                 </div>
                             </div>
                         </div>
@@ -754,7 +756,7 @@
                                     <div class="input-group-addon"><i class="ti-calendar"></i></div>
                                     <input type="text" class="form-control" id="exampleInputuname"
                                         placeholder="{{ fechaEmision }}" formControlName="fecha_emision"
-                                        [value]="getFormattedFechaEmision()" readonly>
+                                         readonly>
                                 </div>
                             </div>
                         </div>
@@ -764,8 +766,11 @@
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="ti-calendar"></i></div>
                                     <input type="date" class="form-control" id="exampleInputuname"
-                                        placeholder="Fecha Vencimiento" formControlName="fecha_vencimiento"
-                                        [value]="getFormattedFechaVencimiento()">
+                                        placeholder="Fecha Vencimiento" formControlName="fecha_vencimiento">
+                                </div>
+                                <div class="error-message text-danger"
+                                    *ngIf="facturaFormXML.get('fecha_vencimiento').hasError('fechaInvalida')">
+                                    La fecha de vencimiento no puede ser mayor que la fecha de emisión.
                                 </div>
                             </div>
                         </div>
@@ -1046,8 +1051,7 @@
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="ti-calendar"></i></div>
                                     <input type="text" class="form-control" id="exampleInputuname"
-                                        placeholder="Fecha Emisión" formControlName="fecha_emision"
-                                        [value]="getFormattedFechaEmision()" readonly>
+                                        placeholder="Fecha Emisión" formControlName="fecha_emision" readonly>
                                 </div>
                             </div>
                         </div>
@@ -1058,7 +1062,11 @@
                                     <div class="input-group-addon"><i class="ti-calendar"></i></div>
                                     <input type="date" class="form-control" id="exampleInputuname"
                                         placeholder="Fecha Vencimiento" formControlName="fecha_vencimiento"
-                                        [value]="getFormattedFechaVencimiento()" [readonly]="saldoInicial === 0">
+                                        [value]="getFormattedFechaVencimientoU()" [readonly]="saldoInicial === 0">
+                                </div>
+                                <div class="error-message text-danger"
+                                    *ngIf="facturaFormU.get('fecha_vencimiento').hasError('fechaInvalida')">
+                                    La fecha de vencimiento no puede ser menor que la fecha de emisión.
                                 </div>
                             </div>
                         </div>

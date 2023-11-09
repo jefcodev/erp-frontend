@@ -123,6 +123,8 @@ export class FacturaComponent implements OnInit {
   public facturaSeleccionada: Factura;
   public detalles_factura: DetalleFactura[] = [];
   public codigo: string;
+  public fechaEmisionU: Date;
+  public fechaVencimientoU: Date;
   public total_sin_impuesto: number;
   public total_descuento: number;
   public valor: number;
@@ -314,8 +316,8 @@ export class FacturaComponent implements OnInit {
       id_asiento: [''],
       clave_acceso: [''],
       codigo: [''],
-      fecha_emision: [''],
-      fecha_vencimiento: [''],
+      fecha_emision: [],
+      fecha_vencimiento: [],
       estado_pago: [''],
       total_sin_impuesto: [''],
       total_descuento: [''],
@@ -351,9 +353,27 @@ export class FacturaComponent implements OnInit {
       return null;
     });
 
-    // Actualizar la validación
-    //this.facturaForm.get('fecha_vencimiento').updateValueAndValidity();
+    // Agregar validación personalizada para fecha de vencimiento
+    this.facturaFormXML.get('fecha_vencimiento').setValidators((control) => {
+      const fechaEmision = this.facturaFormXML.get('fecha_emision').value;
+      const fechaVencimiento = control.value;
+      if (fechaEmision && fechaVencimiento && fechaVencimiento < fechaEmision) {
+        return { fechaInvalida: true };
+      }
+      return null;
+    });
 
+    // Agregar validación personalizada para fecha de vencimiento
+    this.facturaFormU.get('fecha_vencimiento').setValidators((control) => {
+      const fechaEmision = this.facturaFormU.get('fecha_emision').value;
+      const fechaVencimiento = control.value;
+      console.log("Fecha Emision ", fechaEmision)
+      console.log("Fecha Vencimiento ", fechaVencimiento)
+      if (fechaEmision && fechaVencimiento && fechaVencimiento < fechaEmision) {
+        return { fechaInvalida: true };
+      }
+      return null;
+    });
   }
 
   ngOnInit(): void {
@@ -1076,6 +1096,8 @@ export class FacturaComponent implements OnInit {
             total_sin_impuesto, total_descuento, valor, importe_total, abono } = factura.factura[0];
           this.facturaSeleccionada = factura.factura[0];
           this.codigo = codigo;
+          this.fechaEmisionU = fecha_emision; // Así mantenemos la fecha original
+          this.fechaVencimientoU = fecha_vencimiento
           this.total_sin_impuesto = total_sin_impuesto;
           this.total_descuento = total_descuento;
           this.valor = valor;
@@ -1110,17 +1132,19 @@ export class FacturaComponent implements OnInit {
       .subscribe(data => {
         console.log("DATA COMPRA: ", data)
         this.facturaFormU.setValue(data);
+        this.facturaFormU.get('fecha_emision').setValue(this.datePipe.transform(this.fechaEmisionU, 'dd/MM/yyyy'));
       });
   }
 
   // Método para cargar proveedor por id en Modal Update Factura
   cargarProveedorPorId(id_proveedor: any) {
     console.log("id?proveedor", id_proveedor)
+    this.facturaFormU.get('fecha_emision').setValue(this.datePipe.transform(this.fechaEmisionU, 'dd/MM/yyyy'));
     return this.proveedorService.loadProveedorById(id_proveedor);
   }
 
   // Método para formatear fecha en Modal Update Factura
-  getFormattedFechaEmision(): string {
+  /*getFormattedFechaEmision(): string {
     const fechaEmision = this.facturaFormU.get('fecha_emision')?.value;
     if (fechaEmision) {
       const fecha = new Date(fechaEmision);
@@ -1128,12 +1152,33 @@ export class FacturaComponent implements OnInit {
     }
     return '';
   }
+  */
 
   // Método para formatear fecha en Modal Update Factura
   getFormattedFechaVencimiento(): string {
     const fechaVencimiento = this.facturaFormU.get('fecha_vencimiento')?.value;
     if (fechaVencimiento) {
       const fecha = new Date(fechaVencimiento);
+      return fecha.toISOString().split('T')[0];
+    }
+    return '';
+  }
+
+  // Método para formatear fecha en Modal Update Factura
+  getFormattedFechaVencimientoU(): string {
+    const fechaVencimiento = this.facturaFormU.get('fecha_vencimiento')?.value;
+    if (fechaVencimiento) {
+      const fecha = new Date(fechaVencimiento);
+      return fecha.toISOString().split('T')[0];
+    }
+    return '';
+  }
+
+  // Método para formatear fecha en Modal Update Factura
+  getFormattedFechaEmisionXML(): string {
+    const fechaEmision = this.facturaFormXML.get('fecha_emision')?.value;
+    if (fechaEmision) {
+      const fecha = new Date(fechaEmision);
       return fecha.toISOString().split('T')[0];
     }
     return '';
@@ -1203,7 +1248,7 @@ export class FacturaComponent implements OnInit {
       clave_acceso: this.claveAcceso,
       codigo: this.estab + "-" + this.ptoEmi + "-" + this.secuencial,
       fecha_emision: this.fechaEmision,
-      fecha_vencimiento: this.fechaEmision,
+      fecha_vencimiento: this.facturaFormXML.get("fecha_vencimiento").value,
       estado_pago: '',
       total_sin_impuesto: this.totalSinImpuestos,
       total_descuento: this.totalDescuento,
@@ -1215,20 +1260,14 @@ export class FacturaComponent implements OnInit {
       //saldo: 0, // Valor válido
       observacion: this.facturaFormXML.get("observacion").value,
     };
-    console.log("EDISON 1")
+    console.log("Data: ", facturaData)
     this.facturaService.createFactura(facturaData).subscribe(
       (res: any) => {
         const facturaId = res.id_factura_compra; // Obtener el ID del factura guardado
-        console.log('< facturaID: ', facturaId)
-        console.log("EDISON 2")
         const productosObservables = this.crearProductosXML();
-
         forkJoin(productosObservables).subscribe((productosCreados: any[]) => {
-          console.log('🟩 PRODUCTOS CREADOS: ', productosCreados);
-
           // Crear los detalles y asociarlos a la factura y productos
           const detallesXMLInterface = this.detallesXMLInterface.map((detalleXML, index) => {
-
             return {
               id_factura_compra: facturaId,
               id_producto: productosCreados[index].id_producto, // Aquí accedemos al primer producto en el array de productos creados
@@ -1238,9 +1277,7 @@ export class FacturaComponent implements OnInit {
               precio_unitario: detalleXML.precioUnitario,
               descuento: detalleXML.descuento,
               precio_total_sin_impuesto: detalleXML.precioTotalSinImpuesto,
-
               precio_total_sin_impuesto_mas_ice: null,
-
               codigo: detalleXML.codigo,
               codigo_porcentaje: detalleXML.codigoPorcentaje,
               tarifa: detalleXML.tarifa,
@@ -1249,7 +1286,6 @@ export class FacturaComponent implements OnInit {
               ice: null,
               precio_total: detalleXML.precioTotalSinImpuesto + detalleXML.valor,
             };
-
             //detallesXMLInterface.push(nuevoDetalle);
           });
           this.detalleFacturaService.createDetalleFacturaArray(detallesXMLInterface).subscribe(
@@ -1440,20 +1476,9 @@ export class FacturaComponent implements OnInit {
             }
           }
         }
-
         this.detallesXMLInterface = arr; // Updated to assign to detallesXMLInterface
-        console.log('this.detallesXMLInterface: ', this.detallesXMLInterface);
         resolve(arr);
-
-        console.log("this.identificacionComprador 2: ", this.identificacionComprador)
-
-        console.log('--> Inicio -  Cargar Proveedor');
         this.cargarProveedorByIdentificacion(this.identificacionComprador)
-        console.log('--> Fin -  Cargar Proveedor');
-
-        console.log('--> Incio - Cargar Forma Pago');
-        //this.cargarFormaPagoByCodigo(this.formaPago)
-        console.log('--> Fin - Cargar Forma Pago');
       });
     });
   }
@@ -1525,7 +1550,7 @@ export class FacturaComponent implements OnInit {
             })
               .then(() => {
                 console.log("this.identificacion 4: ", this.identificacion)
-                this.mostrarMensajeDeAdvertenciaConOpciones('Advertencia', 'Proveedor no encontrado ¿Desea crear un nuevo proveedor?');
+                this.mostrarMensajeDeAdvertenciaConOpciones('Advertencia', 'Proveedor no encontrado. ¿Desea crear un nuevo proveedor?');
               });
           }
         }, (err) => {

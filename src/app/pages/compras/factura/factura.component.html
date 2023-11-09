@@ -754,8 +754,7 @@
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="ti-calendar"></i></div>
                                     <input type="text" class="form-control" id="exampleInputuname"
-                                        placeholder="{{ fechaEmision }}" formControlName="fecha_emision"
-                                        [value]="getFormattedFechaEmision()" readonly>
+                                        placeholder="{{ fechaEmision  | date:'yyyy-MM-dd' }}" formControlName="fecha_emision" readonly>
                                 </div>
                             </div>
                         </div>
@@ -765,8 +764,11 @@
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="ti-calendar"></i></div>
                                     <input type="date" class="form-control" id="exampleInputuname"
-                                        placeholder="Fecha Vencimiento" formControlName="fecha_vencimiento"
-                                        [value]="getFormattedFechaVencimiento()">
+                                        placeholder="Fecha Vencimiento" formControlName="fecha_vencimiento">
+                                </div>
+                                <div class="error-message text-danger"
+                                    *ngIf="facturaFormXML.get('fecha_vencimiento').hasError('fechaInvalida')">
+                                    La fecha de vencimiento no puede ser mayor que la fecha de emisión.
                                 </div>
                             </div>
                         </div>
@@ -1047,8 +1049,7 @@
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="ti-calendar"></i></div>
                                     <input type="text" class="form-control" id="exampleInputuname"
-                                        placeholder="Fecha Emisión" formControlName="fecha_emision"
-                                        [value]="getFormattedFechaEmision()" readonly>
+                                        placeholder="Fecha Emisión" formControlName="fecha_emision" readonly>
                                 </div>
                             </div>
                         </div>
@@ -1059,7 +1060,11 @@
                                     <div class="input-group-addon"><i class="ti-calendar"></i></div>
                                     <input type="date" class="form-control" id="exampleInputuname"
                                         placeholder="Fecha Vencimiento" formControlName="fecha_vencimiento"
-                                        [value]="getFormattedFechaVencimiento()" [readonly]="saldoInicial === 0">
+                                        [value]="getFormattedFechaVencimientoU()" [readonly]="saldoInicial === 0">
+                                </div>
+                                <div class="error-message text-danger"
+                                    *ngIf="facturaFormU.get('fecha_vencimiento').hasError('fechaInvalida')">
+                                    La fecha de vencimiento no puede ser menor que la fecha de emisión.
                                 </div>
                             </div>
                         </div>
