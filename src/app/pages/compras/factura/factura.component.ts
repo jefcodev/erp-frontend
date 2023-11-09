@@ -355,8 +355,11 @@ export class FacturaComponent implements OnInit {
 
     // Agregar validación personalizada para fecha de vencimiento
     this.facturaFormXML.get('fecha_vencimiento').setValidators((control) => {
-      const fechaEmision = this.facturaFormXML.get('fecha_emision').value;
-      const fechaVencimiento = control.value;
+       //const fechaEmision = this.facturaFormXML.get('fecha_emision').value;
+       const fechaEmision = this.datePipe.transform(this.fechaEmision, 'yyyy-MM-dd')
+       const fechaVencimiento = control.value;
+       console.log("Fecha Emision ", fechaEmision)
+       console.log("Fecha Vencimiento ", fechaVencimiento)
       if (fechaEmision && fechaVencimiento && fechaVencimiento < fechaEmision) {
         return { fechaInvalida: true };
       }
@@ -1132,13 +1135,12 @@ export class FacturaComponent implements OnInit {
       .subscribe(data => {
         console.log("DATA COMPRA: ", data)
         this.facturaFormU.setValue(data);
-        this.facturaFormU.get('fecha_emision').setValue(this.datePipe.transform(this.fechaEmisionU, 'dd/MM/yyyy'));
+        this.facturaFormU.get('fecha_emision').setValue(this.datePipe.transform(this.fechaEmisionU, 'yyyy-MM-dd'));
       });
   }
 
   // Método para cargar proveedor por id en Modal Update Factura
   cargarProveedorPorId(id_proveedor: any) {
-    console.log("id?proveedor", id_proveedor)
     this.facturaFormU.get('fecha_emision').setValue(this.datePipe.transform(this.fechaEmisionU, 'dd/MM/yyyy'));
     return this.proveedorService.loadProveedorById(id_proveedor);
   }

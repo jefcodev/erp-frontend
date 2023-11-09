@@ -755,7 +755,7 @@
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="ti-calendar"></i></div>
                                     <input type="text" class="form-control" id="exampleInputuname"
-                                        placeholder="{{ fechaEmision }}" formControlName="fecha_emision"
+                                        placeholder="{{ fechaEmision | date:'yyyy-MM-dd' }}" formControlName="fecha_emision"
                                          readonly>
                                 </div>
                             </div>

@@ -362,8 +362,11 @@ export class FacturaVentaComponent implements OnInit {
 
     // Agregar validación personalizada para fecha de vencimiento
     this.facturaFormXML.get('fecha_vencimiento').setValidators((control) => {
-      const fechaEmision = this.facturaFormXML.get('fecha_emision').value;
+      //const fechaEmision = this.facturaFormXML.get('fecha_emision').value;
+      const fechaEmision = this.datePipe.transform(this.fechaEmision, 'yyyy-MM-dd')
       const fechaVencimiento = control.value;
+      console.log("Fecha Emision ", fechaEmision)
+      console.log("Fecha Vencimiento ", fechaVencimiento)
       if (fechaEmision && fechaVencimiento && fechaVencimiento < fechaEmision) {
         return { fechaInvalida: true };
       }
@@ -1139,14 +1142,15 @@ export class FacturaVentaComponent implements OnInit {
       .subscribe(data => {
         console.log("DATA VENTA: ", data)
         this.facturaFormU.setValue(data);
-        this.facturaFormU.get('fecha_emision').setValue(this.datePipe.transform(this.fechaEmisionU, 'dd/MM/yyyy'));
+        this.facturaFormU.get('fecha_emision').setValue(this.datePipe.transform(this.fechaEmisionU, 'yyyy-MM-dd'));
+        //this.facturaFormU.get('fecha_emision').setValue(this.datePipe.transform(this.fechaEmisionU, 'dd/MM/yyyy'));
         //this.facturaFormU.get('fecha_vencimiento').setValue(this.datePipe.transform(this.fechaVencimientoU, 'dd/MM/yyyy'));
       });
   }
 
   // Método para cargar cliente por id en Modal Update Factura
   cargarClientePorId(id_cliente: any) {
-    console.log("id?cliente", id_cliente)
+    this.facturaFormU.get('fecha_emision').setValue(this.datePipe.transform(this.fechaEmisionU, 'dd/MM/yyyy'));
     return this.clienteService.loadClienteById(id_cliente);
   }
 
