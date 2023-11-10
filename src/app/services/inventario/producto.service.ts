@@ -48,6 +48,11 @@ export class ProductoService {
     const url = `${base_url}/inventario/productos`;
     return this.hhtp.get<LoadProducto>(url, this.headers);
   }
+  
+  loadProductosAll() {
+    const url = `${base_url}/productos/all/`;
+    return this.hhtp.get<LoadProducto>(url, this.headers);
+  }
 
   loadProductoById(id_producto: any) {
     const url = `${base_url}/inventario/productos/${id_producto}`;

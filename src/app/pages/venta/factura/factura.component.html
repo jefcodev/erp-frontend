@@ -453,6 +453,7 @@
                                     <th class="text-center">#</th>
                                     <th class="text-center">Producto</th>
                                     <th class="text-left">Código Principal</th>
+                                    <th class="text-left">Stock</th>
                                     <th class="text-left">Cantidad</th>
                                     <th class="text-left">Descripción</th>
                                     <th class="text-left">Precio Unitario</th>
@@ -478,8 +479,10 @@
 
                                         <td>
                                             <select class="form-control" formControlName="producto_{{i}}"
-                                                (change)="actualizarDescripcion($event, i)"
                                                 (change)="actualizarCodigoPrincipal($event, i)"
+                                                (change)="actualizarDescripcion($event, i)"
+                                                (change)="actualizarStock($event, i)"
+                                                (change)="actualizarPrecioUnitario($event, i)"
                                                 (change)="actualizarTarifa($event, i)">
                                                 <option *ngFor="let producto of productos"
                                                     [value]="producto.id_producto">
@@ -491,7 +494,9 @@
                                         <td><input type="text" class="form-control"
                                                 formControlName="codigo_principal_{{i}}">
                                         </td>
-
+                                        <td><input type="text" class="form-control" formControlName="stock_{{i}}"
+                                                readonly>
+                                        </td>
                                         <td><input type="number" class="form-control" formControlName="cantidad_{{i}}"
                                                 (input)="calcularPrecioTotalSinImpuestoConDescuento(i)"
                                                 (input)="calcularValor(i)" (input)="calcularPrecioTotal(i)"
@@ -755,8 +760,8 @@
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="ti-calendar"></i></div>
                                     <input type="text" class="form-control" id="exampleInputuname"
-                                        placeholder="{{ fechaEmision }}" formControlName="fecha_emision"
-                                         readonly>
+                                        placeholder="{{ fechaEmision | date:'yyyy-MM-dd' }}"
+                                        formControlName="fecha_emision" readonly>
                                 </div>
                             </div>
                         </div>

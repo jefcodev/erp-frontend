@@ -29,6 +29,7 @@ import { FormaPagoService } from 'src/app/services/contabilidad/forma-pago.servi
 interface DetalleFacturaFormInterface {
   producto: number;
   codigo_principal: string;
+  stock: number;
   descripcion: string;
   cantidad: number;
   precio_unitario: number;
@@ -101,6 +102,7 @@ export class FacturaVentaComponent implements OnInit {
   public clientes: Cliente[] = [];
   public formas_pago: FormaPago[] = [];
   public productos: Producto[] = [];
+  public productosAll: Producto[] = [];
   public facturas: Factura[] = [];
 
   // Modal Create Factura
@@ -362,8 +364,11 @@ export class FacturaVentaComponent implements OnInit {
 
     // Agregar validación personalizada para fecha de vencimiento
     this.facturaFormXML.get('fecha_vencimiento').setValidators((control) => {
-      const fechaEmision = this.facturaFormXML.get('fecha_emision').value;
+      //const fechaEmision = this.facturaFormXML.get('fecha_emision').value;
+      const fechaEmision = this.datePipe.transform(this.fechaEmision, 'yyyy-MM-dd')
       const fechaVencimiento = control.value;
+      console.log("Fecha Emision ", fechaEmision)
+      console.log("Fecha Vencimiento ", fechaVencimiento)
       if (fechaEmision && fechaVencimiento && fechaVencimiento < fechaEmision) {
         return { fechaInvalida: true };
       }
@@ -387,6 +392,7 @@ export class FacturaVentaComponent implements OnInit {
     this.cargarClientesAll();
     this.cargarFormasPago();
     this.cargarProductos();
+    this.cargarProductosAll();
     this.cargarFacturasAll();
     this.cargarFacturas();
     const fechaActual = new Date();
@@ -414,6 +420,13 @@ export class FacturaVentaComponent implements OnInit {
     this.productoService.loadProductos()
       .subscribe(({ productos }) => {
         this.productos = productos;
+      })
+  }
+  // Método para caragar todos los productos
+  cargarProductosAll() {
+    this.productoService.loadProductosAll()
+      .subscribe(({ productos }) => {
+        this.productosAll = productos;
       })
   }
 
@@ -607,6 +620,18 @@ export class FacturaVentaComponent implements OnInit {
     // Obtener los detalles del formulario
     this.obtenerDetallesForm()
 
+    // Comprobar si la cantidad en los detalles es mayor que el stock disponible
+    // Comprobar si la cantidad en los detalles es mayor que el stock disponible
+    for (const detalle of this.detalleFacturaFormInterface) {
+      if (detalle.cantidad > detalle.stock) {
+        alert(`La cantidad para el producto ${detalle.producto} excede el stock disponible (${detalle.stock}).`);
+        return; // La función se detiene aquí
+      }
+
+      //this.productoService.actualizarStockProducto(detalle.producto, detalle.cantidad);
+
+    }
+
     this.facturaForm.get('total_sin_impuesto').setValue(this.sumaTotalSinImpuesto);
     this.facturaForm.get('total_descuento').setValue(this.sumaTotalDescuento);
     this.facturaForm.get('valor').setValue(this.sumaTotalIVA);
@@ -614,6 +639,7 @@ export class FacturaVentaComponent implements OnInit {
 
     this.facturaService.createFactura(this.facturaForm.value).subscribe(
       (res: any) => {
+
         const facturaId = res.id_factura_venta; // Obtener el ID del factura guardado
         console.log('facturaID: ', facturaId)
 
@@ -770,6 +796,7 @@ export class FacturaVentaComponent implements OnInit {
         producto: formValues[`producto_${i}`],
         cantidad: formValues[`cantidad_${i}`],
         codigo_principal: formValues[`codigo_principal_${i}`],
+        stock: formValues[`stock_${i}`],
         descripcion: formValues[`descripcion_${i}`],
         precio_unitario: formValues[`precio_unitario_${i}`],
         descuento: formValues[`descuento_${i}`],
@@ -797,6 +824,7 @@ export class FacturaVentaComponent implements OnInit {
     const nuevoDetalle: DetalleFacturaFormInterface = {
       producto: null,
       codigo_principal: null,
+      stock: null,
       descripcion: null,
       cantidad: null,
       precio_unitario: null,
@@ -811,6 +839,7 @@ export class FacturaVentaComponent implements OnInit {
     // Crear instancias de FormControl para cada propiedad del detalle
     const productoControl = new FormControl(nuevoDetalle.producto);
     const codigoPrincipalControl = new FormControl(nuevoDetalle.codigo_principal);
+    const stockControl = new FormControl(nuevoDetalle.stock);
     const descripcionControl = new FormControl(nuevoDetalle.descripcion);
     const cantidadControl = new FormControl(nuevoDetalle.cantidad);
     const precioUnitarioControl = new FormControl(nuevoDetalle.precio_unitario);
@@ -824,6 +853,7 @@ export class FacturaVentaComponent implements OnInit {
     // Agregar los controles al formulario
     this.detalleFacturaForm.addControl('producto_' + this.detalleFacturaFormInterface.length, productoControl);
     this.detalleFacturaForm.addControl('codigo_principal_' + this.detalleFacturaFormInterface.length, codigoPrincipalControl);
+    this.detalleFacturaForm.addControl('stock_' + this.detalleFacturaFormInterface.length, stockControl);
     this.detalleFacturaForm.addControl('descripcion_' + this.detalleFacturaFormInterface.length, descripcionControl);
     this.detalleFacturaForm.addControl('cantidad_' + this.detalleFacturaFormInterface.length, cantidadControl);
     this.detalleFacturaForm.addControl('precio_unitario_' + this.detalleFacturaFormInterface.length, precioUnitarioControl);
@@ -866,6 +896,35 @@ export class FacturaVentaComponent implements OnInit {
   }
 
   // Método para actualizar en Modal Create Factura
+  actualizarCodigoPrincipal(event: Event, indice: number) {
+    const selectElement = event.target as HTMLSelectElement;
+    const productoId = parseInt(selectElement.value, 10);
+    const productoSeleccionado = this.productos.find(producto => producto.id_producto === productoId);
+    if (productoSeleccionado) {
+      this.detalleFacturaForm.controls[`codigo_principal_${indice}`].setValue(productoSeleccionado.codigo_principal);
+    } else {
+      this.detalleFacturaForm.controls[`codigo_principal_${indice}`].setValue('');
+    }
+  }
+
+  // Método para actualizar en Modal Create Factura
+  actualizarStock(event: Event, indice: number) {
+    const selectElement = event.target as HTMLSelectElement;
+    const productoId = parseInt(selectElement.value, 10);
+    const productoSeleccionado = this.productos.find(producto => producto.id_producto === productoId);
+    if (productoSeleccionado) {
+      // Actualiza la descripción en el formulario del detalle de la factura
+      this.detalleFacturaForm.controls[`stock_${indice}`].setValue(productoSeleccionado.stock);
+    } else {
+      this.detalleFacturaForm.controls[`stock_${indice}`].setValue('');
+    }
+  }
+
+  validarCantidadMaxima(cantidad: number, stock: number): boolean {
+    return cantidad <= stock;
+  }
+
+  // Método para actualizar en Modal Create Factura
   actualizarDescripcion(event: Event, indice: number) {
     const selectElement = event.target as HTMLSelectElement;
     const productoId = parseInt(selectElement.value, 10);
@@ -879,14 +938,15 @@ export class FacturaVentaComponent implements OnInit {
   }
 
   // Método para actualizar en Modal Create Factura
-  actualizarCodigoPrincipal(event: Event, indice: number) {
+  actualizarPrecioUnitario(event: Event, indice: number) {
     const selectElement = event.target as HTMLSelectElement;
     const productoId = parseInt(selectElement.value, 10);
     const productoSeleccionado = this.productos.find(producto => producto.id_producto === productoId);
     if (productoSeleccionado) {
-      this.detalleFacturaForm.controls[`codigo_principal_${indice}`].setValue(productoSeleccionado.codigo_principal);
+      // Actualiza la descripción en el formulario del detalle de la factura
+      this.detalleFacturaForm.controls[`precio_unitario_${indice}`].setValue(productoSeleccionado.precio_venta);
     } else {
-      this.detalleFacturaForm.controls[`codigo_principal_${indice}`].setValue('');
+      this.detalleFacturaForm.controls[`precio_unitario_${indice}`].setValue('');
     }
   }
 
@@ -1139,14 +1199,15 @@ export class FacturaVentaComponent implements OnInit {
       .subscribe(data => {
         console.log("DATA VENTA: ", data)
         this.facturaFormU.setValue(data);
-        this.facturaFormU.get('fecha_emision').setValue(this.datePipe.transform(this.fechaEmisionU, 'dd/MM/yyyy'));
+        this.facturaFormU.get('fecha_emision').setValue(this.datePipe.transform(this.fechaEmisionU, 'yyyy-MM-dd'));
+        //this.facturaFormU.get('fecha_emision').setValue(this.datePipe.transform(this.fechaEmisionU, 'dd/MM/yyyy'));
         //this.facturaFormU.get('fecha_vencimiento').setValue(this.datePipe.transform(this.fechaVencimientoU, 'dd/MM/yyyy'));
       });
   }
 
   // Método para cargar cliente por id en Modal Update Factura
   cargarClientePorId(id_cliente: any) {
-    console.log("id?cliente", id_cliente)
+    this.facturaFormU.get('fecha_emision').setValue(this.datePipe.transform(this.fechaEmisionU, 'dd/MM/yyyy'));
     return this.clienteService.loadClienteById(id_cliente);
   }
 
@@ -1503,7 +1564,7 @@ export class FacturaVentaComponent implements OnInit {
       telefono: this.telefono,
       email: this.email
     };
-
+    console.log('clienteData: ',clienteData)
     // Realiza la solicitud POST para crear el cliente
     this.clienteService.createCliente(clienteData).subscribe(
       (res) => {

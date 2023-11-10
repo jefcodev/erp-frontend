@@ -61,7 +61,7 @@ export class ProveedorService {
       )
   }
 
-  createProveedor(formData: FormProveedor) {
+  createProveedor(formData: any) {
     const url = `${base_url}/proveedores`;
     return this.http.post(url, formData, this.headers)
       .pipe(

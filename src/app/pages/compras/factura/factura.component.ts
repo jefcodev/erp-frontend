@@ -256,8 +256,8 @@ export class FacturaComponent implements OnInit {
       identificacion: ['', [Validators.required, Validators.minLength(0)]],
       razon_social: ['', [Validators.required, Validators.minLength(0)]],
       direccion: ['', [Validators.required, Validators.minLength(0)]],
-      telefono: ['', [Validators.required, Validators.minLength(0)]],
-      email: ['', [Validators.required, Validators.email]],
+      telefono: [],
+      email: [],
 
       id_asiento: ['1'],
       codigo: [''],
@@ -355,8 +355,11 @@ export class FacturaComponent implements OnInit {
 
     // Agregar validación personalizada para fecha de vencimiento
     this.facturaFormXML.get('fecha_vencimiento').setValidators((control) => {
-      const fechaEmision = this.facturaFormXML.get('fecha_emision').value;
+      //const fechaEmision = this.facturaFormXML.get('fecha_emision').value;
+      const fechaEmision = this.datePipe.transform(this.fechaEmision, 'yyyy-MM-dd')
       const fechaVencimiento = control.value;
+      console.log("Fecha Emision ", fechaEmision)
+      console.log("Fecha Vencimiento ", fechaVencimiento)
       if (fechaEmision && fechaVencimiento && fechaVencimiento < fechaEmision) {
         return { fechaInvalida: true };
       }
@@ -1132,13 +1135,12 @@ export class FacturaComponent implements OnInit {
       .subscribe(data => {
         console.log("DATA COMPRA: ", data)
         this.facturaFormU.setValue(data);
-        this.facturaFormU.get('fecha_emision').setValue(this.datePipe.transform(this.fechaEmisionU, 'dd/MM/yyyy'));
+        this.facturaFormU.get('fecha_emision').setValue(this.datePipe.transform(this.fechaEmisionU, 'yyyy-MM-dd'));
       });
   }
 
   // Método para cargar proveedor por id en Modal Update Factura
   cargarProveedorPorId(id_proveedor: any) {
-    console.log("id?proveedor", id_proveedor)
     this.facturaFormU.get('fecha_emision').setValue(this.datePipe.transform(this.fechaEmisionU, 'dd/MM/yyyy'));
     return this.proveedorService.loadProveedorById(id_proveedor);
   }
@@ -1478,18 +1480,19 @@ export class FacturaComponent implements OnInit {
         }
         this.detallesXMLInterface = arr; // Updated to assign to detallesXMLInterface
         resolve(arr);
-        this.cargarProveedorByIdentificacion(this.identificacionComprador)
+        this.cargarProveedorByIdentificacion(this.ruc)
       });
     });
   }
 
   // Método para crear proveedor en Modal XML
   crearProveedorXML() {
-    this.identificacion = this.identificacionComprador
-    this.razon_social = this.razonSocialComprador
-    this.direccion = this.direccionComprador
-    this.telefono = this.telefonoXML
-    this.email = this.emailXML
+    this.identificacion = this.ruc
+    this.razon_social = this.razonSocial
+    this.nombre_comercial = null
+    this.direccion = this.dirEstablecimiento
+    this.telefono = "0"
+    this.email = "provedor@example.com"
     if (!this.identificacion || !this.razon_social) {
       Swal.fire('Error', 'Falta información requerida para crear el proveedor.', 'error');
       return;
@@ -1504,7 +1507,7 @@ export class FacturaComponent implements OnInit {
       telefono: this.telefono,
       email: this.email
     };
-
+    console.log('proveedorData: ',proveedorData)
     // Realiza la solicitud POST para crear el proveedor
     this.proveedorService.createProveedor(proveedorData).subscribe(
       (res) => {
