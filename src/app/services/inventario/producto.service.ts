@@ -50,7 +50,7 @@ export class ProductoService {
   }
   
   loadProductosAll() {
-    const url = `${base_url}/productos/all/`;
+    const url = `${base_url}/inventario/productos/all/`;
     return this.hhtp.get<LoadProducto>(url, this.headers);
   }
 
