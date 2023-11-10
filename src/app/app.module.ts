@@ -8,6 +8,7 @@ import { NopagefoundComponent } from './nopagefound/nopagefound.component';
 import { HttpClientModule } from '@angular/common/http';
 import { PagesModule } from './pages/pages.module';
 import { ShowForRolesDirective } from './directivas/show-for-roles.directive';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 
 @NgModule({
@@ -23,7 +24,8 @@ import { ShowForRolesDirective } from './directivas/show-for-roles.directive';
     AppRoutingModule,
     PagesModule,
     AuthModule,
-    HttpClientModule
+    HttpClientModule,
+    NgSelectModule
   ],
   bootstrap: [AppComponent],
   exports: [

@@ -1,12 +1,35 @@
+// models/apu.model.ts
 export class Apu {
-    constructor(
-        public id: number,
-        public date_apu: string,
-        public meters: number,
-        public place: string,
-        public percentage: number,
-        public created: string,
-        public total: number,
-    ) {
-    }
-}
+    codigo: string;
+    nombre: string;
+    descripcion: string;
+    materiales: Material[];
+    equipos: Equipo[];
+    mano_obra: ManoObra[];
+  }
+  
+  export class Material {
+    codigo: string;
+    descripcion: string;
+    cantidad: number;
+    unidad: string;
+    desperdicio: number;
+    precio: number;
+  }
+  
+  export class Equipo {
+    codigo: string;
+    descripcion: string;
+    cantidad: number;
+    unidad: string;
+    precio: number;
+  }
+  
+  export class ManoObra {
+    codigo: string;
+    descripcion: string;
+    cantidad: number;
+    unidad: string;
+    precio: number;
+  }
+  

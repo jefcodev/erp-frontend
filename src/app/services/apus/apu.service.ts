@@ -1,7 +1,7 @@
 
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { delay, map } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
 //Model
 import { Apu } from 'src/app/models/apus/apu.model';
@@ -43,7 +43,14 @@ export class ApuService {
       map((resp :{ok:boolean, apus: Apu[]}
       ) => resp.apus)
     )
+  };
+
+
+  createApu(apu: Apu) {
+    const url = `${base_url}/apu`;
+    return this.http.post(url, apu, this.headers);
   }
+  
 }
 
 

@@ -1,5 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
-
+/* Importa el tema predeterminado de ng-select */
+@import "~@ng-select/ng-select/themes/default.theme.css";
 
 
 .fast{
@@ -47,4 +48,25 @@
 .importar-clientes{
     width: 30%;
     float: left;
+}
+
+
+
+/* Personaliza estilos para ng-select */
+.ng-select {
+  width: 600px; /* Ajusta el ancho según tus preferencias */
+}
+
+.ng-dropdown-panel {
+  border: 1px solid #ccc; /* Ajusta el borde según tus preferencias */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Ajusta la sombra según tus preferencias */
+}
+
+.ng-option {
+  padding: 8px 12px; /* Ajusta el relleno según tus preferencias */
+}
+
+.ng-option.selected {
+  background-color: #007bff; /* Ajusta el color de fondo para la opción seleccionada */
+  color: #fff; /* Ajusta el color del texto para la opción seleccionada */
 }

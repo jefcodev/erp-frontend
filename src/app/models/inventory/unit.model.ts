@@ -1,7 +1,7 @@
 export class Unit{
     constructor(
-        public id: number,
-        public name_units: string,
-        public status: boolean
+        public id_unidad_medida: number,
+        public descripcion: string,
+        public estado: boolean
     ){}
 }

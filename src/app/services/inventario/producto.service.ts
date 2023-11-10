@@ -34,14 +34,23 @@ export class ProductoService {
       }
     }
   }
+ 
 
+  loadProductosHerramientas() {
+    const url = `${base_url}/inventario/productos/herramientas`;
+    return this.hhtp.get<LoadProducto>(url, this.headers);
+  }
+  loadProductosMateriales() {
+    const url = `${base_url}/inventario/productos/materiales`;
+    return this.hhtp.get<LoadProducto>(url, this.headers);
+  }
   loadProductos() {
-    const url = `${base_url}/productos`;
+    const url = `${base_url}/inventario/productos`;
     return this.hhtp.get<LoadProducto>(url, this.headers);
   }
 
   loadProductoById(id_producto: any) {
-    const url = `${base_url}/productos/${id_producto}`;
+    const url = `${base_url}/inventario/productos/${id_producto}`;
     return this.hhtp.get(url, this.headers)
       .pipe(
         map((resp: { ok: boolean, producto: Producto }) => resp.producto)
@@ -50,7 +59,7 @@ export class ProductoService {
 
   //createProducto(formData: FormProducto) {
   createProducto(formData: any) {
-    const url = `${base_url}/productos`;
+    const url = `${base_url}/inventario/productos`;
     return this.hhtp.post(url, formData, this.headers)
       .pipe(
         map((resp: { ok: boolean, producto: Producto[] }) => resp.producto)
@@ -58,12 +67,12 @@ export class ProductoService {
   }
 
   createProductoArray(productos: Producto[]) {
-    const url = `${base_url}/productos`;
+    const url = `${base_url}/inventario/productos`;
     return this.hhtp.post<Producto[]>(url, productos, this.headers);
   }
   
   createProductoArray2(productos: Producto[]) {
-    const url = `${base_url}/productos`;
+    const url = `${base_url}/inventario/productos`;
     const formData = { productos }; // Crear un objeto con una propiedad 'detalles' que contenga el arreglo de detalles
     return this.hhtp.post(url, formData, this.headers).pipe(
       map((resp: { ok: boolean, producto: Producto[] }) => resp.producto)

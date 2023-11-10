@@ -75,7 +75,6 @@ export class ProductoComponent implements OnInit {
     this.productoService.loadProductos()
       .subscribe(({ productos }) => {
         this.productos = productos;
-        console.log("< this.productos", this.productos)
       })
   }
 
