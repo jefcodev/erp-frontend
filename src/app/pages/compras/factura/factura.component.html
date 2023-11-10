@@ -225,8 +225,8 @@
 
                                 <td *ngIf="factura.estado else inactivoOption" class="text-nowrap text-center">
 
-                                    <a class="cursor" data-toggle="modal"
-                                        (click)="cargarFacturaPorId(factura.id_factura_compra); cargarDetallesFacturaByIdFactura(factura.id_factura_compra);"
+                                    <a class="cursor" data-toggle="modal" (click)="cargarFacturaPorId(factura.id_factura_compra); cargarDetallesFacturaByIdFactura(factura.id_factura_compra);
+                                        cargarPagosByIdFactura(factura.id_factura_compra);"
                                         data-target="#exampleModalU"><span
                                             class="fa fa-pencil text-inverse m-r-10"></span></a>
 
@@ -454,6 +454,7 @@
                                     <th class="text-center">#</th>
                                     <th class="text-center">Producto</th>
                                     <th class="text-left">Código Principal</th>
+                                    <th class="text-left">Stock</th>
                                     <th class="text-left">Cantidad</th>
                                     <th class="text-left">Descripción</th>
                                     <th class="text-left">Precio Unitario</th>
@@ -479,10 +480,11 @@
 
                                         <td>
                                             <select class="form-control" formControlName="producto_{{i}}"
-                                                (change)="actualizarDescripcion($event, i)"
                                                 (change)="actualizarCodigoPrincipal($event, i)"
+                                                (change)="actualizarDescripcion($event, i)"
+                                                (change)="actualizarStock($event, i)"
                                                 (change)="actualizarTarifa($event, i)">
-                                                <option *ngFor="let producto of productos"
+                                                <option *ngFor="let producto of productosAll"
                                                     [value]="producto.id_producto">
                                                     {{ producto.id_producto + ' - ' + producto.descripcion }}
                                                 </option>
@@ -492,7 +494,9 @@
                                         <td><input type="text" class="form-control"
                                                 formControlName="codigo_principal_{{i}}">
                                         </td>
-
+                                        <td><input type="text" class="form-control" formControlName="stock_{{i}}"
+                                                readonly>
+                                        </td>
                                         <td><input type="number" class="form-control" formControlName="cantidad_{{i}}"
                                                 (input)="calcularPrecioTotalSinImpuestoConDescuento(i)"
                                                 (input)="calcularValor(i)" (input)="calcularPrecioTotal(i)"
@@ -754,7 +758,8 @@
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="ti-calendar"></i></div>
                                     <input type="text" class="form-control" id="exampleInputuname"
-                                        placeholder="{{ fechaEmision  | date:'yyyy-MM-dd' }}" formControlName="fecha_emision" readonly>
+                                        placeholder="{{ fechaEmision  | date:'yyyy-MM-dd' }}"
+                                        formControlName="fecha_emision" readonly>
                                 </div>
                             </div>
                         </div>
@@ -1135,6 +1140,56 @@
                             <tfoot>
                                 <tr>
                                     <!--paginador-->
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <hr>
+                    <!-- PAGOS Table Data -->
+                    <div class="table-responsive">
+                        <table id="demo-foo-addrow"
+                            class="table m-t-30 table-hover contact-list footable-loaded footable" data-page-size="10">
+                            <thead>
+                                <tr>
+                                    <th class="text-right">#</th>
+                                    <th class="text-left">Fecha Pago</th>
+                                    <th class="text-left">Forma de Pago</th>
+                                    <th class="text-left">Observación </th>
+                                    <th class="text-right">Abono</th>
+                                    <th class="text-left">Estado</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let pago of pagos let i = index">
+                                    <td class="text-center">{{ i + 1 }}</td>
+                                    <td>{{ pago.fecha_pago | date:'yyyy-MM-dd' }}</td>
+                                    <td>
+                                        <ng-container *ngFor="let fp of formas_pago">
+                                            <span *ngIf="fp.id_forma_pago === pago.id_forma_pago">
+                                                {{ fp.codigo }} - {{ fp.descripcion }}</span>
+                                        </ng-container>
+                                    </td>
+                                    <td class="text-left">{{ pago.observacion }}</td>
+                                    <td class="text-right">{{pago.abono | number: '1.2-2' }}</td>
+                                    <td *ngIf="pago.estado; else inactivo">
+                                        <div class="label label-table label-success">ACTIVO</div>
+                                    </td>
+                                    <ng-template #inactivo>
+                                        <td>
+                                            <div class="label label-table label-danger">ANULADO</div>
+                                        </td>
+                                    </ng-template>
+                                    <td *ngIf="pago.estado else inactivoOption" class="text-nowrap text-center">
+                                        <a class="cursor" (click)="borrarPago(pago);" data-toggle="tooltip" data-original-title="Close"> <i
+                                                class="fa fa-close text-danger"></i> </a>
+                                    </td>
+                                    <ng-template #inactivoOption>
+                                    </ng-template>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
                                 </tr>
                             </tfoot>
                         </table>
