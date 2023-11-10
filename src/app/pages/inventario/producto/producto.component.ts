@@ -58,7 +58,6 @@ export class ProductoComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarProductos();
-    this.cargarProductosAll();
   }
 
   cerrarModal() {
@@ -77,16 +76,6 @@ export class ProductoComponent implements OnInit {
     this.productoService.loadProductos()
       .subscribe(({ productos }) => {
         this.productos = productos;
-<<<<<<< HEAD
-=======
-      })
-  }
-  
-  cargarProductosAll() {
-    this.productoService.loadProductosAll()
-      .subscribe(({ productos }) => {
-        this.productosAll = productos;
->>>>>>> de28806b84b8d54f277afe60266ff5ab945630a3
       })
   }
 
