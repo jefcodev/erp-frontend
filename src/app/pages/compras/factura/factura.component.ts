@@ -303,9 +303,11 @@ export class FacturaComponent implements OnInit {
       valor: [''],
       importe_total: [''],
 
-      id_forma_pago: [''],
-      abono: [''],
       saldo: ['0.00'],
+
+      id_forma_pago: [''],
+      fecha_pago: [''],
+      abono: [''],
       observacion: [''],
     });
 
@@ -413,7 +415,7 @@ export class FacturaComponent implements OnInit {
       })
   }
 
-  // Método para caragar todos los productos
+  // Método para cargar todos los productos
   cargarProductos() {
     this.productoService.loadProductos()
       .subscribe(({ productos }) => {
@@ -421,18 +423,20 @@ export class FacturaComponent implements OnInit {
       })
   }
 
-  // Método para caragar todos los productos
+  // Método para cargar todos los productos
   cargarProductosAll() {
     this.productoService.loadProductosAll()
       .subscribe(({ productos }) => {
         this.productosAll = productos;
       })
   }
-  // Método para caragar todos los productos
+
+  // Método para cargar los pagos
   cargarPagosByIdFactura(id_factura: any) {
-    this.pagoService.loadPagosByIdFactura(id_factura)
+    this.pagoService.loadPagosByIdFacturaCompra(id_factura)
       .subscribe(({ pagos }) => {
         this.pagos = pagos;
+        console.log("this.pagos", this.pagos)
       })
   }
 
@@ -460,6 +464,7 @@ export class FacturaComponent implements OnInit {
       });
   }
 
+  // Método para borrar pago en Table Update Factura
   borrarPago(pago: Pago) {
     Swal.fire({
       title: '¿Borrar Pago?',
@@ -480,8 +485,8 @@ export class FacturaComponent implements OnInit {
               showConfirmButton: false,
               timer: 1500
             });
-            this.recargarComponente();
             this.cerrarModal();
+            this.recargarComponente();
           }, (err) => {
             let errorMessage = 'Se produjo un error al borrar el pago.';
             if (err.error && err.error.msg) {
@@ -1131,15 +1136,23 @@ export class FacturaComponent implements OnInit {
       return;
     }
 
+    const idFormaPago = this.facturaFormU.get('id_forma_pago').value;
+    const fecha_pago = this.facturaFormU.get('fecha_pago').value;
     const abono = this.facturaFormU.get('abono').value;
     const observacion = this.facturaFormU.get('observacion').value;
-    const idFormaPago = this.facturaFormU.get('id_forma_pago').value;
-    if (abono > 0 && observacion.trim() === '') {
-      alert('Debes proporcionar una observación si el abono es mayor a cero.');
-      return; // La función se detiene aquí
-    } else if (abono > 0 && idFormaPago === '') {
-      alert('Debes seleccionar una forma de pago.');
-      return; // La función se detiene aquí
+    if (abono > 0) {
+      if (!fecha_pago) {
+        alert('Debes proporcionar una fecha de pago si el abono es mayor a cero.');
+        return;
+      }
+      if (idFormaPago === '') {
+        alert('Debes seleccionar una forma de pago si el abono es mayor a cero.');
+        return;
+      }
+      if (observacion.trim() === '') {
+        alert('Debes proporcionar una observación si el abono es mayor a cero.');
+        return;
+      }
     }
 
     const data = {
@@ -1167,8 +1180,9 @@ export class FacturaComponent implements OnInit {
   // Método para cargar factura por id en Modal Update Factura
   cargarFacturaPorId(id_factura_compra: any) {
     // Limpia los datos anteriores antes de cargar una nueva factura
-    this.facturas = null;
+    //this.facturas = null;
     this.pagos = [];
+    console.log('jajjaja', this.saldoInicial)
     this.facturaService.loadFacturaById(id_factura_compra)
       .pipe(
         switchMap((factura: any) => {
@@ -1185,10 +1199,12 @@ export class FacturaComponent implements OnInit {
 
           const saldo = factura.saldo.toFixed(2);
           this.saldoInicial = parseFloat(saldo); // Saldo recuperado
+
           this.abonoU = abono; // Abono recuperado
 
           const id_forma_pago = ""; // Precargar un id_forma_pago en html
-          const observacion = ""; // Precargar una observación en html
+          const fecha_pago = null;
+          const observacion = "";
 
           return this.cargarProveedorPorId(id_proveedor).pipe(
             concatMap(proveedor => {
@@ -1203,14 +1219,13 @@ export class FacturaComponent implements OnInit {
               return of({
                 identificacion, razon_social, direccion, telefono, email,
                 id_asiento, codigo, fecha_emision, fecha_vencimiento, estado_pago, total_sin_impuesto, total_descuento, valor, importe_total, abono, saldo,
-                id_forma_pago, observacion,
+                id_forma_pago, fecha_pago, observacion,
               });
             })
           );
         })
       )
       .subscribe(data => {
-        console.log("DATA COMPRA: ", data)
         this.facturaFormU.setValue(data);
         this.facturaFormU.get('fecha_emision').setValue(this.datePipe.transform(this.fechaEmisionU, 'yyyy-MM-dd'));
       });
@@ -1642,49 +1657,6 @@ export class FacturaComponent implements OnInit {
         }
       );
   }
-
-  public id_pago
-  public id_factura
-  public fecha_pago
-  public observacion2
-  public abono2
-
-
-  // Método para cargar proveedor por identificación en Modal XML
-  /*cargarPagoByIdFactura(id_factura: string) {
-    this.pagoService.loadPagoByIdFactura(id_factura)
-      .subscribe(
-        (pago) => {
-          if (Array.isArray(pago) && pago.length > 0) {
-            const { id_pago, fecha_pago, observacion } = pago[0];
-            this.id_pago = id_pago;
-            this.fecha_pago = fecha_pago;
-            this.observacion2 = observacion;
-            console.log("this.id_factura: ", this.id_factura)
-  
-          } else {
-            Swal.fire({
-              title: 'Éxito',
-              text: 'XML Cargado',
-              icon: 'success',
-              timer: 1500,
-              showConfirmButton: false,
-            })
-              .then(() => {
-                console.log("HOLA")
-                //this.mostrarMensajeDeAdvertenciaConOpciones('Advertencia', 'Proveedor no encontrado. ¿Desea crear un nuevo proveedor?');
-              });
-          }
-        }, (err) => {
-          let errorMessage = 'Se produjo un error al cargar el proveedor.';
-          if (err.error && err.error.msg) {
-            errorMessage = err.error.msg;
-          }
-          Swal.fire('Error', err.error.msg, 'error');
-        }
-      );
-  }
-  */
 
   // Método para mostrar adevertencia en Modal XML
   mostrarMensajeDeAdvertenciaConOpciones(title: string, text: string) {

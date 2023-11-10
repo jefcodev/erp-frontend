@@ -18,6 +18,7 @@ import { Factura } from 'src/app/models/venta/factura.model';
 import { FormaPago } from '../../../models/contabilidad/forma-pago.model';
 import { Producto } from 'src/app/models/inventario/producto.model';
 import { DetalleFactura } from '../../../models/venta/detalle-factura.model';
+import { Pago } from '../../../models/contabilidad/pago.model';
 
 // Services
 import { ClienteService } from 'src/app/services/venta/cliente.service';
@@ -25,6 +26,7 @@ import { FacturaService } from 'src/app/services/venta/factura.service';
 import { DetalleFacturaService } from 'src/app/services/venta/detalle-factura.service';
 import { ProductoService } from 'src/app/services/inventario/producto.service';
 import { FormaPagoService } from 'src/app/services/contabilidad/forma-pago.service';
+import { PagoService } from '../../../services/contabilidad/pago.service';
 
 interface DetalleFacturaFormInterface {
   producto: number;
@@ -104,6 +106,8 @@ export class FacturaVentaComponent implements OnInit {
   public productos: Producto[] = [];
   public productosAll: Producto[] = [];
   public facturas: Factura[] = [];
+
+  public pagos: Pago[] = [];
 
   // Modal Create Factura
   public facturaForm: FormGroup;
@@ -242,6 +246,7 @@ export class FacturaVentaComponent implements OnInit {
     // Servicios 
     //private clienteService: ClienteService,
     private clienteService: ClienteService,
+    private pagoService: PagoService,
     private productoService: ProductoService,
     private formaPagoService: FormaPagoService,
     private facturaService: FacturaService,
@@ -305,6 +310,7 @@ export class FacturaVentaComponent implements OnInit {
       importe_total: [''],
 
       id_forma_pago: [''],
+      fecha_pago: [''],
       abono: [''],
       saldo: ['0.00'],
       observacion: [''],
@@ -415,18 +421,27 @@ export class FacturaVentaComponent implements OnInit {
       })
   }
 
-  // Método para caragar todos los productos
+  // Método para cargar todos los productos
   cargarProductos() {
     this.productoService.loadProductos()
       .subscribe(({ productos }) => {
         this.productos = productos;
       })
   }
-  // Método para caragar todos los productos
+  // Método para cargar todos los productos
   cargarProductosAll() {
     this.productoService.loadProductosAll()
       .subscribe(({ productos }) => {
         this.productosAll = productos;
+      })
+  }
+
+  // Método para cargar los pagos 
+  cargarPagosByIdFactura(id_factura: any) {
+    this.pagoService.loadPagosByIdFacturaVenta(id_factura)
+      .subscribe(({ pagos }) => {
+        this.pagos = pagos;
+        console.log("this.pagos", this.pagos)
       })
   }
 
@@ -452,6 +467,41 @@ export class FacturaVentaComponent implements OnInit {
         this.sumaSaldo = sumaSaldo;
         this.sumaImporteTotal = sumaImporteTotal;
       });
+  }
+
+  // Método para borrar pago en Table Update Factura
+  borrarPago(pago: Pago) {
+    Swal.fire({
+      title: '¿Borrar Pago?',
+      text: `Estas a punto de borrar pago de $${pago.abono}`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, borrar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.value) {
+        this.pagoService.deletePago(pago.id_pago)
+          .subscribe(resp => {
+            //this.cargarPagosByIdFactura(this.id_factura);
+            Swal.fire({
+              icon: 'success',
+              title: 'Pago borrado',
+              text: `Pago de ${pago.abono} ha sido borrado correctamente.`,
+              showConfirmButton: false,
+              timer: 1500
+            });
+            this.cerrarModal();
+            this.recargarComponente();
+          }, (err) => {
+            let errorMessage = 'Se produjo un error al borrar el pago.';
+            if (err.error && err.error.msg) {
+              errorMessage = err.error.msg;
+            }
+            Swal.fire('Error', errorMessage, 'error');
+          }
+          );
+      }
+    });
   }
 
   // Método para borrar factura en Table Date Factura
@@ -1121,15 +1171,23 @@ export class FacturaVentaComponent implements OnInit {
       return;
     }
 
+    const idFormaPago = this.facturaFormU.get('id_forma_pago').value;
+    const fecha_pago = this.facturaFormU.get('fecha_pago').value;
     const abono = this.facturaFormU.get('abono').value;
     const observacion = this.facturaFormU.get('observacion').value;
-    const idFormaPago = this.facturaFormU.get('id_forma_pago').value;
-    if (abono > 0 && observacion.trim() === '') {
-      alert('Debes proporcionar una observación si el abono es mayor a cero.');
-      return; // La función se detiene aquí
-    } else if (abono > 0 && idFormaPago === '') {
-      alert('Debes seleccionar una forma de pago.');
-      return; // La función se detiene aquí
+    if (abono > 0) {
+      if (!fecha_pago) {
+        alert('Debes proporcionar una fecha de pago si el abono es mayor a cero.');
+        return;
+      }
+      if (idFormaPago === '') {
+        alert('Debes seleccionar una forma de pago si el abono es mayor a cero.');
+        return;
+      }
+      if (observacion.trim() === '') {
+        alert('Debes proporcionar una observación si el abono es mayor a cero.');
+        return;
+      }
     }
 
     const data = {
@@ -1173,10 +1231,13 @@ export class FacturaVentaComponent implements OnInit {
 
           const saldo = factura.saldo.toFixed(2);
           this.saldoInicial = parseFloat(saldo); // Saldo recuperado
+
           this.abonoU = abono; // Abono recuperado
 
           const id_forma_pago = ""; // Precargar un id_forma_pago en html
-          const observacion = ""; // Precargar una observación en html
+          const fecha_pago = null;
+          const observacion = "";
+
           return this.cargarClientePorId(id_cliente).pipe(
             concatMap(cliente => {
               const { identificacion, razon_social, direccion, telefono, email } = cliente[0];
@@ -1190,18 +1251,15 @@ export class FacturaVentaComponent implements OnInit {
               return of({
                 identificacion, razon_social, direccion, telefono, email,
                 id_asiento, codigo, fecha_emision, fecha_vencimiento, estado_pago, total_sin_impuesto, total_descuento, valor, importe_total, abono, saldo,
-                id_forma_pago, observacion,
+                id_forma_pago, fecha_pago, observacion,
               });
             })
           );
         })
       )
       .subscribe(data => {
-        console.log("DATA VENTA: ", data)
         this.facturaFormU.setValue(data);
         this.facturaFormU.get('fecha_emision').setValue(this.datePipe.transform(this.fechaEmisionU, 'yyyy-MM-dd'));
-        //this.facturaFormU.get('fecha_emision').setValue(this.datePipe.transform(this.fechaEmisionU, 'dd/MM/yyyy'));
-        //this.facturaFormU.get('fecha_vencimiento').setValue(this.datePipe.transform(this.fechaVencimientoU, 'dd/MM/yyyy'));
       });
   }
 
@@ -1564,7 +1622,7 @@ export class FacturaVentaComponent implements OnInit {
       telefono: this.telefono,
       email: this.email
     };
-    console.log('clienteData: ',clienteData)
+    console.log('clienteData: ', clienteData)
     // Realiza la solicitud POST para crear el cliente
     this.clienteService.createCliente(clienteData).subscribe(
       (res) => {

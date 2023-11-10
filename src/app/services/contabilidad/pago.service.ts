@@ -44,8 +44,12 @@ export class PagoService {
     return this.http.get<LoadPago>(url, this.headers);
   }
 
-  loadPagosByIdFactura(id_factura: any) {
-    const url = `${base_url}/pagos/factura/${id_factura}`;
+  loadPagosByIdFacturaCompra(id_factura: any) {
+    const url = `${base_url}/pagos/factura/compra/${id_factura}`;
+    return this.http.get<LoadPago>(url, this.headers);
+  }
+  loadPagosByIdFacturaVenta(id_factura: any) {
+    const url = `${base_url}/pagos/factura/venta/${id_factura}`;
     return this.http.get<LoadPago>(url, this.headers);
   }
 
@@ -56,7 +60,6 @@ export class PagoService {
         map((resp: { ok: boolean, pago: Pago }) => resp.pago)
       )
   }
-
 
   createPago(formData: any) {
     const url = `${base_url}/pagos`;

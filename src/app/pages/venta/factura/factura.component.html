@@ -225,8 +225,8 @@
 
                                 <td *ngIf="factura.estado else inactivoOption" class="text-nowrap text-center">
 
-                                    <a class="cursor" data-toggle="modal"
-                                        (click)="cargarFacturaPorId(factura.id_factura_venta); cargarDetallesFacturaByIdFactura(factura.id_factura_venta);"
+                                    <a class="cursor" data-toggle="modal" (click)="cargarFacturaPorId(factura.id_factura_venta); cargarDetallesFacturaByIdFactura(factura.id_factura_venta);
+                                         cargarPagosByIdFactura(factura.id_factura_venta);"
                                         data-target="#exampleModalU"><span
                                             class="fa fa-pencil text-inverse m-r-10"></span></a>
 
@@ -1147,34 +1147,101 @@
                         </table>
                     </div>
 
+
+                    <!-- Pagos Table Data -->
+                    <div class="table-responsive">
+                        <table id="demo-foo-addrow"
+                            class="table m-t-30 table-hover contact-list footable-loaded footable" data-page-size="10">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">#</th>
+                                    <th class="text-left">Fecha Pago</th>
+                                    <th class="text-left">Forma de Pago</th>
+                                    <th class="text-left">Observación </th>
+                                    <th class="text-right">Abono</th>
+                                    <th class="text-left">Estado</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let pago of pagos let i = index">
+                                    <td class="text-center">{{ i + 1 }}</td>
+                                    <td>{{ pago.fecha_pago | date:'yyyy-MM-dd' }}</td>
+                                    <td>
+                                        <ng-container *ngFor="let fp of formas_pago">
+                                            <span *ngIf="fp.id_forma_pago === pago.id_forma_pago">
+                                                {{ fp.codigo }} - {{ fp.descripcion }}</span>
+                                        </ng-container>
+                                    </td>
+                                    <td class="text-left">{{ pago.observacion }}</td>
+                                    <td class="text-right">{{pago.abono | number: '1.2-2' }}</td>
+                                    <td *ngIf="pago.estado; else inactivo">
+                                        <div class="label label-table label-success">ACTIVO</div>
+                                    </td>
+                                    <ng-template #inactivo>
+                                        <td>
+                                            <div class="label label-table label-danger">ANULADO</div>
+                                        </td>
+                                    </ng-template>
+                                    <td *ngIf="pago.estado else inactivoOption" class="text-nowrap text-center">
+                                        <a class="cursor" (click)="borrarPago(pago);" data-toggle="tooltip"
+                                            data-original-title="Close"> <i class="fa fa-close text-danger"></i> </a>
+                                    </td>
+                                    <ng-template #inactivoOption>
+                                    </ng-template>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
                     <!-- Factura Form 2 -->
                     <div class="col-md-12">
                         <div class="clearfix"></div>
                         <hr>
                         <div class="row">
 
-                            <!-- Espaciador -->
-                            <div class="col-md-3"></div>
-
                             <!-- Pago de Factura -->
                             <div class="col-md-3">
                                 <br>
                                 <div class="form-group">
+                                    <label for="exampleInputuname" style="width: 100%;">Fecha Pago
+                                        <div class="input-group">
+                                            <div class="input-group-addon"><i class="ti-calendar"></i></div>
+                                            <input type="date" class="form-control" id="exampleInputuname"
+                                                placeholder="Fecha de Pago" formControlName="fecha_pago"
+                                                [readonly]="saldoInicial === 0">
+                                        </div>
+                                    </label>
                                     <label for="exampleInputuname">Forma de Pago
-                                        <select class="form-control" formControlName="id_forma_pago"
-                                            [disabled]="saldoInicial === 0">
-                                            <!--  [attr.disabled]="saldoInicial === 0" -->
-                                            <option *ngFor="let fp of formas_pago" [value]="fp.id_forma_pago">
-                                                {{ fp.codigo }} - {{ fp.descripcion }}
-                                            </option>
-                                        </select>
+                                        <div class="input-group">
+                                            <div class="input-group-addon"><i class="ti-credit-card"></i></div>
+                                            <select class="form-control" formControlName="id_forma_pago">
+                                                <!-- [attr.disabled]="saldoInicial === 0" -->
+                                                <option *ngFor="let fp of formas_pago" [value]="fp.id_forma_pago">
+                                                    {{ fp.codigo }} - {{ fp.descripcion }}
+                                                </option>
+                                            </select>
+                                        </div>
                                     </label>
                                     <label for="exampleInputuname" style="width: 100%;">Observación
-                                        <input type="text" class="form-control" placeholder="Nota ó número de control"
-                                            formControlName="observacion" min="0" [readonly]="saldoInicial === 0">
-                                        <!-- [readonly]="abonoU <= 0">
+                                        <div class="input-group">
+                                            <div class="input-group-addon"><i class="ti-eye"></i></div>
+                                            <input type="text" class="form-control" formControlName="observacion"
+                                                placeholder="Nota ó número de control" min="0"
+                                                [readonly]="saldoInicial === 0">
+                                            <!-- [readonly]="abonoU <= 0">
                                         [readonly]="saldoInicial === 0 || abonoU <= 0"-->
+                                        </div>
                                     </label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <br>
+                                <div class="form-group">
                                     <label for="exampleInputuname" style="width: 100%;">Pagar Factura
                                         <div class="input-group">
                                             <div class="input-group-addon"><b>ABONAR:</b></div>
@@ -1185,10 +1252,16 @@
                                     </label>
                                     <label for="exampleInputuname" style="width: 100%;">Saldo Pendiente
                                         <div class="input-group">
-                                            <div class="input-group-addon"><b>SALDO:</b>&nbsp;&nbsp;&nbsp;&nbsp;
-                                            </div>
+                                            <div class="input-group-addon"><b>SALDO:</b>&nbsp;&nbsp;&nbsp;&nbsp;</div>
                                             <input type="number" class="form-control text-right" id="exampleInputuname"
                                                 placeholder="0.00" formControlName="saldo" readonly>
+                                        </div>
+                                    </label>
+                                    <label for="exampleInputuname" style="width: 100%;">Valo Total
+                                        <div class="input-group">
+                                            <div class="input-group-addon"><b>TOTAL:</b>&nbsp;&nbsp;&nbsp;&nbsp;</div>
+                                            <input type="number" class="form-control text-right" id="exampleInputuname"
+                                                placeholder="0.00" formControlName="importe_total" readonly>
                                         </div>
                                     </label>
                                 </div>
