@@ -18,6 +18,7 @@ import { Producto } from '../../../models/inventario/producto.model';
 import { FormaPago } from '../../../models/contabilidad/forma-pago.model';
 import { Factura } from '../../../models/compra/factura.model';
 import { DetalleFactura } from '../../../models/compra/detalle-factura.model';
+import { Pago } from '../../../models/contabilidad/pago.model';
 
 // Services
 import { ProveedorService } from '../../../services/compra/proveedor.service';
@@ -25,10 +26,12 @@ import { ProductoService } from '../../../services/inventario/producto.service';
 import { FormaPagoService } from '../../../services/contabilidad/forma-pago.service';
 import { FacturaService } from '../../../services/compra/factura.service';
 import { DetalleFacturaService } from '../../../services/compra/detalle-factura.service';
+import { PagoService } from '../../../services/contabilidad/pago.service';
 
 interface DetalleFacturaFormInterface {
   producto: number;
   codigo_principal: string;
+  stock: number;
   descripcion: string;
   cantidad: number;
   precio_unitario: number;
@@ -100,7 +103,10 @@ export class FacturaComponent implements OnInit {
   public proveedores: Proveedor[] = [];
   public formas_pago: FormaPago[] = [];
   public productos: Producto[] = [];
+  public productosAll: Producto[] = [];
   public facturas: Factura[] = [];
+
+  public pagos: Pago[] = [];
 
   // Modal Create Factura
   public facturaForm: FormGroup;
@@ -235,6 +241,7 @@ export class FacturaComponent implements OnInit {
 
     // Servicios 
     private proveedorService: ProveedorService,
+    private pagoService: PagoService,
     private productoService: ProductoService,
     private formaPagoService: FormaPagoService,
     private facturaService: FacturaService,
@@ -383,6 +390,7 @@ export class FacturaComponent implements OnInit {
     this.cargarProveedoresAll();
     this.cargarFormasPago();
     this.cargarProductos();
+    this.cargarProductosAll();
     this.cargarFacturasAll();
     this.cargarFacturas();
     const fechaActual = new Date();
@@ -413,6 +421,21 @@ export class FacturaComponent implements OnInit {
       })
   }
 
+  // Método para caragar todos los productos
+  cargarProductosAll() {
+    this.productoService.loadProductosAll()
+      .subscribe(({ productos }) => {
+        this.productosAll = productos;
+      })
+  }
+  // Método para caragar todos los productos
+  cargarPagosByIdFactura(id_factura: any) {
+    this.pagoService.loadPagosByIdFactura(id_factura)
+      .subscribe(({ pagos }) => {
+        this.pagos = pagos;
+      })
+  }
+
   // Método para cargar facturas paginadas en Table Data Factura
   cargarFacturas() {
     const desde = (this.paginaActual - 1) * this.itemsPorPagina;
@@ -435,6 +458,40 @@ export class FacturaComponent implements OnInit {
         this.sumaSaldo = sumaSaldo;
         this.sumaImporteTotal = sumaImporteTotal;
       });
+  }
+
+  borrarPago(pago: Pago) {
+    Swal.fire({
+      title: '¿Borrar Pago?',
+      text: `Estas a punto de borrar pago de $${pago.abono}`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, borrar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.value) {
+        this.pagoService.deletePago(pago.id_pago)
+          .subscribe(resp => {
+            //this.cargarPagosByIdFactura(this.id_factura);
+            Swal.fire({
+              icon: 'success',
+              title: 'Pago borrado',
+              text: `Pago de ${pago.abono} ha sido borrado correctamente.`,
+              showConfirmButton: false,
+              timer: 1500
+            });
+            this.recargarComponente();
+            this.cerrarModal();
+          }, (err) => {
+            let errorMessage = 'Se produjo un error al borrar el pago.';
+            if (err.error && err.error.msg) {
+              errorMessage = err.error.msg;
+            }
+            Swal.fire('Error', errorMessage, 'error');
+          }
+          );
+      }
+    });
   }
 
   // Método para borrar factura en Table Date Factura
@@ -766,6 +823,7 @@ export class FacturaComponent implements OnInit {
         producto: formValues[`producto_${i}`],
         cantidad: formValues[`cantidad_${i}`],
         codigo_principal: formValues[`codigo_principal_${i}`],
+        stock: formValues[`stock_${i}`],
         descripcion: formValues[`descripcion_${i}`],
         precio_unitario: formValues[`precio_unitario_${i}`],
         descuento: formValues[`descuento_${i}`],
@@ -793,6 +851,7 @@ export class FacturaComponent implements OnInit {
     const nuevoDetalle: DetalleFacturaFormInterface = {
       producto: null,
       codigo_principal: null,
+      stock: null,
       descripcion: null,
       cantidad: null,
       precio_unitario: null,
@@ -807,6 +866,7 @@ export class FacturaComponent implements OnInit {
     // Crear instancias de FormControl para cada propiedad del detalle
     const productoControl = new FormControl(nuevoDetalle.producto);
     const codigoPrincipalControl = new FormControl(nuevoDetalle.codigo_principal);
+    const stockControl = new FormControl(nuevoDetalle.stock);
     const descripcionControl = new FormControl(nuevoDetalle.descripcion);
     const cantidadControl = new FormControl(nuevoDetalle.cantidad);
     const precioUnitarioControl = new FormControl(nuevoDetalle.precio_unitario);
@@ -820,6 +880,7 @@ export class FacturaComponent implements OnInit {
     // Agregar los controles al formulario
     this.detalleFacturaForm.addControl('producto_' + this.detalleFacturaFormInterface.length, productoControl);
     this.detalleFacturaForm.addControl('codigo_principal_' + this.detalleFacturaFormInterface.length, codigoPrincipalControl);
+    this.detalleFacturaForm.addControl('stock_' + this.detalleFacturaFormInterface.length, stockControl);
     this.detalleFacturaForm.addControl('descripcion_' + this.detalleFacturaFormInterface.length, descripcionControl);
     this.detalleFacturaForm.addControl('cantidad_' + this.detalleFacturaFormInterface.length, cantidadControl);
     this.detalleFacturaForm.addControl('precio_unitario_' + this.detalleFacturaFormInterface.length, precioUnitarioControl);
@@ -862,6 +923,31 @@ export class FacturaComponent implements OnInit {
   }
 
   // Método para actualizar en Modal Create Factura
+  actualizarCodigoPrincipal(event: Event, indice: number) {
+    const selectElement = event.target as HTMLSelectElement;
+    const productoId = parseInt(selectElement.value, 10);
+    const productoSeleccionado = this.productos.find(producto => producto.id_producto === productoId);
+    if (productoSeleccionado) {
+      this.detalleFacturaForm.controls[`codigo_principal_${indice}`].setValue(productoSeleccionado.codigo_principal);
+    } else {
+      this.detalleFacturaForm.controls[`codigo_principal_${indice}`].setValue('');
+    }
+  }
+
+  // Método para actualizar en Modal Create Factura
+  actualizarStock(event: Event, indice: number) {
+    const selectElement = event.target as HTMLSelectElement;
+    const productoId = parseInt(selectElement.value, 10);
+    const productoSeleccionado = this.productos.find(producto => producto.id_producto === productoId);
+    if (productoSeleccionado) {
+      // Actualiza la descripción en el formulario del detalle de la factura
+      this.detalleFacturaForm.controls[`stock_${indice}`].setValue(productoSeleccionado.stock);
+    } else {
+      this.detalleFacturaForm.controls[`stock_${indice}`].setValue('');
+    }
+  }
+
+  // Método para actualizar en Modal Create Factura
   actualizarDescripcion(event: Event, indice: number) {
     const selectElement = event.target as HTMLSelectElement;
     const productoId = parseInt(selectElement.value, 10);
@@ -871,18 +957,6 @@ export class FacturaComponent implements OnInit {
       this.detalleFacturaForm.controls[`descripcion_${indice}`].setValue(productoSeleccionado.descripcion);
     } else {
       this.detalleFacturaForm.controls[`descripcion_${indice}`].setValue('');
-    }
-  }
-
-  // Método para actualizar en Modal Create Factura
-  actualizarCodigoPrincipal(event: Event, indice: number) {
-    const selectElement = event.target as HTMLSelectElement;
-    const productoId = parseInt(selectElement.value, 10);
-    const productoSeleccionado = this.productos.find(producto => producto.id_producto === productoId);
-    if (productoSeleccionado) {
-      this.detalleFacturaForm.controls[`codigo_principal_${indice}`].setValue(productoSeleccionado.codigo_principal);
-    } else {
-      this.detalleFacturaForm.controls[`codigo_principal_${indice}`].setValue('');
     }
   }
 
@@ -1092,6 +1166,9 @@ export class FacturaComponent implements OnInit {
 
   // Método para cargar factura por id en Modal Update Factura
   cargarFacturaPorId(id_factura_compra: any) {
+    // Limpia los datos anteriores antes de cargar una nueva factura
+    this.facturas = null;
+    this.pagos = [];
     this.facturaService.loadFacturaById(id_factura_compra)
       .pipe(
         switchMap((factura: any) => {
@@ -1507,7 +1584,7 @@ export class FacturaComponent implements OnInit {
       telefono: this.telefono,
       email: this.email
     };
-    console.log('proveedorData: ',proveedorData)
+    console.log('proveedorData: ', proveedorData)
     // Realiza la solicitud POST para crear el proveedor
     this.proveedorService.createProveedor(proveedorData).subscribe(
       (res) => {
@@ -1565,6 +1642,49 @@ export class FacturaComponent implements OnInit {
         }
       );
   }
+
+  public id_pago
+  public id_factura
+  public fecha_pago
+  public observacion2
+  public abono2
+
+
+  // Método para cargar proveedor por identificación en Modal XML
+  /*cargarPagoByIdFactura(id_factura: string) {
+    this.pagoService.loadPagoByIdFactura(id_factura)
+      .subscribe(
+        (pago) => {
+          if (Array.isArray(pago) && pago.length > 0) {
+            const { id_pago, fecha_pago, observacion } = pago[0];
+            this.id_pago = id_pago;
+            this.fecha_pago = fecha_pago;
+            this.observacion2 = observacion;
+            console.log("this.id_factura: ", this.id_factura)
+  
+          } else {
+            Swal.fire({
+              title: 'Éxito',
+              text: 'XML Cargado',
+              icon: 'success',
+              timer: 1500,
+              showConfirmButton: false,
+            })
+              .then(() => {
+                console.log("HOLA")
+                //this.mostrarMensajeDeAdvertenciaConOpciones('Advertencia', 'Proveedor no encontrado. ¿Desea crear un nuevo proveedor?');
+              });
+          }
+        }, (err) => {
+          let errorMessage = 'Se produjo un error al cargar el proveedor.';
+          if (err.error && err.error.msg) {
+            errorMessage = err.error.msg;
+          }
+          Swal.fire('Error', err.error.msg, 'error');
+        }
+      );
+  }
+  */
 
   // Método para mostrar adevertencia en Modal XML
   mostrarMensajeDeAdvertenciaConOpciones(title: string, text: string) {
