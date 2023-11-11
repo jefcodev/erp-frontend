@@ -282,10 +282,11 @@ export class FacturaVentaComponent implements OnInit {
       importe_total: [],
 
       id_forma_pago: [''],
+      fecha_pago: [''],
       abono: [],
-      saldo: ['0.00'],
       observacion: [''],
 
+      saldo: ['0.00'],
     });
 
     this.facturaFormU = this.fb.group({
@@ -312,8 +313,9 @@ export class FacturaVentaComponent implements OnInit {
       id_forma_pago: [''],
       fecha_pago: [''],
       abono: [''],
-      saldo: ['0.00'],
       observacion: [''],
+
+      saldo: ['0.00'],
     });
 
     this.facturaFormXML = this.fb.group({
@@ -339,9 +341,11 @@ export class FacturaVentaComponent implements OnInit {
       importe_total: [''],
 
       id_forma_pago: [''],
+      fecha_pago: [''],
       abono: [''],
-      saldo: ['0.00'],
       observacion: [''],
+
+      saldo: ['0.00'],
     });
 
     this.detalleFacturaForm = this.fb.group({
@@ -656,15 +660,23 @@ export class FacturaVentaComponent implements OnInit {
       return;
     }
 
+    const id_forma_pago = this.facturaForm.get('id_forma_pago').value;
+    const fecha_pago = this.facturaForm.get('fecha_pago').value;
     const abono = this.facturaForm.get('abono').value;
     const observacion = this.facturaForm.get('observacion').value;
-    const idFormaPago = this.facturaForm.get('id_forma_pago').value;
-    if (abono > 0 && observacion.trim() === '') {
-      alert('Debes proporcionar una observación si el abono es mayor a cero.');
-      return; // La función se detiene aquí
-    } else if (abono > 0 && idFormaPago === '') {
-      alert('Debes seleccionar una forma de pago.');
-      return; // La función se detiene aquí
+    if (abono > 0) {
+      if (!fecha_pago) {
+        alert('Debes proporcionar una fecha de pago si el abono es mayor a cero.');
+        return;
+      }
+      if (id_forma_pago === '') {
+        alert('Debes seleccionar una forma de pago si el abono es mayor a cero.');
+        return;
+      }
+      if (observacion.trim() === '') {
+        alert('Debes proporcionar una observación si el abono es mayor a cero.');
+        return;
+      }
     }
 
     // Obtener los detalles del formulario
@@ -680,6 +692,11 @@ export class FacturaVentaComponent implements OnInit {
 
       //this.productoService.actualizarStockProducto(detalle.producto, detalle.cantidad);
 
+    }
+
+    // Verificar si fecha_vencimiento no está definido y asignar null
+    if (!this.facturaForm.get('fecha_vencimiento').value) {
+      this.facturaForm.get('fecha_vencimiento').setValue(null);
     }
 
     this.facturaForm.get('total_sin_impuesto').setValue(this.sumaTotalSinImpuesto);
@@ -1345,16 +1362,25 @@ export class FacturaVentaComponent implements OnInit {
       return;
     }
 
-    const abono = this.facturaFormXML.get('abono').value;
-    const observacion = this.facturaFormXML.get('observacion').value;
-    const idFormaPago = this.facturaFormXML.get('id_forma_pago').value;
-    if (abono > 0 && observacion.trim() === '') {
-      alert('Debes proporcionar una observación si el abono es mayor a cero.');
-      return; // La función se detiene aquí
-    } else if (abono > 0 && idFormaPago === '') {
-      alert('Debes seleccionar una forma de pago.');
-      return; // La función se detiene aquí
+    const id_forma_pago = this.facturaForm.get('id_forma_pago').value;
+    const fecha_pago = this.facturaForm.get('fecha_pago').value;
+    const abono = this.facturaForm.get('abono').value;
+    const observacion = this.facturaForm.get('observacion').value;
+    if (abono > 0) {
+      if (!fecha_pago) {
+        alert('Debes proporcionar una fecha de pago si el abono es mayor a cero.');
+        return;
+      }
+      if (id_forma_pago === '') {
+        alert('Debes seleccionar una forma de pago si el abono es mayor a cero.');
+        return;
+      }
+      if (observacion.trim() === '') {
+        alert('Debes proporcionar una observación si el abono es mayor a cero.');
+        return;
+      }
     }
+    
     // Una vez que los productos se han creado, procede a crear la factura
     const facturaData: FacturaXMLInterface = {
       id_cliente: this.id_cliente,

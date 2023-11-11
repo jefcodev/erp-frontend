@@ -275,11 +275,13 @@ export class FacturaComponent implements OnInit {
       valor: [],
       propina: [],
       importe_total: [],
-
+      
       id_forma_pago: [''],
+      fecha_pago: [''],
       abono: [],
-      saldo: ['0.00'],
       observacion: [''],
+      
+      saldo: ['0.00'],
     });
 
     this.facturaFormU = this.fb.group({
@@ -302,13 +304,13 @@ export class FacturaComponent implements OnInit {
       total_descuento: [''],
       valor: [''],
       importe_total: [''],
-
-      saldo: ['0.00'],
-
+      
       id_forma_pago: [''],
       fecha_pago: [''],
       abono: [''],
       observacion: [''],
+      
+      saldo: ['0.00'],
     });
 
     this.facturaFormXML = this.fb.group({
@@ -334,9 +336,11 @@ export class FacturaComponent implements OnInit {
       importe_total: [''],
 
       id_forma_pago: [''],
+      fecha_pago: [''],
       abono: [''],
-      saldo: ['0.00'],
       observacion: [''],
+      
+      saldo: ['0.00'],
     });
 
     this.detalleFacturaForm = this.fb.group({
@@ -388,6 +392,7 @@ export class FacturaComponent implements OnInit {
     });
   }
 
+  /*
   ngOnInit(): void {
     this.cargarProveedoresAll();
     this.cargarFormasPago();
@@ -397,7 +402,23 @@ export class FacturaComponent implements OnInit {
     this.cargarFacturas();
     const fechaActual = new Date();
     this.fechaActual = formatDate(fechaActual, 'd-M-yyyy', 'en-US', 'UTC-5');
+  }*/
+
+  
+  async ngOnInit(): Promise<void> {
+    this.cargarProveedoresAll();
+    this.cargarFormasPago();
+    this.cargarProductos();
+    //this.cargarProductosAll();
+    this.cargarFacturasAll();
+    this.cargarFacturas();
+    this.cargarProductosAll();  // Espera a que se carguen los productos
+
+    const fechaActual = new Date();
+    this.fechaActual = formatDate(fechaActual, 'd-M-yyyy', 'en-US', 'UTC-5');
   }
+  
+
 
   // Método para cargar todos los proveedores 
   cargarProveedoresAll() {
@@ -427,6 +448,7 @@ export class FacturaComponent implements OnInit {
   cargarProductosAll() {
     this.productoService.loadProductosAll()
       .subscribe(({ productos }) => {
+        console.log("ALL PRODUCT: ", productos)
         this.productosAll = productos;
       })
   }
@@ -651,20 +673,33 @@ export class FacturaComponent implements OnInit {
       return;
     }
 
+    const id_forma_pago = this.facturaForm.get('id_forma_pago').value;
+    const fecha_pago = this.facturaForm.get('fecha_pago').value;
     const abono = this.facturaForm.get('abono').value;
     const observacion = this.facturaForm.get('observacion').value;
-    const idFormaPago = this.facturaForm.get('id_forma_pago').value;
-    if (abono > 0 && observacion.trim() === '') {
-      alert('Debes proporcionar una observación si el abono es mayor a cero.');
-      return; // La función se detiene aquí
-    } else if (abono > 0 && idFormaPago === '') {
-      alert('Debes seleccionar una forma de pago.');
-      return; // La función se detiene aquí
+    if (abono > 0) {
+      if (!fecha_pago) {
+        alert('Debes proporcionar una fecha de pago si el abono es mayor a cero.');
+        return;
+      }
+      if (id_forma_pago === '') {
+        alert('Debes seleccionar una forma de pago si el abono es mayor a cero.');
+        return;
+      }
+      if (observacion.trim() === '') {
+        alert('Debes proporcionar una observación si el abono es mayor a cero.');
+        return;
+      }
     }
 
     // Obtener los detalles del formulario
     this.obtenerDetallesForm()
 
+    // Verificar si fecha_vencimiento no está definido y asignar null
+    if (!this.facturaForm.get('fecha_vencimiento').value) {
+      this.facturaForm.get('fecha_vencimiento').setValue(null);
+    }
+    
     this.facturaForm.get('total_sin_impuesto').setValue(this.sumaTotalSinImpuesto);
     this.facturaForm.get('total_descuento').setValue(this.sumaTotalDescuento);
     this.facturaForm.get('valor').setValue(this.sumaTotalIVA);
@@ -709,8 +744,9 @@ export class FacturaComponent implements OnInit {
               showConfirmButton: false,
               timer: 1500
             });
-            this.recargarComponente();
+            this.cargarProductosAll()
             this.cerrarModal();
+            this.recargarComponente();
           },
           (err) => {
             let errorMessage = 'Se produjo un error al crear el factura..';
@@ -720,7 +756,6 @@ export class FacturaComponent implements OnInit {
             Swal.fire('Error', errorMessage, 'error');
           }
         );
-
         //this.recargarComponente();
       },
       (err) => {
@@ -1136,7 +1171,7 @@ export class FacturaComponent implements OnInit {
       return;
     }
 
-    const idFormaPago = this.facturaFormU.get('id_forma_pago').value;
+    const id_forma_pago = this.facturaFormU.get('id_forma_pago').value;
     const fecha_pago = this.facturaFormU.get('fecha_pago').value;
     const abono = this.facturaFormU.get('abono').value;
     const observacion = this.facturaFormU.get('observacion').value;
@@ -1145,7 +1180,7 @@ export class FacturaComponent implements OnInit {
         alert('Debes proporcionar una fecha de pago si el abono es mayor a cero.');
         return;
       }
-      if (idFormaPago === '') {
+      if (id_forma_pago === '') {
         alert('Debes seleccionar una forma de pago si el abono es mayor a cero.');
         return;
       }
@@ -1321,15 +1356,23 @@ export class FacturaComponent implements OnInit {
       return;
     }
 
-    const abono = this.facturaFormXML.get('abono').value;
-    const observacion = this.facturaFormXML.get('observacion').value;
-    const idFormaPago = this.facturaFormXML.get('id_forma_pago').value;
-    if (abono > 0 && observacion.trim() === '') {
-      alert('Debes proporcionar una observación si el abono es mayor a cero.');
-      return; // La función se detiene aquí
-    } else if (abono > 0 && idFormaPago === '') {
-      alert('Debes seleccionar una forma de pago.');
-      return; // La función se detiene aquí
+    const id_forma_pago = this.facturaForm.get('id_forma_pago').value;
+    const fecha_pago = this.facturaForm.get('fecha_pago').value;
+    const abono = this.facturaForm.get('abono').value;
+    const observacion = this.facturaForm.get('observacion').value;
+    if (abono > 0) {
+      if (!fecha_pago) {
+        alert('Debes proporcionar una fecha de pago si el abono es mayor a cero.');
+        return;
+      }
+      if (id_forma_pago === '') {
+        alert('Debes seleccionar una forma de pago si el abono es mayor a cero.');
+        return;
+      }
+      if (observacion.trim() === '') {
+        alert('Debes proporcionar una observación si el abono es mayor a cero.');
+        return;
+      }
     }
 
     // Una vez que los productos se han creado, procede a crear la factura

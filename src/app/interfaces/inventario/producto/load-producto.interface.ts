@@ -1,5 +1,5 @@
 import { Producto } from "../../../models/inventario/producto.model";
 
-export interface LoadProducto{
+export interface LoadProducto {
     productos: Producto[];
 }
