@@ -12,7 +12,7 @@ import { LoginForm } from '../../interfaces/login-form.iterface';
 
 // Models
 import { Producto } from 'src/app/models/inventario/producto.model';
-import { LoadPuestos } from 'src/app/interfaces/apu/load-puestos.interface';
+import { LoadPuesto } from 'src/app/interfaces/apu/load-puestos.interface';
 //import { ProductoU } from 'src/app/models/inventario/producto.model';
 
 // Variable API
@@ -51,8 +51,10 @@ export class ProductoService {
   }
   loadPuestos() {
     const url = `${base_url}/inventario/productos/puestos`;
-    return this.hhtp.get<LoadPuestos>(url, this.headers);
+    return this.hhtp.get<LoadPuesto>(url, this.headers);
   }
+
+  
   
   loadProductosAll() {
     const url = `${base_url}/inventario/productos/all/`;

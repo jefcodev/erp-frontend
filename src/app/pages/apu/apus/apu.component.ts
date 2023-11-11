@@ -29,6 +29,8 @@ export class ApuComponent implements OnInit {
   herramientas : Producto []=[];
   puestos: Puesto []=[];
 
+  
+
 /* 
 codigo
 cargo
@@ -48,6 +50,9 @@ jornal
   rendimientoC: number;
   unidadC: string;
 
+
+
+  selectedPuesto: Puesto | null = null;
 
   /* Variables de totales unitarios */
 
@@ -225,11 +230,16 @@ calcularRendimientoManoObra(){
       })
   }
   cargarPuestos() {
-    this.productoService.loadPuestos()
-    .subscribe(({ puestos }) => {
+    this.productoService.loadPuestos().subscribe(
+      ({ puestos }) => {
         this.puestos = puestos;
-      })
+      },
+      (error) => {
+        console.error("Error al cargar puestos:", error);
+      }
+    );
   }
+  
   cargarProductosHerramientas() {
     this.productoService.loadProductosHerramientas()
       .subscribe(({ productos }) => {

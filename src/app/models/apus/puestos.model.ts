@@ -1,7 +1,8 @@
 export class Puesto {
-    
-         codigo: string;
-         cargo: string;
-          salario: number;
-    
-  }
+    constructor(
+        public codigo: string,
+        public cargo: string,
+        public salario: number
+    ) { }
+
+}
