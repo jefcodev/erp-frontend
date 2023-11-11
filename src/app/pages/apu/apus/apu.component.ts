@@ -7,6 +7,7 @@ import { UnitService } from 'src/app/services/inventory/unit.service';
 import { Unit } from 'src/app/models/inventory/unit.model';
 import { ProductoService } from 'src/app/services/inventario/producto.service';
 import { Producto } from 'src/app/models/inventario/producto.model';
+import { Puesto} from 'src/app/models/apus/puestos.model';
 
 
 @Component({
@@ -26,9 +27,19 @@ export class ApuComponent implements OnInit {
   unidades: Unit[] = [];
   productos: Producto[]=[];
   herramientas : Producto []=[];
-  mano_obras: Producto []=[];
+  puestos: Puesto []=[];
+
+/* 
+codigo
+cargo
+jornal
+
+103.81 
+
+500 
 
 
+*/
 
   /* Variables del capítulo apu */
   codigoC: string;
@@ -48,15 +59,21 @@ export class ApuComponent implements OnInit {
   totalManoObra: number = 0;
   unitarioManoObra: number =0;
   
+
   constructor(private apuService: ApuService,
     private unidadesService: UnitService,
     private productoService: ProductoService
    ) { }
 
+
   ngOnInit(): void {
      this.cargarUnidades();
      this.cargarProductos();
      this.cargarProductosHerramientas();
+     this.cargarPuestos();
+     
+     
+     console.log('Puestos'+ this.puestos)
      
 
   }
@@ -123,6 +140,8 @@ export class ApuComponent implements OnInit {
   }
 
 
+
+
 /* Métodos para cambiar datos Equipo Herramientas y Maquinaria */
 
 actualizarDatosEquipos(productoSeleccionado: any, indice: number) {
@@ -155,8 +174,44 @@ calcularRendimiento(){
   this.unitarioEquipos =  this.totalEquipos/ this.rendimientoC
   this.unitarioEquipos = parseFloat(this.unitarioEquipos.toFixed(2))
   return this.unitarioEquipos;
-  
-  
+}
+
+
+
+
+
+/* Métodos para cambiar datos Mano de Obra */
+
+actualizarDatosManoObra(productoSeleccionado: any, indice: number) {
+    
+  if (productoSeleccionado) {
+    // Si se ha seleccionado un producto, actualiza el campo de "precio" en la fila correspondiente
+    this.filasEquipos[indice].precioe = productoSeleccionado.precio_compra;
+    this.filasEquipos[indice].descripcione = productoSeleccionado.descripcion;
+    
+  }
+}
+
+calcularSubTotalManoObra(indice: number) {
+  const fila = this.filasEquipos[indice];
+  if (fila.cantidade !== null && fila.precioe !== null) {
+    fila.totale = fila.cantidade * fila.precioe;
+  }
+}
+
+calcularTotalManoObra() {
+  this.totalEquipos = this.filasEquipos.reduce((total, fila) => {
+    return total + (fila.totale || 0); // Se utiliza "totale" en lugar de "total"
+  }, 0);
+
+  // Redondear el total a 2 decimales
+  this.totalEquipos = parseFloat(this.totalEquipos.toFixed(2));
+}
+
+calcularRendimientoManoObra(){
+  this.unitarioEquipos =  this.totalEquipos/ this.rendimientoC
+  this.unitarioEquipos = parseFloat(this.unitarioEquipos.toFixed(2))
+  return this.unitarioEquipos;
 }
 
 
@@ -169,28 +224,28 @@ calcularRendimiento(){
         this.productos = productos;
       })
   }
+  cargarPuestos() {
+    this.productoService.loadPuestos()
+    .subscribe(({ puestos }) => {
+        this.puestos = puestos;
+      })
+  }
   cargarProductosHerramientas() {
     this.productoService.loadProductosHerramientas()
       .subscribe(({ productos }) => {
         this.herramientas = productos;
       })
+      console.log('Puestos')
   }
   cargarUnidades() {
     this.unidadesService.cargarUnits()
       .subscribe((unidades: Unit[]) => {
         this.unidades = unidades;
       });
+
   }
 
 
-
-  /* 
-  
-  Fecha:
-  Rendimiento:
-  Unidad:
-  
-  */
 
   /* Métodos Crear */
 

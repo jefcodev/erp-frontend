@@ -319,17 +319,10 @@
                         <td class="text-center">{{ i + 1 }}</td>
 
                         <td>
-                          <ng-select [items]="herramientas" bindLabel="descripcion"
-                            placeholder="Seleccione una Herramienta" [(ngModel)]="item.herramientas"
+                          <ng-select [items]="puestos" bindLabel="cargo"
+                            placeholder="Seleccione una Herramienta" [(ngModel)]="item.puestos"
                             name="descripcionm{{i}}" [searchable]="true"
-                            (ngModelChange)="actualizarDatosMateriales($event, i)"></ng-select>
-
-                          <!-- <select class="form-control" [(ngModel)]="item.descripcion" name="descripcion{{i}}">
-                            <option value="">Seleccione un Producto</option>
-                            <option *ngFor="let producto of productos" [value]="producto.descripcion">{{
-                              producto.descripcion }}</option>
-                          </select> -->
-
+                            ></ng-select>
                         </td>
                         <td>
                           <input type="number" class="form-control text-right" [(ngModel)]="item.cantidadm"
