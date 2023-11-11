@@ -3,6 +3,8 @@ export class Apu {
     codigo: string;
     nombre: string;
     descripcion: string;
+    rendimiento: number;
+    unidad: string;
     materiales: Material[];
     equipos: Equipo[];
     mano_obra: ManoObra[];
@@ -18,18 +20,18 @@ export class Apu {
   }
   
   export class Equipo {
-    codigo: string;
-    descripcion: string;
-    cantidad: number;
-    unidad: string;
-    precio: number;
+    codigoe: string;
+    descripcione: string;
+    cantidade: number;
+    unidade: string;
+    precioe: number;
   }
   
   export class ManoObra {
-    codigo: string;
-    descripcion: string;
-    cantidad: number;
-    unidad: string;
-    precio: number;
+    codigom: string;
+    descripcionm: string;
+    cantidadm: number;
+    unidadm: string;
+    preciom: number;
   }
   

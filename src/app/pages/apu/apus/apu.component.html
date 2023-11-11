@@ -1,37 +1,144 @@
 <div class="row">
   <div class="col-lg-12">
+    <div class="card ">
+      <div class="card-header bg-info">
+        <h4 class="m-b-0 text-white text-center">ANALISIS DE PRECIOS UNITARIO</h4>
+      </div>
+      <div class="card-body">
+        <form action="#" class="form-horizontal">
+          <div class="form-body">
+
+            <h3 class="box-title">Datos</h3>
+            <hr class="m-t-0 m-b-40">
+            <!--/row-->
+            <div class="row">
+              <div class="col-md-6">
+
+
+                <div class="form-group row">
+                  <label for="exampleInputuname3" class="col-sm-3 control-label">Código</label>
+                  <div class="col-sm-9">
+                    <div class="input-group">
+                      <div class="input-group-addon"><i class="ti-user"></i></div>
+                      <input type="text" class="form-control" [(ngModel)]="codigoC" name="codigoC" placeholder="Código">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group row">
+                  <label for="exampleInputuname3" class="col-sm-3 control-label">Nombre</label>
+                  <div class="col-sm-9">
+                    <div class="input-group">
+                      <div class="input-group-addon"><i class="ti-user"></i></div>
+                      <input type="text" class="form-control" [(ngModel)]="nombreC" name="nombreC" placeholder="Nombre">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group row">
+                  <label for="exampleInputuname3" class="col-sm-3 control-label">Descripcion</label>
+                  <div class="col-sm-9">
+                    <div class="input-group">
+                      <div class="input-group-addon"><i class="ti-user"></i></div>
+                      <input type="text" class="form-control" [(ngModel)]="descripcionC" name="descripcionC"
+                        placeholder="Descripcion">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!--/span-->
+              <div class="col-md-6">
+
+                <div class="form-group row">
+                  <label for="exampleInputuname3" class="col-sm-3 control-label">Rendimiento</label>
+                  <div class="col-sm-9">
+                    <div class="input-group">
+                      <div class="input-group-addon"><i class="ti-user"></i></div>
+                      <input type="number" min="0.000" class="form-control" [(ngModel)]="rendimientoC"
+                        name="rendimientoC"  (ngModelChange)="calcularRendimiento();" placeholder="Rendimiento">
+                    </div>
+                  </div>
+                </div>
+                <!-- <div class="form-group row">
+                                  <label class="control-label text-right col-md-3">Rendimiento</label>
+                                  <div class="col-md-9">
+                                      <input type="number" min="0.000" class="form-control" [(ngModel)]="rendimientoC" name="rendimientoC">
+                                  </div>
+                              </div> -->
+              </div>
+              <!--/span-->
+            </div>
+            <!--/row-->
+            <div class="row">
+              <div class="col-md-6">
+
+                <div class="form-group row">
+                  <label for="exampleInputuname3" class="col-sm-3 control-label">Unidad</label>
+                  <div class="col-sm-9">
+                    <div class="input-group">
+                      <div class="input-group-addon"><i class="ti-user"></i></div>
+                      <input type="text" class="form-control" [(ngModel)]="unidadC" name="unidadC" placeholder="Unidad">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!--/span-->
+            </div>
+            <!--/row-->
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="row">
+  <div class="col-lg-12">
     <div class="card">
       <div class="card-body">
         <form #apuForm="ngForm">
           <div class="form-body">
             <div class="row p-t-20">
               <div class="col-md-12">
-                <label class="control-label">Materiales</label>
+                <h3 class="box-title">Materiales</h3>
+                <hr class="m-t-0 m-b-40">
 
-                <div class="table-responsive m-t-5" style="clear: both;">
+                <div class="table-responsive">
                   <table class="table table-bordered">
                     <thead>
-                      <th class="text-center">#</th>
+                      <th class="text-center">Código</th>
                       <th class="text-center">Descripción</th>
                       <th class="text-center">Cantidad</th>
                       <th class="text-center">Unidad</th>
                       <th class="text-center">Desp %</th>
                       <th class="text-center">Precio</th>
-                      <th class="text-center">Total</th>
-                      <th class="text-center">Acciones</th>
+                      <th class="w100 text-center">Total</th>
+                      <th class="w50">Acciones</th>
                     </thead>
                     <tbody>
                       <tr *ngFor="let item of filasMateriales; let i = index">
-                        <td class="text-center">{{ i + 1 }}</td>
+                        <td>
+                          <input type="text" class="form-control text-right" [(ngModel)]="item.codigo"
+                            name="codigo{{i}}" disabled>
+                        </td>
 
-                        
                         <td>
                           <ng-select [items]="productos" bindLabel="descripcion" placeholder="Seleccione un producto"
-                            [(ngModel)]="item.producto" name="producto{{i}}" [searchable]="true"></ng-select>
+                            [(ngModel)]="item.producto" name="descripcion{{i}}" [searchable]="true"
+                            (ngModelChange)="actualizarDatosMateriales($event, i)"></ng-select>
+
                         </td>
                         <td>
-                          <input type="number" class="form-control text-right" [(ngModel)]="item.cantidad"
-                            name="cantidad{{i}}">
+                          <input type="number" min="0.0000" class="form-control text-right" [(ngModel)]="item.cantidad"
+                            name="cantidad{{i}}" (ngModelChange)="calcularSubTotalMateriales(i); calcularTotalMateriales();">
                         </td>
                         <td>
                           <input type="text" class="form-control text-right" [(ngModel)]="item.unidad"
@@ -43,17 +150,20 @@
                         </td>
                         <td>
                           <input type="number" class="form-control text-right" [(ngModel)]="item.precio"
-                            name="precio{{i}}">
+                            name="precio{{i}}" (ngModelChange)="calcularSubTotalMateriales(i)" disabled>
+                          <!-- style="border: none; background: transparent;" -->
+
                         </td>
                         <td>
                           <input type="number" class="form-control text-right" [(ngModel)]="item.total"
-                            name="total{{i}}">
+                            name="item.total{{i}}" disabled>
                         </td>
+
                         <td class="text-center">
                           <!-- Botón para eliminar la fila actual -->
-                          <button (click)="deleteFilaMateriales(i)" class="btn btn-danger">
-                            <i class="ti-trash"></i>
-                          </button>
+                          <a class="cursor" (click)="deleteFilaMateriales(i)" data-toggle="tooltip"
+                            data-original-title="Eliminar"> <i class="fa fa-close text-danger"></i> </a>
+
                         </td>
                       </tr>
                     </tbody>
@@ -66,10 +176,41 @@
                       </button>
                     </div>
                   </div>
+                  <div class="col-md-12">
+
+                    <div class="row">
+                      <!-- Espaciador -->
+                      <div class="col-md-6"></div>
+
+                      <!-- Detalle -->
+                      <div class="col-md-4">
+                        <div class="m-t-30 text-right">
+                          <p class="text-right">Total Materiales =</p>
+                          <p class="text-right">Unitario Materiales =</p>
+
+                        </div>
+
+                      </div>
+
+                      <!-- Valores -->
+                      <div class="col-md-2">
+                        <div class="pull-right m-t-30 text-right">
+                          <p class="text-right">$ {{totalMateriales}}</p>
+                          <p class="text-right">$ {{totalMateriales}}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <br>
+                  </div>
+
                 </div>
               </div>
+
+
+
               <div class="col-md-12">
-                <label class="control-label">Equipos, Herramientas y Maquinaria</label>
+                <h3 class="box-title">Equipos, Herramientas y Maquinaria</h3>
+                <hr class="m-t-0 m-b-40">
 
                 <div class="table-responsive m-t-5" style="clear: both;">
                   <table class="table table-bordered">
@@ -83,28 +224,35 @@
                       <th class="text-center">Acciones</th>
                     </thead>
                     <tbody>
+                      
                       <tr *ngFor="let item of filasEquipos; let i = index">
                         <td class="text-center">{{ i + 1 }}</td>
                         <td>
-                          <ng-select [items]="herramientas" bindLabel="descripcion" placeholder="Seleccione un producto"
-                            [(ngModel)]="item.producto" name="producto{{i}}" [searchable]="true"></ng-select>
+                          <ng-select [items]="herramientas" bindLabel="descripcion"
+                            placeholder="Seleccione una Herramienta" [(ngModel)]="item.herramientas"
+                            name="descripcione{{i}}" [searchable]="true"
+                            (ngModelChange)="actualizarDatosEquipos($event, i)"></ng-select>
+
                         </td>
                         <td>
-                          <input type="number" class="form-control text-right" [(ngModel)]="item.cantidad"
-                            name="cantidad{{i}}">
+                          <input type="number" class="form-control text-right" [(ngModel)]="item.cantidade"
+                            name="cantidade{{i}}" (ngModelChange)="calcularSubTotalEquipos(i); calcularTotalEquipos(); calcularRendimiento();">
+                            
+
+                            
                         </td>
                         <td>
-                          <input type="text" class="form-control text-right" [(ngModel)]="item.unidad"
-                            name="unidad{{i}}">
+                          <input type="text" class="form-control text-right" [(ngModel)]="item.unidade"
+                            name="unidade{{i}}">
                         </td>
 
                         <td>
-                          <input type="number" class="form-control text-right" [(ngModel)]="item.precio"
-                            name="precio{{i}}">
+                          <input type="number" class="form-control text-right" [(ngModel)]="item.precioe"
+                            name="precioe{{i}}" disabled>
                         </td>
                         <td>
-                          <input type="number" class="form-control text-right" [(ngModel)]="item.total"
-                            name="total{{i}}">
+                            <input type="number" class="form-control text-right" [(ngModel)]="item.totale"
+                            name="item.totale{{i}}" disabled>
                         </td>
                         <td class="text-center">
                           <!-- Botón para eliminar la fila actual -->
@@ -123,10 +271,37 @@
                       </button>
                     </div>
                   </div>
+                  <div class="col-md-12">
+
+                    <div class="row">
+                      <!-- Espaciador -->
+                      <div class="col-md-6"></div>
+
+                      <!-- Detalle -->
+                      <div class="col-md-4">
+                        <div class="m-t-30 text-right">
+                          <p class="text-right">Total Herramientas y Equipos =</p>
+                          <p class="text-right">Unitario Herramientas y Equipos =</p>
+
+                        </div>
+
+                      </div>
+
+                      <!-- Valores -->
+                      <div class="col-md-2">
+                        <div class="pull-right m-t-30 text-right">
+                          <p class="text-right">$  {{totalEquipos}} </p>
+                          <p class="text-right">$ {{unitarioEquipos}} </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <br>
                 </div>
               </div>
               <div class="col-md-12">
-                <label class="control-label">Mano de Obra</label>
+                <h3 class="box-title">Mano de Obra</h3>
+                <hr class="m-t-0 m-b-40">
 
                 <div class="table-responsive m-t-5" style="clear: both;">
                   <table class="table table-bordered">
@@ -144,8 +319,10 @@
                         <td class="text-center">{{ i + 1 }}</td>
 
                         <td>
-                          <ng-select [items]="productos" bindLabel="descripcion" placeholder="Seleccione un producto"
-                            [(ngModel)]="item.producto" name="producto{{i}}" [searchable]="true"></ng-select>
+                          <ng-select [items]="herramientas" bindLabel="descripcion"
+                            placeholder="Seleccione una Herramienta" [(ngModel)]="item.herramientas"
+                            name="descripcionm{{i}}" [searchable]="true"
+                            (ngModelChange)="actualizarDatosMateriales($event, i)"></ng-select>
 
                           <!-- <select class="form-control" [(ngModel)]="item.descripcion" name="descripcion{{i}}">
                             <option value="">Seleccione un Producto</option>
@@ -155,27 +332,27 @@
 
                         </td>
                         <td>
-                          <input type="number" class="form-control text-right" [(ngModel)]="item.cantidad"
-                            name="cantidad{{i}}">
+                          <input type="number" class="form-control text-right" [(ngModel)]="item.cantidadm"
+                            name="cantidadm{{i}}">
                         </td>
                         <td>
-                          <input type="text" class="form-control text-right" [(ngModel)]="item.unidad"
-                            name="unidad{{i}}">
+                          <input type="text" class="form-control text-right" [(ngModel)]="item.unidadm"
+                            name="unidadm{{i}}">
                           <!-- <select class="form-control" [(ngModel)]="item.unidad" name="unidad{{i}}">
                                                       <option value="">Seleccione una unidad</option>
                                                       <option *ngFor="let unidad of unidades" [value]="unidad.descripcion">{{ unidad.descripcion }}</option>
                                                     </select> -->
-                          
+
 
                         </td>
 
                         <td>
-                          <input type="number" class="form-control text-right" [(ngModel)]="item.precio"
-                            name="precio{{i}}">
+                          <input type="number" class="form-control text-right" [(ngModel)]="item.preciom"
+                            name="preciom{{i}}">
                         </td>
                         <td>
-                          <input type="number" class="form-control text-right" [(ngModel)]="item.total"
-                            name="total{{i}}">
+                          <input type="number" class="form-control text-right" [(ngModel)]="item.totalm"
+                            name="totalm{{i}}">
                         </td>
                         <td class="text-center">
                           <!-- Botón para eliminar la fila actual -->
@@ -192,6 +369,80 @@
                       <button (click)="addFilaManoObra()" class="btn btn-success">
                         Agregar <span class="fa fa-plus" style="padding-left: 10px;"></span>
                       </button>
+                    </div>
+                  </div>
+
+                  <div class="col-md-12">
+
+                    <div class="row">
+                      <!-- Espaciador -->
+                      <div class="col-md-6"></div>
+
+                      <!-- Detalle -->
+                      <div class="col-md-4">
+                        <div class="m-t-30 text-right">
+                          <p class="text-right">Subtotal Mano de Obra:</p>
+                          <p class="text-right">Prestaciones Sociales:</p>
+                          <p class="text-right">Subtotal + Prestaciones Sociales:</p>
+                          <p class="text-right">Total Mano de Obra: </p>
+                          <p class="text-right">Unitario de Mano de Obra: </p>
+
+                        </div>
+
+                      </div>
+
+                      <!-- Valores -->
+                      <div class="col-md-2">
+                        <div class="pull-right m-t-30 text-right">
+                          <p class="text-right">$ 0.00 </p>
+                          <p class="text-right">$ 0.00 </p>
+                          <p class="text-right">$ 0.00 </p>
+                          <p class="text-right">$ 0.00 </p>
+                          <p class="text-right">$ 0.00 </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="clearfix"></div>
+                <hr>
+                <div class="row">
+
+                  <!-- Espaciador -->
+                  <div class="col-md-6"></div>
+
+
+                  <!-- Detalle -->
+                  <div class="col-md-4">
+                    <div class="m-t-30 text-right">
+                      <p class="text-right">Costos Directos por Unidad:</p>
+                      <p class="text-right">12 % Administración y Costos Indirectos:</p>
+                      <p class="text-right">Subtotal:</p>
+                      <p class="text-right">Utilidad: </p>
+                      <h3 class="text-right">Precio Unitario:</h3>
+                    </div>
+
+                  </div>
+
+                  <!-- Valores -->
+                  <div class="col-md-2">
+                    <div class="pull-center m-t-30 text-center">
+                      <!-- <p>$ {{ sumaTotalSinImpuesto.toFixed(2) }} </p>
+                            <p>$ {{ sumaTotalImpuesto.toFixed(2) }} </p>
+                            <p>$ {{ sumaTotalImpuestoCero.toFixed(2) }} </p>
+                            <p>$ 0.00 </p> 
+                            <p>$ 0.00 </p> 
+                            <p>$ {{ sumaTotalDescuento.toFixed(2) }} </p>
+                            <p>$ {{ sumaTotalICE.toFixed(2) }} </p>
+                            <p>$ {{ sumaTotalIVA.toFixed(2) }} </p>
+                            <h3>$ {{ sumaPrecioTotal.toFixed(2) }} </h3> -->
+                      <p class="text-right">$ 0.00 </p>
+                      <p class="text-right">$ 0.00 </p>
+                      <p class="text-right">$ 0.00 </p>
+                      <p class="text-right">$ 0.00 </p>
+                      <h3 class="text-right">$ 0.00 </h3>
                     </div>
                   </div>
                 </div>
