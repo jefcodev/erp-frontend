@@ -1,13 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, HostListener, Renderer2 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
+import { SweetAlertIcon } from 'sweetalert2';
+import { formatDate, DatePipe } from '@angular/common';
 import Swal from 'sweetalert2';
-import { Asiento } from '../../../models/contabilidad/asiento.model';
+
+// Service
 import { AsientoService } from 'src/app/services/contabilidad/asiento.service';
 import { DetalleAsientoService } from 'src/app/services/contabilidad/detalle-asiento.service';
-import { DetalleAsiento } from '../../../models/contabilidad/detalle-asiento.model';
-import { formatDate } from '@angular/common';
 import { CuentaService } from 'src/app/services/contabilidad/cuenta.service';
+
+// Models
+import { Asiento } from '../../../models/contabilidad/asiento.model';
+import { DetalleAsiento } from '../../../models/contabilidad/detalle-asiento.model';
 import { Cuenta } from 'src/app/models/contabilidad/cuenta.model';
 
 // Agrega la interfaz o clase para el detalle del asiento
@@ -46,18 +51,42 @@ export class AsientoComponent implements OnInit {
   totalDebe: number = 0;
   totalHaber: number = 0;
 
+  // Paginación
+  //public totalAsientos: number = 0; abajo
+  public itemsPorPagina = 10;
+  public paginaActual = 1;
+  public paginas: number[] = [];
+  public mostrarPaginacion: boolean = false;
+  public maximoPaginasVisibles = 5;
+
+  // Búsqueda y filtrado
+  public buscarTexto: string = '';
+  public allAsientos: Asiento[] = [];
+  public fechaInicio: string;
+  public fechaFin: string;
+  public estadoSelect: string;
+
+  public totalAsientos: number = 0;
+
+  public asientosAux: Asiento[] = [];
+  public totalAsientosAux: number = 0;
+
   constructor(
     private fb: FormBuilder,
-    private asientoService: AsientoService,
     private router: Router,
-    private activatedRoute: ActivatedRoute,
+
+    // Services
+    private asientoService: AsientoService,
     private cuentaService: CuentaService,
     private detalleAsientoService: DetalleAsientoService,
+
+    // Filtrado de asientos
+    private datePipe: DatePipe,
   ) {
     this.asientoForm = this.fb.group({
       //id_asiento: [''], // Add this line to include the 'id_asiento' field
       //id_asiento: this.id_asiento, // Add this line to include the 'id_asiento' field
-      //fecha: ['', [Validators.required, Validators.minLength(3)]],
+      fecha_asiento: [''],
       referencia: ['PAGO A PROVEEDORES', [Validators.required, Validators.minLength(1)]],
       documento: ['01-05-2023-00003', [Validators.required, Validators.minLength(1)]],
       observacion: ['NINGUNA', [Validators.required, Validators.minLength(1)]],
@@ -78,20 +107,32 @@ export class AsientoComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarAsientos();
+    this.cargarAsientosAll();
     this.cargarCuentas();
+
     const fechaActual = new Date();
     this.fechaActual = formatDate(fechaActual, 'd-M-yyyy', 'en-US', 'UTC-5');
-    //console.log("fechaActual");
-    //console.log(fechaActual);
   }
 
   cargarAsientos() {
-    this.asientoService.loadAsientos()
-      .subscribe(({ asientos }) => {
+    const desde = (this.paginaActual - 1) * this.itemsPorPagina;
+    console.log("DESDE: ", desde)
+    console.log("LIMIT", this.itemsPorPagina)
+    this.asientoService.loadAsientos(desde, this.itemsPorPagina)
+      .subscribe(({ asientos, totalAsientos }) => {
         this.asientos = asientos;
-        console.log("Test (asiento.component.ts) - cargarAsientos()")
-        console.log(asientos)
-      })
+        this.totalAsientos = totalAsientos;
+        this.calcularNumeroPaginas();
+        this.mostrarPaginacion = this.totalAsientos > this.itemsPorPagina;
+      });
+  }
+  // Método para cargar todas asientos en Table Data Asiento
+  cargarAsientosAll() {
+    this.asientoService.loadAsientosAll()
+      .subscribe(({ asientos, totalAsientos }) => {
+        this.allAsientos = asientos;
+        this.totalAsientos = totalAsientos;
+      });
   }
 
   cargarCuentas() {
@@ -203,7 +244,7 @@ export class AsientoComponent implements OnInit {
         this.recargarComponente();
       })
   }
-  
+
   crearAsiento2_aux() {
 
     // Obtener los valores del formulario de detalles
@@ -350,6 +391,102 @@ export class AsientoComponent implements OnInit {
     });
   }
 
+
+  // Método para filtrar asientos en Table Date Asiento
+  filtrarAsientos() {
+    if (!this.asientosAux || this.asientosAux.length === 0) {
+      // Inicializar las variables auxiliares una sola vez
+      this.asientosAux = this.asientos;
+      this.totalAsientosAux = this.totalAsientos;
+    }
+    if (this.buscarTexto.trim() === '' && !this.estadoSelect && (!this.fechaInicio || !this.fechaFin)) {
+      // Restablecemos las variables principales con las auxiliares
+      this.asientos = this.asientosAux;
+      this.totalAsientos = this.totalAsientosAux;
+    } else {
+      // Reiniciamos variables
+      this.totalAsientos = 0;
+
+      this.asientos = this.allAsientos.filter((asiento) => {
+        const regex = new RegExp(this.buscarTexto, 'i');
+        const fechaAsiento = this.datePipe.transform(new Date(asiento.fecha_asiento), 'yyyy-MM-dd');
+
+        console.log('🟩 ')
+        console.log('asiento.estado ', asiento.estado)
+        console.log(' this.estadoSelect ', this.estadoSelect)
+
+        const pasaFiltro = (
+          (asiento.id_asiento.toString().includes(this.buscarTexto) ||
+            asiento.referencia.match(regex) !== null) &&
+          (!this.estadoSelect || asiento.estado === (this.estadoSelect === 'true')) &&
+          (!this.fechaInicio || fechaAsiento >= this.fechaInicio) &&
+          (!this.fechaFin || fechaAsiento <= this.fechaFin)
+        );
+        return pasaFiltro;
+      });
+    }
+  }
+
+  // Método para borrar fecha fin en Table Date Asiento
+  borrarFechaFin() {
+    this.fechaFin = null; // O establece el valor predeterminado deseado
+    this.filtrarAsientos();
+  }
+
+  // Método para borrar fecha inicio en Table Date Asiento
+  borrarFechaInicio() {
+    this.fechaInicio = null; // O establece el valor predeterminado deseado
+    this.filtrarAsientos();
+  }
+
+  // Método para obtener total páginas en Table Date Asiento
+  get totalPaginas(): number {
+    return Math.ceil(this.totalAsientos / this.itemsPorPagina);
+  }
+
+  // Método para calcular número de páginas en Table Date Asiento
+  calcularNumeroPaginas() {
+    if (this.totalAsientos === 0 || this.itemsPorPagina <= 0) {
+      this.paginas = [];
+      return;
+    }
+    const totalPaginas = Math.ceil(this.totalAsientos / this.itemsPorPagina);
+    const halfVisible = Math.floor(this.maximoPaginasVisibles / 2);
+    let startPage = Math.max(1, this.paginaActual - halfVisible);
+    let endPage = Math.min(totalPaginas, startPage + this.maximoPaginasVisibles - 1);
+    if (endPage - startPage + 1 < this.maximoPaginasVisibles) {
+      startPage = Math.max(1, endPage - this.maximoPaginasVisibles + 1);
+    }
+    this.paginas = Array(endPage - startPage + 1).fill(0).map((_, i) => startPage + i);
+  }
+
+  // Método para cambiar items en Table Date Asiento
+  changeItemsPorPagina() {
+    this.cargarAsientos();
+    this.paginaActual = 1;
+  }
+
+  // Método para cambiar página en Table Date Asiento
+  cambiarPagina(page: number): void {
+    if (page >= 1 && page <= this.totalPaginas) {
+      this.paginaActual = page;
+      this.cargarAsientos();
+    }
+  }
+
+  // Método para obtener mínimo en Table Date Asiento
+  getMinValue(): number {
+    const minValue = (this.paginaActual - 1) * this.itemsPorPagina + 1;
+    return minValue;
+  }
+
+  // Método para obtener máximo en Table Date Asiento
+  getMaxValue(): number {
+    const maxValue = this.paginaActual * this.itemsPorPagina;
+    return maxValue;
+  }
+
+
   campoNoValido(campo: string, form: FormGroup): boolean {
     if (form.get(campo)?.invalid && this.formSubmitted) {
       return true;
@@ -372,11 +509,12 @@ export class AsientoComponent implements OnInit {
 
   }
 
+  /*
   abrirModal() {
     this.ocultarModal = false;
     this.activatedRoute.params.subscribe(params => {
     })
-  }
+  }*/
 
   cerrarModal() {
     this.ocultarModal = true;

@@ -1,113 +1,205 @@
-<!-- table data-->
-<div class="col-12">
-    <div class="card">
-        <div class="card-body">
+<!-- Table Data Asiento -->
+<div class="row">
+    <div class="col-12">
 
-            <h4 class="card-title">Lista de Asientos</h4>
-            <h6 class="card-subtitle"></h6>
+        <div class="card">
+            <div class="card-body">
 
-            <div class="float-left modal-footer">
-                <button class="btn btn-info waves-effect waves-light" data-toggle="modal" data-target="#exampleModal"
-                    type="button"><span class="btn-label"><i class="fa fa-plus"></i></span>Nuevo Asiento</button>
-                <button class="btn btn-success margin-left-10 AN__btn_imprimir_pdf___NEW_ASI hidenNew2 btn-new-version"
-                    id="btnimprimirasiento" type="button">
-                    <span class="fa fa-file-pdf-o" style="padding-left:0px;"></span>&nbsp;PDF
-                </button>
-                <button class="btn btn-success AN__btn_imprimir_excel___NEW_ASI hidenNew2 btn-new-version"
-                    id="btnasientoEXCEL" type="button">
-                    <span class="fa fa-file-excel-o" style="padding-left:0px;"></span>&nbsp;Excel
-                </button>
-                <button class="btn btn-success margin-left-10 AN__btn_imprimir_asiento___NEW_ASI hidenNew2 btn-print"
-                    id="btnimprimir" type="button" onclick="">
-                    <span class="fa fa-print" style="padding-left:0px;"></span>&nbsp;Imprimir
-                </button>
-                <div id="example23_filter" class="dataTables_filter"><label>Buscar:<input type="search" class=""
-                            placeholder="" aria-controls="example23"></label>
-                </div>
-            </div>
+                <!-- Row Button  -->
+                <div class="row button-group">
 
-            <div class="table-responsive">
-
-                <table id="demo-foo-addrow" class="table m-t-30 table-hover contact-list footable-loaded footable"
-                    data-page-size="10">
-                    <thead>
-                        <tr>
-
-                            <th class="footable-sortable text-center">#<span class="footable-sort-indicator"></span></th>
-                            <th class="footable-sortable">Fecha <span class="footable-sort-indicator"></span>
-                            </th>
-                            <th class="footable-sortable">Referencia<span class="footable-sort-indicator"></span></th>
-                            <th class="footable-sortable">Documento<span class="footable-sort-indicator"></span></th>
-                            <th class="footable-sortable">Estado<span class="footable-sort-indicator"></span></th>
-                            <th class="footable-sortable text-center">Action<span class="footable-sort-indicator"></span></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-
-                        <tr *ngFor="let asiento of asientos let i = index">
-                            <td class="text-center">{{asiento.id_asiento}}</td>
-                            <td>{{asiento.fecha | date:'yyyy-MM-dd' }}</td>
-                            <td>{{asiento.referencia}}</td>
-                            <td>{{asiento.documento}}</td>
-
-                            <td *ngIf="asiento.estado; else inactivo">
-                                <div class="label label-table label-success">Activo</div>
-                            </td>
-                            <ng-template #inactivo>
-                                <td>
-                                    <div class="label label-table label-danger">Inactivo</div>
-                                </td>
-                            </ng-template>
-
-                            <td *ngIf="asiento.estado else inactivoOption" class="text-nowrap text-center">
-
-                                <a class="cursor" data-toggle="modal" (click)="cargarAsientoPorId(asiento.id_asiento); cargarDetalleAsientos(asiento.id_asiento)"
-                                    data-target="#exampleModalU"><span
-                                        class="fa fa-pencil text-inverse m-r-10"></span></a>
-
-                                <a class="cursor" (click)="borrarAsiento(asiento);" data-toggle="tooltip"
-                                    data-original-title="Close"> <i class="fa fa-close text-danger"></i> </a>
-                            </td>
-                            <ng-template #inactivoOption>
-                            </ng-template>
-                        </tr>
-                    </tbody>
-                    <tfoot>
-                        <tr>
-
-                            <td colspan="8">
-                                <div class="text-right">
-                                    <ul class="pagination">
-                                        <li class="footable-page-arrow disabled"><a data-page="first"
-                                                href="#first">«</a></li>
-                                        <li class="footable-page-arrow disabled"><a data-page="prev" href="#prev">‹</a>
-                                        </li>
-                                        <li class="footable-page-arrow"><a data-page="next" href="#next">›</a></li>
-                                        <li class="footable-page-arrow"><a data-page="last" href="#last">»</a></li>
-                                    </ul>
+                    <!-- Button Groups  -->
+                    <div class="col-lg-12 col-md-12">
+                        <div class="float-left">
+                            <button type="button" class="btn btn-info waves-effect waves-light" data-toggle="modal"
+                                data-target="#exampleModal">
+                                <i class="fa fa-plus"></i> Nueva Asiento
+                            </button>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown"
+                                    aria-haspopup="true" aria-expanded="false">
+                                    Más opciones
+                                </button>
+                                <div class="dropdown-menu" x-placement="bottom-start"
+                                    style="position: absolute; transform: translate3d(0px, 36px, 0px); top: 0px; left: 0px; will-change: transform;">
+                                    <a class="dropdown-item" href="#" data-toggle="modal"
+                                        data-target="#exampleModalXML">
+                                        <span class="fa fa-download"></span> Importar </a>
+                                    <a class="dropdown-item" href="#" data-toggle="modal"
+                                        data-target="#exampleModalXML">
+                                        <span class="fa fa-upload"></span> Exportar </a>
+                                    <a class="dropdown-item" href="#">
+                                        <span class="fa fa-print"></span> Imprimir </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="#" data-toggle="modal"
+                                        data-target="#exampleModalXML">
+                                        <i class="fa fa-cog"></i> Configuración </a>
                                 </div>
-                            </td>
-                        </tr>
-                    </tfoot>
-                </table>
+                            </div>
+                        </div>
+                    </div>
+                    &nbsp;
+
+                    <!-- Date Range Input, Select Input and Search Input -->
+                    <div class="col-lg-12 col-md-12">
+                        <div class="button-group">
+                            <label>Fecha Asiento Inicio
+                                <input type="date" class="form-control" [(ngModel)]="fechaInicio"
+                                    (change)="filtrarAsientos()" (dblclick)="borrarFechaInicio()"
+                                    style="width: 100%;" />
+                            </label>
+                            &nbsp;
+                            <label>Fecha Asiento Fin
+                                <input type="date" class="form-control" [(ngModel)]="fechaFin"
+                                    (change)="filtrarAsientos()" (dblclick)="borrarFechaFin()" style="width: 100%;" />
+                            </label>
+                            &nbsp;
+                            <label>Estado
+                                <select class="form-control" [(ngModel)]="estadoSelect" (change)="filtrarAsientos()"
+                                    style="width: 100%;">
+                                    <option value="">TODOS</option>
+                                    <option value="true">ACTIVO</option>
+                                    <option value="false">ANULADO</option>
+                                </select>
+                            </label>
+
+                            &nbsp;
+                            <label>Buscar
+                                <input type="text" class="form-control flex-fill" [(ngModel)]="buscarTexto"
+                                    placeholder="Factura, RUC/CI, Razón Social " (input)="filtrarAsientos()" />
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table Data -->
+                <div class="table-responsive">
+
+                    <table id="demo-foo-addrow" class="table m-t-30 table-hover contact-list footable-loaded footable"
+                        data-page-size="10">
+                        <thead>
+                            <tr>
+
+                                <th class="footable-sortable text-center">#<span class="footable-sort-indicator"></span>
+                                </th>
+                                <th class="footable-sortable text-center">ID<span
+                                        class="footable-sort-indicator"></span>
+                                </th>
+                                <th class="footable-sortable">Fecha Asiento <span
+                                        class="footable-sort-indicator"></span>
+                                </th>
+                                <th class="footable-sortable">Referencia<span class="footable-sort-indicator"></span>
+                                </th>
+                                <th class="footable-sortable">Documento<span class="footable-sort-indicator"></span>
+                                </th>
+                                <th class="footable-sortable">Estado<span class="footable-sort-indicator"></span></th>
+                                <th class="footable-sortable text-center">Action<span
+                                        class="footable-sort-indicator"></span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            <tr *ngFor="let asiento of asientos let i = index">
+                                <td class="text-center">
+                                    <span class="footable-toggle"></span>
+                                    {{ (paginaActual - 1) * itemsPorPagina + i + 1 }}
+                                </td>
+                                <td class="text-center">{{asiento.id_asiento}}</td>
+                                <td>{{asiento.fecha_asiento | date:'yyyy-MM-dd' }}</td>
+                                <td>{{asiento.referencia}}</td>
+                                <td>{{asiento.documento}}</td>
+
+                                <td *ngIf="asiento.estado; else inactivo">
+                                    <div class="label label-table label-success">ACTIVO</div>
+                                </td>
+                                <ng-template #inactivo>
+                                    <td>
+                                        <div class="label label-table label-danger">ANULADO</div>
+                                    </td>
+                                </ng-template>
+
+                                <td *ngIf="asiento.estado else inactivoOption" class="text-nowrap text-center">
+
+                                    <a class="cursor" data-toggle="modal"
+                                        (click)="cargarAsientoPorId(asiento.id_asiento); cargarDetalleAsientos(asiento.id_asiento)"
+                                        data-target="#exampleModalU"><span
+                                            class="fa fa-pencil text-inverse m-r-10"></span></a>
+
+                                    <a class="cursor" (click)="borrarAsiento(asiento);" data-toggle="tooltip"
+                                        data-original-title="Close"> <i class="fa fa-close text-danger"></i> </a>
+                                </td>
+                                <ng-template #inactivoOption>
+                                </ng-template>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                        </tfoot>
+                    </table>
+                </div>
+                <hr>
+
+                <!-- Pagination-->
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="form-inline">Mostrar &nbsp;
+                            <select id="demo-show-entries" [(ngModel)]="itemsPorPagina"
+                                (change)="changeItemsPorPagina()" class="mr-2">
+                                <option value="5">5</option>
+                                <option value="10">10</option>
+                                <option value="15">15</option>
+                                <option value="20">20</option>
+                            </select>entradas
+                        </label>
+                        <div class="form-inline">
+                            <label class="mr-2">Mostrando</label>
+                            {{ getMinValue() }}
+                            a {{ getMaxValue() > totalAsientos ? totalAsientos : getMaxValue() }}
+                            de {{ totalAsientos }} datos
+                        </div>
+                    </div>
+                    <div class="col-md-6 float-left" style="text-align: right;">
+                        <button class="btn btn-secondary waves-effect waves-light" type="button"
+                            (click)="cambiarPagina(1)">
+                            <i class="mdi mdi-chevron-double-left"></i>
+                        </button>
+                        <button class="btn btn-secondary waves-effect waves-light" type="button"
+                            (click)="cambiarPagina(paginaActual - 1)">
+                            <i class="mdi mdi-chevron-left"></i>
+                        </button>
+                        <ng-container *ngIf="mostrarPaginacion; else showFirstPageButton">
+                            <ng-container *ngFor="let pagina of paginas">
+                                <button class="btn btn-secondary waves-effect waves-light" type="button"
+                                    (click)="cambiarPagina(pagina)">
+                                    {{ pagina }}
+                                </button>
+                            </ng-container>
+                        </ng-container>
+                        <ng-template #showFirstPageButton>
+                            <button class="btn btn-secondary waves-effect waves-light" type="button"
+                                (click)="cambiarPagina(1)">
+                                1
+                            </button>
+                        </ng-template>
+                        <button class="btn btn-secondary waves-effect waves-light" type="button"
+                            (click)="cambiarPagina(paginaActual + 1)">
+                            <i class="mdi mdi-chevron-right"></i>
+                        </button>
+                        <button class="btn btn-secondary waves-effect waves-light" type="button"
+                            (click)="cambiarPagina(totalPaginas)">
+                            <i class="mdi mdi-chevron-double-right"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<style>
-    .modal-dialog {
-        max-width: 80%;
-        /* Ajusta el valor según tus necesidades */
-        margin: 30px auto;
-    }
-</style>
-
-<!-- Modal create -->
+<!-- Modal Create Asiento -->
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel1" #miModal>
     <div class="modal-dialog" role="document" style="width: 100%;" max-width="1000px;">
         <div class="modal-content">
-            
+
             <div class="modal-header">
                 <h4 class="modal-title" id="exampleModalLabel1">Nuevo Asiento</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -188,16 +280,20 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control text-right" formControlName="descripcion_{{i}}">
+                                        <input type="text" class="form-control text-right"
+                                            formControlName="descripcion_{{i}}">
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control text-right" formControlName="documentod_{{i}}">
+                                        <input type="text" class="form-control text-right"
+                                            formControlName="documentod_{{i}}">
                                     </td>
                                     <td>
-                                        <input type="number" class="form-control text-right" formControlName="debe_{{i}}">
+                                        <input type="number" class="form-control text-right"
+                                            formControlName="debe_{{i}}">
                                     </td>
                                     <td>
-                                        <input type="number" class="form-control text-right" formControlName="haber_{{i}}">
+                                        <input type="number" class="form-control text-right"
+                                            formControlName="haber_{{i}}">
                                     </td>
                                     <td class="text-center">
                                         <button type="button" class="btn btn-danger btn-sm"
@@ -271,7 +367,7 @@
 <div class="modal fade" id="exampleModalU" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel1" #miModal>
     <div class="modal-dialog" role="document" style="width: 100%;" max-width="1000px;">
         <div class="modal-content">
-            
+
             <div class="modal-header">
                 <h4 class="modal-title" id="exampleModalLabel1">Actualizar Asiento</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -283,12 +379,12 @@
                 <h3><b>ASIENTO # </b> {{ id_asiento }}</h3>
                 <h5><b>Fecha : </b> {{ fechaActual}}</h5>
             </div>
-            
+
             <div class="modal-body">
                 <!-- Asiento Form -->
                 <form autocomplete="off" [formGroup]="asientoFormU">
                     <div class="row">
-                        
+
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="exampleInputuname">Referencia</label>
@@ -333,21 +429,25 @@
 
                     <div class="table-responsive">
 
-                        <table id="demo-foo-addrow" class="table m-t-30 table-hover contact-list footable-loaded footable"
-                            data-page-size="10">
+                        <table id="demo-foo-addrow"
+                            class="table m-t-30 table-hover contact-list footable-loaded footable" data-page-size="10">
                             <thead>
                                 <tr>
-        
-                                    <th class="footable-sortable text-center">#<span class="footable-sort-indicator"></span></th>
-                                    <th class="footable-sortable">Descripción <span class="footable-sort-indicator"></span>
+
+                                    <th class="footable-sortable text-center">#<span
+                                            class="footable-sort-indicator"></span></th>
+                                    <th class="footable-sortable">Descripción <span
+                                            class="footable-sort-indicator"></span>
                                     </th>
-                                    <th class="footable-sortable">Documento<span class="footable-sort-indicator"></span></th>
+                                    <th class="footable-sortable">Documento<span class="footable-sort-indicator"></span>
+                                    </th>
                                     <th class="footable-sortable">Debe<span class="footable-sort-indicator"></span></th>
-                                    <th class="footable-sortable">Haber<span class="footable-sort-indicator"></span></th>
+                                    <th class="footable-sortable">Haber<span class="footable-sort-indicator"></span>
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
-        
+
                                 <tr *ngFor="let da of detalle_asientos let i = index">
                                     <td class="text-center">{{da.id_asiento}}</td>
                                     <td>{{da.descripcion}}</td>
@@ -361,16 +461,19 @@
                             </tbody>
                             <tfoot>
                                 <tr>
-        
+
                                     <td colspan="8">
                                         <div class="text-right">
                                             <ul class="pagination">
                                                 <li class="footable-page-arrow disabled"><a data-page="first"
                                                         href="#first">«</a></li>
-                                                <li class="footable-page-arrow disabled"><a data-page="prev" href="#prev">‹</a>
+                                                <li class="footable-page-arrow disabled"><a data-page="prev"
+                                                        href="#prev">‹</a>
                                                 </li>
-                                                <li class="footable-page-arrow"><a data-page="next" href="#next">›</a></li>
-                                                <li class="footable-page-arrow"><a data-page="last" href="#last">»</a></li>
+                                                <li class="footable-page-arrow"><a data-page="next" href="#next">›</a>
+                                                </li>
+                                                <li class="footable-page-arrow"><a data-page="last" href="#last">»</a>
+                                                </li>
                                             </ul>
                                         </div>
                                     </td>
@@ -381,7 +484,7 @@
 
                 </form>
 
-                
+
             </div>
 
             <div class="col-md-12">
@@ -395,3 +498,12 @@
         </div>
     </div>
 </div>
+
+
+<style>
+    .modal-dialog {
+        max-width: 80%;
+        /* Ajusta el valor según tus necesidades */
+        margin: 30px auto;
+    }
+</style>
