@@ -58,8 +58,8 @@ export class DetalleAsientoComponent implements OnInit {
 
   cargarDetalleAsientos() {
     this.detalleAsientoService.loadDetalleAsientos()
-      .subscribe(({ detalle_asientos }) => {
-        this.detalle_asientos = detalle_asientos;
+      .subscribe(({ detalles_asiento }) => {
+        this.detalle_asientos = detalles_asiento;
       })
   }
 

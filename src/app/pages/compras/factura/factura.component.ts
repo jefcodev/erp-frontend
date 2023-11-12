@@ -261,26 +261,26 @@ export class FacturaComponent implements OnInit {
 
       id_proveedor: ['', [Validators.required, Validators.minLength(0)]],
       identificacion: ['', [Validators.required, Validators.minLength(0)]],
-      razon_social: ['', [Validators.required, Validators.minLength(0)]],
-      direccion: ['', [Validators.required, Validators.minLength(0)]],
+      razon_social: [''],
+      direccion: [''],
       telefono: [],
       email: [],
 
       id_asiento: ['1'],
-      codigo: [''],
+      codigo: ['', Validators.required],
       fecha_emision: ['', Validators.required],
-      fecha_vencimiento: ['', [Validators.required]],
+      fecha_vencimiento: ['', Validators.required],
       total_sin_impuesto: [],
       total_descuento: [],
       valor: [],
       propina: [],
       importe_total: [],
-      
+
       id_forma_pago: [''],
       fecha_pago: [''],
       abono: [],
       observacion: [''],
-      
+
       saldo: ['0.00'],
     });
 
@@ -304,12 +304,12 @@ export class FacturaComponent implements OnInit {
       total_descuento: [''],
       valor: [''],
       importe_total: [''],
-      
+
       id_forma_pago: [''],
       fecha_pago: [''],
       abono: [''],
       observacion: [''],
-      
+
       saldo: ['0.00'],
     });
 
@@ -339,7 +339,7 @@ export class FacturaComponent implements OnInit {
       fecha_pago: [''],
       abono: [''],
       observacion: [''],
-      
+
       saldo: ['0.00'],
     });
 
@@ -404,7 +404,7 @@ export class FacturaComponent implements OnInit {
     this.fechaActual = formatDate(fechaActual, 'd-M-yyyy', 'en-US', 'UTC-5');
   }*/
 
-  
+
   async ngOnInit(): Promise<void> {
     this.cargarProveedoresAll();
     this.cargarFormasPago();
@@ -417,7 +417,7 @@ export class FacturaComponent implements OnInit {
     const fechaActual = new Date();
     this.fechaActual = formatDate(fechaActual, 'd-M-yyyy', 'en-US', 'UTC-5');
   }
-  
+
 
 
   // Método para cargar todos los proveedores 
@@ -465,7 +465,7 @@ export class FacturaComponent implements OnInit {
   // Método para cargar facturas paginadas en Table Data Factura
   cargarFacturas() {
     const desde = (this.paginaActual - 1) * this.itemsPorPagina;
-    console.log("DESDE: ",desde)
+    console.log("DESDE: ", desde)
     console.log("LIMIT", this.itemsPorPagina)
     this.facturaService.loadFacturas(desde, this.itemsPorPagina)
       .subscribe(({ facturas, totalFacturas }) => {
@@ -701,7 +701,7 @@ export class FacturaComponent implements OnInit {
     if (!this.facturaForm.get('fecha_vencimiento').value) {
       this.facturaForm.get('fecha_vencimiento').setValue(null);
     }
-    
+
     this.facturaForm.get('total_sin_impuesto').setValue(this.sumaTotalSinImpuesto);
     this.facturaForm.get('total_descuento').setValue(this.sumaTotalDescuento);
     this.facturaForm.get('valor').setValue(this.sumaTotalIVA);
@@ -749,12 +749,8 @@ export class FacturaComponent implements OnInit {
             this.cargarProductosAll()
             this.cerrarModal();
             this.recargarComponente();
-          },
-          (err) => {
-            let errorMessage = 'Se produjo un error al crear el factura..';
-            if (err.error && err.error.msg) {
-              errorMessage = err.error.msg;
-            }
+          }, (err) => {
+            const errorMessage = err.error?.msg || 'Se produjo un error al crear la factura.';
             Swal.fire('Error', errorMessage, 'error');
           }
         );
@@ -1884,6 +1880,7 @@ export class FacturaComponent implements OnInit {
       return false;
     }
   }
+
   // Método para recargar componente
   recargarComponente() {
     this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {

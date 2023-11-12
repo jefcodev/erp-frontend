@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { map, Observable, tap, catchError, of } from 'rxjs';
 
 // Interfaces
-import { FormDetalleAsiento } from '../../interfaces/contabilidad/detalle-asiento/form-detalle-asiento.interface';
+//import { FormDetalleAsiento } from '../../interfaces/contabilidad/detalle-asiento/form-detalle-asiento.interface';
 import { LoadDetalleAsiento } from '../../interfaces/contabilidad/detalle-asiento/load-detalle-asiento.interface';
 import { LoginForm } from '../../interfaces/login-form.iterface';
 
@@ -20,6 +20,7 @@ const base_url = environment.base_url;
 @Injectable({
   providedIn: 'root'
 })
+
 export class DetalleAsientoService {
 
   constructor(private hhtp: HttpClient,
@@ -48,12 +49,12 @@ export class DetalleAsientoService {
       )
   }
 
-  loadDetalleAsientoByAsiento(id_asiento: any) {
+  loadDetallesAsientoByIdAsiento(id_asiento: any) {
     const url = `${base_url}/detalle-asientos/asiento/${id_asiento}`;
     return this.hhtp.get<LoadDetalleAsiento>(url, this.headers);
   }
 
-  createDetalleAsiento(formData: FormDetalleAsiento) {
+  createDetalleAsiento(formData: any) {
     const url = `${base_url}/detalle-asientos`;
     return this.hhtp.post(url, formData, this.headers)
       .pipe(
@@ -61,16 +62,13 @@ export class DetalleAsientoService {
       )
   }
 
-
-  createDetalleAsiento2(detalles: DetalleAsiento[]) {
+  createDetalleAsientoArray(detalles: DetalleAsiento[]) {
     const url = `${base_url}/detalle-asientos`;
     const formData = { detalles }; // Crear un objeto con una propiedad 'detalles' que contenga el arreglo de detalles
     return this.hhtp.post(url, formData, this.headers).pipe(
       map((resp: { ok: boolean; detalle_asiento: DetalleAsiento[] }) => resp.detalle_asiento)
     );
   }
-
-  
 
   updateDetalleAsiento(detalle_asiento: DetalleAsientoU) {
     const url = `${base_url}/detalle-asientos/${detalle_asiento.id_detalle_asiento}`;
