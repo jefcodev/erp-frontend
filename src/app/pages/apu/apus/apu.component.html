@@ -162,7 +162,7 @@
 
                         <td class="text-center">
                           <!-- Botón para eliminar la fila actual -->
-                          <a class="cursor" (click)="deleteFilaMateriales(i)" data-toggle="tooltip"
+                          <a class="cursor" (click)="deleteFilaMateriales(i); calcularTotalMateriales();" data-toggle="tooltip"
                             data-original-title="Eliminar"> <i class="fa fa-close text-danger"></i> </a>
 
                         </td>
@@ -206,7 +206,91 @@
 
                 </div>
               </div>
+              <div class="col-md-12">
+                <h3 class="box-title">Transporte</h3>
+                <hr class="m-t-0 m-b-40">
 
+                <div class="table-responsive">
+                  <table class="table table-bordered">
+                    <thead>
+                      <th class="text-center">Código</th>
+                      <th class="text-center">Descripción</th>
+                      <th class="text-center">Cantidad</th>
+                      <th class="text-center">Unidad</th>
+                      <th class="text-center">Precio</th>
+                      <th class="text-center">Total</th>
+                      <th class="text-center">Acciones</th>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let item of filasTransporte; let i = index">
+                        <td>
+                          <input type="text" class="form-control text-right" [(ngModel)]="item.codigot" name="codigot{{i}}" disabled>
+                        </td>
+                  
+                        <td>
+                          <ng-select [items]="transporte" bindLabel="descripcion" placeholder="Seleccione un producto"
+                            [(ngModel)]="item.transporte" name="descripciont{{i}}" [searchable]="true"
+                            (ngModelChange)="actualizarDatosTransporte($event, i); calcularSubTotalTransporte(i);"></ng-select>
+                        </td>
+                        <td>
+                          <input type="number" min="0.0000" class="form-control text-right" [(ngModel)]="item.cantidadt"
+                            name="cantidadt{{i}}" (ngModelChange)="calcularSubTotalTransporte(i); calcularTotalTransporte();">
+                        </td>
+                        <td>
+                          <input type="text" class="form-control text-right" [(ngModel)]="item.unidadt" name="unidadt{{i}}">
+                        </td>
+                        <td>
+                          <input type="number" class="form-control text-right" [(ngModel)]="item.preciot" name="preciot{{i}}"
+                            (ngModelChange)="calcularSubTotalTransporte(i)" disabled>
+                        </td>
+                        <td>
+                          <input type="number" class="form-control text-right" [(ngModel)]="item.totalt" name="item.totalt{{i}}" disabled>
+                        </td>
+                        <td class="text-center">
+                          <a class="cursor" (click)="deleteFilaTransporte(i); calcularTotalTransporte();" data-toggle="tooltip"
+                            data-original-title="Eliminar"> <i class="fa fa-close text-danger"></i> </a>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                                
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <!-- Botón para agregar una nueva fila -->
+                      <button (click)="addFilaTransporte()" class="btn btn-success">
+                        Agregar <span class="fa fa-plus" style="padding-left: 10px;"></span>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="col-md-12">
+
+                    <div class="row">
+                      <!-- Espaciador -->
+                      <div class="col-md-6"></div>
+
+                      <!-- Detalle -->
+                      <div class="col-md-4">
+                        <div class="m-t-30 text-right">
+                          <p class="text-right">Total Transporte =</p>
+                          <p class="text-right">Unitario Transporte =</p>
+
+                        </div>
+
+                      </div>
+
+                      <!-- Valores -->
+                      <div class="col-md-2">
+                        <div class="pull-right m-t-30 text-right">
+                          <p class="text-right">$ {{totalTransporte}}</p>
+                          <p class="text-right">$ {{totalTransporte}}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <br>
+                  </div>
+
+                </div>
+              </div>
 
 
               <div class="col-md-12">
@@ -257,10 +341,8 @@
                             name="item.totale{{i}}" disabled>
                         </td>
                         <td class="text-center">
-                          <!-- Botón para eliminar la fila actual -->
-                          <button (click)="deleteFilaEquipos(i)" class="btn btn-danger">
-                            <i class="ti-trash"></i>
-                          </button>
+                           <a class="cursor" (click)="deleteFilaEquipos(i); calcularTotalEquipos(); calcularRendimiento();" data-toggle="tooltip"
+                           data-original-title="Eliminar"> <i class="fa fa-close text-danger"></i> </a>
                         </td>
                       </tr>
                     </tbody>
@@ -322,13 +404,14 @@
 
                         <td>
                           <ng-select [items]="puestos" bindLabel="cargo" placeholder="Seleccione puesto"
-                            [(ngModel)]="item.puestos" name="descripcionm{{i}}" [searchable]="true">
+                            [(ngModel)]="item.puestos" name="descripcionm{{i}}" [searchable]="true"
+                            (ngModelChange)="actualizarDatosManoObra($event, i); calcularSubTotalManoObra(i);"                            >
                           </ng-select>
 
                         </td>
                         <td>
                           <input type="number" class="form-control text-right" [(ngModel)]="item.cantidadm"
-                            name="cantidadm{{i}}">
+                            name="cantidadm{{i}}" (ngModelChange)="calcularSubTotalManoObra(i);" >
                         </td>
                         <td>
                           <input type="text" class="form-control text-right" [(ngModel)]="item.unidadm"
@@ -340,20 +423,19 @@
 
 
                         </td>
-
+                        
                         <td>
                           <input type="number" class="form-control text-right" [(ngModel)]="item.preciom"
-                            name="preciom{{i}}">
+                            name="preciom{{i}}" (ngModelChange)="calcularSubTotalManoObra(i);">
                         </td>
                         <td>
                           <input type="number" class="form-control text-right" [(ngModel)]="item.totalm"
                             name="totalm{{i}}">
                         </td>
                         <td class="text-center">
-                          <!-- Botón para eliminar la fila actual -->
-                          <button (click)="deleteFilaManoObra(i)" class="btn btn-danger">
-                            <i class="ti-trash"></i>
-                          </button>
+                          
+                          <a class="cursor" (click)="deleteFilaManoObra(i); calcularSubTotalManoObra(i);" data-toggle="tooltip"
+                           data-original-title="Eliminar"> <i class="fa fa-close text-danger"></i> </a>
                         </td>
                       </tr>
                     </tbody>

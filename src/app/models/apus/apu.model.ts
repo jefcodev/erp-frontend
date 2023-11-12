@@ -8,6 +8,7 @@ export class Apu {
     materiales: Material[];
     equipos: Equipo[];
     mano_obra: ManoObra[];
+    transporte: Transporte[];
   }
   
   export class Material {
@@ -33,5 +34,12 @@ export class Apu {
     cantidadm: number;
     unidadm: string;
     preciom: number;
+  }
+  export class Transporte {
+    codigot: string;
+    descripciont: string;
+    cantidadt: number;
+    unidadt: string;
+    preciot: number;
   }
   

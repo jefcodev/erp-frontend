@@ -22,14 +22,15 @@ export class ApuComponent implements OnInit {
   filasMateriales: any [] = [];
   filasEquipos: any[] = [];
   filasManoObra: any[] = [];
+  filasTransporte : any []=[];
 
   /* Cargar dartos */
   unidades: Unit[] = [];
   productos: Producto[]=[];
   herramientas : Producto []=[];
   puestos: Puesto []=[];
+  transporte : Producto []=[];
 
-  
 
 /* 
 codigo
@@ -52,8 +53,6 @@ jornal
 
 
 
-  selectedPuesto: Puesto | null = null;
-
   /* Variables de totales unitarios */
 
   totalMateriales: number = 0;
@@ -62,7 +61,9 @@ jornal
   unitarioEquipos: number = 0;
 
   totalManoObra: number = 0;
-  unitarioManoObra: number =0;
+  unitarioManoObra: number = 0;
+
+  totalTransporte : number = 0;
   
 
   constructor(private apuService: ApuService,
@@ -76,6 +77,7 @@ jornal
      this.cargarProductos();
      this.cargarProductosHerramientas();
      this.cargarPuestos();
+     this.cargarProductosTransporte();
      
      
      console.log('Puestos'+ this.puestos)
@@ -96,7 +98,7 @@ jornal
 
   /* Add & Delete Filas Equipos */
   addFilaEquipos() {
-    this.filasEquipos.push({ descripcione: '', cantidade: null, unidade: '', precioe: null, totale: null });
+    this.filasEquipos.push({ codige:'',descripcione: '', cantidade: null, unidade: '', precioe: null, totale: null });
   }
   deleteFilaEquipos(index: number) {
     if (this.filasEquipos.length >= 1) {
@@ -106,11 +108,20 @@ jornal
 
   /* Add & Delete Filas Mano de Obra */
   addFilaManoObra() {
-    this.filasManoObra.push({ descripcionm: '', cantidadm: null, unidadm: '', preciom: null, totalm: null });
+    this.filasManoObra.push({codigom:'', descripcionm: '', cantidadm: null, unidadm: '', preciom: null, totalm: null });
   }
   deleteFilaManoObra(index: number) {
     if (this.filasManoObra.length >= 1) {
       this.filasManoObra.splice(index, 1);
+    }
+  }
+  /* Add & Delete Filas Transporte */
+  addFilaTransporte() {
+    this.filasTransporte.push({ codigot:'',descripciont: '', cantidadt: null, unidadt: '', preciot: null, totalt: null });
+  }
+  deleteFilaTransporte(index: number) {
+    if (this.filasTransporte.length >= 1) {
+      this.filasTransporte.splice(index, 1);
     }
   }
 
@@ -187,30 +198,29 @@ calcularRendimiento(){
 
 /* Métodos para cambiar datos Mano de Obra */
 
-actualizarDatosManoObra(productoSeleccionado: any, indice: number) {
+actualizarDatosManoObra(trabajoSeleccionado: any, indice: number) {
     
-  if (productoSeleccionado) {
+  if (trabajoSeleccionado) {
     // Si se ha seleccionado un producto, actualiza el campo de "precio" en la fila correspondiente
-    this.filasEquipos[indice].precioe = productoSeleccionado.precio_compra;
-    this.filasEquipos[indice].descripcione = productoSeleccionado.descripcion;
+    this.filasManoObra[indice].preciom = trabajoSeleccionado.salario;
+    this.filasManoObra[indice].descripcionm = trabajoSeleccionado.cargo;
     
   }
 }
 
 calcularSubTotalManoObra(indice: number) {
-  const fila = this.filasEquipos[indice];
-  if (fila.cantidade !== null && fila.precioe !== null) {
-    fila.totale = fila.cantidade * fila.precioe;
+  const fila = this.filasManoObra[indice];
+  if (fila.cantidadm !== null && fila.preciom !== null) {
+    fila.totalm = fila.cantidadm * fila.preciom;
   }
 }
 
 calcularTotalManoObra() {
-  this.totalEquipos = this.filasEquipos.reduce((total, fila) => {
-    return total + (fila.totale || 0); // Se utiliza "totale" en lugar de "total"
+  this.totalManoObra = this.filasManoObra.reduce((total, fila) => {
+    return total + (fila.m || 0); // Se utiliza "totale" en lugar de "total"
   }, 0);
-
   // Redondear el total a 2 decimales
-  this.totalEquipos = parseFloat(this.totalEquipos.toFixed(2));
+  this.totalManoObra = parseFloat(this.totalManoObra.toFixed(2));
 }
 
 calcularRendimientoManoObra(){
@@ -218,6 +228,50 @@ calcularRendimientoManoObra(){
   this.unitarioEquipos = parseFloat(this.unitarioEquipos.toFixed(2))
   return this.unitarioEquipos;
 }
+
+
+
+
+/* Metodos actualización de datos Transporte */
+
+
+actualizarDatosTransporte(trabajoSeleccionado: any, indice: number) {
+    
+  if (trabajoSeleccionado) {
+    // Si se ha seleccionado un producto, actualiza el campo de "precio" en la fila correspondiente
+    this.filasTransporte[indice].preciot = trabajoSeleccionado.precio_compra;
+    this.filasTransporte[indice].descripciont = trabajoSeleccionado.descripcion;
+    
+  }
+}
+
+calcularSubTotalTransporte(indice: number) {
+  const fila = this.filasTransporte[indice];
+  if (fila.cantidadt !== null && fila.preciot !== null) {
+    fila.totalt = fila.cantidadt * fila.preciot;
+  }
+}
+
+calcularTotalTransporte() {
+  this.totalTransporte = this.filasTransporte.reduce((total, fila) => {
+    return total + (fila.m || 0); // Se utiliza "totale" en lugar de "total"
+  }, 0);
+  // Redondear el total a 2 decimales
+  this.totalTransporte = parseFloat(this.totalTransporte.toFixed(2));
+}
+
+/* calcularRendimientoTransporte(){
+  this.unitarioEquipos =  this.totalEquipos/ this.rendimientoC
+  this.unitarioEquipos = parseFloat(this.unitarioEquipos.toFixed(2))
+  return this.unitarioEquipos;
+} */
+
+
+
+
+
+
+
 
 
 
@@ -247,6 +301,13 @@ calcularRendimientoManoObra(){
       })
       console.log('Puestos')
   }
+  cargarProductosTransporte() {
+    this.productoService.loadProductosMateriales()
+      .subscribe(({ productos }) => {
+        this.transporte = productos;
+      })
+      console.log('Puestos')
+  }
   cargarUnidades() {
     this.unidadesService.cargarUnits()
       .subscribe((unidades: Unit[]) => {
@@ -271,6 +332,7 @@ calcularRendimientoManoObra(){
       materiales: this.filasMateriales,
       equipos: this.filasEquipos,
       mano_obra: this.filasManoObra,
+      transporte : this.filasTransporte
     };
 
     console.log('APU' + apu);
