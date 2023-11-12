@@ -34,13 +34,17 @@ export class AsientoService {
     }
   }
 
-  loadAsientos() {
-    const url = `${base_url}/asientos`;
+  loadAsientos(desde: number = 0, limit: number = 0) {
+    const url = `${base_url}/contabilidad/asientos?desde=${desde}&limit=${limit}`;
+    return this.hhtp.get<LoadAsiento>(url, this.headers);
+  }
+  loadAsientosAll() {
+    const url = `${base_url}/contabilidad/asientos/all`;
     return this.hhtp.get<LoadAsiento>(url, this.headers);
   }
 
   loadAsientoById(id_asiento: any) {
-    const url = `${base_url}/asientos/${id_asiento}`;
+    const url = `${base_url}/contabilidad/asientos/${id_asiento}`;
     return this.hhtp.get(url, this.headers)
       .pipe(
         map((resp: { ok: boolean, asiento: Asiento }) => resp.asiento)
@@ -48,7 +52,7 @@ export class AsientoService {
   }
 
   createAsiento(formData: FormAsiento) {
-    const url = `${base_url}/asientos`;
+    const url = `${base_url}/contabilidad/asientos`;
     return this.hhtp.post(url, formData, this.headers)
       .pipe(
         map((resp: { ok: boolean, asiento: Asiento[] }) => resp.asiento)
@@ -56,12 +60,12 @@ export class AsientoService {
   }
 
   updateAsiento(asiento: Asiento) {
-    const url = `${base_url}/asientos/${asiento.id_asiento}`;
+    const url = `${base_url}/contabilidad/asientos/${asiento.id_asiento}`;
     return this.hhtp.put(url, asiento, this.headers);
   }
 
   deleteAsiento(id_asiento: any) { //OJO: any
-    const url = `${base_url}/asientos/${id_asiento}`;
+    const url = `${base_url}/contabilidad/asientos/${id_asiento}`;
     return this.hhtp.delete(url, this.headers);
   }
 

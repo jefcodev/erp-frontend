@@ -239,7 +239,7 @@ export class FacturaComponent implements OnInit {
     private router: Router,
     private renderer: Renderer2,
 
-    // Servicios 
+    // Services
     private proveedorService: ProveedorService,
     private pagoService: PagoService,
     private productoService: ProductoService,
@@ -249,7 +249,7 @@ export class FacturaComponent implements OnInit {
 
     //XML
     private http: HttpClient,
-    private elementRef: ElementRef,
+    //private elementRef: ElementRef,
 
     // Filtrado de facturas
     private datePipe: DatePipe,
@@ -465,6 +465,8 @@ export class FacturaComponent implements OnInit {
   // Método para cargar facturas paginadas en Table Data Factura
   cargarFacturas() {
     const desde = (this.paginaActual - 1) * this.itemsPorPagina;
+    console.log("DESDE: ",desde)
+    console.log("LIMIT", this.itemsPorPagina)
     this.facturaService.loadFacturas(desde, this.itemsPorPagina)
       .subscribe(({ facturas, totalFacturas }) => {
         this.facturas = facturas;
