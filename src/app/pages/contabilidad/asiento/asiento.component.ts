@@ -19,6 +19,7 @@ import { Cuenta } from 'src/app/models/contabilidad/cuenta.model';
 interface DetalleAsientoFormInterface {
   cuenta: number;
   descripcion: string;
+  documento: string;
   documentod: string;
   debe: number;
   haber: number;
@@ -51,9 +52,11 @@ export class AsientoComponent implements OnInit {
   public asientoFormU: FormGroup;
   public asientoSeleccionado: Asiento;
   public detalles_asiento: DetalleAsiento[] = [];
+  public total_debe: number;
+  public total_haber: number;
 
 
-  public id_asiento: number = 1;
+  public id_asiento: number;
 
   public detalleAsiento: DetalleAsiento;
 
@@ -110,9 +113,10 @@ export class AsientoComponent implements OnInit {
     });
 
     this.asientoFormU = this.fb.group({
-      //id_asiento: [''], 
 
-      fecha_asiento: [''],
+      //id_asiento: [''],
+
+      fecha_asiento: ['', Validators.required],
       referencia: ['', [Validators.required, Validators.minLength(1)]],
       documento: ['', [Validators.required, Validators.minLength(1)]],
       observacion: [''],
@@ -150,8 +154,13 @@ export class AsientoComponent implements OnInit {
   // Método para cargar detalles asiento por id asiento en Modal Update Asiento
   cargarDetallesAsientoByIdAsiento(id_asiento: any) {
     this.detalleAsientoService.loadDetallesAsientoByIdAsiento(id_asiento)
-      .subscribe(({ detalles_asiento }) => {
+      .subscribe(({ detalles_asiento, total_debe, total_haber }) => {
         this.detalles_asiento = detalles_asiento;
+        this.total_debe = total_debe;
+        this.total_haber = total_haber;
+        console.log("detalles_asiento: ", detalles_asiento)
+        console.log("total_debe: ", total_debe)
+        console.log("total_haber: ", total_haber)
       })
   }
 
@@ -168,18 +177,19 @@ export class AsientoComponent implements OnInit {
     this.cuentaService.loadCuentas()
       .subscribe(({ cuentas }) => {
         this.cuentas = cuentas;
-        console.log("Test (cuenta.component.ts) - cargarCuentas()")
-        console.log(cuentas)
-      })
+      });
   }
 
+  // Método para cargar asiento en Modal Update Asiento
   cargarAsientoPorId(id_asiento: any) {
     this.asientoService.loadAsientoById(id_asiento)
       .subscribe(asiento => {
-        const { referencia, documento, observacion } = asiento[0];
+        const { id_asiento, fecha_asiento, referencia, documento, observacion } = asiento[0];
         this.asientoSeleccionado = asiento[0];
-        this.asientoFormU.setValue({ referencia, documento, observacion })
-      })
+        this.id_asiento = id_asiento;
+        this.asientoFormU.setValue({ fecha_asiento, referencia, documento, observacion })
+        this.asientoFormU.get('fecha_asiento').setValue(this.datePipe.transform(fecha_asiento, 'yyyy-MM-dd'));
+      });
   }
 
   // Método para crear asiento en Modal Create Asiento
@@ -207,6 +217,20 @@ export class AsientoComponent implements OnInit {
       return;
     }
 
+    // Calcular la suma total de "Debe" y "Haber"
+    const sumaTotalDebe = this.detalleAsientoFormInterface.reduce((total, detalle) => total + detalle.debe, 0);
+    const sumaTotalHaber = this.detalleAsientoFormInterface.reduce((total, detalle) => total + detalle.haber, 0);
+
+    // Calcular la diferencia
+    const diferencia = sumaTotalDebe - sumaTotalHaber;
+
+    // Validar si la suma de "Debe" es igual a la suma de "Haber" o si la diferencia es cero
+    if (sumaTotalDebe !== sumaTotalHaber || diferencia !== 0) {
+      alert('La suma total de "Debe" debe ser igual a la suma total de "Haber" o la diferencia debe ser cero.');
+      // Puedes manejar la lógica adicional aquí
+      return;
+    }
+
     this.asientoService.createAsiento(this.asientoForm.value).subscribe(
       (res: any) => {
         const asientoId = res.id_asiento; // Obtener el ID del asiento guardado
@@ -221,6 +245,7 @@ export class AsientoComponent implements OnInit {
             id_asiento: asientoId,
             id_cuenta: detalle.cuenta,
             descripcion: detalle.descripcion,
+            documento: null,
             documentod: detalle.documentod,
             debe: detalle.debe,
             haber: detalle.haber
@@ -241,14 +266,14 @@ export class AsientoComponent implements OnInit {
             this.recargarComponente();
             this.cerrarModal();
           }, (err) => {
-            const errorMessage = err.error?.msg || 'Se produjo un error al crear la factura.';
+            const errorMessage = err.error?.msg || 'Se produjo un error al crear el asiento.';
             Swal.fire('Error', errorMessage, 'error');
           }
         );
         //this.recargarComponente();
       },
       (err) => {
-        const errorMessage = err.error?.msg || 'Se produjo un error al crear la factura.';
+        const errorMessage = err.error?.msg || 'Se produjo un error al crear el asiento 2.';
         Swal.fire('Error', errorMessage, 'error');
       }
     );
@@ -280,6 +305,7 @@ export class AsientoComponent implements OnInit {
         cuenta: formValues[`cuenta_${i}`],
         descripcion: formValues[`descripcion_${i}`],
         documentod: formValues[`documentod_${i}`],
+        documento: null,
         debe: formValues[`debe_${i}`],
         haber: formValues[`haber_${i}`]
       };
@@ -299,6 +325,7 @@ export class AsientoComponent implements OnInit {
     const nuevoDetalle: DetalleAsientoFormInterface = {
       cuenta: null,
       descripcion: null,
+      documento: null,
       documentod: null,
       debe: null,
       haber: null
@@ -509,12 +536,15 @@ export class AsientoComponent implements OnInit {
     }
   }
 
+  /*
   obtenerUltimoId(): number {
     if (this.asientos.length > 0) {
       return (this.asientos[this.asientos.length - 1].id_asiento) + 1;
     }
     return 0; // o cualquier valor predeterminado
   }
+
+  */
 
   // Método para recargar componente
   recargarComponente() {
@@ -564,9 +594,9 @@ export class AsientoComponent implements OnInit {
   // Método para actualizar en Modal Create Asiento
   actualizarDiferencia() {
     this.diferencia = this.sumaTotalDebe - this.sumaTotalHaber;
-    console.log("debe",this.sumaTotalDebe)
-    console.log("haber",this.sumaTotalHaber)
-    console.log("diferencias",this.diferencia)
+    console.log("debe", this.sumaTotalDebe)
+    console.log("haber", this.sumaTotalHaber)
+    console.log("diferencias", this.diferencia)
   }
 
   /*

@@ -4,6 +4,7 @@ export class DetalleAsiento {
         public id_asiento: number,
         public id_cuenta: number,
         public descripcion: string,
+        public documento: string,
         public documentod: string,
         public debe: number,
         public haber: number,
@@ -17,6 +18,7 @@ export class DetalleAsientoU {
         public id_asiento: number,
         public descripcion: string,
         public documento: string,
+        public documentod: string,
         public debe: number,
         public haber: number,
     ) { }

@@ -321,6 +321,7 @@
                     <h3><b>FACTURA COMPRA</b></h3>
                     <h5><b>#</b></h5>
                 </div>
+                <br>
 
                 <form autocomplete="off" [formGroup]="facturaForm">
 
@@ -564,11 +565,11 @@
                             </div>
                         </div>
                     </form>
+                    <hr>
 
                     <!-- Factura Form 2 -->
                     <div class="col-md-12">
                         <div class="clearfix"></div>
-                        <hr>
                         <div class="row">
 
                             <!-- Pago de Factura -->
@@ -695,6 +696,7 @@
                     <h3><b>FACTURA COMPRA</b></h3>
                     <h5><b># </b> {{ estab }}-{{ ptoEmi }}-{{ secuencial }}</h5>
                 </div>
+                <br>
 
                 <form autocomplete="off" [formGroup]="facturaFormXML">
 
@@ -1011,6 +1013,8 @@
                     <h3><b>FACTURA COMPRA</b></h3>
                     <h5><b># </b> {{ codigo}}</h5>
                 </div>
+                <br>
+                
                 <form autocomplete="off" [formGroup]="facturaFormU">
 
                     <!-- Factura Form Data-->
@@ -1167,9 +1171,6 @@
                                 </tr>
                             </tbody>
                             <tfoot>
-                                <tr>
-                                    <!--paginador-->
-                                </tr>
                             </tfoot>
                         </table>
                     </div>
@@ -1219,8 +1220,6 @@
                                 </tr>
                             </tbody>
                             <tfoot>
-                                <tr>
-                                </tr>
                             </tfoot>
                         </table>
                     </div>

@@ -49,8 +49,16 @@ export class DetalleAsientoService {
       )
   }
 
+  loadDetallesAsientoByIdAsiento3(id_asiento: any) {
+    const url = `${base_url}/contabilidad/detalle-asientos/asiento/${id_asiento}`;
+    return this.hhtp.get(url, this.headers)
+      .pipe(
+        map((resp: { ok: boolean, detalle_asiento: DetalleAsiento, total_debe: number, total_haber: number }) => resp.detalle_asiento)
+      )
+  }
+
   loadDetallesAsientoByIdAsiento(id_asiento: any) {
-    const url = `${base_url}/detalle-asientos/asiento/${id_asiento}`;
+    const url = `${base_url}/contabilidad/detalle-asientos/asiento/${id_asiento}`;
     return this.hhtp.get<LoadDetalleAsiento>(url, this.headers);
   }
 
@@ -63,7 +71,7 @@ export class DetalleAsientoService {
   }
 
   createDetalleAsientoArray(detalles: DetalleAsiento[]) {
-    const url = `${base_url}/detalle-asientos`;
+    const url = `${base_url}/contabilidad/detalle-asientos`;
     const formData = { detalles }; // Crear un objeto con una propiedad 'detalles' que contenga el arreglo de detalles
     return this.hhtp.post(url, formData, this.headers).pipe(
       map((resp: { ok: boolean; detalle_asiento: DetalleAsiento[] }) => resp.detalle_asiento)

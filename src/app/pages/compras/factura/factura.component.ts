@@ -1215,7 +1215,6 @@ export class FacturaComponent implements OnInit {
     // Limpia los datos anteriores antes de cargar una nueva factura
     //this.facturas = null;
     this.pagos = [];
-    console.log('jajjaja', this.saldoInicial)
     this.facturaService.loadFacturaById(id_factura_compra)
       .pipe(
         switchMap((factura: any) => {
