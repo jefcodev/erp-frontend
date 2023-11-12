@@ -1,5 +1,5 @@
 import { Component, OnInit, ElementRef, ViewChild, HostListener, Renderer2 } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormControl, FormArray, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 //import { SweetAlertIcon } from 'sweetalert2';
 import { formatDate, DatePipe } from '@angular/common';
@@ -44,29 +44,20 @@ export class AsientoComponent implements OnInit {
 
   // Modal Create Asiento
   public asientoForm: FormGroup;
+  public detalleAsientoForm: FormGroup;
   public detalleAsientoFormInterface: DetalleAsientoFormInterface[] = [];
   public validacionDetallesRequeridos = false;
-
+  public sumaTotalDebe: number = 0;
+  public sumaTotalHaber: number = 0;
+  public diferencia: number = 0;
 
   // Modal Update Asiento
   public asientoFormU: FormGroup;
   public asientoSeleccionado: Asiento;
   public detalles_asiento: DetalleAsiento[] = [];
+  public id_asiento: number;
   public total_debe: number;
   public total_haber: number;
-
-
-  public id_asiento: number;
-
-  public detalleAsiento: DetalleAsiento;
-
-  detalleAsientoForm: FormGroup;
-  ultimoId: number;
-  numeroAsiento: number;
-
-  public sumaTotalDebe: number = 0;
-  public sumaTotalHaber: number = 0;
-  public diferencia: number = 0;
 
   // Paginación
   //public totalAsientos: number = 0; abajo
@@ -103,9 +94,7 @@ export class AsientoComponent implements OnInit {
 
   ) {
     this.asientoForm = this.fb.group({
-
       id_asiento: [''],
-
       fecha_asiento: ['', Validators.required],
       referencia: ['', [Validators.required, Validators.minLength(1)]],
       documento: ['', [Validators.required, Validators.minLength(1)]],
@@ -113,9 +102,7 @@ export class AsientoComponent implements OnInit {
     });
 
     this.asientoFormU = this.fb.group({
-
       //id_asiento: [''],
-
       fecha_asiento: ['', Validators.required],
       referencia: ['', [Validators.required, Validators.minLength(1)]],
       documento: ['', [Validators.required, Validators.minLength(1)]],
@@ -126,18 +113,26 @@ export class AsientoComponent implements OnInit {
       detalles: this.fb.array([]),
     });
 
-
   }
 
   ngOnInit(): void {
+    this.cargarCuentas();
     this.cargarAsientos();
     this.cargarAsientosAll();
-    this.cargarCuentas();
 
     const fechaActual = new Date();
     this.fechaActual = formatDate(fechaActual, 'd-M-yyyy', 'en-US', 'UTC-5');
   }
 
+  // Método para cargar las cuentas
+  cargarCuentas() {
+    this.cuentaService.loadCuentas()
+      .subscribe(({ cuentas }) => {
+        this.cuentas = cuentas;
+      });
+  }
+
+  // Método para cargar asientos paginados en Table Data Asiento
   cargarAsientos() {
     const desde = (this.paginaActual - 1) * this.itemsPorPagina;
     console.log("DESDE: ", desde)
@@ -151,19 +146,6 @@ export class AsientoComponent implements OnInit {
       });
   }
 
-  // Método para cargar detalles asiento por id asiento en Modal Update Asiento
-  cargarDetallesAsientoByIdAsiento(id_asiento: any) {
-    this.detalleAsientoService.loadDetallesAsientoByIdAsiento(id_asiento)
-      .subscribe(({ detalles_asiento, total_debe, total_haber }) => {
-        this.detalles_asiento = detalles_asiento;
-        this.total_debe = total_debe;
-        this.total_haber = total_haber;
-        console.log("detalles_asiento: ", detalles_asiento)
-        console.log("total_debe: ", total_debe)
-        console.log("total_haber: ", total_haber)
-      })
-  }
-
   // Método para cargar todas asientos en Table Data Asiento
   cargarAsientosAll() {
     this.asientoService.loadAsientosAll()
@@ -171,233 +153,6 @@ export class AsientoComponent implements OnInit {
         this.allAsientos = asientos;
         this.totalAsientos = totalAsientos;
       });
-  }
-
-  cargarCuentas() {
-    this.cuentaService.loadCuentas()
-      .subscribe(({ cuentas }) => {
-        this.cuentas = cuentas;
-      });
-  }
-
-  // Método para cargar asiento en Modal Update Asiento
-  cargarAsientoPorId(id_asiento: any) {
-    this.asientoService.loadAsientoById(id_asiento)
-      .subscribe(asiento => {
-        const { id_asiento, fecha_asiento, referencia, documento, observacion } = asiento[0];
-        this.asientoSeleccionado = asiento[0];
-        this.id_asiento = id_asiento;
-        this.asientoFormU.setValue({ fecha_asiento, referencia, documento, observacion })
-        this.asientoFormU.get('fecha_asiento').setValue(this.datePipe.transform(fecha_asiento, 'yyyy-MM-dd'));
-      });
-  }
-
-  // Método para crear asiento en Modal Create Asiento
-  crearAsiento() {
-    this.formSubmitted = true;
-    this.validacionDetallesRequeridos = true;
-
-    if (this.detalleAsientoFormInterface.length < 2) {
-      //alert("Se requieren al menos dos detalles para guardar el asiento contable.");
-      return;
-    }
-
-    if (this.asientoForm.invalid) {
-      console.log("Validar Formulario", this.asientoForm.value);
-      return;
-    }
-
-    // Obtener los detalles del formulario
-    this.obtenerDetallesForm()
-
-    // Validar si todas las filas tienen contenido
-    if (!this.validarContenidoFilas()) {
-      alert('Todos los campos de la tabla deben estar llenos.');
-      // Puedes manejar la lógica adicional aquí
-      return;
-    }
-
-    // Calcular la suma total de "Debe" y "Haber"
-    const sumaTotalDebe = this.detalleAsientoFormInterface.reduce((total, detalle) => total + detalle.debe, 0);
-    const sumaTotalHaber = this.detalleAsientoFormInterface.reduce((total, detalle) => total + detalle.haber, 0);
-
-    // Calcular la diferencia
-    const diferencia = sumaTotalDebe - sumaTotalHaber;
-
-    // Validar si la suma de "Debe" es igual a la suma de "Haber" o si la diferencia es cero
-    if (sumaTotalDebe !== sumaTotalHaber || diferencia !== 0) {
-      alert('La suma total de "Debe" debe ser igual a la suma total de "Haber" o la diferencia debe ser cero.');
-      // Puedes manejar la lógica adicional aquí
-      return;
-    }
-
-    this.asientoService.createAsiento(this.asientoForm.value).subscribe(
-      (res: any) => {
-        const asientoId = res.id_asiento; // Obtener el ID del asiento guardado
-        console.log('ASIENTOID')
-        console.log(asientoId)
-        console.log('DETALLES ASIENTO 222222')
-        console.log(this.detalleAsientoFormInterface)
-        // Crear los detalles y asociarlos al asiento
-        const detalles = [];
-        for (const detalle of this.detalleAsientoFormInterface) {
-          const nuevoDetalle: DetalleAsiento = {
-            id_asiento: asientoId,
-            id_cuenta: detalle.cuenta,
-            descripcion: detalle.descripcion,
-            documento: null,
-            documentod: detalle.documentod,
-            debe: detalle.debe,
-            haber: detalle.haber
-          };
-          detalles.push(nuevoDetalle);
-        }
-        console.log('DETALLES CON ID_ASIENTO')
-        console.log(detalles)
-        this.detalleAsientoService.createDetalleAsientoArray(detalles).subscribe(
-          () => {
-            Swal.fire({
-              icon: 'success',
-              title: 'Asiento Creado',
-              text: 'El asiento se han creado correctamente.',
-              showConfirmButton: false,
-              timer: 1500
-            });
-            this.recargarComponente();
-            this.cerrarModal();
-          }, (err) => {
-            const errorMessage = err.error?.msg || 'Se produjo un error al crear el asiento.';
-            Swal.fire('Error', errorMessage, 'error');
-          }
-        );
-        //this.recargarComponente();
-      },
-      (err) => {
-        const errorMessage = err.error?.msg || 'Se produjo un error al crear el asiento 2.';
-        Swal.fire('Error', errorMessage, 'error');
-      }
-    );
-  }
-
-  // Método para validar si todas las filas tienen contenido en Modal Create Asiento
-  validarContenidoFilas(): boolean {
-    return this.detalleAsientoFormInterface.every(detalle =>
-      detalle.cuenta !== null &&
-      detalle.descripcion !== null &&
-      detalle.documentod !== null &&
-      detalle.debe !== null &&
-      detalle.haber !== null
-    );
-  }
-
-  // Método para obtener detalles en Modal Create Asiento
-  obtenerDetallesForm() {
-    const formValues = this.detalleAsientoForm.getRawValue();
-
-    // Obtener el número de detalles
-    const numDetalles2 = Object.keys(formValues).filter(key => key.startsWith('cuenta_')).length;
-
-    // Reiniciar el arreglo detalleAsiento2
-    this.detalleAsientoFormInterface = [];
-
-    for (let i = 0; i < numDetalles2; i++) {
-      const nuevoDetalle: DetalleAsientoFormInterface = {
-        cuenta: formValues[`cuenta_${i}`],
-        descripcion: formValues[`descripcion_${i}`],
-        documentod: formValues[`documentod_${i}`],
-        documento: null,
-        debe: formValues[`debe_${i}`],
-        haber: formValues[`haber_${i}`]
-      };
-      this.detalleAsientoFormInterface.push(nuevoDetalle);
-    }
-    //this.detalleForm.reset();
-  }
-
-  // Método agregar detalle en Modal Create Asiento
-  agregarDetalleForm(): void {
-    this.formSubmitted = true;
-    if (this.detalleAsientoForm.invalid) {
-      console.log('RETURN')
-      return;
-    }
-
-    const nuevoDetalle: DetalleAsientoFormInterface = {
-      cuenta: null,
-      descripcion: null,
-      documento: null,
-      documentod: null,
-      debe: null,
-      haber: null
-    };
-
-    // Crear instancias de FormControl para cada propiedad del detalle
-    const cuentaControl = new FormControl(nuevoDetalle.cuenta);
-    const descripcionControl = new FormControl(nuevoDetalle.descripcion);
-    const documentodControl = new FormControl(nuevoDetalle.documentod);
-    const debeControl = new FormControl(nuevoDetalle.debe);
-    const haberControl = new FormControl(nuevoDetalle.haber);
-
-    // Agregar los controles al formulario
-    this.detalleAsientoForm.addControl('cuenta_' + this.detalleAsientoFormInterface.length, cuentaControl);
-    this.detalleAsientoForm.addControl('descripcion_' + this.detalleAsientoFormInterface.length, descripcionControl);
-    this.detalleAsientoForm.addControl('documentod_' + this.detalleAsientoFormInterface.length, documentodControl);
-    this.detalleAsientoForm.addControl('debe_' + this.detalleAsientoFormInterface.length, debeControl);
-    this.detalleAsientoForm.addControl('haber_' + this.detalleAsientoFormInterface.length, haberControl);
-
-    nuevoDetalle.cuenta = cuentaControl.value;
-    nuevoDetalle.descripcion = descripcionControl.value;
-    nuevoDetalle.documentod = documentodControl.value;
-    nuevoDetalle.debe = debeControl.value;
-    nuevoDetalle.haber = haberControl.value;
-
-    // Agregar el detalle al arreglo
-    this.detalleAsientoFormInterface.push(nuevoDetalle);
-
-    // Calcular los totales
-    //this.actualizarTotalDebe();
-  }
-
-  // Método para eliminar detalle en Modal Create Asiento
-  eliminarDetalle(index: number): void {
-    this.detalleAsientoFormInterface.splice(index, 1);
-
-    // Volver a calcular los totales
-    this.actualizarTotalDebe();
-  }
-
-  // Método para actualizar asiento en Modal Update Asiento
-  actualizarAsiento() {
-    if (this.asientoFormU.invalid) {
-      return;
-    }
-    const data = {
-      ...this.asientoFormU.value,
-      id_asiento: this.asientoSeleccionado.id_asiento
-    }
-
-    // realizar posteo
-    this.asientoService.updateAsiento(data)
-      .subscribe(res => {
-        Swal.fire({
-          icon: 'success',
-          title: 'Asiento actualizado',
-          text: 'Asiento se ha actualizado correctamente',
-          showConfirmButton: false,
-          timer: 1500
-        });
-        //this.router.navigateByUrl(`/dashboard/asientos`)
-        this.recargarComponente();
-        this.cerrarModal();
-      }, (err) => {
-        // En caso de error
-        let errorMessage = 'Se produjo un error al actualizar el asiento.';
-        if (err.error && err.error.msg) {
-          errorMessage = err.error.msg;
-        }
-        Swal.fire('Error', err.error.msg, 'error');
-      });
-    this.recargarComponente();
   }
 
   // Método para borrar asiento en Table Date Asiento
@@ -527,42 +282,177 @@ export class AsientoComponent implements OnInit {
     return maxValue;
   }
 
-  // Método para validar las entradas en formularios
-  campoNoValido(campo: string, form: FormGroup): boolean {
-    if (form.get(campo)?.invalid && this.formSubmitted) {
-      return true;
-    } else {
-      return false;
+  // Método para crear asiento en Modal Create Asiento
+  crearAsiento() {
+    this.formSubmitted = true;
+    this.validacionDetallesRequeridos = true;
+
+    if (this.detalleAsientoFormInterface.length < 2) {
+      //alert("Se requieren al menos dos detalles para guardar el asiento contable.");
+      return;
     }
+
+    if (this.asientoForm.invalid) {
+      console.log("Validar Formulario", this.asientoForm.value);
+      return;
+    }
+
+    // Obtener los detalles del formulario
+    this.obtenerDetallesForm()
+
+    // Validar si todas las filas tienen contenido
+    if (!this.validarContenidoFilas()) {
+      alert('Todos los campos de la tabla deben estar llenos.');
+      // Puedes manejar la lógica adicional aquí
+      return;
+    }
+
+    // Calcular la suma total de "Debe" y "Haber"
+    const sumaTotalDebe = this.detalleAsientoFormInterface.reduce((total, detalle) => total + detalle.debe, 0);
+    const sumaTotalHaber = this.detalleAsientoFormInterface.reduce((total, detalle) => total + detalle.haber, 0);
+
+    // Calcular la diferencia
+    const diferencia = sumaTotalDebe - sumaTotalHaber;
+
+    // Validar si la suma de "Debe" es igual a la suma de "Haber" o si la diferencia es cero
+    if (sumaTotalDebe !== sumaTotalHaber || diferencia !== 0) {
+      alert('La suma total de "Debe" debe ser igual a la suma total de "Haber" o la diferencia debe ser cero.');
+      // Puedes manejar la lógica adicional aquí
+      return;
+    }
+
+    this.asientoService.createAsiento(this.asientoForm.value).subscribe(
+      (res: any) => {
+        const asientoId = res.id_asiento; // Obtener el ID del asiento guardado
+        console.log('ASIENTOID')
+        console.log(asientoId)
+        console.log('DETALLES ASIENTO 222222')
+        console.log(this.detalleAsientoFormInterface)
+        // Crear los detalles y asociarlos al asiento
+        const detalles = [];
+        for (const detalle of this.detalleAsientoFormInterface) {
+          const nuevoDetalle: DetalleAsiento = {
+            id_asiento: asientoId,
+            id_cuenta: detalle.cuenta,
+            descripcion: detalle.descripcion,
+            documento: null,
+            documentod: detalle.documentod,
+            debe: detalle.debe,
+            haber: detalle.haber
+          };
+          detalles.push(nuevoDetalle);
+        }
+        console.log('DETALLES CON ID_ASIENTO')
+        console.log(detalles)
+        this.detalleAsientoService.createDetalleAsientoArray(detalles).subscribe(
+          () => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Asiento Creado',
+              text: 'El asiento se han creado correctamente.',
+              showConfirmButton: false,
+              timer: 1500
+            });
+            this.recargarComponente();
+            this.cerrarModal();
+          }, (err) => {
+            const errorMessage = err.error?.msg || 'Se produjo un error al crear el asiento.';
+            Swal.fire('Error', errorMessage, 'error');
+          }
+        );
+        //this.recargarComponente();
+      },
+      (err) => {
+        const errorMessage = err.error?.msg || 'Se produjo un error al crear el asiento 2.';
+        Swal.fire('Error', errorMessage, 'error');
+      }
+    );
   }
 
-  /*
-  obtenerUltimoId(): number {
-    if (this.asientos.length > 0) {
-      return (this.asientos[this.asientos.length - 1].id_asiento) + 1;
-    }
-    return 0; // o cualquier valor predeterminado
+  // Método para validar el contendo en la tabla en Modal Create Asiento
+  validarContenidoFilas(): boolean {
+    return this.detalleAsientoFormInterface.every(detalle =>
+      detalle.cuenta !== null &&
+      detalle.descripcion !== null &&
+      detalle.documentod !== null &&
+      detalle.debe !== null &&
+      detalle.haber !== null
+    );
   }
 
-  */
+  // Método para obtener detalles en Modal Create Asiento
+  obtenerDetallesForm() {
+    const formValues = this.detalleAsientoForm.getRawValue();
 
-  // Método para recargar componente
-  recargarComponente() {
-    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-      this.router.navigate(['/dashboard/asientos']);
-    });
+    // Obtener el número de detalles
+    const numDetalles2 = Object.keys(formValues).filter(key => key.startsWith('cuenta_')).length;
+
+    // Reiniciar el arreglo detalleAsiento2
+    this.detalleAsientoFormInterface = [];
+
+    for (let i = 0; i < numDetalles2; i++) {
+      const nuevoDetalle: DetalleAsientoFormInterface = {
+        cuenta: formValues[`cuenta_${i}`],
+        descripcion: formValues[`descripcion_${i}`],
+        documentod: formValues[`documentod_${i}`],
+        documento: null,
+        debe: formValues[`debe_${i}`],
+        haber: formValues[`haber_${i}`]
+      };
+      this.detalleAsientoFormInterface.push(nuevoDetalle);
+    }
+    //this.detalleAsientoForm.reset();
   }
-  // Método para cerrar modal
-  cerrarModal() {
-    this.mostrarModal = true;
-    const body = document.querySelector('body');
-    if (body) {
-      body.classList.remove('modal-open');
+
+  // Método agregar detalle en Modal Create Asiento
+  agregarDetalleForm(): void {
+    this.formSubmitted = true;
+    if (this.detalleAsientoForm.invalid) {
+      console.log('RETURN')
+      return;
     }
-    const modalBackdrop = document.querySelector('.modal-backdrop');
-    if (modalBackdrop) {
-      this.renderer.removeChild(document.body, modalBackdrop);
-    }
+
+    const nuevoDetalle: DetalleAsientoFormInterface = {
+      cuenta: null,
+      descripcion: null,
+      documento: null,
+      documentod: null,
+      debe: null,
+      haber: null
+    };
+
+    // Crear instancias de FormControl para cada propiedad del detalle
+    const cuentaControl = new FormControl(nuevoDetalle.cuenta);
+    const descripcionControl = new FormControl(nuevoDetalle.descripcion);
+    const documentodControl = new FormControl(nuevoDetalle.documentod);
+    const debeControl = new FormControl(nuevoDetalle.debe);
+    const haberControl = new FormControl(nuevoDetalle.haber);
+
+    // Agregar los controles al formulario
+    this.detalleAsientoForm.addControl('cuenta_' + this.detalleAsientoFormInterface.length, cuentaControl);
+    this.detalleAsientoForm.addControl('descripcion_' + this.detalleAsientoFormInterface.length, descripcionControl);
+    this.detalleAsientoForm.addControl('documentod_' + this.detalleAsientoFormInterface.length, documentodControl);
+    this.detalleAsientoForm.addControl('debe_' + this.detalleAsientoFormInterface.length, debeControl);
+    this.detalleAsientoForm.addControl('haber_' + this.detalleAsientoFormInterface.length, haberControl);
+
+    nuevoDetalle.cuenta = cuentaControl.value;
+    nuevoDetalle.descripcion = descripcionControl.value;
+    nuevoDetalle.documentod = documentodControl.value;
+    nuevoDetalle.debe = debeControl.value;
+    nuevoDetalle.haber = haberControl.value;
+
+    // Agregar el detalle al arreglo
+    this.detalleAsientoFormInterface.push(nuevoDetalle);
+  }
+
+  // Método para eliminar detalle en Modal Create Asiento
+  eliminarDetalle(index: number): void {
+    this.detalleAsientoForm.removeControl('cuenta_' + index);
+    this.detalleAsientoForm.removeControl('descripcion_' + index);
+    this.detalleAsientoForm.removeControl('documentod_' + index);
+    this.detalleAsientoForm.removeControl('debe_' + index);
+    this.detalleAsientoForm.removeControl('haber_' + index);
+    this.detalleAsientoFormInterface.splice(index, 1);
   }
 
   // Método para actualizar en Modal Create Asiento
@@ -599,20 +489,92 @@ export class AsientoComponent implements OnInit {
     console.log("diferencias", this.diferencia)
   }
 
-  /*
-  calcularTotales2(): void {
-    this.totalDebe = 0;
-    this.totalHaber = 0;
-
-    for (const detalle of this.detalleAsientoFormInterface) {
-      this.totalDebe += detalle.debe;
-      this.totalHaber += detalle.haber;
+  // Método para actualizar asiento en Modal Update Asiento
+  actualizarAsiento() {
+    if (this.asientoFormU.invalid) {
+      return;
     }
-    console.log('this.totalDebe')
-    console.log(this.totalDebe)
-    console.log('this.totalHaber')
-    console.log(this.totalHaber)
+    const data = {
+      ...this.asientoFormU.value,
+      id_asiento: this.asientoSeleccionado.id_asiento
+    }
+
+    // realizar posteo
+    this.asientoService.updateAsiento(data)
+      .subscribe(res => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Asiento actualizado',
+          text: 'Asiento se ha actualizado correctamente',
+          showConfirmButton: false,
+          timer: 1500
+        });
+        //this.router.navigateByUrl(`/dashboard/asientos`)
+        this.recargarComponente();
+        this.cerrarModal();
+      }, (err) => {
+        // En caso de error
+        let errorMessage = 'Se produjo un error al actualizar el asiento.';
+        if (err.error && err.error.msg) {
+          errorMessage = err.error.msg;
+        }
+        Swal.fire('Error', err.error.msg, 'error');
+      });
+    this.recargarComponente();
   }
-  */
+
+  // Método para cargar detalles asiento por id asiento en Modal Update Asiento
+  cargarDetallesAsientoByIdAsiento(id_asiento: any) {
+    this.detalleAsientoService.loadDetallesAsientoByIdAsiento(id_asiento)
+      .subscribe(({ detalles_asiento, total_debe, total_haber }) => {
+        this.detalles_asiento = detalles_asiento;
+        this.total_debe = total_debe;
+        this.total_haber = total_haber;
+        console.log("detalles_asiento: ", detalles_asiento)
+        console.log("total_debe: ", total_debe)
+        console.log("total_haber: ", total_haber)
+      })
+  }
+
+  // Método para cargar asiento en Modal Update Asiento
+  cargarAsientoPorId(id_asiento: any) {
+    this.asientoService.loadAsientoById(id_asiento)
+      .subscribe(asiento => {
+        const { id_asiento, fecha_asiento, referencia, documento, observacion } = asiento[0];
+        this.asientoSeleccionado = asiento[0];
+        this.id_asiento = id_asiento;
+        this.asientoFormU.setValue({ fecha_asiento, referencia, documento, observacion })
+        this.asientoFormU.get('fecha_asiento').setValue(this.datePipe.transform(fecha_asiento, 'yyyy-MM-dd'));
+      });
+  }
+
+  // Método para validar las entradas en formularios
+  campoNoValido(campo: string, form: FormGroup): boolean {
+    if (form.get(campo)?.invalid && this.formSubmitted) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  // Método para recargar componente
+  recargarComponente() {
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this.router.navigate(['/dashboard/asientos']);
+    });
+  }
+
+  // Método para cerrar modal
+  cerrarModal() {
+    this.mostrarModal = true;
+    const body = document.querySelector('body');
+    if (body) {
+      body.classList.remove('modal-open');
+    }
+    const modalBackdrop = document.querySelector('.modal-backdrop');
+    if (modalBackdrop) {
+      this.renderer.removeChild(document.body, modalBackdrop);
+    }
+  }
 
 }

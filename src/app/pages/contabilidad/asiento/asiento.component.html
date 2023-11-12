@@ -13,7 +13,7 @@
                         <div class="float-left">
                             <button type="button" class="btn btn-info waves-effect waves-light" data-toggle="modal"
                                 data-target="#exampleModal">
-                                <i class="fa fa-plus"></i> Nueva Asiento
+                                <i class="fa fa-plus"></i> Nuevo Asiento
                             </button>
                             <div class="btn-group">
                                 <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown"
@@ -318,7 +318,7 @@
                                         </td>
                                         <td class="text-center">
                                             <button type="button" class="btn btn-danger btn-sm"
-                                                (click)="eliminarDetalle(i)">
+                                                (click)="eliminarDetalle(i); actualizarTotalDebe(); actualizarTotalHaber(); actualizarDiferencia();">
                                                 <i class="ti-trash"></i>
                                             </button>
                                         </td>
@@ -327,7 +327,8 @@
                             </table>
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <button id="agregarLinea" class="btn btn-success" (click)="agregarDetalleForm()">
+                                    <button id="agregarLinea" class="btn btn-success"
+                                        (click)="agregarDetalleForm(); actualizarTotalDebe(); actualizarTotalHaber(); actualizarDiferencia();">
                                         <span class="fa fa-plus"></span> Agregar
                                     </button>
                                 </div>
@@ -426,7 +427,7 @@
                             <div class="form-group">
                                 <label for="exampleInputuname">Referencia</label>
                                 <div class="input-group">
-                                    <div class="input-group-addon"><i class="ti-user"></i></div>
+                                    <div class="input-group-addon"><i class="fa fa-pencil-square-o"></i></div>
                                     <input type="text" class="form-control" id="exampleInputuname"
                                         placeholder="Referencia" formControlName="referencia">
                                 </div>
@@ -436,7 +437,7 @@
                             <div class="form-group">
                                 <label for="exampleInputuname">Documento</label>
                                 <div class="input-group">
-                                    <div class="input-group-addon"><i class="ti-user"></i></div>
+                                    <div class="input-group-addon"><i class="fa fa-file-pdf-o"></i></div>
                                     <input type="text" class="form-control" id="exampleInputuname"
                                         placeholder="Documento" formControlName="documento" readonly>
                                 </div>
@@ -446,7 +447,7 @@
                             <div class="form-group">
                                 <label for="exampleInputuname">Observación</label>
                                 <div class="input-group">
-                                    <div class="input-group-addon"><i class="ti-user"></i></div>
+                                    <div class="input-group-addon"><i class="fa fa-eye"></i></div>
                                     <input type="text" class="form-control" id="exampleInputuname"
                                         placeholder="Observación" formControlName="observacion">
                                 </div>
@@ -472,8 +473,8 @@
                                     <th class="text-left">Cuenta</th>
                                     <th class="text-left">Descripción</th>
                                     <th class="text-left">Documento</th>
-                                    <th class="text-right">Debe</th>
-                                    <th class="text-right">Haber</th>
+                                    <th class="text-right">Debe $</th>
+                                    <th class="text-right">Haber $</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -481,8 +482,8 @@
                                     <td class="text-center">{{ i + 1 }}</td>
                                     <td>
                                         <ng-container *ngFor="let cuenta of cuentas">
-                                            <ng-container
-                                                *ngIf="cuenta.id_cuenta == da.id_cuenta ">{{cuenta.codigo}} - {{cuenta.descripcion}}</ng-container>
+                                            <ng-container *ngIf="cuenta.id_cuenta == da.id_cuenta ">{{cuenta.codigo}} -
+                                                {{cuenta.descripcion}}</ng-container>
                                         </ng-container>
                                     </td>
                                     <td>{{da.descripcion}}</td>
@@ -541,7 +542,6 @@
         </div>
     </div>
 </div>
-
 
 <style>
     .modal-dialog {
