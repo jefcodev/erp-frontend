@@ -21,7 +21,7 @@ const base_url = environment.base_url;
 })
 export class FormaPagoService {
 
-  constructor(private hhtp: HttpClient,
+  constructor(private http: HttpClient,
     private router: Router) { }
 
   get token(): string {
@@ -35,14 +35,19 @@ export class FormaPagoService {
     }
   }
 
-  loadFormasPago() {
-    const url = `${base_url}/formas-pago`;
-    return this.hhtp.get<LoadFormaPago>(url,);
+  loadFormasPago(desde: number = 0, limit: number = 0) {
+    const url = `${base_url}/formas-pago?desde=${desde}&limit=${limit}`;
+    return this.http.get<LoadFormaPago>(url,);
+  }
+
+  loadFormasPagoAll() {
+    const url = `${base_url}/formas-pago/all`;
+    return this.http.get<LoadFormaPago>(url, this.headers);
   }
 
   loadFormaPagoById(id_forma_pago: any) {
     const url = `${base_url}/formas-pago/id/${id_forma_pago}`;
-    return this.hhtp.get(url, this.headers)
+    return this.http.get(url, this.headers)
       .pipe(
         map((resp: { ok: boolean, forma_pago: FormaPago }) => resp.forma_pago)
       )
@@ -50,7 +55,7 @@ export class FormaPagoService {
 
   loadFormaPagoByCodigo(codigo: any) {
     const url = `${base_url}/formas-pago/codigo/${codigo}`;
-    return this.hhtp.get(url, this.headers)
+    return this.http.get(url, this.headers)
       .pipe(
         map((resp: { ok: boolean, forma_pago: FormaPago }) => resp.forma_pago)
       )
@@ -58,7 +63,7 @@ export class FormaPagoService {
 
   createFormaPago(formData: FormFormaPago) {
     const url = `${base_url}/formas-pago`;
-    return this.hhtp.post(url, formData, this.headers)
+    return this.http.post(url, formData, this.headers)
       .pipe(
         map((resp: { ok: boolean, forma_pago: FormaPago[] }) => resp.forma_pago)
       )
@@ -66,12 +71,12 @@ export class FormaPagoService {
 
   updateFormaPago(forma_pago: FormaPago) {
     const url = `${base_url}/formas-pago/${forma_pago.id_forma_pago}`;
-    return this.hhtp.put(url, forma_pago, this.headers);
+    return this.http.put(url, forma_pago, this.headers);
   }
 
   deleteFormaPago(id_forma_pago: any) { //OJO: any
     const url = `${base_url}/formas-pago/${id_forma_pago}`;
-    return this.hhtp.delete(url, this.headers);
+    return this.http.delete(url, this.headers);
   }
 
 

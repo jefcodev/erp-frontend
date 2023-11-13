@@ -1,7 +1,7 @@
 export class LibroDiario {
     constructor(
         public id_asiento: number,
-        public fecha: Date,
+        public fecha_asiento: Date,
         public codigo: string,
         public descripcion: string,
         public debe: number,

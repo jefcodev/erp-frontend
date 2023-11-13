@@ -138,6 +138,7 @@ export class FacturaComponent implements OnInit {
   public abono: number;
   public abonoU: number; // Abono recuperado
   public saldoInicial: number; // Saldo recuperado
+  public estado: boolean; // Estado recuperado
 
   // Modal XML
   public facturaFormXML: FormGroup;
@@ -1183,7 +1184,7 @@ export class FacturaComponent implements OnInit {
       .pipe(
         switchMap((factura: any) => {
           const { id_proveedor, id_asiento, codigo, fecha_emision, fecha_vencimiento, estado_pago,
-            total_sin_impuesto, total_descuento, valor, importe_total, abono } = factura.factura[0];
+            total_sin_impuesto, total_descuento, valor, importe_total, abono, estado } = factura.factura[0];
           this.facturaSeleccionada = factura.factura[0];
           this.codigo = codigo;
           this.fechaEmisionU = fecha_emision; // Así mantenemos la fecha original
@@ -1192,6 +1193,7 @@ export class FacturaComponent implements OnInit {
           this.total_descuento = total_descuento;
           this.valor = valor;
           this.importe_total = importe_total;
+          this.estado = estado;
 
           const saldo = factura.saldo.toFixed(2);
           this.saldoInicial = parseFloat(saldo); // Saldo recuperado
@@ -1673,10 +1675,9 @@ export class FacturaComponent implements OnInit {
             this.identificacion = identificacion;
             this.razon_social = razon_social;
             console.log("this.identificacion 3: ", this.identificacion)
-
           } else {
             Swal.fire({
-              title: 'Éxito 2',
+              title: 'Éxito',
               text: 'XML Cargado',
               icon: 'success',
               timer: 1500,

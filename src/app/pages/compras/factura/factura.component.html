@@ -222,18 +222,25 @@
                                         <div class="label label-table label-danger">ANULADA</div>
                                     </td>
                                 </ng-template>
-
                                 <td *ngIf="factura.estado else inactivoOption" class="text-nowrap text-center">
-
-                                    <a class="cursor" data-toggle="modal" (click)="cargarFacturaPorId(factura.id_factura_compra); cargarDetallesFacturaByIdFactura(factura.id_factura_compra);
-                                        cargarPagosByIdFactura(factura.id_factura_compra);"
-                                        data-target="#exampleModalU"><span
-                                            class="fa fa-pencil text-inverse m-r-10"></span></a>
-
-                                    <a class="cursor" (click)="borrarFactura(factura);" data-toggle="tooltip"
-                                        data-original-title="Close"> <i class="fa fa-close text-danger"></i> </a>
+                                    <button class="btn btn-outline-warning btn-sm m-r-5" data-toggle="modal" (click)="cargarFacturaPorId(factura.id_factura_compra);
+                                    cargarDetallesFacturaByIdFactura(factura.id_factura_compra); 
+                                    cargarPagosByIdFactura(factura.id_factura_compra);" data-target="#exampleModalU">
+                                        <i class="fa fa-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-outline-danger btn-sm" (click)="borrarFactura(factura);"
+                                        data-toggle="tooltip" data-original-title="Close">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
                                 </td>
                                 <ng-template #inactivoOption>
+                                    <td class="text-nowrap text-center">
+                                        <button class="btn btn-outline-info btn-sm" data-toggle="modal"
+                                            (click)="cargarFacturaPorId(factura.id_factura_compra); cargarDetallesFacturaByIdFactura(factura.id_factura_compra);"
+                                            data-target="#exampleModalU">
+                                            <i class="fa fa-eye"></i>
+                                        </button>
+                                    </td>
                                 </ng-template>
                             </tr>
                         </tbody>
@@ -1001,7 +1008,8 @@
 
             <!-- Modal Header -->
             <div class="modal-header">
-                <h4 class="modal-title" id="exampleModalLabel1">Editar Factura</h4>
+                <h4 class="modal-title" id="exampleModalLabel1">
+                    {{ estado ? 'Actualizar Factura' : 'Visualizar Factura' }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -1011,10 +1019,10 @@
             <div class="modal-body">
                 <div class="text-center">
                     <h3><b>FACTURA COMPRA</b></h3>
-                    <h5><b># </b> {{ codigo}}</h5>
+                    <h5><b># </b> {{ codigo }}</h5>
                 </div>
                 <br>
-                
+
                 <form autocomplete="off" [formGroup]="facturaFormU">
 
                     <!-- Factura Form Data-->
@@ -1096,7 +1104,8 @@
                                     <div class="input-group-addon"><i class="ti-calendar"></i></div>
                                     <input type="date" class="form-control" id="exampleInputuname"
                                         placeholder="Fecha Vencimiento" formControlName="fecha_vencimiento"
-                                        [value]="getFormattedFechaVencimientoU()" [readonly]="saldoInicial === 0">
+                                        [value]="getFormattedFechaVencimientoU()"
+                                        [readonly]="saldoInicial === 0 || !estado">
                                 </div>
                                 <div class="error-message text-danger"
                                     *ngIf="facturaFormU.get('fecha_vencimiento').hasError('fechaInvalida')">
@@ -1188,7 +1197,7 @@
                                     <th class="text-left">Observación </th>
                                     <th class="text-right">Abono</th>
                                     <th class="text-left">Estado</th>
-                                    <th class="text-center">Action</th>
+                                    <th class="text-center">Acción</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -1239,7 +1248,7 @@
                                             <div class="input-group-addon"><i class="ti-calendar"></i></div>
                                             <input type="date" class="form-control" id="exampleInputuname"
                                                 placeholder="Fecha de Pago" formControlName="fecha_pago"
-                                                [readonly]="saldoInicial === 0">
+                                                [readonly]="saldoInicial === 0 || !estado">
                                         </div>
                                     </label>
                                     <label for="exampleInputuname" style="width: 100%;">Forma de Pago
@@ -1258,7 +1267,7 @@
                                             <div class="input-group-addon"><i class="ti-eye"></i></div>
                                             <input type="text" class="form-control" formControlName="observacion"
                                                 placeholder="Nota ó número de control" min="0"
-                                                [readonly]="saldoInicial === 0">
+                                                [readonly]="saldoInicial === 0 || !estado">
                                             <!-- [readonly]="abonoU <= 0">
                                         [readonly]="saldoInicial === 0 || abonoU <= 0"-->
                                         </div>
@@ -1273,7 +1282,7 @@
                                             <div class="input-group-addon"><b>ABONAR:</b></div>
                                             <input type="number" class="form-control text-right" id="exampleInputuname"
                                                 placeholder="0.00" formControlName="abono" (input)="actualizarSaldoU()"
-                                                min="0" [readonly]="saldoInicial === 0">
+                                                min="0" [readonly]="saldoInicial === 0 || !estado">
                                         </div>
                                     </label>
                                     <label for="exampleInputuname" style="width: 100%;">Saldo Pendiente
@@ -1329,8 +1338,9 @@
 
             <!-- Modal Footer -->
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-info" (click)="actualizarFactura();"
+                <button type="button" class="btn btn-danger" [innerHTML]="estado ? 'Cancelar' : 'Cerrar'"
+                    data-dismiss="modal"></button>
+                <button type="button" class="btn btn-info" *ngIf="estado" (click)="actualizarFactura();"
                     [disabled]="saldoInicial === 0">Actualizar</button>
             </div>
         </div>
@@ -1415,7 +1425,7 @@
 
     /* CSS personalizado para espaciar los botones */
     .float-left .btn {
-        margin-right: 10px;
+        margin-right: 5px;
         /* Ajusta este valor según el espacio deseado */
     }
 

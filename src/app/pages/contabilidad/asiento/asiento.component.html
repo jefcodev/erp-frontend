@@ -79,23 +79,14 @@
                         <thead>
                             <tr>
 
-                                <th class="footable-sortable text-center">#<span class="footable-sort-indicator"></span>
-                                </th>
-                                <th class="footable-sortable text-center">ID<span
-                                        class="footable-sort-indicator"></span>
-                                </th>
-                                <th class="footable-sortable">Fecha <span
-                                        class="footable-sort-indicator"></span>
-                                </th>
-                                <th class="footable-sortable">Referencia<span class="footable-sort-indicator"></span>
-                                </th>
-                                <th class="footable-sortable">Documento<span class="footable-sort-indicator"></span>
-                                </th>
-                                <th class="footable-sortable">Observación<span class="footable-sort-indicator"></span>
-                                </th>
-                                <th class="footable-sortable">Estado<span class="footable-sort-indicator"></span></th>
-                                <th class="footable-sortable text-center">Acción<span
-                                        class="footable-sort-indicator"></span></th>
+                                <th class="text-center">#</th>
+                                <th class="text-center">ID</th>
+                                <th class="text-left">Fecha</th>
+                                <th class="text-center">Referencia</th>
+                                <th class="text-left">Documento</th>
+                                <th class="text-left">Observación</th>
+                                <th class="text-left">Estado</th>
+                                <th class="text-center">Acción</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -547,9 +538,10 @@
 
             <!-- Modal Footer -->
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-info" (click)="actualizarAsiento();"
-                    [disabled]="estado === false">Actualizar</button>
+                <button type="button" class="btn btn-danger" [innerHTML]="estado ? 'Cancelar' : 'Cerrar'"
+                    data-dismiss="modal"></button>
+                <button type="button" class="btn btn-info" *ngIf="estado"
+                    (click)="actualizarAsiento();">Actualizar</button>
             </div>
         </div>
     </div>
@@ -560,5 +552,22 @@
         max-width: 80%;
         /* Ajusta el valor según tus necesidades */
         margin: 30px auto;
+    }
+
+    .float-left .btn {
+        margin-right: 5px;
+    }
+
+    hr {
+        border: 1px transparent #ccc;
+        margin: 20px 0;
+    }
+
+    .modal-body-aux {
+        padding-bottom: 0px;
+    }
+
+    .material-aux {
+        font-weight: 300;
     }
 </style>

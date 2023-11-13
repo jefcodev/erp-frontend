@@ -240,31 +240,6 @@ export class ProveedorComponent implements OnInit {
     }
   }
 
-  //borrar
-  filtrarProveedores2() {
-    if (this.proveedoresAux && this.proveedoresAux.length > 0) {
-    } else {
-      this.proveedoresAux = this.proveedores;
-      console.log("this.proveedoresAux: ", this.proveedoresAux)
-    }
-    if (this.buscarTexto.trim() === '' && !this.estadoSelect) {
-      console.log("ELSE this.proveedoresAux: ", this.proveedoresAux)
-      this.proveedores = this.proveedoresAux;
-    } else {
-      this.proveedores = this.allProveedores.filter(proveedor => {
-        const regex = new RegExp(this.buscarTexto, 'i'); // 'i' para que sea insensible a mayúsculas/minúsculas
-        return (
-          (proveedor.razon_social.toLowerCase().includes(this.buscarTexto.toLowerCase()) ||
-            proveedor.identificacion.includes(this.buscarTexto) ||
-            proveedor.direccion.match(regex) !== null ||
-            proveedor.telefono.includes(this.buscarTexto) ||
-            proveedor.email.includes(this.buscarTexto)) &&
-          (!this.estadoSelect || proveedor.estado === (this.estadoSelect === 'true'))
-        );
-      });
-    }
-  }
-
   get totalPaginas(): number {
     return Math.ceil(this.totalProveedores / this.itemsPorPagina);
   }
