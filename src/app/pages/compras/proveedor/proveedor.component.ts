@@ -23,17 +23,22 @@ export class ProveedorComponent implements OnInit {
   public proveedorSeleccionado: Proveedor;
 
   // Paginación
-  public totalProveedores: number = 0;
+  // public totalProveedores: number = 0; abajo
   public itemsPorPagina = 10;
   public paginaActual = 1;
   public paginas: number[] = [];
   public mostrarPaginacion: boolean = false;
   public maximoPaginasVisibles = 5;
 
-  // Búsqueda
+  // Búsqueda y filtrado
   public buscarTexto: string = '';
-  public proveedores_aux: Proveedor[] = [];
   public allProveedores: Proveedor[] = [];
+  public estadoSelect: string;
+
+  public totalProveedores: number = 0;
+
+  public proveedoresAux: Proveedor[] = [];
+  public totalProveedoresAux: number = 0;
 
 
   constructor(
@@ -159,11 +164,12 @@ export class ProveedorComponent implements OnInit {
             this.cargarProveedores();
             Swal.fire({
               icon: 'success',
-              title: 'Proveedor borrado',
+              title: 'Proveedor Borrado',
               text: `${proveedor.razon_social} ha sido borrado correctamente.`,
               showConfirmButton: false,
               timer: 1500
             });
+            this.recargarComponente();
           }, (err) => {
             const errorMessage = err.error?.msg || 'Se produjo un error al borrar el proveedor.';
             Swal.fire('Error', errorMessage, 'error');
@@ -173,27 +179,89 @@ export class ProveedorComponent implements OnInit {
     });
   }
 
+  activarProveedor(proveedor: Proveedor) {
+    Swal.fire({
+      title: '¿Activar Proveedor?',
+      text: `Estas a punto de activar a ${proveedor.razon_social}`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, activar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.value) {
+        this.proveedorService.deleteProveedor(proveedor.id_proveedor).subscribe(
+          () => {
+            this.cargarProveedores();
+            Swal.fire({
+              icon: 'success',
+              title: 'Proveedor Activado',
+              text: `${proveedor.razon_social} ha sido activado correctamente.`,
+              showConfirmButton: false,
+              timer: 1500
+            });
+            this.recargarComponente();
+          }, (err) => {
+            const errorMessage = err.error?.msg || 'Se produjo un error al activar el proveedor.';
+            Swal.fire('Error', errorMessage, 'error');
+          }
+        );
+      }
+    });
+  }
+
+  // Método para filtrar cuentas en Table Date Cuenta
   filtrarProveedores() {
-    if (this.proveedores_aux && this.proveedores_aux.length > 0) {
-    } else {
-      this.proveedores_aux = this.proveedores;
-      console.log("this.proveedores_aux: ", this.proveedores_aux)
+    if (!this.proveedoresAux || this.proveedoresAux.length === 0) {
+      // Inicializar las variables auxiliares una sola vez
+      this.proveedoresAux = this.proveedores;
+      this.totalProveedoresAux = this.totalProveedores;
     }
-    if (this.buscarTexto.trim() === '') {
-      console.log("ELSE this.proveedores_aux: ", this.proveedores_aux)
-      this.proveedores = this.proveedores_aux;
+    if (this.buscarTexto.trim() === '' && !this.estadoSelect) {
+      // Restablecemos las variables principales con las auxiliares
+      this.proveedores = this.proveedoresAux;
+      this.totalProveedores = this.totalProveedoresAux;
+    } else {
+      // Reiniciamos variables
+      this.totalProveedores = 0;
+
+      this.proveedores = this.allProveedores.filter((proveedor) => {
+        const regex = new RegExp(this.buscarTexto, 'i');
+
+        const pasaFiltro = (
+          (proveedor.razon_social.toLowerCase().includes(this.buscarTexto.toLowerCase()) ||
+            proveedor.identificacion.includes(this.buscarTexto) ||
+            proveedor.direccion.match(regex) !== null ||
+            proveedor.telefono.includes(this.buscarTexto) ||
+            proveedor.email.includes(this.buscarTexto)) &&
+          (!this.estadoSelect || proveedor.estado === (this.estadoSelect === 'true'))
+        );
+        return pasaFiltro;
+      });
+    }
+  }
+
+  //borrar
+  filtrarProveedores2() {
+    if (this.proveedoresAux && this.proveedoresAux.length > 0) {
+    } else {
+      this.proveedoresAux = this.proveedores;
+      console.log("this.proveedoresAux: ", this.proveedoresAux)
+    }
+    if (this.buscarTexto.trim() === '' && !this.estadoSelect) {
+      console.log("ELSE this.proveedoresAux: ", this.proveedoresAux)
+      this.proveedores = this.proveedoresAux;
     } else {
       this.proveedores = this.allProveedores.filter(proveedor => {
         const regex = new RegExp(this.buscarTexto, 'i'); // 'i' para que sea insensible a mayúsculas/minúsculas
         return (
-          proveedor.razon_social.toLowerCase().includes(this.buscarTexto.toLowerCase()) ||
-          proveedor.identificacion.includes(this.buscarTexto) ||
-          proveedor.direccion.match(regex) !== null ||
-          proveedor.telefono.includes(this.buscarTexto) ||
-          proveedor.email.includes(this.buscarTexto)
+          (proveedor.razon_social.toLowerCase().includes(this.buscarTexto.toLowerCase()) ||
+            proveedor.identificacion.includes(this.buscarTexto) ||
+            proveedor.direccion.match(regex) !== null ||
+            proveedor.telefono.includes(this.buscarTexto) ||
+            proveedor.email.includes(this.buscarTexto)) &&
+          (!this.estadoSelect || proveedor.estado === (this.estadoSelect === 'true'))
         );
       });
-      console.log("ENCONTRADOS this.proveedores: ", this.proveedores)
     }
   }
 

@@ -775,7 +775,7 @@ export class FacturaVentaComponent implements OnInit {
       (res) => {
         Swal.fire({
           icon: 'success',
-          title: 'Cliente creado',
+          title: 'Cliente Creado',
           text: 'Cliente se ha creado correctamente.',
           showConfirmButton: false,
           timer: 1500
@@ -1436,7 +1436,7 @@ export class FacturaVentaComponent implements OnInit {
             () => {
               Swal.fire({
                 icon: 'success',
-                title: 'Factura creada',
+                title: 'Factura Creada',
                 text: 'La factura se han creado correctamente.',
                 showConfirmButton: false,
                 timer: 1500
@@ -1654,7 +1654,7 @@ export class FacturaVentaComponent implements OnInit {
       (res) => {
         Swal.fire({
           icon: 'success',
-          title: 'Cliente creado',
+          title: 'Cliente Creado',
           text: 'Cliente se ha creado correctamente.',
           showConfirmButton: false,
           timer: 1500

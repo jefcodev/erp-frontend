@@ -40,7 +40,7 @@ export class AsientoComponent implements OnInit {
 
   // Datos recuperados
   public asientos: Asiento[] = [];
-  public cuentas: Cuenta[] = [];
+  public allCuentas: Cuenta[] = [];
 
   // Modal Create Asiento
   public asientoForm: FormGroup;
@@ -58,6 +58,7 @@ export class AsientoComponent implements OnInit {
   public id_asiento: number;
   public total_debe: number;
   public total_haber: number;
+  public estado: boolean;
 
   // Paginación
   //public totalAsientos: number = 0; abajo
@@ -116,7 +117,7 @@ export class AsientoComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.cargarCuentas();
+    this.cargarCuentasAll();
     this.cargarAsientos();
     this.cargarAsientosAll();
 
@@ -124,11 +125,11 @@ export class AsientoComponent implements OnInit {
     this.fechaActual = formatDate(fechaActual, 'd-M-yyyy', 'en-US', 'UTC-5');
   }
 
-  // Método para cargar las cuentas
-  cargarCuentas() {
-    this.cuentaService.loadCuentas()
+  // Método para cargar todas cuentas
+  cargarCuentasAll() {
+    this.cuentaService.loadCuentasAll()
       .subscribe(({ cuentas }) => {
-        this.cuentas = cuentas;
+        this.allCuentas = cuentas;
       });
   }
 
@@ -171,7 +172,7 @@ export class AsientoComponent implements OnInit {
             this.cargarAsientos();
             Swal.fire({
               icon: 'success',
-              title: 'Asiento borrado',
+              title: 'Asiento Borrado',
               text: `${asiento.referencia} ha sido borrado correctamente.`,
               showConfirmButton: false,
               timer: 1500
@@ -504,7 +505,7 @@ export class AsientoComponent implements OnInit {
       .subscribe(res => {
         Swal.fire({
           icon: 'success',
-          title: 'Asiento actualizado',
+          title: 'Asiento Actualizado',
           text: 'Asiento se ha actualizado correctamente',
           showConfirmButton: false,
           timer: 1500
@@ -540,9 +541,11 @@ export class AsientoComponent implements OnInit {
   cargarAsientoPorId(id_asiento: any) {
     this.asientoService.loadAsientoById(id_asiento)
       .subscribe(asiento => {
-        const { id_asiento, fecha_asiento, referencia, documento, observacion } = asiento[0];
+        const { id_asiento, fecha_asiento, referencia, documento, observacion, estado } = asiento[0];
         this.asientoSeleccionado = asiento[0];
         this.id_asiento = id_asiento;
+        this.estado = estado;
+        console.log("Estado", estado)
         this.asientoFormU.setValue({ fecha_asiento, referencia, documento, observacion })
         this.asientoFormU.get('fecha_asiento').setValue(this.datePipe.transform(fecha_asiento, 'yyyy-MM-dd'));
       });

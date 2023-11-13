@@ -38,6 +38,7 @@ export class AsientoService {
     const url = `${base_url}/contabilidad/asientos?desde=${desde}&limit=${limit}`;
     return this.hhtp.get<LoadAsiento>(url, this.headers);
   }
+  
   loadAsientosAll() {
     const url = `${base_url}/contabilidad/asientos/all`;
     return this.hhtp.get<LoadAsiento>(url, this.headers);

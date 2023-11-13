@@ -16,12 +16,15 @@
                         </button>
                         <div class="dropdown-menu" x-placement="bottom-start"
                             style="position: absolute; transform: translate3d(0px, 36px, 0px); top: 0px; left: 0px; will-change: transform;">
-                            <a class="dropdown-item" href="#">Importar</a>
-                            <a class="dropdown-item" href="#">Exportar</a>
-                            <a class="dropdown-item" href="#">Cuentas por Cobrar</a>
-                            <a class="dropdown-item" href="#">Imprimir</a>
+                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#exampleModalXML">
+                                <span class="fa fa-download"></span> Importar </a>
+                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#exampleModalXML">
+                                <span class="fa fa-upload"></span> Exportar </a>
+                            <a class="dropdown-item" href="#">
+                                <span class="fa fa-print"></span> Imprimir </a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#">Configuración</a>
+                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#exampleModalXML">
+                                <i class="fa fa-cog"></i> Configuración </a>
                         </div>
                     </div>
                 </div>
@@ -29,9 +32,22 @@
                 <!-- Search Input -->
                 <div class="float-right ">
                     <div class="form-group" style="display: flex; align-items: center;">
-                        <label style="height: 15px; margin-right: 10px;">Buscar:</label>
+                        <label style="height: 15px; margin-right: 10px;">&nbsp;&nbsp;&nbsp;Buscar:</label>
                         <input type="text" class="form-control" [(ngModel)]="buscarTexto" (input)="filtrarClientes()"
                             style="width: 100%;" />
+                    </div>
+                </div>
+
+                <!-- Select State -->
+                <div class="float-right ">
+                    <div class="form-group" style="display: flex; align-items: center;">
+                        <label style="height: 15px; margin-right: 10px;">Estado:</label>
+                        <select class="form-control" [(ngModel)]="estadoSelect" (change)="filtrarClientes()"
+                            style="width: 100%;">
+                            <option value="">TODOS</option>
+                            <option value="true">ACTIVO</option>
+                            <option value="false">INACTIVO</option>
+                        </select>
                     </div>
                 </div>
 
@@ -42,19 +58,14 @@
                         data-page-size="10">
                         <thead>
                             <tr>
-                                <th class="footable-sortable text-center">#<span class="footable-sort-indicator"></span>
-                                </th>
-                                <th class="footable-sortable">Identificación <span
-                                        class="footable-sort-indicator"></span>
-                                </th>
-                                <th class="footable-sortable">Razón Social<span class="footable-sort-indicator"></span>
-                                </th>
-                                <th class="footable-sortable">Dirección<span class="footable-sort-indicator"></span>
-                                </th>
-                                <th class="footable-sortable">Teléfono<span class="footable-sort-indicator"></span></th>
-                                <th class="footable-sortable">Email<span class="footable-sort-indicator"></span></th>
-                                <th class="footable-sortable">Estado<span class="footable-sort-indicator"></span></th>
-                                <th class="footable-sortable">Action<span class="footable-sort-indicator"></span></th>
+                                <th class="text-center">#</th>
+                                <th class="text-left">Identificación</th>
+                                <th class="text-left">Razón Social</th>
+                                <th class="text-left">Dirección</th>
+                                <th class="text-left">Teléfono</th>
+                                <th class="text-left">Email</th>
+                                <th class="text-left">Estado</th>
+                                <th class="text-center">Acción</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -73,25 +84,31 @@
                                 <td>{{cliente.email}}</td>
 
                                 <td *ngIf="cliente.estado; else inactivo">
-                                    <div class="label label-table label-success">Activo</div>
+                                    <div class="label label-table label-success">ACTIVO</div>
                                 </td>
                                 <ng-template #inactivo>
                                     <td>
-                                        <div class="label label-table label-danger">Inactivo</div>
+                                        <div class="label label-table label-danger">INACTIVO</div>
                                     </td>
                                 </ng-template>
 
                                 <td *ngIf="cliente.estado else inactivoOption" class="text-nowrap text-center">
-
-                                    <a class="cursor" data-toggle="modal"
-                                        (click)="cargarClientePorId(cliente.id_cliente);"
-                                        data-target="#exampleModalU"><span
-                                            class="fa fa-pencil text-inverse m-r-10"></span></a>
-
-                                    <a class="cursor" (click)="borrarCliente(cliente);" data-toggle="tooltip"
-                                        data-original-title="Close"> <i class="fa fa-close text-danger"></i> </a>
+                                    <button class="btn btn-outline-warning btn-sm m-r-5" data-toggle="modal"
+                                        (click)="cargarClientePorId(cliente.id_cliente);" data-target="#exampleModalU">
+                                        <i class="fa fa-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-outline-danger btn-sm" (click)="borrarCliente(cliente);"
+                                        data-toggle="tooltip" data-original-title="Close">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
                                 </td>
                                 <ng-template #inactivoOption>
+                                    <td class="text-nowrap text-center">
+                                        <button class="btn btn-outline-success btn-sm" *ngIf="!cliente.estado"
+                                            (click)="activarCliente(cliente)">
+                                            Activar
+                                        </button>
+                                    </td>
                                 </ng-template>
                             </tr>
                         </tbody>
