@@ -78,9 +78,9 @@
                                     <a href="javascript:void(0)"><img src="../assets/images/users/proveedor7.png"
                                             alt="user" width="40" class="img-circle"> {{proveedor.razon_social}}</a>
                                 </td>
-                                <td>{{proveedor.direccion}}</td>
-                                <td>{{proveedor.telefono}}</td>
-                                <td>{{proveedor.email}}</td>
+                                <td>{{ proveedor.direccion }}</td>
+                                <td>{{ proveedor.telefono }}</td>
+                                <td>{{ proveedor.email }}</td>
                                 <td *ngIf="proveedor.estado; else inactivo">
                                     <div class="label label-table label-success">ACTIVO</div>
                                 </td>

@@ -620,10 +620,7 @@ export class FacturaComponent implements OnInit {
             });
             this.recargarComponente();
           }, (err) => {
-            let errorMessage = 'Se produjo un error al borrar el factura.';
-            if (err.error && err.error.msg) {
-              errorMessage = err.error.msg;
-            }
+            const errorMessage = err.error?.msg || 'Se produjo un error al borrar la factura.';
             Swal.fire('Error', errorMessage, 'error');
           }
           );

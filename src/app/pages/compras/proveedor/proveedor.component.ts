@@ -108,7 +108,7 @@ export class ProveedorComponent implements OnInit {
       () => {
         Swal.fire({
           icon: 'success',
-          title: 'Proveedor creado',
+          title: 'Proveedor Creado',
           text: 'Proveedor se ha creado correctamente.',
           showConfirmButton: false,
           timer: 1500
@@ -135,7 +135,7 @@ export class ProveedorComponent implements OnInit {
       () => {
         Swal.fire({
           icon: 'success',
-          title: 'Proveedor actualizado',
+          title: 'Proveedor Actualizado',
           text: 'Proveedor se ha actualizado correctamente',
           showConfirmButton: false,
           timer: 1500

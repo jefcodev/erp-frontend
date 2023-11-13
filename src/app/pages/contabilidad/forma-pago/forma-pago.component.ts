@@ -57,13 +57,14 @@ export class FormaPagoComponent implements OnInit {
     });
 
     this.formaPagoFormU = this.fb.group({
-      codigo: ['', [Validators.required, Validators.minLength(2)]],
+      codigo: [''],
       descripcion: ['', [Validators.required, Validators.minLength(3)]],
     });
   }
 
   ngOnInit(): void {
     this.cargarFormasPago();
+    this.cargarFormasPagoAll();
   }
 
   cargarFormasPago() {
@@ -98,8 +99,8 @@ export class FormaPagoComponent implements OnInit {
     if (this.formaPagoForm.invalid) {
       return;
     }
-    this.formaPagoService.createFormaPago(this.formaPagoForm.value)
-      .subscribe(res => {
+    this.formaPagoService.createFormaPago(this.formaPagoForm.value).subscribe(
+      res => {
         Swal.fire({
           icon: 'success',
           title: 'Forma de Pago creado',
@@ -110,16 +111,14 @@ export class FormaPagoComponent implements OnInit {
         this.recargarComponente();
         this.cerrarModal();
       }, (err) => {
-        let errorMessage = 'Se produjo un error al crear la forma de pago.';
-        if (err.error && err.error.msg) {
-          errorMessage = err.error.msg;
-        }
-        Swal.fire('Error', err.error.msg, 'error');
-      });
-    this.recargarComponente();
+        const errorMessage = err.error?.msg || 'Se produjo un error al crear la forma de pago.';
+        Swal.fire('Error', errorMessage, 'error');
+      }
+    );
   }
 
   actualizarFormaPago() {
+    this.formSubmitted = true;
     if (this.formaPagoFormU.invalid) {
       return;
     }
@@ -127,8 +126,8 @@ export class FormaPagoComponent implements OnInit {
       ...this.formaPagoFormU.value,
       id_forma_pago: this.formaPagoSeleccionado.id_forma_pago
     }
-    this.formaPagoService.updateFormaPago(data)
-      .subscribe(res => {
+    this.formaPagoService.updateFormaPago(data).subscribe(
+      res => {
         Swal.fire({
           icon: 'success',
           title: 'Forma de Pago actualizado',
@@ -139,14 +138,10 @@ export class FormaPagoComponent implements OnInit {
         this.recargarComponente();
         this.cerrarModal();
       }, (err) => {
-        // En caso de error
-        let errorMessage = 'Se produjo un error al actualizar la forma de pago.';
-        if (err.error && err.error.msg) {
-          errorMessage = err.error.msg;
-        }
-        Swal.fire('Error', err.error.msg, 'error');
-      });
-    this.recargarComponente();
+        const errorMessage = err.error?.msg || 'Se produjo un error al actualizar la forma de pago.';
+        Swal.fire('Error', errorMessage, 'error');
+      }
+    );
   }
 
   borrarFormaPago(forma_pago: FormaPago) {
@@ -159,24 +154,22 @@ export class FormaPagoComponent implements OnInit {
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.value) {
-        this.formaPagoService.deleteFormaPago(forma_pago.id_forma_pago)
-          .subscribe(resp => {
+        this.formaPagoService.deleteFormaPago(forma_pago.id_forma_pago).subscribe(
+          resp => {
             this.cargarFormasPago();
             Swal.fire({
               icon: 'success',
-              title: 'Forma de Pago borrado',
+              title: 'Forma de Pago Borrado',
               text: `${forma_pago.codigo} ${forma_pago.descripcion} ha sido borrado correctamente.`,
               showConfirmButton: false,
               timer: 1500
             });
+            this.recargarComponente()
           }, (err) => {
-            let errorMessage = 'Se produjo un error al borrar la forma de pago.';
-            if (err.error && err.error.msg) {
-              errorMessage = err.error.msg;
-            }
+            const errorMessage = err.error?.msg || 'Se produjo un error al borrar la forma de pago.';
             Swal.fire('Error', errorMessage, 'error');
           }
-          );
+        );
       }
     });
   }
@@ -227,10 +220,11 @@ export class FormaPagoComponent implements OnInit {
       this.totalFormasPago = 0;
 
       this.formasPago = this.allFormasPago.filter((formaPago) => {
+        const regex = new RegExp(this.buscarTexto, 'i');
 
         const pasaFiltro = (
-          (formaPago.codigo.includes(this.buscarTexto) ||
-            formaPago.descripcion.toLowerCase().includes(this.buscarTexto.toLowerCase())) &&
+          (formaPago.codigo.match(regex) !== null ||
+            formaPago.descripcion.match(regex) !== null) &&
           (!this.estadoSelect || formaPago.estado === (this.estadoSelect === 'true'))
         );
         return pasaFiltro;

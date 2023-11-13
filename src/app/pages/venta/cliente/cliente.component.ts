@@ -132,7 +132,7 @@ export class ClienteComponent implements OnInit {
       () => {
         Swal.fire({
           icon: 'success',
-          title: 'Cliente actualizado',
+          title: 'Cliente Actualizado',
           text: 'Cliente se ha actualizado correctamente',
           showConfirmButton: false,
           timer: 1500
@@ -144,36 +144,6 @@ export class ClienteComponent implements OnInit {
         Swal.fire('Error', errorMessage, 'error');
       }
     );
-  }
-
-  filtrarClientes() {
-    if (!this.clientesAux || this.clientesAux.length === 0) {
-      // Inicializar las variables auxiliares una sola vez
-      this.clientesAux = this.clientes;
-      this.totalClientesAux = this.totalClientes;
-    }
-    if (this.buscarTexto.trim() === '' && !this.estadoSelect) {
-      // Restablecemos las variables principales con las auxiliares
-      this.clientes = this.clientesAux;
-      this.totalClientes = this.totalClientesAux;
-    } else {
-      // Reiniciamos variables
-      this.totalClientes = 0;
-
-      this.clientes = this.allClientes.filter((cliente) => {
-        const regex = new RegExp(this.buscarTexto, 'i');
-
-        const pasaFiltro = (
-          (cliente.razon_social.toLowerCase().includes(this.buscarTexto.toLowerCase()) ||
-            cliente.identificacion.includes(this.buscarTexto) ||
-            cliente.direccion.match(regex) !== null ||
-            cliente.telefono.includes(this.buscarTexto) ||
-            cliente.email.includes(this.buscarTexto)) &&
-          (!this.estadoSelect || cliente.estado === (this.estadoSelect === 'true'))
-        );
-        return pasaFiltro;
-      });
-    }
   }
 
   borrarCliente(cliente: Cliente) {
@@ -234,6 +204,36 @@ export class ClienteComponent implements OnInit {
         );
       }
     });
+  }
+
+  filtrarClientes() {
+    if (!this.clientesAux || this.clientesAux.length === 0) {
+      // Inicializar las variables auxiliares una sola vez
+      this.clientesAux = this.clientes;
+      this.totalClientesAux = this.totalClientes;
+    }
+    if (this.buscarTexto.trim() === '' && !this.estadoSelect) {
+      // Restablecemos las variables principales con las auxiliares
+      this.clientes = this.clientesAux;
+      this.totalClientes = this.totalClientesAux;
+    } else {
+      // Reiniciamos variables
+      this.totalClientes = 0;
+
+      this.clientes = this.allClientes.filter((cliente) => {
+        const regex = new RegExp(this.buscarTexto, 'i');
+
+        const pasaFiltro = (
+          (cliente.razon_social.toLowerCase().includes(this.buscarTexto.toLowerCase()) ||
+            cliente.identificacion.includes(this.buscarTexto) ||
+            cliente.direccion.match(regex) !== null ||
+            cliente.telefono.includes(this.buscarTexto) ||
+            cliente.email.includes(this.buscarTexto)) &&
+          (!this.estadoSelect || cliente.estado === (this.estadoSelect === 'true'))
+        );
+        return pasaFiltro;
+      });
+    }
   }
 
   get totalPaginas(): number {
