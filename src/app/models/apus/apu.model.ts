@@ -5,6 +5,7 @@ export class Apu {
     descripcion: string;
     rendimiento: number;
     unidad: string;
+    total: number;
     materiales: Material[];
     equipos: Equipo[];
     mano_obra: ManoObra[];

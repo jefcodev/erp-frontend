@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { delay, map } from 'rxjs';
 
 //Model
-import { Quotation } from 'src/app/models/quotations/quotation.model';
+import { Proforma } from 'src/app/models/quotations/quotation.model'; 
 
 // API
 import { environment } from 'src/environments/environment';
@@ -36,7 +36,7 @@ export class QuotationService {
     const url=`${base_url}/quotation`;
     return this.http.get(url, this.headers)
     .pipe(
-      map((resp :{ok:boolean, quotations: Quotation[]}
+      map((resp :{ok:boolean, quotations: Proforma[]}
       ) => resp.quotations)
     )
   }

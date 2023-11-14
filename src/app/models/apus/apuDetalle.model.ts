@@ -7,6 +7,7 @@ export class ApuDetalle {
     public descripcion: string,
     public rendimiento: string,
     public unidad: string,
+    public total : number
   ){
   }
     

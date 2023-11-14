@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 //Model
-import { Quotation } from 'src/app/models/quotations/quotation.model';
+import { Proforma } from 'src/app/models/quotations/quotation.model'; 
 
 //Service 
 
@@ -17,7 +17,7 @@ import { QuotationService } from 'src/app/services/quotations/quotation.service'
 })
 export class QuotationsComponent implements OnInit{
 
-  public quotations: Quotation[]=[];
+  public proformas: Proforma[]=[];
   public cargando: boolean = true;
   constructor(
     private quotationService: QuotationService,
@@ -34,9 +34,8 @@ export class QuotationsComponent implements OnInit{
     this.cargando = true;
       this.quotationService.cargarQuotations()
         .subscribe(quotations => {
-          this.quotations = quotations;
-          console.log(quotations)
-          this.cargando = false;
+          this.proformas = quotations;
+          console.log(quotations);
         });
     }
 

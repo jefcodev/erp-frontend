@@ -41,23 +41,12 @@ export class ApuService {
     const url=`${base_url}/apu`;
     return this.http.get(url, this.headers)
     .pipe(
-      map((resp :{ok:boolean, apus: Apu[]}
-      ) => resp.apus)
+      map((resp :{ok:boolean, datos: Apu[]}
+      ) => resp.datos)
     )
   };
 
-  /* 
-  getApuDetalle(cabeceraId: number): Observable<ApuDetalle> {
-    const url = `${this.apiUrl}/ruta_para_obtener_detalle/${cabeceraId}`;
-    return this.http.get<ApuDetalle>(url);
-  }
-  */
-/*   cargarDetalleApus(id:number) : Observable<ApuDetalle> {
-    const url=`${base_url}/apu/${id}`;
-    return this.http.get<ApuDetalle>(url, this.headers);
-  }; */
-
-  cargarDetalleApus(id: any) {
+  cargarDetalleApu(id: any) {
     const url=`${base_url}/apu/${id}`;
     return this.http.get(url, this.headers)
       .pipe(

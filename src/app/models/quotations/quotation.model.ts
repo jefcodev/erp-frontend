@@ -1,13 +1,17 @@
-export class Quotation {
-    constructor(
-        public id: number,
-        public date_quo: string,
-        public code_quo: string,
-        public id_client: number,
-        public id_iva: number,
-        public created: string,
-        public status: boolean,
-    ) {
+export class Proforma {
+    id_cliente: number;
+    fecha: string;
+    descuento: number;
+    total: number;
+    estado?: boolean;
+    productos: Detalle[];
+}
 
-    }
+export class Detalle {
+    proforma_id?: number;
+    item: string;
+    item_id: number;
+    cantidad: number;
+    precio_unitario: number;
+    descuento: number;
 }

@@ -32,21 +32,32 @@
                     <table class="table table-striped">
                         <thead>
                             <tr>
-                                <th>Fecha</th>
-                                <th>Metros cuadrados</th>
-                                <th>Descuento</th>
-                                <th>Creado por</th>
+                                <th>Código</th>
+                                <th>Proyecto</th>
+                                <th>Descripción</th>
+                                <th>Rendimiento</th>
+                                <th>Unidad</th>
                                 <th>Valor Total</th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr *ngFor="let item of apus">
+                            <tr *ngFor="let item of capitulo">
                                 <td>{{item.codigo}}</td>
                                 <td>{{item.nombre}}</td>
                                 <td>{{item.descripcion}}</td>
                                 <td>{{item.rendimiento}}</td>
                                 <td>{{item.unidad}}</td>
+                                <td>{{item.total}}</td>
                                 <td class="text-nowrap">
+                                    <button class="btn btn-warning btn-sm m-r-5" data-toggle="modal"
+                                        data-target="#modalApu">
+                                        <i class="fa fa-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-info btn-sm m-r-5" data-toggle="modal"
+                                        data-target="#modalApu">
+                                        <i class="fa fa-eye"></i>
+                                    </button>
                                   <a href="#" data-toggle="tooltip" data-original-title="Edit"> <i class="fa fa-pencil text-inverse m-r-10"></i> </a>
                                   <a href="#" data-toggle="tooltip" data-original-title="Close"> <i class="fa fa-close text-danger"></i> </a>
                                 </td>
@@ -65,3 +76,428 @@
         </div>
     </div>
 </div>
+
+
+<!-- Modal Update Proveedores -->
+<div class="modal fadeIn fast modal-principal" id="modalApu" tabindex="-1" role="dialog"
+    aria-labelledby="exampleModalLabel1" #miModal>
+    <div class="modal-dialog" role="document" style="width: 100%;" max-width="1000px;">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title" id="exampleModalLabel1">
+                    Visulizar Anlisis de Precios Unitarios</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <div class="text-center">
+                    <h3><b>APU</b></h3>
+                    
+                </div>
+                <br>
+
+                <form autocomplete="off">
+
+                    <!-- Factura Form Data-->
+                    <div class="row" *ngFor="let item of apus">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Código</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-id-badge"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder="Identificación" name="item.codigo" [(ngModel)]="item.codigo" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Nombre</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-user"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder="Razón Social" name="item.nombre" [(ngModel)]="item.nombre" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Descripción</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-location-pin"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder="Descripción" name="item.descripcion" [(ngModel)]="item.descripcion" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Rendimiento</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-mobile"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder="Rendimiento" name="item.rendimiento" [(ngModel)]="item.rendimiento" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Unidad</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-email"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname" placeholder="Email"
+                                    name="item.unidad" [(ngModel)]="item.unidad" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Asiento</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-file"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname" placeholder="Asiento"
+                                        formControlName="id_asiento" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Fecha Emisión</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-calendar"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder="Fecha Emisión" formControlName="fecha_emision" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Fecha vencimiento</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-calendar"></i></div>
+                                    <input type="date" class="form-control" id="exampleInputuname"
+                                        placeholder="Fecha Vencimiento" formControlName="fecha_vencimiento"
+                                        >
+                                </div>
+                                <div class="error-message text-danger"
+                                    >
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+
+                    <!-- Detalle Table Data -->
+                    <div class="table-responsive">
+                        <table id="demo-foo-addrow"
+                            class="table m-t-30 table-hover contact-list footable-loaded footable" data-page-size="10">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">#</th>
+                                    <th class="text-right">Código</th>
+                                    <th class="text-center">Cantidad</th>
+                                    <th class="text-center">Descripción </th>
+                                    <th class="text-right">Precio Unitario</th>
+                                    <th class="text-right">Descuento</th>
+                                    <th class="text-center">Tarifa</th>
+                                    <th class="text-right">Valor</th>
+                                    <th class="text-right">Precio Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                               <!--  <tr *ngFor="let df of detalles_factura let i = index">
+                                    <td class="text-center">{{ i + 1 }}</td>
+                                    <td class="text-center">{{df.id_producto}}</td>
+                                    <td class="text-center">{{ df.cantidad | number: '1.2-2' }}</td>
+                                    <td>{{df.descripcion}}</td>
+                                    <td class="text-right">{{df.precio_unitario | number: '1.2-2' }}</td>
+                                    <td class="text-right">{{df.descuento}}</td>
+                                    <td class="text-right">{{df.tarifa}}</td>
+                                    <td class="text-right">{{df.valor}}</td>
+                                    <td class="text-right">{{df.precio_total_sin_impuesto}}</td>
+                                    <ng-template #inactivoOption>
+                                    </ng-template>
+                                </tr> -->
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <!--paginador-->
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <hr>
+
+                    <!-- Pagos Table Data -->
+                    <div class="table-responsive">
+                        <table id="demo-foo-addrow"
+                            class="table m-t-30 table-hover contact-list footable-loaded footable" data-page-size="10">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">#</th>
+                                    <th class="text-left">Fecha Pago</th>
+                                    <th class="text-left">Forma de Pago</th>
+                                    <th class="text-left">Observación </th>
+                                    <th class="text-right">Abono</th>
+                                    <th class="text-left">Estado</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- <tr *ngFor="let pago of pagos let i = index">
+                                    <td class="text-center">{{ i + 1 }}</td>
+                                    <td>{{ pago.fecha_pago | date:'yyyy-MM-dd' }}</td>
+                                    <td>
+                                        <ng-container *ngFor="let fp of formas_pago">
+                                            <span *ngIf="fp.id_forma_pago === pago.id_forma_pago">
+                                                {{ fp.codigo }} - {{ fp.descripcion }}</span>
+                                        </ng-container>
+                                    </td>
+                                    <td class="text-left">{{ pago.observacion }}</td>
+                                    <td class="text-right">{{pago.abono | number: '1.2-2' }}</td>
+                                    <td *ngIf="pago.estado; else inactivo">
+                                        <div class="label label-table label-success">ACTIVO</div>
+                                    </td>
+                                    <ng-template #inactivo>
+                                        <td>
+                                            <div class="label label-table label-danger">ANULADO</div>
+                                        </td>
+                                    </ng-template>
+                                    <td *ngIf="pago.estado else inactivoOption" class="text-nowrap text-center">
+                                        <a class="cursor" (click)="borrarPago(pago);" data-toggle="tooltip"
+                                            data-original-title="Close"> <i class="fa fa-close text-danger"></i> </a>
+                                    </td>
+                                    <ng-template #inactivoOption>
+                                    </ng-template>
+                                </tr> -->
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <hr>
+
+                    <!-- Factura Form 2 -->
+                    <div class="col-md-12">
+                        <div class="clearfix"></div>
+                        <div class="row">
+
+                            <!-- Pago de Factura -->
+                            <div class="col-md-3">
+                                <br>
+                                <div class="form-group">
+                                    <label for="exampleInputuname" style="width: 100%;">Fecha Pago
+                                        <div class="input-group">
+                                            <div class="input-group-addon"><i class="ti-calendar"></i></div>
+                                            <input type="date" class="form-control" id="exampleInputuname"
+                                               >
+                                        </div>
+                                    </label>
+                                    <label for="exampleInputuname">Forma de Pago
+                                        <div class="input-group">
+                                            <div class="input-group-addon"><i class="ti-credit-card"></i></div>
+                                          
+                                        </div>
+                                    </label>
+                                    <label for="exampleInputuname" style="width: 100%;">Observación
+                                        <div class="input-group">
+                                            <div class="input-group-addon"><i class="ti-eye"></i></div>
+                                            <input type="text" class="form-control" formControlName="observacion"
+                                                placeholder="Nota ó número de control" min="0"
+                                                >
+                                            <!-- [readonly]="abonoU <= 0">
+                                        [readonly]="saldoInicial === 0 || abonoU <= 0"-->
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <br>
+                                <div class="form-group">
+                                    <label for="exampleInputuname" style="width: 100%;">Pagar Factura
+                                        <div class="input-group">
+                                            <div class="input-group-addon"><b>ABONAR:</b></div>
+                                            <input type="number" class="form-control text-right" id="exampleInputuname"
+                                                placeholder="0.00" formControlName="abono" 
+                                                min="0" >
+                                        </div>
+                                    </label>
+                                    <label for="exampleInputuname" style="width: 100%;">Saldo Pendiente
+                                        <div class="input-group">
+                                            <div class="input-group-addon"><b>SALDO:</b>&nbsp;&nbsp;&nbsp;&nbsp;</div>
+                                            <input type="number" class="form-control text-right" id="exampleInputuname"
+                                                placeholder="0.00" formControlName="saldo" readonly>
+                                        </div>
+                                    </label>
+                                    <label for="exampleInputuname" style="width: 100%;">Total Factura
+                                        <div class="input-group">
+                                            <div class="input-group-addon"><b>TOTAL:</b>&nbsp;&nbsp;&nbsp;&nbsp;</div>
+                                            <input type="number" class="form-control text-right" id="exampleInputuname"
+                                                placeholder="0.00" formControlName="importe_total" readonly>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Detalle -->
+                            <div class="col-md-3">
+                                <div class="pull-right m-t-30 text-right">
+                                    <p>SUBTOTAL SIN IMPUESTOS: </p>
+                                    <p>SUBTOTAL 12%: </p>
+                                    <p>SUBTOTAL 0%: </p>
+                                    <p>SUBTOTAL NO OBJETO DE IVA: </p>
+                                    <p>SUBTOTAL EXCENTO DE IVA: </p>
+                                    <p>TOTAL DESCUENTO: </p>
+                                    <p>ICE:</p>
+                                    <p>IVA 12%: </p>
+                                    <h3 class="left-align"><b>VALOR TOTAL: </b></h3>
+                                </div>
+                            </div>
+
+                            <!-- Valores -->
+                            <div class="col-md-3">
+                                <div class="pull-right m-t-30 text-right">
+                                    <!-- <p>$ {{ total_sin_impuesto }}</p>
+                                    <p>$ 0.00</p>
+                                    <p>$ 0.00</p>
+                                    <p>$ 0.00</p>
+                                    <p>$ 0.00</p>
+                                    <p>$ {{ total_descuento }}</p>
+                                    <p>$ 0.00</p>
+                                    <p>$ {{ valor}}</p>
+                                    <h3>$ {{ importe_total }}</h3> -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" 
+                    data-dismiss="modal"></button>
+                <button type="button" class="btn btn-info"
+                    [disabled]="  0">Actualizar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Table Data Factura */
+
+    /* CSS personalizado para espaciar los botones */
+    .float-left .btn {
+        margin-right: 5px;
+        /* Ajusta este valor según el espacio deseado */
+    }
+
+    /* Modal Create Factura */
+
+    .modal-dialog {
+        max-width: 80%;
+        /* Ajusta el valor según tus necesidades */
+        margin: 30px auto;
+    }
+
+    .left-align {
+        /* Alinea a la izquierda la etiqueta  VALOR TOTAL */
+        text-align: left;
+    }
+
+    /* Modal Create Cliente */
+
+    .clientes-filtrados {
+        position: absolute;
+        z-index: 9999;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    /* Modal Create Cliente */
+    .modal-custom .modal-dialog {
+        max-width: 30%;
+        /* Ajusta el valor según tus necesidades */
+        margin: 30px auto;
+    }
+
+    /* Modal XML */
+    .custom-file-upload {
+        display: inline-block;
+        padding: 6px 20px;
+        cursor: pointer;
+        background-color: #007bff;
+        color: #fff;
+        border: 1px solid #007bff;
+        border-radius: 5px;
+    }
+
+    .custom-file-upload:hover {
+        background-color: #0056b3;
+    }
+
+    /*
+    .custom-file-upload {
+        display: inline-block;
+        padding: 6px 20px;
+        cursor: pointer;
+        background-color: #007bff;
+        color: #fff;
+        border: 1px solid #007bff;
+        border-radius: 5px;
+    }
+
+    .custom-file-upload:hover {
+        background-color: #0056b3;
+    }
+
+    */
+
+    /* Modal Cliente */
+    .modal-body-aux {
+        padding-bottom: 0px;
+    }
+
+    .material-aux {
+        font-weight: 300;
+    }
+
+    .custom-width-modal .modal-content {
+        max-width: 500px;
+        /* Cambia este valor al ancho deseado */
+        margin: 0 auto;
+        /* Centra el modal en la ventana */
+    }
+
+    /* fecha de vencimiento  */
+    .fecha-vencida {
+        color: red;
+        /* O cualquier estilo que desees para fechas vencidas */
+    }
+
+    .fecha-no-vencida {
+        color: rgb(29, 0, 215);
+        /* O cualquier estilo que desees para fechas no vencidas */
+    }
+
+    /* Totales*/
+
+    .row-item {
+        margin-bottom: 5px;
+    }
+
+    .column-item {
+        border-right: 50px solid transparent;
+        /* Ajusta este valor según tus preferencias */
+    }
+</style>

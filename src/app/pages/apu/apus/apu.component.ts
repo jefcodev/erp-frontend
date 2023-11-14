@@ -373,6 +373,7 @@ export class ApuComponent implements OnInit {
       descripcion: this.descripcionC,
       rendimiento: this.rendimientoC,
       unidad: this.unidadC,
+      total : this.precioUnitario,
       materiales: this.filasMateriales,
       equipos: this.filasEquipos,
       mano_obra: this.filasManoObra,
