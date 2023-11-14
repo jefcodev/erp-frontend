@@ -28,13 +28,13 @@ export class BalanceGeneralService {
     }
   }
 
-  loadBalanceGeneral() {
-    const url = `${base_url}/balance-general`;
+  loadBalanceGeneral(fechaInicio: string, fechaFin: string) {
+    const url = `${base_url}/contabilidad/balance-general/${fechaInicio}/${fechaFin}`;
     return this.hhtp.get<LoadBalanceGeneral>(url, this.headers);
   }
 
-  loadSumaAPP() {
-    const url = `${base_url}/balance-general/suma`;
+  loadSumaAPP(fechaInicio: string, fechaFin: string) {
+    const url = `${base_url}/contabilidad/balance-general/suma/${fechaInicio}/${fechaFin}`;
     return this.hhtp.get<LoadBalanceGeneral>(url, this.headers);
   }
 

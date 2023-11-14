@@ -1,4 +1,4 @@
-import { EstadoResultado, SumaIEG } from "src/app/models/contabilidad/estado-resultado";
+import { EstadoResultado, SumaIEG } from "src/app/models/contabilidad/estado-resultado.model";
 
 export interface LoadEstadoResultado {
     estado_resultado: EstadoResultado[];

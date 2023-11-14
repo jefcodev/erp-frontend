@@ -410,7 +410,6 @@ export class FacturaComponent implements OnInit {
     this.cargarProveedoresAll();
     this.cargarFormasPago();
     this.cargarProductos();
-    //this.cargarProductosAll();
     this.cargarFacturas();
     this.cargarFacturasAll();
     this.cargarProductosAll();  // Espera a que se carguen los productos
@@ -429,7 +428,7 @@ export class FacturaComponent implements OnInit {
 
   // Método para cargar todas las formas de pago
   cargarFormasPago() {
-    this.formaPagoService.loadFormasPago()
+    this.formaPagoService.loadFormasPagoAll()
       .subscribe(({ formas_pago }) => {
         this.formas_pago = formas_pago;
       })

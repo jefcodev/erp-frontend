@@ -89,6 +89,7 @@
                                     (change)="filtrarEstadoResultado()" (dblclick)="borrarFechaInicio()"
                                     style="width: 100%;" />
                             </label>
+                           
                             &nbsp;
                             <label>Fecha Fin
                                 <input type="date" class="form-control" [(ngModel)]="fechaFin"
@@ -198,22 +199,6 @@
                             2, maximumFractionDigits: 2 }) }}</h4>
                     </td>
                 </tr>
-            </div>
-            <!--<button (click)="generatePDF()">Generar PDF gg</button> -->
-            <div class="float-left modal-footer">
-                <hr>
-                <button class="btn btn-success margin-left-10 AN__btn_imprimir_pdf___NEW_ASI hidenNew2 btn-new-version"
-                    id="btnimprimirasiento" type="button" (click)="generatePDF()">
-                    <span class="fa fa-file-pdf-o" style="padding-left:0px;"></span>&nbsp;PDF
-                </button>
-                <button class="btn btn-success AN__btn_imprimir_excel___NEW_ASI hidenNew2 btn-new-version"
-                    id="btnasientoEXCEL" type="button" (click)="exportToExcel()">
-                    <span class="fa fa-file-excel-o" style="padding-left:0px;"></span>&nbsp;Excel
-                </button>
-                <button class="btn btn-success margin-left-10 AN__btn_imprimir_asiento___NEW_ASI hidenNew2 btn-print"
-                    id="btnimprimir" type="button" onclick="ImprimirAsiento();">
-                    <span class="fa fa-print" style="padding-left:0px;"></span>&nbsp;Imprimir
-                </button>
             </div>
         </div>
     </div>
