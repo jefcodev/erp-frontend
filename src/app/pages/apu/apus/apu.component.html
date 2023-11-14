@@ -133,13 +133,13 @@
                         <td>
                           <ng-select [items]="productos" bindLabel="descripcion" placeholder="Seleccione un producto"
                             [(ngModel)]="item.producto" name="descripcion{{i}}" [searchable]="true"
-                            (ngModelChange)="actualizarDatosMateriales($event, i)"></ng-select>
+                            (ngModelChange)="actualizarDatosMateriales($event, i); calcularSubTotalMateriales(i); calcularTotalMateriales(); calcularCostosDirectos();"></ng-select>
 
                         </td>
                         <td>
                           <input type="number" min="0.0000" class="form-control text-right" [(ngModel)]="item.cantidad"
                             name="cantidad{{i}}"
-                            (ngModelChange)="calcularSubTotalMateriales(i); calcularTotalMateriales();">
+                            (ngModelChange)="calcularSubTotalMateriales(i); calcularTotalMateriales(); calcularCostosDirectos();">
                         </td>
                         <td>
                           <input type="text" class="form-control text-right" [(ngModel)]="item.unidad"
@@ -162,7 +162,7 @@
 
                         <td class="text-center">
                           <!-- Botón para eliminar la fila actual -->
-                          <a class="cursor" (click)="deleteFilaMateriales(i); calcularTotalMateriales();" data-toggle="tooltip"
+                          <a class="cursor" (click)="deleteFilaMateriales(i); calcularTotalMateriales(); calcularCostosDirectos();" data-toggle="tooltip"
                             data-original-title="Eliminar"> <i class="fa fa-close text-danger"></i> </a>
 
                         </td>
@@ -230,11 +230,11 @@
                         <td>
                           <ng-select [items]="transporte" bindLabel="descripcion" placeholder="Seleccione un producto"
                             [(ngModel)]="item.transporte" name="descripciont{{i}}" [searchable]="true"
-                            (ngModelChange)="actualizarDatosTransporte($event, i); calcularSubTotalTransporte(i);"></ng-select>
+                            (ngModelChange)="actualizarDatosTransporte($event, i); calcularSubTotalTransporte(i);  calcularTotalTransporte(); calcularCostosDirectos();"></ng-select>
                         </td>
                         <td>
                           <input type="number" min="0.0000" class="form-control text-right" [(ngModel)]="item.cantidadt"
-                            name="cantidadt{{i}}" (ngModelChange)="calcularSubTotalTransporte(i); calcularTotalTransporte();">
+                            name="cantidadt{{i}}" (ngModelChange)="calcularSubTotalTransporte(i); calcularTotalTransporte(); calcularCostosDirectos();">
                         </td>
                         <td>
                           <input type="text" class="form-control text-right" [(ngModel)]="item.unidadt" name="unidadt{{i}}">
@@ -247,7 +247,7 @@
                           <input type="number" class="form-control text-right" [(ngModel)]="item.totalt" name="item.totalt{{i}}" disabled>
                         </td>
                         <td class="text-center">
-                          <a class="cursor" (click)="deleteFilaTransporte(i); calcularTotalTransporte();" data-toggle="tooltip"
+                          <a class="cursor" (click)="deleteFilaTransporte(i); calcularTotalTransporte(); calcularCostosDirectos();" data-toggle="tooltip"
                             data-original-title="Eliminar"> <i class="fa fa-close text-danger"></i> </a>
                         </td>
                       </tr>
@@ -316,13 +316,13 @@
                           <ng-select [items]="herramientas" bindLabel="descripcion"
                             placeholder="Seleccione una Herramienta" [(ngModel)]="item.herramientas"
                             name="descripcione{{i}}" [searchable]="true"
-                            (ngModelChange)="actualizarDatosEquipos($event, i)"></ng-select>
+                            (ngModelChange)="actualizarDatosEquipos($event, i); calcularSubTotalEquipos(i); calcularTotalEquipos(); calcularRendimiento(); calcularCostosDirectos();"></ng-select>
 
                         </td>
                         <td>
                           <input type="number" class="form-control text-right" [(ngModel)]="item.cantidade"
                             name="cantidade{{i}}"
-                            (ngModelChange)="calcularSubTotalEquipos(i); calcularTotalEquipos(); calcularRendimiento();">
+                            (ngModelChange)="calcularSubTotalEquipos(i); calcularTotalEquipos(); calcularRendimiento(); calcularCostosDirectos();">
 
 
 
@@ -341,7 +341,7 @@
                             name="item.totale{{i}}" disabled>
                         </td>
                         <td class="text-center">
-                           <a class="cursor" (click)="deleteFilaEquipos(i); calcularTotalEquipos(); calcularRendimiento();" data-toggle="tooltip"
+                           <a class="cursor" (click)="deleteFilaEquipos(i); calcularTotalEquipos(); calcularRendimiento(); calcularCostosDirectos();" data-toggle="tooltip"
                            data-original-title="Eliminar"> <i class="fa fa-close text-danger"></i> </a>
                         </td>
                       </tr>
@@ -390,7 +390,7 @@
                 <div class="table-responsive m-t-5" style="clear: both;">
                   <table class="table table-bordered">
                     <thead>
-                      <th class="text-center">#</th>
+                      <th class="text-center">Código</th>
                       <th class="text-center">Descripción</th>
                       <th class="text-center">Cantidad</th>
                       <th class="text-center">Unidad</th>
@@ -400,41 +400,38 @@
                     </thead>
                     <tbody>
                       <tr *ngFor="let item of filasManoObra; let i = index">
-                        <td class="text-center">{{ i + 1 }}</td>
+                        <td>
+                          <input type="text" class="form-control text-right" [(ngModel)]="item.codigom"
+                            name="codigom{{i}}">
+                        </td>
 
                         <td>
                           <ng-select [items]="puestos" bindLabel="cargo" placeholder="Seleccione puesto"
                             [(ngModel)]="item.puestos" name="descripcionm{{i}}" [searchable]="true"
-                            (ngModelChange)="actualizarDatosManoObra($event, i); calcularSubTotalManoObra(i);"                            >
+                            (ngModelChange)="actualizarDatosManoObra($event, i); calcularSubTotalManoObra(i);  calcularSubTotalManoObra2(); calcularCostosDirectos();"                            >
                           </ng-select>
 
                         </td>
                         <td>
                           <input type="number" class="form-control text-right" [(ngModel)]="item.cantidadm"
-                            name="cantidadm{{i}}" (ngModelChange)="calcularSubTotalManoObra(i);" >
+                            name="cantidadm{{i}}" min="0.0000" (ngModelChange)="calcularSubTotalManoObra(i); calcularSubTotalManoObra2(); calcularCostosDirectos();" >
                         </td>
                         <td>
                           <input type="text" class="form-control text-right" [(ngModel)]="item.unidadm"
                             name="unidadm{{i}}">
-                          <!-- <select class="form-control" [(ngModel)]="item.unidad" name="unidad{{i}}">
-                                                      <option value="">Seleccione una unidad</option>
-                                                      <option *ngFor="let unidad of unidades" [value]="unidad.descripcion">{{ unidad.descripcion }}</option>
-                                                    </select> -->
-
-
                         </td>
                         
                         <td>
                           <input type="number" class="form-control text-right" [(ngModel)]="item.preciom"
-                            name="preciom{{i}}" (ngModelChange)="calcularSubTotalManoObra(i);">
+                            name="preciom{{i}}" disabled>
                         </td>
                         <td>
                           <input type="number" class="form-control text-right" [(ngModel)]="item.totalm"
-                            name="totalm{{i}}">
+                            name="totalm{{i}}" disabled>
                         </td>
                         <td class="text-center">
                           
-                          <a class="cursor" (click)="deleteFilaManoObra(i); calcularSubTotalManoObra(i);" data-toggle="tooltip"
+                          <a class="cursor" (click)="deleteFilaManoObra(i);  calcularSubTotalManoObra2(); calcularCostosDirectos();" data-toggle="tooltip"
                            data-original-title="Eliminar"> <i class="fa fa-close text-danger"></i> </a>
                         </td>
                       </tr>
@@ -460,7 +457,6 @@
                         <div class="m-t-30 text-right">
                           <p class="text-right">Subtotal Mano de Obra:</p>
                           <p class="text-right">Prestaciones Sociales:</p>
-                          <p class="text-right">Subtotal + Prestaciones Sociales:</p>
                           <p class="text-right">Total Mano de Obra: </p>
                           <p class="text-right">Unitario de Mano de Obra: </p>
 
@@ -471,11 +467,10 @@
                       <!-- Valores -->
                       <div class="col-md-2">
                         <div class="pull-right m-t-30 text-right">
-                          <p class="text-right">$ 0.00 </p>
-                          <p class="text-right">$ 0.00 </p>
-                          <p class="text-right">$ 0.00 </p>
-                          <p class="text-right">$ 0.00 </p>
-                          <p class="text-right">$ 0.00 </p>
+                          <p class="text-right">$ {{subTotalManoObra}} </p>
+                          <p class="text-right">$ {{totalPrestaciones}} </p>
+                          <p class="text-right">$ {{totalManoyPrestaciones}} </p>
+                          <p class="text-right">$ {{unitarioManoObra}}</p>
                         </div>
                       </div>
                     </div>
@@ -495,9 +490,9 @@
                   <div class="col-md-4">
                     <div class="m-t-30 text-right">
                       <p class="text-right">Costos Directos por Unidad:</p>
-                      <p class="text-right">12 % Administración y Costos Indirectos:</p>
+                      <p class="text-right">12% Administración y Costos Indirectos:</p>
                       <p class="text-right">Subtotal:</p>
-                      <p class="text-right">Utilidad: </p>
+                      <p class="text-right">8% Utilidad: </p>
                       <h3 class="text-right">Precio Unitario:</h3>
                     </div>
 
@@ -515,11 +510,11 @@
                             <p>$ {{ sumaTotalICE.toFixed(2) }} </p>
                             <p>$ {{ sumaTotalIVA.toFixed(2) }} </p>
                             <h3>$ {{ sumaPrecioTotal.toFixed(2) }} </h3> -->
-                      <p class="text-right">$ 0.00 </p>
-                      <p class="text-right">$ 0.00 </p>
-                      <p class="text-right">$ 0.00 </p>
-                      <p class="text-right">$ 0.00 </p>
-                      <h3 class="text-right">$ 0.00 </h3>
+                      <p class="text-right">$ {{costosDirectos}} </p>
+                      <p class="text-right">$ {{administracion}} </p>
+                      <p class="text-right">$ {{subTotalUnitario}} </p>
+                      <p class="text-right">$ {{utilidad}} </p>
+                      <h3 class="text-right">$ {{precioUnitario}} </h3>
                     </div>
                   </div>
                 </div>

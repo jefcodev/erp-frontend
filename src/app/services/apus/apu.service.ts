@@ -5,6 +5,7 @@ import { Observable, map } from 'rxjs';
 
 //Model
 import { Apu } from 'src/app/models/apus/apu.model';
+import { ApuDetalle } from 'src/app/models/apus/apuDetalle.model';
 
 // API
 import { environment } from 'src/environments/environment';
@@ -44,6 +45,25 @@ export class ApuService {
       ) => resp.apus)
     )
   };
+
+  /* 
+  getApuDetalle(cabeceraId: number): Observable<ApuDetalle> {
+    const url = `${this.apiUrl}/ruta_para_obtener_detalle/${cabeceraId}`;
+    return this.http.get<ApuDetalle>(url);
+  }
+  */
+/*   cargarDetalleApus(id:number) : Observable<ApuDetalle> {
+    const url=`${base_url}/apu/${id}`;
+    return this.http.get<ApuDetalle>(url, this.headers);
+  }; */
+
+  cargarDetalleApus(id: any) {
+    const url=`${base_url}/apu/${id}`;
+    return this.http.get(url, this.headers)
+      .pipe(
+        map((resp: { ok: boolean, capitulo: ApuDetalle[] }) => resp.capitulo)
+      )
+  }
 
 
   createApu(apu: Apu) {
