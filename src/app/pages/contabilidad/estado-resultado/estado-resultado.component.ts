@@ -38,6 +38,13 @@ export class EstadoResultadoComponent implements OnInit {
   utilidad_bruta: number;
   utilidad_neta: number;
 
+  // Búsqueda y filtrado
+  public buscarTexto: string = '';
+  //public allFacturas: Factura[] = [];
+  public fechaInicio: string;
+  public fechaFin: string;
+  public estadoPagoSelect: string;
+
   constructor(
     private fb: FormBuilder,
     private estadoResultadoService: EstadoResultadoService,
@@ -68,7 +75,8 @@ export class EstadoResultadoComponent implements OnInit {
         this.egreso = parseFloat(suma.egreso);
         this.gasto = parseFloat(suma.gasto);
         this.utilidad_bruta = this.ingreso + this.egreso;
-        this.utilidad_neta = this.utilidad_bruta + this.gasto;
+        //this.utilidad_neta = this.utilidad_bruta + this.gasto;
+        this.utilidad_neta = this.gasto + this.egreso + this.ingreso;
         console.log("Ingreso", this.ingreso);
         console.log("Egreso", this.egreso);
         console.log("Gasto", this.gasto);
@@ -237,10 +245,10 @@ export class EstadoResultadoComponent implements OnInit {
   exportToExcel() {
     // Crear el libro de trabajo de Excel
     const workbook = XLSX.utils.book_new();
-  
+
     // Crear la hoja de cálculo principal
     const worksheet = XLSX.utils.table_to_sheet(document.getElementById('demo-foo-addrow'));
-  
+
     // Recorrer las celdas de la hoja de cálculo y cambiar el tipo de celda a "Texto" para las celdas de la columna de código
     const range = XLSX.utils.decode_range(worksheet['!ref']);
     for (let row = range.s.r + 1; row <= range.e.r; row++) {
@@ -253,16 +261,16 @@ export class EstadoResultadoComponent implements OnInit {
         worksheet[cellAddress].v = updatedCode; // Asignar el código actualizado a la celda
       }
     }
-  
+
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Datos');
-  
+
     // Obtén los valores dinámicos sin formato
     const totalIngreso = parseFloat((this.ingreso || 0).toFixed(2));
     const totalEgreso = parseFloat((this.egreso || 0).toFixed(2));
     const utilidadBruta = parseFloat((this.utilidad_bruta || 0).toFixed(2));
     const totalGasto = parseFloat((this.gasto || 0).toFixed(2));
     const utilidadNeta = parseFloat((this.utilidad_neta || 0).toFixed(2));
-  
+
     // Crear una nueva hoja de cálculo para los datos adicionales
     const dataSheet = XLSX.utils.aoa_to_sheet([
       ['', '', ''],
@@ -272,19 +280,19 @@ export class EstadoResultadoComponent implements OnInit {
       ['Total Gasto:', totalGasto, ''],
       ['Utilidad Neta:', utilidadNeta, ''],
     ]);
-  
+
     XLSX.utils.book_append_sheet(workbook, dataSheet, 'Datos Adicionales');
-  
+
     // Generar el archivo de Excel
     const excelData = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-  
+
     // Crear un Blob con los datos del archivo de Excel
     const excelBlob = new Blob([excelData], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-  
+
     // Descargar el archivo de Excel
     saveAs(excelBlob, 'estado_resultado.xlsx');
   }
-  
+
   exportToExcel12() {
     // Crear el libro de trabajo de Excel
     const workbook = XLSX.utils.book_new();
@@ -361,16 +369,35 @@ export class EstadoResultadoComponent implements OnInit {
     saveAs(excelBlob, 'estado_resultado.xlsx');
   }
 
-/*
-  exportToExcel2() {
-    const table = document.getElementById('demo-foo-addrow');
-    const tableExport = new TableExport(table);
+  /*
+    exportToExcel2() {
+      const table = document.getElementById('demo-foo-addrow');
+      const tableExport = new TableExport(table);
+  
+      const exportData = tableExport.getExportData();
+      const xlsxData = exportData.demoFooAddrow.xlsx;
+  
+      const blob = new Blob([xlsxData.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      saveAs(blob, 'estado_resultado.xlsx');
+    }
+  */
 
-    const exportData = tableExport.getExportData();
-    const xlsxData = exportData.demoFooAddrow.xlsx;
+  filtrarEstadoResultado() {
 
-    const blob = new Blob([xlsxData.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    saveAs(blob, 'estado_resultado.xlsx');
   }
-*/
+
+  // Método para borrar fecha fin en Table Date Factura
+  borrarFechaFin() {
+    this.fechaFin = null; // O establece el valor predeterminado deseado
+    this.filtrarEstadoResultado();
+  }
+
+  // Método para borrar fecha inicio en Table Date Factura
+  borrarFechaInicio() {
+    this.fechaInicio = null; // O establece el valor predeterminado deseado
+    this.filtrarEstadoResultado();
+  }
+
+
+
 }
