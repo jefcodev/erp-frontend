@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import Swal from 'sweetalert2';
-import { EstadoResultado, SumaIEG } from 'src/app/models/contabilidad/estado-resultado';
+import { EstadoResultado, SumaIEG } from 'src/app/models/contabilidad/estado-resultado.model';
 import { EstadoResultadoService } from 'src/app/services/contabilidad/estado-resultado.service';
 import { formatDate } from '@angular/common';
 
@@ -18,7 +18,10 @@ import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 //import XLSXStyle from 'xlsx-style';
 
-
+interface LoadEstadoResultado {
+  estado_resultado: EstadoResultado[];// ver
+  suma_ieg: SumaIEG[];
+}
 
 @Component({
   selector: 'app-estado-resultado',
@@ -41,9 +44,14 @@ export class EstadoResultadoComponent implements OnInit {
   // Búsqueda y filtrado
   public buscarTexto: string = '';
   //public allFacturas: Factura[] = [];
-  public fechaInicio: string;
-  public fechaFin: string;
+  //public fechaInicio: string;
+  //public fechaFin: string;
   public estadoPagoSelect: string;
+
+  //public fechaInicio = '2023-10-01'; // Puedes ajustar estas fechas según tus necesidades
+  //public fechaFin = '2023-12-31';
+  public fechaInicio: string; // Puedes ajustar estas fechas según tus necesidades
+  public fechaFin: string;
 
   constructor(
     private fb: FormBuilder,
@@ -54,39 +62,251 @@ export class EstadoResultadoComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.cargarEstadoResultado();
+    this.fechaInicio = '2023-01-01';
+    this.fechaFin = '2023-12-31';
     this.cargarSumaIEG();
+    this.cargarEstadoResultado();
+    //this.cargarEstadoResultado2();
+    //this.cargarSumaIEG2();
   }
 
   cargarEstadoResultado() {
-    this.estadoResultadoService.loadEstadoResultado()
+    this.estadoResultadoService.loadEstadoResultado(this.fechaInicio, this.fechaFin)
       .subscribe(({ estado_resultado }) => {
         this.estado_resultado = estado_resultado;
-      })
+      });
   }
 
   cargarSumaIEG() {
-    this.estadoResultadoService.loadSumaIEG()
+    this.estadoResultadoService.loadSumaIEG(this.fechaInicio, this.fechaFin)
       .subscribe(({ suma_ieg }) => {
         console.log("Suma Ingreso, Egreso, Gasto");
         console.log(suma_ieg);
         const suma = suma_ieg[0];
-        this.ingreso = parseFloat(suma.ingreso);
-        this.egreso = parseFloat(suma.egreso);
-        this.gasto = parseFloat(suma.gasto);
-        this.utilidad_bruta = this.ingreso + this.egreso;
-        //this.utilidad_neta = this.utilidad_bruta + this.gasto;
-        this.utilidad_neta = this.gasto + this.egreso + this.ingreso;
+
+        // Utiliza el operador de fusión nula (??) para proporcionar cero si el valor es nulo o indefinido.
+        this.ingreso = parseFloat(suma.ingresos) ?? 0;
+        this.egreso = parseFloat(suma.egresos) ?? 0;
+        this.gasto = parseFloat(suma.gastos) ?? 0;
+
+        // Verifica las operaciones de utilidad_bruta y utilidad_neta
         console.log("Ingreso", this.ingreso);
         console.log("Egreso", this.egreso);
         console.log("Gasto", this.gasto);
+
+        // Calcula la utilidad_bruta
+        this.utilidad_bruta = this.ingreso - this.egreso; // signo cambiado
         console.log("Utilidad Bruta", this.utilidad_bruta);
+
+        // Calcula la utilidad_neta
+        this.utilidad_neta = this.ingreso - (this.gasto + this.egreso);
         console.log("Utilidad neta", this.utilidad_neta);
       });
   }
 
+  filtrarEstadoResultado() {
+    this.ingreso = 0;
+    this.egreso = 0;
+    this.gasto = 0;
+    this.utilidad_bruta = 0;
+    this.utilidad_neta = 0;
+    // Asegúrate de manejar las fechas de inicio y fin y luego carga el estado de resultados.
+    this.cargarSumaIEG();
+    this.cargarEstadoResultado();
+  }
+
+  // Método para borrar fecha fin en Table Date Factura
+  borrarFechaFin() {
+    this.fechaFin = null; // O establece el valor predeterminado deseado
+    this.filtrarEstadoResultado();
+  }
+
+  // Método para borrar fecha inicio en Table Date Factura
+  borrarFechaInicio() {
+    this.fechaInicio = null; // O establece el valor predeterminado deseado
+    this.filtrarEstadoResultado();
+  }
+
 
   generatePDF() {
+    // Crear el contenido del PDF
+    const content = [
+
+      // Título grande
+      {
+        text: 'Informe de Estado de Resultado',
+        style: 'bigTitle',
+        alignment: 'center',
+        fontSize: 18,
+        margin: [0, 0, 0, 10], // Ajusta los márgenes según tu preferencia
+      },
+
+      // Tabla
+      {
+        table: {
+          headerRows: 1,
+          widths: ['auto', '*', 'auto'],
+          body: [
+            // Encabezados de columna
+            [
+              { text: 'Código', style: 'tableHeader' },
+              { text: 'Descripción', style: 'tableHeader' },
+              { text: 'Saldo', style: 'tableHeader' }
+            ],
+            // Filas de datos
+            ...this.estado_resultado.map(er => [er.codigo, er.descripcion, { text: er.saldo, alignment: 'right' }])
+          ]
+        },
+        layout: {
+          defaultBorder: false
+        }
+      },
+      { canvas: [{ type: 'line', x1: 0, y1: 5, x2: 520, y2: 5, lineWidth: 1 }] }, // Separador
+      // Espaciador invisible
+      { text: '', margin: [0, 10] },
+      // Total Ingreso
+      {
+        columns: [
+          { text: 'Total Ingreso: ', alignment: 'right', bold: true },
+          { text: '$ ' + (this.ingreso || 0).toLocaleString('es', { minimumFractionDigits: 2, maximumFractionDigits: 2 }), alignment: 'right' }
+        ]
+      },
+      // Total Egreso
+      {
+        columns: [
+          { text: 'Total Egreso: ', alignment: 'right', bold: true },
+          { text: '$ ' + (this.egreso || 0).toLocaleString('es', { minimumFractionDigits: 2, maximumFractionDigits: 2 }), alignment: 'right' }
+        ]
+      },
+      // Utilidad Bruta
+      {
+        columns: [
+          { text: 'Utilidad Bruta: ', alignment: 'right', bold: true },
+          { text: '$ ' + (this.utilidad_bruta || 0).toLocaleString('es', { minimumFractionDigits: 2, maximumFractionDigits: 2 }), alignment: 'right' }
+        ]
+      },
+      // Total Gasto
+      {
+        columns: [
+
+          { text: 'Total Gasto: ', alignment: 'right', bold: true },
+          { text: '$ ' + (this.gasto || 0).toLocaleString('es', { minimumFractionDigits: 2, maximumFractionDigits: 2 }), alignment: 'right' }
+        ]
+      },
+      // Utilidad Neta
+      {
+        columns: [
+          { text: 'Utilidad Neta: ', alignment: 'right', bold: true },
+          { text: '$ ' + (this.utilidad_neta || 0).toLocaleString('es', { minimumFractionDigits: 2, maximumFractionDigits: 2 }), alignment: 'right' }
+        ]
+      }
+
+    ];
+
+    // Estilos personalizados
+    const styles = {
+      tableHeader: {
+        bold: true,
+        alignment: 'center',
+        fillColor: '#e9ecef',
+        //fillColor: '#f2f2f2',
+        margin: [0, 5, 0, 5],
+        font: 'Roboto'
+      }
+    };
+
+    // Definir las fuentes utilizadas en el documento
+    const fonts = {
+      Arial: {
+        normal: 'Arial.ttf',
+        bold: 'Arial-Bold.ttf',
+        italics: 'Arial-Italic.ttf',
+        bolditalics: 'Arial-BoldItalic.ttf'
+      },
+      Roboto: {
+        normal: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf',
+        bold: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Bold.ttf',
+        italics: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Italic.ttf',
+        bolditalics: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-BoldItalic.ttf'
+      }
+    };
+
+    // Encabezado del documento
+    const header = {
+      columns: [
+        { text: 'Estado de Resultado', style: 'headerText', margin: [10, 10] },
+        //{ text: new Date().toLocaleString('es', { dateStyle: 'medium', timeStyle: 'medium' }), style: 'headerDate', alignment: 'right', margin: [10, 10] }
+        {
+          text: '' + formatDate(new Date()),
+          style: 'headerDate',
+          alignment: 'right',
+          margin: [10, 10],
+        },
+      ]
+    };
+
+    // Pie de página del documento
+    const footer = function (currentPage, pageCount) {
+      return {
+        columns: [
+          { text: 'Página ' + currentPage.toString() + ' de ' + pageCount, alignment: 'right', margin: [10, 10] },
+          //{ text: 'Pie de página', alignment: 'right', margin: [10, 10] }
+        ]
+      };
+    };
+
+    // Función para formatear la fecha
+    function formatDate(date) {
+      const year = date.getFullYear();
+      const month = padZero(date.getMonth() + 1);
+      const day = padZero(date.getDate());
+      const hours = padZero(date.getHours());
+      const minutes = padZero(date.getMinutes());
+      const seconds = padZero(date.getSeconds());
+
+      return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    }
+
+    // Función para agregar ceros a la izquierda si es necesario
+    function padZero(value) {
+      return value < 10 ? '0' + value : value;
+    }
+
+
+    // Estilos personalizados para el encabezado
+    const headerStyles = {
+      headerText: {
+        font: 'Times New Roman',
+        fontSize: 8,
+        bold: true
+      },
+      headerDate: {
+        font: 'Times New Roman',
+        fontSize: 8
+      }
+    };
+
+    // Definir las opciones del documento PDF
+    const options = {
+      content: content,
+      styles: styles,
+      fonts: fonts,
+      header: header,
+      footer: footer,
+    };
+
+    // Agregar estilos personalizados al objeto options
+
+    // Generar el documento PDF
+    const pdfDocGenerator = pdfMake.createPdf(options);
+
+    // Descargar el PDF
+    pdfDocGenerator.download('estado_resultado.pdf');
+  }
+
+
+  generatePDF3() { // original
+
     // Crear el contenido del PDF
     const content = [
       // Tabla
@@ -183,7 +403,7 @@ export class EstadoResultadoComponent implements OnInit {
     const options = {
       content: content,
       styles: styles,
-      fonts: fonts
+      fonts: fonts,
     };
 
     // Generar el documento PDF
@@ -193,40 +413,10 @@ export class EstadoResultadoComponent implements OnInit {
     pdfDocGenerator.download('estado_resultado.pdf');
   }
 
-  generatePDF2() {
-    // Crear el contenido del PDF
-    const documentDefinition = {
-      content: [
-        { text: 'Estado de Resultados', style: 'header' },
-        { text: 'Total Activo: $516.750,00', style: 'content' },
-        { text: 'Total Pasivo: $-25.000,00', style: 'content' },
-        { text: 'Resultado Ejercicio: $8.250,00', style: 'content' },
-        { text: 'Total Patrimonio: $-491.749,75', style: 'content' },
-        { text: 'Total Pasivo + Patrimonio: $-516.749,75', style: 'content' }
-      ],
-      styles: {
-        header: {
-          fontSize: 18,
-          bold: true,
-          marginBottom: 20
-        },
-        content: {
-          fontSize: 14,
-          marginBottom: 10
-        }
-      }
-    };
-
-    // Generar el PDF
-    const pdfDocGenerator = pdfMake.createPdf(documentDefinition);
-    pdfDocGenerator.download('estado_resultados.pdf');
-  }
-
-
 
   recargarComponente() {
     this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-      this.router.navigate(['/dashboard/balance-general']);
+      this.router.navigate(['/dashboard/estado-resultado']);
     });
 
   }
@@ -373,30 +563,15 @@ export class EstadoResultadoComponent implements OnInit {
     exportToExcel2() {
       const table = document.getElementById('demo-foo-addrow');
       const tableExport = new TableExport(table);
-  
+   
       const exportData = tableExport.getExportData();
       const xlsxData = exportData.demoFooAddrow.xlsx;
-  
+   
       const blob = new Blob([xlsxData.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
       saveAs(blob, 'estado_resultado.xlsx');
     }
   */
 
-  filtrarEstadoResultado() {
-
-  }
-
-  // Método para borrar fecha fin en Table Date Factura
-  borrarFechaFin() {
-    this.fechaFin = null; // O establece el valor predeterminado deseado
-    this.filtrarEstadoResultado();
-  }
-
-  // Método para borrar fecha inicio en Table Date Factura
-  borrarFechaInicio() {
-    this.fechaInicio = null; // O establece el valor predeterminado deseado
-    this.filtrarEstadoResultado();
-  }
 
 
 

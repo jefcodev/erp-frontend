@@ -15,7 +15,7 @@ const base_url = environment.base_url;
 })
 export class EstadoResultadoService {
 
-  constructor(private hhtp: HttpClient,
+  constructor(private http: HttpClient,
     private router: Router) { }
   get token(): string {
     return localStorage.getItem('token');
@@ -28,14 +28,14 @@ export class EstadoResultadoService {
     }
   }
 
-  loadEstadoResultado() {
-    const url = `${base_url}/estado-resultado`;
-    return this.hhtp.get<LoadEstadoResultado>(url, this.headers);
+  loadEstadoResultado(fechaInicio: string, fechaFin: string) {
+    const url = `${base_url}/contabilidad/estado-resultado/${fechaInicio}/${fechaFin}`;
+    return this.http.get<LoadEstadoResultado>(url, this.headers);
   }
 
-  loadSumaIEG() {
-    const url = `${base_url}/estado-resultado/suma`;
-    return this.hhtp.get<LoadEstadoResultado>(url, this.headers);
+  loadSumaIEG(fechaInicio: string, fechaFin: string) {
+    const url = `${base_url}/contabilidad/estado-resultado/suma/${fechaInicio}/${fechaFin}`;
+    return this.http.get<LoadEstadoResultado>(url, this.headers);
   }
 
   logout() {
@@ -46,7 +46,7 @@ export class EstadoResultadoService {
   // Validación de token 
   validarToken(): Observable<boolean> {
     const token = localStorage.getItem('token') || '';
-    return this.hhtp.get(`${base_url}/login/renew`, {
+    return this.http.get(`${base_url}/login/renew`, {
       headers: {
         'x-token': token
       }
@@ -67,7 +67,7 @@ export class EstadoResultadoService {
   // Validación de token Fin //OJO
   login(formData: any) {
     const fomrLogin: LoginForm = formData;
-    return this.hhtp.post(`${base_url}/login`, fomrLogin)
+    return this.http.post(`${base_url}/login`, fomrLogin)
       .pipe(
         tap((resp: any) => {
           localStorage.setItem('token', resp.token)

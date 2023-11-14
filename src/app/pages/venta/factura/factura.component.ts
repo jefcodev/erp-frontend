@@ -420,7 +420,7 @@ export class FacturaVentaComponent implements OnInit {
 
   // Método para cargar todas las formas de pago
   cargarFormasPago() {
-    this.formaPagoService.loadFormasPago()
+    this.formaPagoService.loadFormasPagoAll()
       .subscribe(({ formas_pago }) => {
         this.formas_pago = formas_pago;
       })

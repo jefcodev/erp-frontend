@@ -8,8 +8,8 @@ export class EstadoResultado {
 }
 export class SumaIEG {
     constructor(
-        public ingreso: string,
-        public egreso: string,
-        public gasto: string,
+        public ingresos: string,
+        public egresos: string,
+        public gastos: string,
     ) { }
 }
