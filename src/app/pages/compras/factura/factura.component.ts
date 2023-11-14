@@ -48,7 +48,7 @@ interface DetalleFacturaFormInterface {
 
 interface FacturaXMLInterface {
   id_proveedor: number;
-  id_asiento: number;
+  //id_asiento: number;
   id_info_tributaria: number,
   clave_acceso: string;
   codigo: string;
@@ -267,7 +267,7 @@ export class FacturaComponent implements OnInit {
       telefono: [],
       email: [],
 
-      id_asiento: ['1'],
+      id_asiento: [''],
       codigo: ['', Validators.required],
       fecha_emision: ['', Validators.required],
       fecha_vencimiento: ['', Validators.required],
@@ -1374,7 +1374,7 @@ export class FacturaComponent implements OnInit {
       id_proveedor: this.id_proveedor,
       //id_forma_pago: this.id_forma_pago, con esto cargamos la forma de pago del XML
       id_forma_pago: this.facturaFormXML.get("id_forma_pago").value,
-      id_asiento: 1,
+      //id_asiento: 1,
       id_info_tributaria: 1,
       clave_acceso: this.claveAcceso,
       codigo: this.estab + "-" + this.ptoEmi + "-" + this.secuencial,
