@@ -20,21 +20,26 @@ export class ClienteComponent implements OnInit {
   public clienteForm: FormGroup;
   public clienteFormU: FormGroup;
   public clientes: Cliente[] = [];
-  public clientes_aux: Cliente[] = [];
-  public totalClientes: number = 0;
-  public allClientes: Cliente[] = [];
-  public allTotalClientes: number = 0;
   public clienteSeleccionado: Cliente;
 
   // Paginación
-  itemsPorPagina = 10;
-  paginaActual = 1;
-  paginas: number[] = [];
-  mostrarPaginacion: boolean = false;
-  maximoPaginasVisibles = 5;
+  // public totalClientes: number = 0; abajo
+  public itemsPorPagina = 10;
+  public paginaActual = 1;
+  public paginas: number[] = [];
+  public mostrarPaginacion: boolean = false;
+  public maximoPaginasVisibles = 5;
 
-  // Búsqueda
-  buscarTexto: string = '';
+  // Búsqueda y filtrado
+  public buscarTexto: string = '';
+  public allClientes: Cliente[] = [];
+  public estadoSelect: string;
+
+  public totalClientes: number = 0;
+
+  public clientesAux: Cliente[] = [];
+  public totalClientesAux: number = 0;
+
 
   constructor(
     private fb: FormBuilder,
@@ -77,9 +82,8 @@ export class ClienteComponent implements OnInit {
 
   cargarClientesAll() {
     this.clienteService.loadClientesAll()
-      .subscribe(({ clientes, total }) => {
+      .subscribe(({ clientes }) => {
         this.allClientes = clientes;
-        this.allTotalClientes = total;
       });
   }
 
@@ -101,7 +105,7 @@ export class ClienteComponent implements OnInit {
       () => {
         Swal.fire({
           icon: 'success',
-          title: 'Cliente creado',
+          title: 'Cliente Creado',
           text: 'Cliente se ha creado correctamente.',
           showConfirmButton: false,
           timer: 1500
@@ -116,6 +120,7 @@ export class ClienteComponent implements OnInit {
   }
 
   actualizarCliente() {
+    this.formSubmitted = true;
     if (this.clienteFormU.invalid) {
       return;
     }
@@ -127,7 +132,7 @@ export class ClienteComponent implements OnInit {
       () => {
         Swal.fire({
           icon: 'success',
-          title: 'Cliente actualizado',
+          title: 'Cliente Actualizado',
           text: 'Cliente se ha actualizado correctamente',
           showConfirmButton: false,
           timer: 1500
@@ -139,27 +144,6 @@ export class ClienteComponent implements OnInit {
         Swal.fire('Error', errorMessage, 'error');
       }
     );
-  }
-
-  filtrarClientes() {
-    if (this.clientes_aux && this.clientes_aux.length > 0) {
-    } else {
-      this.clientes_aux = this.clientes;
-    }
-    if (this.buscarTexto.trim() === '') {
-      this.clientes = this.clientes_aux;
-    } else {
-      this.clientes = this.allClientes.filter(proveedor => {
-        const regex = new RegExp(this.buscarTexto, 'i'); // 'i' para que sea insensible a mayúsculas/minúsculas
-        return (
-          proveedor.razon_social.toLowerCase().includes(this.buscarTexto.toLowerCase()) ||
-          proveedor.identificacion.includes(this.buscarTexto) ||
-          proveedor.direccion.match(regex) !== null ||
-          proveedor.telefono.includes(this.buscarTexto) ||
-          proveedor.email.includes(this.buscarTexto)
-        );
-      });
-    }
   }
 
   borrarCliente(cliente: Cliente) {
@@ -177,11 +161,12 @@ export class ClienteComponent implements OnInit {
             this.cargarClientes();
             Swal.fire({
               icon: 'success',
-              title: 'Cliente borrado',
+              title: 'Cliente Borrado',
               text: `${cliente.razon_social} ha sido borrado correctamente.`,
               showConfirmButton: false,
               timer: 1500
             });
+            this.recargarComponente();
           }, (err) => {
             const errorMessage = err.error?.msg || 'Se produjo un error al borrar el cliente.';
             Swal.fire('Error', errorMessage, 'error');
@@ -189,6 +174,66 @@ export class ClienteComponent implements OnInit {
         );
       }
     });
+  }
+
+  activarCliente(cliente: Cliente) {
+    Swal.fire({
+      title: '¿Activar Cliente?',
+      text: `Estas a punto de activar a ${cliente.razon_social}`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, activar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.value) {
+        this.clienteService.deleteCliente(cliente.id_cliente).subscribe(
+          () => {
+            this.cargarClientes();
+            Swal.fire({
+              icon: 'success',
+              title: 'Cliente Activado',
+              text: `${cliente.razon_social} ha sido activado correctamente.`,
+              showConfirmButton: false,
+              timer: 1500
+            });
+            this.recargarComponente();
+          }, (err) => {
+            const errorMessage = err.error?.msg || 'Se produjo un error al activar el cliente.';
+            Swal.fire('Error', errorMessage, 'error');
+          }
+        );
+      }
+    });
+  }
+
+  filtrarClientes() {
+    if (!this.clientesAux || this.clientesAux.length === 0) {
+      // Inicializar las variables auxiliares una sola vez
+      this.clientesAux = this.clientes;
+      this.totalClientesAux = this.totalClientes;
+    }
+    if (this.buscarTexto.trim() === '' && !this.estadoSelect) {
+      // Restablecemos las variables principales con las auxiliares
+      this.clientes = this.clientesAux;
+      this.totalClientes = this.totalClientesAux;
+    } else {
+      // Reiniciamos variables
+      this.totalClientes = 0;
+
+      this.clientes = this.allClientes.filter((cliente) => {
+        const regex = new RegExp(this.buscarTexto, 'i');
+
+        const pasaFiltro = (
+          (cliente.razon_social.toLowerCase().includes(this.buscarTexto.toLowerCase()) ||
+            cliente.identificacion.includes(this.buscarTexto) ||
+            cliente.direccion.match(regex) !== null ||
+            cliente.telefono.includes(this.buscarTexto) ||
+            cliente.email.includes(this.buscarTexto)) &&
+          (!this.estadoSelect || cliente.estado === (this.estadoSelect === 'true'))
+        );
+        return pasaFiltro;
+      });
+    }
   }
 
   get totalPaginas(): number {

@@ -21,7 +21,7 @@ const base_url = environment.base_url;
 })
 export class TarifaIVAService {
 
-  constructor(private hhtp: HttpClient,
+  constructor(private http: HttpClient,
     private router: Router) { }
   get token(): string {
     return localStorage.getItem('token');
@@ -34,14 +34,19 @@ export class TarifaIVAService {
     }
   }
 
-  loadTarifasIVA() {
-    const url = `${base_url}/tarifas-iva`;
-    return this.hhtp.get<LoadTarifaIVA>(url, this.headers);
+  loadTarifasIVA(desde: number = 0, limit: number = 0) {
+    const url = `${base_url}/tarifas-iva?desde=${desde}&limit=${limit}`;
+    return this.http.get<LoadTarifaIVA>(url, this.headers);
+  }
+
+  loadTarifasIVAAll() {
+    const url = `${base_url}/tarifas-iva/all`;
+    return this.http.get<LoadTarifaIVA>(url, this.headers);
   }
 
   loadTarifaIVAById(id_tarifa_iva: any) {
     const url = `${base_url}/tarifas-iva/id/${id_tarifa_iva}`;
-    return this.hhtp.get(url, this.headers)
+    return this.http.get(url, this.headers)
       .pipe(
         map((resp: { ok: boolean, tarifa_iva: TarifaIVA }) => resp.tarifa_iva)
       )
@@ -49,7 +54,7 @@ export class TarifaIVAService {
 
   createTarifaIVA(formData: any) {
     const url = `${base_url}/tarifas-iva`;
-    return this.hhtp.post(url, formData, this.headers)
+    return this.http.post(url, formData, this.headers)
       .pipe(
         map((resp: { ok: boolean, tarifa_iva: TarifaIVA[] }) => resp.tarifa_iva)
       )
@@ -57,12 +62,12 @@ export class TarifaIVAService {
 
   updateTarifaIVA(tarifa_iva: TarifaIVA) {
     const url = `${base_url}/tarifas-iva/${tarifa_iva.id_tarifa_iva}`;
-    return this.hhtp.put(url, tarifa_iva, this.headers);
+    return this.http.put(url, tarifa_iva, this.headers);
   }
 
   deleteTarifaIVA(id_tarifa_iva: any) { //OJO: any
     const url = `${base_url}/tarifas-iva/${id_tarifa_iva}`;
-    return this.hhtp.delete(url, this.headers);
+    return this.http.delete(url, this.headers);
   }
 
   logout() {
@@ -73,7 +78,7 @@ export class TarifaIVAService {
   // Validación de token 
   validarToken(): Observable<boolean> {
     const token = localStorage.getItem('token') || '';
-    return this.hhtp.get(`${base_url}/login/renew`, {
+    return this.http.get(`${base_url}/login/renew`, {
       headers: {
         'x-token': token
       }
@@ -94,7 +99,7 @@ export class TarifaIVAService {
   // Validación de token Fin //OJO
   login(formData: any) {
     const fomrLogin: LoginForm = formData;
-    return this.hhtp.post(`${base_url}/login`, fomrLogin)
+    return this.http.post(`${base_url}/login`, fomrLogin)
       .pipe(
         tap((resp: any) => {
           localStorage.setItem('token', resp.token)

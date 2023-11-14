@@ -19,9 +19,10 @@ const base_url = environment.base_url;
 @Injectable({
   providedIn: 'root'
 })
+
 export class CuentaService {
 
-  constructor(private hhtp: HttpClient,
+  constructor(private http: HttpClient,
     private router: Router) { }
   get token(): string {
     return localStorage.getItem('token');
@@ -34,43 +35,48 @@ export class CuentaService {
     }
   }
 
-  loadCuentas() {
-    const url = `${base_url}/cuentas`;
-    return this.hhtp.get<LoadCuenta>(url, this.headers);
+  loadCuentas(desde: number = 0, limit: number = 0) {
+    const url = `${base_url}/contabilidad/cuentas?desde=${desde}&limit=${limit}`;
+    return this.http.get<LoadCuenta>(url, this.headers);
+  }
+
+  loadCuentasAll() {
+    const url = `${base_url}/contabilidad/cuentas/all`;
+    return this.http.get<LoadCuenta>(url, this.headers);
   }
 
   loadCuentaById(id_cuenta: any) {
-    const url = `${base_url}/cuentas/id/${id_cuenta}`;
-    return this.hhtp.get(url, this.headers)
+    const url = `${base_url}/contabilidad/cuentas/id/${id_cuenta}`;
+    return this.http.get(url, this.headers)
       .pipe(
         map((resp: { ok: boolean, cuenta: Cuenta }) => resp.cuenta)
       )
   }
 
   loadCuentaByCodigo(codigo: any) {
-    const url = `${base_url}/cuentas/codigo/${codigo}`;
-    return this.hhtp.get(url, this.headers)
+    const url = `${base_url}/contabilidad/cuentas/codigo/${codigo}`;
+    return this.http.get(url, this.headers)
       .pipe(
         map((resp: { ok: boolean, cuenta: Cuenta }) => resp.cuenta)
       )
   }
 
   createCuenta(formData: FormCuenta) {
-    const url = `${base_url}/cuentas`;
-    return this.hhtp.post(url, formData, this.headers)
+    const url = `${base_url}/contabilidad/cuentas`;
+    return this.http.post(url, formData, this.headers)
       .pipe(
         map((resp: { ok: boolean, cuenta: Cuenta[] }) => resp.cuenta)
       )
   }
 
   updateCuenta(cuenta: Cuenta) {
-    const url = `${base_url}/cuentas/${cuenta.id_cuenta}`;
-    return this.hhtp.put(url, cuenta, this.headers);
+    const url = `${base_url}/contabilidad/cuentas/${cuenta.id_cuenta}`;
+    return this.http.put(url, cuenta, this.headers);
   }
 
   deleteCuenta(id_cuenta: any) { //OJO: any
-    const url = `${base_url}/cuentas/${id_cuenta}`;
-    return this.hhtp.delete(url, this.headers);
+    const url = `${base_url}/contabilidad/cuentas/${id_cuenta}`;
+    return this.http.delete(url, this.headers);
   }
 
   logout() {
@@ -81,7 +87,7 @@ export class CuentaService {
   // Validación de token 
   validarToken(): Observable<boolean> {
     const token = localStorage.getItem('token') || '';
-    return this.hhtp.get(`${base_url}/login/renew`, {
+    return this.http.get(`${base_url}/login/renew`, {
       headers: {
         'x-token': token
       }
@@ -102,7 +108,7 @@ export class CuentaService {
   // Validación de token Fin //OJO
   login(formData: any) {
     const fomrLogin: LoginForm = formData;
-    return this.hhtp.post(`${base_url}/login`, fomrLogin)
+    return this.http.post(`${base_url}/login`, fomrLogin)
       .pipe(
         tap((resp: any) => {
           localStorage.setItem('token', resp.token)

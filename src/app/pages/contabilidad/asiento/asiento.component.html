@@ -13,7 +13,7 @@
                         <div class="float-left">
                             <button type="button" class="btn btn-info waves-effect waves-light" data-toggle="modal"
                                 data-target="#exampleModal">
-                                <i class="fa fa-plus"></i> Nueva Asiento
+                                <i class="fa fa-plus"></i> Nuevo Asiento
                             </button>
                             <div class="btn-group">
                                 <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown"
@@ -62,7 +62,6 @@
                                     <option value="false">ANULADO</option>
                                 </select>
                             </label>
-
                             &nbsp;
                             <label>Buscar
                                 <input type="text" class="form-control flex-fill" [(ngModel)]="buscarTexto"
@@ -80,23 +79,14 @@
                         <thead>
                             <tr>
 
-                                <th class="footable-sortable text-center">#<span class="footable-sort-indicator"></span>
-                                </th>
-                                <th class="footable-sortable text-center">ID<span
-                                        class="footable-sort-indicator"></span>
-                                </th>
-                                <th class="footable-sortable">Fecha Asiento <span
-                                        class="footable-sort-indicator"></span>
-                                </th>
-                                <th class="footable-sortable">Referencia<span class="footable-sort-indicator"></span>
-                                </th>
-                                <th class="footable-sortable">Documento<span class="footable-sort-indicator"></span>
-                                </th>
-                                <th class="footable-sortable">Observación<span class="footable-sort-indicator"></span>
-                                </th>
-                                <th class="footable-sortable">Estado<span class="footable-sort-indicator"></span></th>
-                                <th class="footable-sortable text-center">Action<span
-                                        class="footable-sort-indicator"></span></th>
+                                <th class="text-center">#</th>
+                                <th class="text-center">ID</th>
+                                <th class="text-left">Fecha</th>
+                                <th class="text-center">Referencia</th>
+                                <th class="text-left">Documento</th>
+                                <th class="text-left">Observación</th>
+                                <th class="text-left">Estado</th>
+                                <th class="text-center">Acción</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -121,16 +111,24 @@
                                 </ng-template>
 
                                 <td *ngIf="asiento.estado else inactivoOption" class="text-nowrap text-center">
-
-                                    <a class="cursor" data-toggle="modal"
-                                        (click)="cargarAsientoPorId(asiento.id_asiento); cargarDetallesAsientoByIdAsiento(asiento.id_asiento)"
-                                        data-target="#exampleModalU"><span
-                                            class="fa fa-pencil text-inverse m-r-10"></span></a>
-
-                                    <a class="cursor" (click)="borrarAsiento(asiento);" data-toggle="tooltip"
-                                        data-original-title="Close"> <i class="fa fa-close text-danger"></i> </a>
+                                    <button class="btn btn-outline-warning btn-sm m-r-5" data-toggle="modal" (click)="cargarAsientoPorId(asiento.id_asiento);
+                                        cargarDetallesAsientoByIdAsiento(asiento.id_asiento)"
+                                        data-target="#exampleModalU">
+                                        <i class="fa fa-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-outline-danger btn-sm" (click)="borrarAsiento(asiento);"
+                                        data-toggle="tooltip" data-original-title="Close">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
                                 </td>
                                 <ng-template #inactivoOption>
+                                    <td class="text-nowrap text-center">
+                                        <button class="btn btn-outline-info btn-sm" data-toggle="modal" (click)="cargarAsientoPorId(asiento.id_asiento);
+                                            cargarDetallesAsientoByIdAsiento(asiento.id_asiento)"
+                                            data-target="#exampleModalU">
+                                            <i class="fa fa-eye"></i>
+                                        </button>
+                                    </td>
                                 </ng-template>
                             </tr>
                         </tbody>
@@ -218,11 +216,11 @@
                     <h3><b>ASIENTO # </b></h3>
                     <h5><b>Fecha : </b> {{ fechaActual}}</h5>
                 </div>
+                <br>
 
-                <!-- Asiento Form -->
                 <form autocomplete="off" [formGroup]="asientoForm">
 
-                    <!-- Factura Form -->
+                    <!-- Asiento Form -->
                     <div class="row">
                         <div class="col-md-3">
                             <div class="form-group">
@@ -238,7 +236,7 @@
                             <div class="form-group">
                                 <label for="exampleInputuname">Referencia</label>
                                 <div class="input-group">
-                                    <div class="input-group-addon"><i class="ti-user"></i></div>
+                                    <div class="input-group-addon"><i class="fa fa-pencil-square-o"></i></div>
                                     <input type="text" class="form-control" id="exampleInputuname"
                                         placeholder="Referencia" formControlName="referencia">
                                 </div>
@@ -248,7 +246,7 @@
                             <div class="form-group">
                                 <label for="exampleInputuname">Documento</label>
                                 <div class="input-group">
-                                    <div class="input-group-addon"><i class="ti-user"></i></div>
+                                    <div class="input-group-addon"><i class="fa fa-file-pdf-o"></i></div>
                                     <input type="text" class="form-control" id="exampleInputuname"
                                         placeholder="Documento" formControlName="documento">
                                 </div>
@@ -258,7 +256,7 @@
                             <div class="form-group">
                                 <label for="exampleInputuname">Observación</label>
                                 <div class="input-group">
-                                    <div class="input-group-addon"><i class="ti-user"></i></div>
+                                    <div class="input-group-addon"><i class="fa fa-eye"></i></div>
                                     <input type="text" class="form-control" id="exampleInputuname"
                                         placeholder="Observación" formControlName="observacion">
                                 </div>
@@ -294,7 +292,7 @@
                                         <td class="text-center">{{ i + 1 }}</td>
                                         <td>
                                             <select class="form-control" formControlName="cuenta_{{i}}">
-                                                <option *ngFor="let cuenta of cuentas" [value]="cuenta.id_cuenta">{{
+                                                <option *ngFor="let cuenta of allCuentas" [value]="cuenta.id_cuenta">{{
                                                     cuenta.codigo + ' - ' + cuenta.descripcion }}</option>
                                             </select>
                                         </td>
@@ -318,7 +316,7 @@
                                         </td>
                                         <td class="text-center">
                                             <button type="button" class="btn btn-danger btn-sm"
-                                                (click)="eliminarDetalle(i)">
+                                                (click)="eliminarDetalle(i); actualizarTotalDebe(); actualizarTotalHaber(); actualizarDiferencia();">
                                                 <i class="ti-trash"></i>
                                             </button>
                                         </td>
@@ -327,15 +325,17 @@
                             </table>
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <button id="agregarLinea" class="btn btn-success" (click)="agregarDetalleForm()">
+                                    <button id="agregarLinea" class="btn btn-success"
+                                        (click)="agregarDetalleForm(); actualizarTotalDebe(); actualizarTotalHaber(); actualizarDiferencia();">
                                         <span class="fa fa-plus"></span> Agregar
                                     </button>
                                 </div>
                             </div>
                         </div>
                     </form>
+                    <hr>
 
-                    <!-- Factura Form 2 -->
+                    <!-- Asiento Form 2 -->
                     <div class="col-md-12">
                         <div class="row">
                             <div class="col-lg-5 col-md-6"></div>
@@ -384,98 +384,114 @@
     </div>
 </div>
 
-<!-- Modal Update -->
-<div class="modal fade" id="exampleModalU" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel1" #miModal>
+<!-- Modal Update Asiento -->
+<div class="modal fadeIn fast" id="exampleModalU" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel1"
+    #miModal>
     <div class="modal-dialog" role="document" style="width: 100%;" max-width="1000px;">
         <div class="modal-content">
 
+            <!-- Modal Header -->
             <div class="modal-header">
-                <h4 class="modal-title" id="exampleModalLabel1">Actualizar Asiento</h4>
+                <h4 class="modal-title" id="exampleModalLabel1">
+                    {{ estado ? 'Actualizar Asiento' : 'Visualizar Asiento' }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
 
-            <div class="text-center">
-                <h3><b>ASIENTO # </b> {{ id_asiento }}</h3>
-                <h5><b>Fecha : </b> {{ fechaActual}}</h5>
-            </div>
-
+            <!-- Modal Body -->
             <div class="modal-body">
-                <!-- Asiento Form -->
+                <div class="text-center">
+                    <h3><b>ASIENTO # </b> {{id_asiento}}</h3>
+                    <h5><b>Fecha : </b> {{fechaActual}}</h5>
+                </div>
+                <br>
+
                 <form autocomplete="off" [formGroup]="asientoFormU">
+
+                    <!-- Asiento Form -->
                     <div class="row">
 
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="form-group">
-                                <label for="exampleInputuname">Referencia</label>
+                                <label for="exampleInputuname">Fecha Asiento</label>
                                 <div class="input-group">
-                                    <div class="input-group-addon"><i class="ti-user"></i></div>
-                                    <input type="text" class="form-control" id="exampleInputuname"
-                                        placeholder="Referencia" formControlName="referencia" readonly>
+                                    <div class="input-group-addon"><i class="ti-calendar"></i></div>
+                                    <input type="date" class="form-control" id="exampleInputuname"
+                                        placeholder="Fecha Asiento" formControlName="fecha_asiento"
+                                        [readonly]="estado === false">
                                 </div>
                             </div>
                         </div>
-
-                        <div class="col-md-4">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Referencia</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="fa fa-pencil-square-o"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder="Referencia" formControlName="referencia"
+                                        [readonly]="estado === false">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
                             <div class="form-group">
                                 <label for="exampleInputuname">Documento</label>
                                 <div class="input-group">
-                                    <div class="input-group-addon"><i class="ti-user"></i></div>
+                                    <div class="input-group-addon"><i class="fa fa-file-pdf-o"></i></div>
                                     <input type="text" class="form-control" id="exampleInputuname"
                                         placeholder="Documento" formControlName="documento" readonly>
                                 </div>
                             </div>
                         </div>
-
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="form-group">
                                 <label for="exampleInputuname">Observación</label>
                                 <div class="input-group">
-                                    <div class="input-group-addon"><i class="ti-user"></i></div>
+                                    <div class="input-group-addon"><i class="fa fa-eye"></i></div>
                                     <input type="text" class="form-control" id="exampleInputuname"
-                                        placeholder="Observación" formControlName="observacion">
+                                        placeholder="Observación" formControlName="observacion"
+                                        [readonly]="estado === false">
                                 </div>
                             </div>
                         </div>
-
+                        <!-- Input Validation -->
                         <div class="col">
                             <div class="text-danger">
-                                <p *ngIf="campoNoValido('descripcion',asientoForm)">El campo es obligatorio</p>
+                                <p *ngIf="campoNoValido('fecha_asiento', asientoForm)">La fecha de asiento es
+                                    obligatoria.</p>
+                                <p *ngIf="campoNoValido('referencia', asientoForm)">La referencia es obligatoria.</p>
                             </div>
                         </div>
-                        <hr>
                     </div>
 
-
+                    <!-- Detalle Table Data -->
                     <div class="table-responsive">
-
                         <table id="demo-foo-addrow"
                             class="table m-t-30 table-hover contact-list footable-loaded footable" data-page-size="10">
                             <thead>
                                 <tr>
-
-                                    <th class="footable-sortable text-center">#<span
-                                            class="footable-sort-indicator"></span></th>
-                                    <th class="footable-sortable">Descripción <span
-                                            class="footable-sort-indicator"></span>
-                                    </th>
-                                    <th class="footable-sortable">Documento<span class="footable-sort-indicator"></span>
-                                    </th>
-                                    <th class="footable-sortable">Debe<span class="footable-sort-indicator"></span></th>
-                                    <th class="footable-sortable">Haber<span class="footable-sort-indicator"></span>
-                                    </th>
+                                    <th class="text-center">#</th>
+                                    <th class="text-left">Cuenta</th>
+                                    <th class="text-left">Descripción</th>
+                                    <th class="text-left">Documento</th>
+                                    <th class="text-right">Debe $</th>
+                                    <th class="text-right">Haber $</th>
                                 </tr>
                             </thead>
                             <tbody>
-
                                 <tr *ngFor="let da of detalles_asiento let i = index">
-                                    <td class="text-center">{{da.id_asiento}}</td>
+                                    <td class="text-center">{{ i + 1 }}</td>
+                                    <td>
+                                        <ng-container *ngFor="let cuenta of allCuentas">
+                                            <ng-container *ngIf="cuenta.id_cuenta == da.id_cuenta ">{{cuenta.codigo}} -
+                                                {{cuenta.descripcion}}</ng-container>
+                                        </ng-container>
+                                    </td>
                                     <td>{{da.descripcion}}</td>
-                                    <td>{{da.documentod}}</td>
-                                    <td>{{da.debe}}</td>
-                                    <td>{{da.haber}}</td>
-
+                                    <td>{{da.documento}}</td>
+                                    <td class="text-right">{{da.debe}}</td>
+                                    <td class="text-right">{{da.haber}}</td>
                                     <ng-template #inactivoOption>
                                     </ng-template>
                                 </tr>
@@ -484,24 +500,74 @@
                             </tfoot>
                         </table>
                     </div>
+                    <hr>
 
+                    <!-- Asiento Form 2 -->
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-lg-5 col-md-6"></div>
+                            <div class="col-md-2 col-lg-2 col-xlg-2">
+                                <div class="card">
+                                    <div class="box bg-dark text-center">
+                                        <h6 class="text-white">DIFERENCIA</h6>
+                                        <h2 class="font-light text-white">$ {{'0.00'}}</h2>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-1 col-md-6"></div>
+                            <div class="col-md-2 col-lg-2 col-xlg-2">
+                                <div class="card">
+                                    <div class="box bg-info text-center">
+                                        <h6 class="text-white">TOTAL DEBE</h6>
+                                        <h2 class="font-light text-white">$ {{ total_debe | number:'1.2-2' }}</h2>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2 col-lg-2 col-xlg-2">
+                                <div class="card">
+                                    <div class="box bg-success text-center">
+                                        <h6 class="text-white">TOTAL HABER</h6>
+                                        <h2 class="font-light text-white">$ {{ total_haber | number:'1.2-2' }}</h2>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </form>
             </div>
 
             <!-- Modal Footer -->
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-info" (click)="crearAsiento();">Guardar</button>
+                <button type="button" class="btn btn-danger" [innerHTML]="estado ? 'Cancelar' : 'Cerrar'"
+                    data-dismiss="modal"></button>
+                <button type="button" class="btn btn-info" *ngIf="estado"
+                    (click)="actualizarAsiento();">Actualizar</button>
             </div>
         </div>
     </div>
 </div>
-
 
 <style>
     .modal-dialog {
         max-width: 80%;
         /* Ajusta el valor según tus necesidades */
         margin: 30px auto;
+    }
+
+    .float-left .btn {
+        margin-right: 5px;
+    }
+
+    hr {
+        border: 1px transparent #ccc;
+        margin: 20px 0;
+    }
+
+    .modal-body-aux {
+        padding-bottom: 0px;
+    }
+
+    .material-aux {
+        font-weight: 300;
     }
 </style>

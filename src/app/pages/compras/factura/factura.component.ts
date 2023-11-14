@@ -138,6 +138,7 @@ export class FacturaComponent implements OnInit {
   public abono: number;
   public abonoU: number; // Abono recuperado
   public saldoInicial: number; // Saldo recuperado
+  public estado: boolean; // Estado recuperado
 
   // Modal XML
   public facturaFormXML: FormGroup;
@@ -410,15 +411,13 @@ export class FacturaComponent implements OnInit {
     this.cargarFormasPago();
     this.cargarProductos();
     //this.cargarProductosAll();
-    this.cargarFacturasAll();
     this.cargarFacturas();
+    this.cargarFacturasAll();
     this.cargarProductosAll();  // Espera a que se carguen los productos
 
     const fechaActual = new Date();
     this.fechaActual = formatDate(fechaActual, 'd-M-yyyy', 'en-US', 'UTC-5');
   }
-
-
 
   // Método para cargar todos los proveedores 
   cargarProveedoresAll() {
@@ -486,75 +485,6 @@ export class FacturaComponent implements OnInit {
         this.sumaSaldo = sumaSaldo;
         this.sumaImporteTotal = sumaImporteTotal;
       });
-  }
-
-  // Método para borrar pago en Table Update Factura
-  borrarPago(pago: Pago) {
-    Swal.fire({
-      title: '¿Borrar Pago?',
-      text: `Estas a punto de borrar pago de $${pago.abono}`,
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Sí, borrar',
-      cancelButtonText: 'Cancelar'
-    }).then((result) => {
-      if (result.value) {
-        this.pagoService.deletePago(pago.id_pago)
-          .subscribe(resp => {
-            //this.cargarPagosByIdFactura(this.id_factura);
-            Swal.fire({
-              icon: 'success',
-              title: 'Pago borrado',
-              text: `Pago de ${pago.abono} ha sido borrado correctamente.`,
-              showConfirmButton: false,
-              timer: 1500
-            });
-            this.cerrarModal();
-            this.recargarComponente();
-          }, (err) => {
-            let errorMessage = 'Se produjo un error al borrar el pago.';
-            if (err.error && err.error.msg) {
-              errorMessage = err.error.msg;
-            }
-            Swal.fire('Error', errorMessage, 'error');
-          }
-          );
-      }
-    });
-  }
-
-  // Método para borrar factura en Table Date Factura
-  borrarFactura(factura: Factura) {
-    Swal.fire({
-      title: '¿Borrar Factura?',
-      text: `Estas a punto de borrar a ${factura.codigo}`,
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Sí, borrar',
-      cancelButtonText: 'Cancelar'
-    }).then((result) => {
-      if (result.value) {
-        this.facturaService.deleteFactura(factura.id_factura_compra)
-          .subscribe(resp => {
-            this.cargarFacturas();
-            Swal.fire({
-              icon: 'success',
-              title: 'Factura borrado',
-              text: `${factura.codigo} ha sido borrado correctamente.`,
-              showConfirmButton: false,
-              timer: 1500
-            });
-            this.recargarComponente();
-          }, (err) => {
-            let errorMessage = 'Se produjo un error al borrar el factura.';
-            if (err.error && err.error.msg) {
-              errorMessage = err.error.msg;
-            }
-            Swal.fire('Error', errorMessage, 'error');
-          }
-          );
-      }
-    });
   }
 
   // Método para filtrar facturas en Table Date Factura
@@ -667,6 +597,38 @@ export class FacturaComponent implements OnInit {
     return maxValue;
   }
 
+  // Método para borrar factura en Table Date Factura
+  borrarFactura(factura: Factura) {
+    Swal.fire({
+      title: '¿Borrar Factura?',
+      text: `Estas a punto de borrar a ${factura.codigo}`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, borrar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.value) {
+        this.facturaService.deleteFactura(factura.id_factura_compra)
+          .subscribe(resp => {
+            this.cargarFacturas();
+            Swal.fire({
+              icon: 'success',
+              title: 'Factura borrado',
+              text: `${factura.codigo} ha sido borrado correctamente.`,
+              showConfirmButton: false,
+              timer: 1500
+            });
+            this.recargarComponente();
+          }, (err) => {
+            const errorMessage = err.error?.msg || 'Se produjo un error al borrar la factura.';
+            Swal.fire('Error', errorMessage, 'error');
+          }
+          );
+      }
+    });
+  }
+
+
   // Método para crear factura en Modal Create Factura
   crearFactura() {
     this.formSubmitted = true;
@@ -773,7 +735,7 @@ export class FacturaComponent implements OnInit {
       (res) => {
         Swal.fire({
           icon: 'success',
-          title: 'Proveedor creado',
+          title: 'Proveedor Creado',
           text: 'Proveedor se ha creado correctamente.',
           showConfirmButton: false,
           timer: 1500
@@ -1215,12 +1177,11 @@ export class FacturaComponent implements OnInit {
     // Limpia los datos anteriores antes de cargar una nueva factura
     //this.facturas = null;
     this.pagos = [];
-    console.log('jajjaja', this.saldoInicial)
     this.facturaService.loadFacturaById(id_factura_compra)
       .pipe(
         switchMap((factura: any) => {
           const { id_proveedor, id_asiento, codigo, fecha_emision, fecha_vencimiento, estado_pago,
-            total_sin_impuesto, total_descuento, valor, importe_total, abono } = factura.factura[0];
+            total_sin_impuesto, total_descuento, valor, importe_total, abono, estado } = factura.factura[0];
           this.facturaSeleccionada = factura.factura[0];
           this.codigo = codigo;
           this.fechaEmisionU = fecha_emision; // Así mantenemos la fecha original
@@ -1229,6 +1190,7 @@ export class FacturaComponent implements OnInit {
           this.total_descuento = total_descuento;
           this.valor = valor;
           this.importe_total = importe_total;
+          this.estado = estado;
 
           const saldo = factura.saldo.toFixed(2);
           this.saldoInicial = parseFloat(saldo); // Saldo recuperado
@@ -1332,6 +1294,41 @@ export class FacturaComponent implements OnInit {
     }
   }
 
+  // Método para borrar pago en Table Update Factura
+  borrarPago(pago: Pago) {
+    Swal.fire({
+      title: '¿Borrar Pago?',
+      text: `Estas a punto de borrar pago de $${pago.abono}`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, borrar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.value) {
+        this.pagoService.deletePago(pago.id_pago)
+          .subscribe(resp => {
+            //this.cargarPagosByIdFactura(this.id_factura);
+            Swal.fire({
+              icon: 'success',
+              title: 'Pago borrado',
+              text: `Pago de ${pago.abono} ha sido borrado correctamente.`,
+              showConfirmButton: false,
+              timer: 1500
+            });
+            this.cerrarModal();
+            this.recargarComponente();
+          }, (err) => {
+            let errorMessage = 'Se produjo un error al borrar el pago.';
+            if (err.error && err.error.msg) {
+              errorMessage = err.error.msg;
+            }
+            Swal.fire('Error', errorMessage, 'error');
+          }
+          );
+      }
+    });
+  }
+
   // Método para crear factura en Modal XML
   crearFacturaXML() {
     // Reiniciar el arreglo detallesXMLInterface
@@ -1427,7 +1424,7 @@ export class FacturaComponent implements OnInit {
             () => {
               Swal.fire({
                 icon: 'success',
-                title: 'Factura creada',
+                title: 'Factura Creada',
                 text: 'La factura se han creado correctamente.',
                 showConfirmButton: false,
                 timer: 1500
@@ -1646,7 +1643,7 @@ export class FacturaComponent implements OnInit {
       (res) => {
         Swal.fire({
           icon: 'success',
-          title: 'Proveedor creado',
+          title: 'Proveedor Creado',
           text: 'Proveedor se ha creado correctamente.',
           showConfirmButton: false,
           timer: 1500
@@ -1675,10 +1672,9 @@ export class FacturaComponent implements OnInit {
             this.identificacion = identificacion;
             this.razon_social = razon_social;
             console.log("this.identificacion 3: ", this.identificacion)
-
           } else {
             Swal.fire({
-              title: 'Éxito 2',
+              title: 'Éxito',
               text: 'XML Cargado',
               icon: 'success',
               timer: 1500,
