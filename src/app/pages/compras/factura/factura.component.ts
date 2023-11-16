@@ -372,8 +372,6 @@ export class FacturaComponent implements OnInit {
       //const fechaEmision = this.facturaFormXML.get('fecha_emision').value;
       const fechaEmision = this.datePipe.transform(this.fechaEmision, 'yyyy-MM-dd')
       const fechaVencimiento = control.value;
-      console.log("Fecha Emision ", fechaEmision)
-      console.log("Fecha Vencimiento ", fechaVencimiento)
       if (fechaEmision && fechaVencimiento && fechaVencimiento < fechaEmision) {
         return { fechaInvalida: true };
       }
@@ -384,8 +382,6 @@ export class FacturaComponent implements OnInit {
     this.facturaFormU.get('fecha_vencimiento').setValidators((control) => {
       const fechaEmision = this.facturaFormU.get('fecha_emision').value;
       const fechaVencimiento = control.value;
-      console.log("Fecha Emision ", fechaEmision)
-      console.log("Fecha Vencimiento ", fechaVencimiento)
       if (fechaEmision && fechaVencimiento && fechaVencimiento < fechaEmision) {
         return { fechaInvalida: true };
       }
@@ -446,7 +442,6 @@ export class FacturaComponent implements OnInit {
   cargarProductosAll() {
     this.productoService.loadProductosAll()
       .subscribe(({ productos }) => {
-        console.log("ALL PRODUCT: ", productos)
         this.productosAll = productos;
       })
   }
@@ -456,15 +451,12 @@ export class FacturaComponent implements OnInit {
     this.pagoService.loadPagosByIdFacturaCompra(id_factura)
       .subscribe(({ pagos }) => {
         this.pagos = pagos;
-        console.log("this.pagos", this.pagos)
       })
   }
 
   // Método para cargar facturas paginadas en Table Data Factura
   cargarFacturas() {
     const desde = (this.paginaActual - 1) * this.itemsPorPagina;
-    console.log("DESDE: ", desde)
-    console.log("LIMIT", this.itemsPorPagina)
     this.facturaService.loadFacturas(desde, this.itemsPorPagina)
       .subscribe(({ facturas, totalFacturas }) => {
         this.facturas = facturas;
@@ -632,7 +624,6 @@ export class FacturaComponent implements OnInit {
   crearFactura() {
     this.formSubmitted = true;
     if (this.facturaForm.invalid) {
-      console.log("Validar Formulario", this.facturaForm.value);
       return;
     }
 
@@ -671,7 +662,6 @@ export class FacturaComponent implements OnInit {
     this.facturaService.createFactura(this.facturaForm.value).subscribe(
       (res: any) => {
         const facturaId = res.id_factura_compra; // Obtener el ID del factura guardado
-        console.log('facturaID: ', facturaId)
 
         // Crear los detalles y asociarlos a la factura
         const detalles = [];
@@ -696,8 +686,6 @@ export class FacturaComponent implements OnInit {
           };
           detalles.push(nuevoDetalle);
         }
-        console.log('DETALLES CON ID_factura')
-        console.log(detalles)
         this.detalleFacturaService.createDetalleFacturaArray(detalles).subscribe(
           () => {
             Swal.fire({
@@ -843,7 +831,6 @@ export class FacturaComponent implements OnInit {
   // Método agregar detalle en Modal Create Factura
   agregarDetalleForm(): void {
     if (this.detalleFacturaForm.invalid) {
-      console.log('RETURN')
       return;
     }
 
@@ -1112,7 +1099,6 @@ export class FacturaComponent implements OnInit {
   actualizarSaldo(): void {
     this.abono = this.facturaForm.get('abono').value || 0;
     const nuevoSaldo = Math.max(this.sumaPrecioTotal - this.abono, 0);
-    console.log("entra")
     if (nuevoSaldo === 0) {
       this.abono = this.sumaPrecioTotal;
       this.facturaForm.get('abono').setValue(this.abono.toFixed(2));
@@ -1126,7 +1112,6 @@ export class FacturaComponent implements OnInit {
   actualizarFactura() {
     this.formSubmitted = true;
     if (this.facturaFormU.invalid) {
-      console.log("Validar Formulario", this.facturaForm.value);
       return;
     }
 
@@ -1232,17 +1217,6 @@ export class FacturaComponent implements OnInit {
   }
 
   // Método para formatear fecha en Modal Update Factura
-  /*getFormattedFechaEmision(): string {
-    const fechaEmision = this.facturaFormU.get('fecha_emision')?.value;
-    if (fechaEmision) {
-      const fecha = new Date(fechaEmision);
-      return fecha.toISOString().split('T')[0];
-    }
-    return '';
-  }
-  */
-
-  // Método para formatear fecha en Modal Update Factura
   getFormattedFechaVencimiento(): string {
     const fechaVencimiento = this.facturaFormU.get('fecha_vencimiento')?.value;
     if (fechaVencimiento) {
@@ -1345,8 +1319,6 @@ export class FacturaComponent implements OnInit {
 
     this.formSubmitted = true;
     if (this.facturaFormU.invalid) {
-      // Aquí se valida los campos que están validando en "Input Validation"
-      console.log("Validar Formulario", this.facturaForm.value);
       return;
     }
 
@@ -1391,7 +1363,6 @@ export class FacturaComponent implements OnInit {
       //saldo: 0, // Valor válido
       observacion: this.facturaFormXML.get("observacion").value,
     };
-    console.log("Data: ", facturaData)
     this.facturaService.createFactura(facturaData).subscribe(
       (res: any) => {
         const facturaId = res.id_factura_compra; // Obtener el ID del factura guardado
@@ -1514,7 +1485,6 @@ export class FacturaComponent implements OnInit {
         this.tipoIdentificacionComprador = infoFactura.tipoIdentificacionComprador[0];
         this.razonSocialComprador = infoFactura.razonSocialComprador[0];
         this.identificacionComprador = infoFactura.identificacionComprador[0];
-        console.log("this.identificacionComprador: ", this.identificacionComprador)
         if ('direccionComprador' in infoFactura) {
           this.direccionComprador = infoFactura.direccionComprador[0];
         } else {
@@ -1535,7 +1505,6 @@ export class FacturaComponent implements OnInit {
         // infoFactura
         this.propina = parseFloat(infoFactura.propina[0]);
         this.importeTotal = parseFloat(infoFactura.importeTotal[0]);
-        console.log("this.importeTotal--------------------", this.importeTotal)
         //this.importeTotal = parseFloat(result.factura.infoFactura[0].importeTotal[0]);
         this.ivaAux = this.importeTotal - this.totalSinImpuestos
         this.moneda = infoFactura.moneda[0];
@@ -1549,14 +1518,12 @@ export class FacturaComponent implements OnInit {
         if (result?.factura?.infoFactura?.pagos?.[0]?.pago?.[0]?.plazo) {
           this.plazo = parseInt(result.factura.infoFactura.pagos[0].pago[0].plazo[0]);
         } else {
-          console.log("plazo no diponible");
           this.plazo = null; // O un valor predeterminado
         }
         //this.unidadTiempo = pagos.unidadTiempo[0];
         if (result?.factura?.infoFactura?.pagos?.[0]?.pago?.[0]?.unidadTiempo) {
           this.unidadTiempo = result.factura.infoFactura.pagos[0].pago[0].unidadTiempo[0];
         } else {
-          console.log("unidadTiempo no diponible");
           this.unidadTiempo = null; // O un valor predeterminado
         }
 
@@ -1636,7 +1603,6 @@ export class FacturaComponent implements OnInit {
       telefono: this.telefono,
       email: this.email
     };
-    console.log('proveedorData: ', proveedorData)
     // Realiza la solicitud POST para crear el proveedor
     this.proveedorService.createProveedor(proveedorData).subscribe(
       (res) => {
@@ -1670,7 +1636,6 @@ export class FacturaComponent implements OnInit {
             this.id_proveedor = id_proveedor;
             this.identificacion = identificacion;
             this.razon_social = razon_social;
-            console.log("this.identificacion 3: ", this.identificacion)
           } else {
             Swal.fire({
               title: 'Éxito',
@@ -1680,7 +1645,6 @@ export class FacturaComponent implements OnInit {
               showConfirmButton: false,
             })
               .then(() => {
-                console.log("this.identificacion 4: ", this.identificacion)
                 this.mostrarMensajeDeAdvertenciaConOpciones('Advertencia', 'Proveedor no encontrado. ¿Desea crear un nuevo proveedor?');
               });
           }
@@ -1706,13 +1670,9 @@ export class FacturaComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         // El usuario hizo clic en "Sí", puedes tomar acciones aquí
-        console.log('Usuario hizo clic en "Sí"');
-        console.log('--> Inicio - this.crearProveedorXML()');
         this.crearProveedorXML();
-        console.log('--> Fin - this.crearProveedorXML()');
       } else {
         // El usuario hizo clic en "No" o cerró el cuadro de diálogo
-        console.log('Usuario hizo clic en "No" o cerró el cuadro de diálogo');
       }
     });
   }
