@@ -22,7 +22,7 @@ import { UsuariosModule } from './usuarios/usuarios.module';
 import { InventarioModule } from './inventario/inventario.module';
 import { PurchaseModule } from './purchases/purchase.module';
 import { ComprasModule } from './compras/compras.module';
-import { VentaModule } from './venta/venta.module';
+import { VentaModule } from './ventas/ventas.module'; 
 import { QuotationModule } from './quotations/quotation.module';
 import { ContabilidadModule } from './contabilidad/contabilidad.module';
 import { InventoryModule } from './inventory/inventory.module';

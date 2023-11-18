@@ -1,7 +1,7 @@
-export class DetalleFactura {
+export class DetalleVenta {
     constructor(
         //public id_detalle_factura_venta: number, // ojo se actvo esta linea para mostrar los detalles
-        public id_factura_venta: number,
+        public id_venta: number,
         public id_producto: number,
         public codigo_principal: string,
         public descripcion: string,
@@ -20,9 +20,9 @@ export class DetalleFactura {
     ) { }
 }
 
-export class DetalleFacturaU {
+export class DetalleVentaU {
     constructor(
-        public id_detalle_factura_venta: number,
+        public id_detalle_venta: number,
         public id_producto: number,
         public id_factura_venta: number,
         public codigo_principal: string,

@@ -13,22 +13,24 @@ import * as xml2js from 'xml2js';
 import { forkJoin, Observable } from 'rxjs';
 
 // Models
+import { TipoComprobante } from '../../../models/contabilidad/tipo-comprobante.model';
 import { Cliente } from '../../../models/venta/cliente.model';
-import { Factura } from 'src/app/models/venta/factura.model';
+import { Venta } from '../../../models/venta/venta.model';
 import { FormaPago } from '../../../models/contabilidad/forma-pago.model';
-import { Producto } from 'src/app/models/inventario/producto.model';
-import { DetalleFactura } from '../../../models/venta/detalle-factura.model';
+import { Producto } from '../../../models/inventario/producto.model';
+import { DetalleVenta } from '../../../models/venta/detalle-venta.model';
 import { Pago } from '../../../models/contabilidad/pago.model';
 
 // Services
-import { ClienteService } from 'src/app/services/venta/cliente.service';
-import { FacturaService } from 'src/app/services/venta/factura.service';
-import { DetalleFacturaService } from 'src/app/services/venta/detalle-factura.service';
-import { ProductoService } from 'src/app/services/inventario/producto.service';
-import { FormaPagoService } from 'src/app/services/contabilidad/forma-pago.service';
+import { TipoComprobanteService } from '../../../services/contabilidad/tipo-comprobante.service';
+import { ClienteService } from '../../../services/venta/cliente.service';
+import { VentaService } from '../../../services/venta/venta.service';
+import { DetalleVentaService } from '../../../services/venta/detalle-venta.service';
+import { ProductoService } from '../../../services/inventario/producto.service';
+import { FormaPagoService } from '../../../services/contabilidad/forma-pago.service';
 import { PagoService } from '../../../services/contabilidad/pago.service';
 
-interface DetalleFacturaFormInterface {
+interface DetalleVentaFormInterface {
   producto: number;
   codigo_principal: string;
   stock: number;
@@ -46,9 +48,10 @@ interface DetalleFacturaFormInterface {
   precio_total: number;
 }
 
-interface FacturaXMLInterface {
+interface VentaXMLInterface {
+  id_tipo_comprobante: number;
   id_cliente: number;
-  id_asiento: number;
+  //id_asiento: number;
   id_info_tributaria: number,
   clave_acceso: string;
   codigo: string;
@@ -87,31 +90,33 @@ interface DetalleXMLInterface {
 }
 
 @Component({
-  selector: 'app-factura',
-  templateUrl: './factura.component.html',
+  selector: 'app-venta',
+  templateUrl: './venta.component.html',
   styles: [
   ]
 })
 
-export class FacturaVentaComponent implements OnInit {
+export class VentaComponent implements OnInit {
 
   public formSubmitted = false;
   public mostrarModal: boolean = true;
   public fechaActual: string;
 
+  public id_tipo_comprobante: number | null = null;
+
   // Datos recuperados
-  //public clientes: Cliente[] = [];
+  public tipos_comprobantes: TipoComprobante[] = [];
   public clientes: Cliente[] = [];
   public formas_pago: FormaPago[] = [];
   public productos: Producto[] = [];
   public productosAll: Producto[] = [];
-  public facturas: Factura[] = [];
+  public ventas: Venta[] = [];
 
   public pagos: Pago[] = [];
 
-  // Modal Create Factura
-  public facturaForm: FormGroup;
-  public detalleFacturaFormInterface: DetalleFacturaFormInterface[] = [];
+  // Modal Create Venta
+  public ventaForm: FormGroup;
+  public detalleVentaFormInterface: DetalleVentaFormInterface[] = [];
   // Variables para filtrar clientes 
   clientesFiltrados: any[] = [];
   clienteSeleccionado: any;
@@ -125,10 +130,10 @@ export class FacturaVentaComponent implements OnInit {
   public sumaTotalIVA: number = 0;
   public sumaPrecioTotal: number = 0;
 
-  // Modal Update Factura
-  public facturaFormU: FormGroup;
-  public facturaSeleccionada: Factura;
-  public detalles_factura: DetalleFactura[] = [];
+  // Modal Update Venta
+  public ventaFormU: FormGroup;
+  public ventaSeleccionada: Venta;
+  public detalles_venta: DetalleVenta[] = [];
   public codigo: string;
   public fechaEmisionU: Date;
   public fechaVencimientoU: Date;
@@ -142,8 +147,8 @@ export class FacturaVentaComponent implements OnInit {
   public estado: number; // Estado recuperado
 
   // Modal XML
-  public facturaFormXML: FormGroup;
-  public detalleFacturaForm: FormGroup;
+  public ventaFormXML: FormGroup;
+  public detalleVentaForm: FormGroup;
   public abonoXML: number;
 
   // Modal Create Cliente
@@ -178,7 +183,7 @@ export class FacturaVentaComponent implements OnInit {
   public secuencial: string = '';
   public dirMatriz: string = '';
   public contribuyenteRimpe: string = '';
-  // infoFactura
+  // infoVenta
   public fechaEmision: Date = null;
   public dirEstablecimiento: string = '';
   public obligadoContabilidad: string = '';
@@ -189,16 +194,16 @@ export class FacturaVentaComponent implements OnInit {
   public totalSinImpuestos: number = 0.00;
   public totalDescuento: number = 0.00;
   public ivaAux: number = 0.00;
-  // infoFactura/totalConImpuestos
+  // infoVenta/totalConImpuestos
   public codigo2: string = '';
   public codigoPorcentaje2: string = '';
   public baseImponible2: number = 0.00;
   public valor2: number = 0.00;
-  // infoFactura
+  // infoVenta
   public propina: number = 0.00;
   public importeTotal: number = 0.00;
   public moneda: string = "";
-  // infoFactura/pagos
+  // infoVenta/pagos
   public formaPago: string = '';
   public total: number = 0;
   public plazo: number = 0;
@@ -211,7 +216,7 @@ export class FacturaVentaComponent implements OnInit {
   public emailComprador: string = "";
 
   // Paginación
-  //public totalFacturas: number = 0; abajo
+  //public totalVentas: number = 0; abajo
   public itemsPorPagina = 10;
   public paginaActual = 1;
   public paginas: number[] = [];
@@ -220,50 +225,49 @@ export class FacturaVentaComponent implements OnInit {
 
   // Búsqueda y filtrado
   public buscarTexto: string = '';
-  public allFacturas: Factura[] = [];
+  public allVentas: Venta[] = [];
   public fechaInicio: string;
   public fechaFin: string;
   public estadoPagoSelect: string;
+  public tipoComprobanteSelect: string;
 
-  public totalFacturas: number = 0;
-  public totalFacturasPendientes: number = 0;
+  public totalVentas: number = 0;
+  public totalVentasPendientes: number = 0;
   public sumaSaldo: number = 0;
   public sumaImporteTotal: number = 0;
 
-  public facturasAux: Factura[] = [];
-  public totalFacturasAux: number = 0;
-  public totalFacturasPendientesAux: number = 0;
+  public ventasAux: Venta[] = [];
+  public totalVentasAux: number = 0;
+  public totalVentasPendientesAux: number = 0;
   public sumaSaldoAux: number = 0;
   public sumaImporteTotalAux: number = 0;
 
   constructor(
-    //private activatedRoute: ActivatedRoute,
-
-    //XML
     private fb: FormBuilder,
     private router: Router,
     private renderer: Renderer2,
 
     // Servicios 
-    //private clienteService: ClienteService,
+    private TipoComprobanteService: TipoComprobanteService,
     private clienteService: ClienteService,
     private pagoService: PagoService,
     private productoService: ProductoService,
     private formaPagoService: FormaPagoService,
-    private facturaService: FacturaService,
-    private detalleFacturaService: DetalleFacturaService,
+    private ventaService: VentaService,
+    private detalleVentaService: DetalleVentaService,
 
     //XML
     private http: HttpClient,
-    private elementRef: ElementRef,
+    //private elementRef: ElementRef,
 
-    // Filtrado de facturas
+    // Filtrado de ventas
     private datePipe: DatePipe,
 
   ) {
-    this.facturaForm = this.fb.group({
+    this.ventaForm = this.fb.group({
 
-      id_factura_venta: [''],
+      id_tipo_comprobante: [''],
+      id_venta: [''],
 
       id_cliente: ['', [Validators.required, Validators.minLength(0)]],
       identificacion: ['', [Validators.required, Validators.minLength(0)]],
@@ -272,7 +276,7 @@ export class FacturaVentaComponent implements OnInit {
       telefono: ['', [Validators.required, Validators.minLength(0)]],
       email: ['', [Validators.required, Validators.email]],
 
-      id_asiento: ['1'],
+      //id_asiento: ['1'],
       codigo: [''],
       fecha_emision: ['', Validators.required],
       fecha_vencimiento: ['', [Validators.required]],
@@ -290,9 +294,9 @@ export class FacturaVentaComponent implements OnInit {
       saldo: ['0.00'],
     });
 
-    this.facturaFormU = this.fb.group({
+    this.ventaFormU = this.fb.group({
 
-      //id_factura_venta: [''], 
+      //id_venta: [''], 
 
       //id_cliente: [''],
       identificacion: [''],
@@ -301,7 +305,7 @@ export class FacturaVentaComponent implements OnInit {
       telefono: [''],
       email: [''],
 
-      id_asiento: [''],
+      //id_asiento: [''],
       codigo: [''],
       fecha_emision: [],
       fecha_vencimiento: [''],
@@ -319,9 +323,9 @@ export class FacturaVentaComponent implements OnInit {
       saldo: ['0.00'],
     });
 
-    this.facturaFormXML = this.fb.group({
+    this.ventaFormXML = this.fb.group({
 
-      //id_factura_venta: [''], 
+      //id_venta: [''], 
 
       //id_cliente: [''],
       identificacion: [''],
@@ -330,7 +334,7 @@ export class FacturaVentaComponent implements OnInit {
       telefono: [''],
       email: [''],
 
-      id_asiento: [''],
+      //id_asiento: [''],
       clave_acceso: [''],
       codigo: [''],
       fecha_emision: [],
@@ -349,7 +353,7 @@ export class FacturaVentaComponent implements OnInit {
       saldo: ['0.00'],
     });
 
-    this.detalleFacturaForm = this.fb.group({
+    this.detalleVentaForm = this.fb.group({
       detalles: this.fb.array([])
     });
 
@@ -362,8 +366,8 @@ export class FacturaVentaComponent implements OnInit {
     });
 
     // Agregar validación personalizada para fecha de vencimiento
-    this.facturaForm.get('fecha_vencimiento').setValidators((control) => {
-      const fechaEmision = this.facturaForm.get('fecha_emision').value;
+    this.ventaForm.get('fecha_vencimiento').setValidators((control) => {
+      const fechaEmision = this.ventaForm.get('fecha_emision').value;
       const fechaVencimiento = control.value;
       console.log("Fecha Emision ", fechaEmision)
       console.log("Fecha Vencimiento ", fechaVencimiento)
@@ -374,8 +378,8 @@ export class FacturaVentaComponent implements OnInit {
     });
 
     // Agregar validación personalizada para fecha de vencimiento
-    this.facturaFormXML.get('fecha_vencimiento').setValidators((control) => {
-      //const fechaEmision = this.facturaFormXML.get('fecha_emision').value;
+    this.ventaFormXML.get('fecha_vencimiento').setValidators((control) => {
+      //const fechaEmision = this.ventaFormXML.get('fecha_emision').value;
       const fechaEmision = this.datePipe.transform(this.fechaEmision, 'yyyy-MM-dd')
       const fechaVencimiento = control.value;
       console.log("Fecha Emision ", fechaEmision)
@@ -387,8 +391,8 @@ export class FacturaVentaComponent implements OnInit {
     });
 
     // Agregar validación personalizada para fecha de vencimiento
-    this.facturaFormU.get('fecha_vencimiento').setValidators((control) => {
-      const fechaEmision = this.facturaFormU.get('fecha_emision').value;
+    this.ventaFormU.get('fecha_vencimiento').setValidators((control) => {
+      const fechaEmision = this.ventaFormU.get('fecha_emision').value;
       const fechaVencimiento = control.value;
       console.log("Fecha Emision ", fechaEmision)
       console.log("Fecha Vencimiento ", fechaVencimiento)
@@ -400,14 +404,28 @@ export class FacturaVentaComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.cargarTiposComprobantesAll();
     this.cargarClientesAll();
     this.cargarFormasPago();
     this.cargarProductos();
     this.cargarProductosAll();
-    this.cargarFacturasAll();
-    this.cargarFacturas();
+    this.cargarVentasAll();
+    this.cargarVentas();
     const fechaActual = new Date();
     this.fechaActual = formatDate(fechaActual, 'd-M-yyyy', 'en-US', 'UTC-5');
+  }
+
+  // Función para actualizar id_tipo_comprobante
+  actualizarTipoComprobante(id: number) {
+    this.id_tipo_comprobante = id;
+  }
+
+  // Método para cargar todos los tipos de comprobantes 
+  cargarTiposComprobantesAll() {
+    this.TipoComprobanteService.loadTiposComprobantesAll()
+      .subscribe(({ tipos_comprobantes }) => {
+        this.tipos_comprobantes = tipos_comprobantes;
+      })
   }
 
   // Método para cargar todos los clientes 
@@ -442,39 +460,39 @@ export class FacturaVentaComponent implements OnInit {
   }
 
   // Método para cargar los pagos 
-  cargarPagosByIdFactura(id_factura: any) {
-    this.pagoService.loadPagosByIdVenta(id_factura)
+  cargarPagosByIdVenta(id_venta: any) {
+    this.pagoService.loadPagosByIdVenta(id_venta)
       .subscribe(({ pagos }) => {
         this.pagos = pagos;
         console.log("this.pagos", this.pagos)
       })
   }
 
-  // Método para cargar facturas paginadas en Table Data Factura
-  cargarFacturas() {
+  // Método para cargar ventas paginadas en Table Data Venta
+  cargarVentas() {
     const desde = (this.paginaActual - 1) * this.itemsPorPagina;
-    this.facturaService.loadFacturas(desde, this.itemsPorPagina)
-      .subscribe(({ facturas, totalFacturas }) => {
-        this.facturas = facturas;
-        this.totalFacturas = totalFacturas;
+    this.ventaService.loadVentas(desde, this.itemsPorPagina)
+      .subscribe(({ ventas, totalVentas }) => {
+        this.ventas = ventas;
+        this.totalVentas = totalVentas;
         this.calcularNumeroPaginas();
-        this.mostrarPaginacion = this.totalFacturas > this.itemsPorPagina;
+        this.mostrarPaginacion = this.totalVentas > this.itemsPorPagina;
       });
   }
 
-  // Método para cargar todas facturas en Table Data Factura
-  cargarFacturasAll() {
-    this.facturaService.loadFacturasAll()
-      .subscribe(({ facturas, totalFacturas, totalFacturasPendientes, sumaSaldo, sumaImporteTotal }) => {
-        this.allFacturas = facturas;
-        this.totalFacturas = totalFacturas;
-        this.totalFacturasPendientes = totalFacturasPendientes;
+  // Método para cargar todas ventas en Table Data Venta
+  cargarVentasAll() {
+    this.ventaService.loadVentasAll()
+      .subscribe(({ ventas, totalVentas, totalVentasPendientes, sumaSaldo, sumaImporteTotal }) => {
+        this.allVentas = ventas;
+        this.totalVentas = totalVentas;
+        this.totalVentasPendientes = totalVentasPendientes;
         this.sumaSaldo = sumaSaldo;
         this.sumaImporteTotal = sumaImporteTotal;
       });
   }
 
-  // Método para borrar pago en Table Update Factura
+  // Método para borrar pago en Table Update Venta
   borrarPago(pago: Pago) {
     Swal.fire({
       title: '¿Borrar Pago?',
@@ -487,7 +505,7 @@ export class FacturaVentaComponent implements OnInit {
       if (result.value) {
         this.pagoService.deletePago(pago.id_pago)
           .subscribe(resp => {
-            //this.cargarPagosByIdFactura(this.id_factura);
+            //this.cargarPagosByIdVenta(this.id_venta);
             Swal.fire({
               icon: 'success',
               title: 'Pago borrado',
@@ -509,30 +527,30 @@ export class FacturaVentaComponent implements OnInit {
     });
   }
 
-  // Método para borrar factura en Table Date Factura
-  borrarFactura(factura: Factura) {
+  // Método para borrar venta en Table Date Venta
+  borrarVenta(venta: Venta) {
     Swal.fire({
-      title: '¿Borrar Factura?',
-      text: `Estas a punto de borrar a ${factura.codigo}`,
+      title: '¿Borrar Venta?',
+      text: `Estas a punto de borrar a ${venta.codigo}`,
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Sí, borrar',
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.value) {
-        this.facturaService.deleteFactura(factura.id_factura_venta)
+        this.ventaService.deleteVenta(venta.id_venta)
           .subscribe(resp => {
-            this.cargarFacturas();
+            this.cargarVentas();
             Swal.fire({
               icon: 'success',
-              title: 'Factura borrado',
-              text: `${factura.codigo} ha sido borrado correctamente.`,
+              title: 'Venta borrado',
+              text: `${venta.codigo} ha sido borrado correctamente.`,
               showConfirmButton: false,
               timer: 1500
             });
             this.recargarComponente();
           }, (err) => {
-            let errorMessage = 'Se produjo un error al borrar el factura.';
+            let errorMessage = 'Se produjo un error al borrar el venta.';
             if (err.error && err.error.msg) {
               errorMessage = err.error.msg;
             }
@@ -543,81 +561,82 @@ export class FacturaVentaComponent implements OnInit {
     });
   }
 
-  // Método para filtrar facturas en Table Date Factura
-  filtrarFacturas() {
-    if (!this.facturasAux || this.facturasAux.length === 0) {
+  // Método para filtrar ventas en Table Date Venta
+  filtrarVentas() {
+    if (!this.ventasAux || this.ventasAux.length === 0) {
       // Inicializar las variables auxiliares una sola vez
-      this.facturasAux = this.facturas;
-      this.totalFacturasAux = this.totalFacturas;
-      this.totalFacturasPendientesAux = this.totalFacturasPendientes;
+      this.ventasAux = this.ventas;
+      this.totalVentasAux = this.totalVentas;
+      this.totalVentasPendientesAux = this.totalVentasPendientes;
       this.sumaImporteTotalAux = this.sumaImporteTotal;
       this.sumaSaldoAux = this.sumaSaldo;
     }
-    if (this.buscarTexto.trim() === '' && !this.estadoPagoSelect && (!this.fechaInicio || !this.fechaFin)) {
+    if (this.buscarTexto.trim() === '' && !this.tipoComprobanteSelect && !this.estadoPagoSelect && (!this.fechaInicio || !this.fechaFin)) {
       // Restablecemos las variables principales con las auxiliares
-      this.facturas = this.facturasAux;
-      this.totalFacturas = this.totalFacturasAux;
-      this.totalFacturasPendientes = this.totalFacturasPendientesAux;
+      this.ventas = this.ventasAux;
+      this.totalVentas = this.totalVentasAux;
+      this.totalVentasPendientes = this.totalVentasPendientesAux;
       this.sumaImporteTotal = this.sumaImporteTotalAux;
       this.sumaSaldo = this.sumaSaldoAux;
     } else {
       // Reiniciamos variables
-      this.totalFacturas = 0;
-      this.totalFacturasPendientes = 0;
+      this.totalVentas = 0;
+      this.totalVentasPendientes = 0;
       this.sumaImporteTotal = 0;
       this.sumaSaldo = 0;
 
-      this.facturas = this.allFacturas.filter((factura) => {
+      this.ventas = this.allVentas.filter((venta) => {
         const regex = new RegExp(this.buscarTexto, 'i');
-        const fechaEmision = this.datePipe.transform(new Date(factura.fecha_emision), 'yyyy-MM-dd');
-        const cliente = this.clientes.find((prov) => prov.id_cliente === factura.id_cliente);
+        const fechaEmision = this.datePipe.transform(new Date(venta.fecha_emision), 'yyyy-MM-dd');
+        const cliente = this.clientes.find((prov) => prov.id_cliente === venta.id_cliente);
 
         const pasaFiltro = (
-          (factura.codigo.match(regex) !== null ||
+          (venta.codigo.match(regex) !== null ||
             cliente.razon_social.match(regex) !== null ||
             cliente.identificacion.includes(this.buscarTexto)) &&
-          (!this.estadoPagoSelect || factura.estado_pago === this.estadoPagoSelect) &&
+          (!this.tipoComprobanteSelect || venta.id_tipo_comprobante.toString() === this.tipoComprobanteSelect) &&
+          (!this.estadoPagoSelect || venta.estado_pago === this.estadoPagoSelect) &&
           (!this.fechaInicio || fechaEmision >= this.fechaInicio) &&
           (!this.fechaFin || fechaEmision <= this.fechaFin)
         );
 
         if (pasaFiltro) {
-          this.sumaImporteTotal = this.sumaImporteTotal + parseFloat("" + factura.importe_total);
-          if (factura.estado_pago === "PENDIENTE") {
-            this.totalFacturasPendientes++
+          this.sumaImporteTotal = this.sumaImporteTotal + parseFloat("" + venta.importe_total);
+          if (venta.estado_pago === "PENDIENTE") {
+            this.totalVentasPendientes++
           }
-          this.sumaSaldo = this.sumaSaldo + (parseFloat("" + factura.importe_total) - (factura.abono ? parseFloat("" + factura.abono) : 0));
-          this.totalFacturas++;
+          this.sumaSaldo = this.sumaSaldo + (parseFloat("" + venta.importe_total) - (venta.abono ? parseFloat("" + venta.abono) : 0));
+          this.totalVentas++;
         }
         return pasaFiltro;
       });
     }
   }
 
-  // Método para borrar fecha fin en Table Date Factura
+  // Método para borrar fecha fin en Table Date Venta
   borrarFechaFin() {
     this.fechaFin = null; // O establece el valor predeterminado deseado
-    this.filtrarFacturas();
+    this.filtrarVentas();
   }
 
-  // Método para borrar fecha inicio en Table Date Factura
+  // Método para borrar fecha inicio en Table Date Venta
   borrarFechaInicio() {
     this.fechaInicio = null; // O establece el valor predeterminado deseado
-    this.filtrarFacturas();
+    this.filtrarVentas();
   }
 
-  // Método para obtener total páginas en Table Date Factura
+  // Método para obtener total páginas en Table Date Venta
   get totalPaginas(): number {
-    return Math.ceil(this.totalFacturas / this.itemsPorPagina);
+    return Math.ceil(this.totalVentas / this.itemsPorPagina);
   }
 
-  // Método para calcular número de páginas en Table Date Factura
+  // Método para calcular número de páginas en Table Date Venta
   calcularNumeroPaginas() {
-    if (this.totalFacturas === 0 || this.itemsPorPagina <= 0) {
+    if (this.totalVentas === 0 || this.itemsPorPagina <= 0) {
       this.paginas = [];
       return;
     }
-    const totalPaginas = Math.ceil(this.totalFacturas / this.itemsPorPagina);
+    const totalPaginas = Math.ceil(this.totalVentas / this.itemsPorPagina);
     const halfVisible = Math.floor(this.maximoPaginasVisibles / 2);
     let startPage = Math.max(1, this.paginaActual - halfVisible);
     let endPage = Math.min(totalPaginas, startPage + this.maximoPaginasVisibles - 1);
@@ -627,44 +646,44 @@ export class FacturaVentaComponent implements OnInit {
     this.paginas = Array(endPage - startPage + 1).fill(0).map((_, i) => startPage + i);
   }
 
-  // Método para cambiar items en Table Date Factura
+  // Método para cambiar items en Table Date Venta
   changeItemsPorPagina() {
-    this.cargarFacturas();
+    this.cargarVentas();
     this.paginaActual = 1;
   }
 
-  // Método para cambiar página en Table Date Factura
+  // Método para cambiar página en Table Date Venta
   cambiarPagina(page: number): void {
     if (page >= 1 && page <= this.totalPaginas) {
       this.paginaActual = page;
-      this.cargarFacturas();
+      this.cargarVentas();
     }
   }
 
-  // Método para obtener mínimo en Table Date Factura
+  // Método para obtener mínimo en Table Date Venta
   getMinValue(): number {
     const minValue = (this.paginaActual - 1) * this.itemsPorPagina + 1;
     return minValue;
   }
 
-  // Método para obtener máximo en Table Date Factura
+  // Método para obtener máximo en Table Date Venta
   getMaxValue(): number {
     const maxValue = this.paginaActual * this.itemsPorPagina;
     return maxValue;
   }
 
-  // Método para crear factura en Modal Create Factura
-  crearFactura() {
+  // Método para crear venta en Modal Create Venta
+  crearVenta() {
     this.formSubmitted = true;
-    if (this.facturaForm.invalid) {
-      console.log("Validar Formulario", this.facturaForm.value);
+    if (this.ventaForm.invalid) {
+      console.log("Validar Formulario", this.ventaForm.value);
       return;
     }
 
-    const id_forma_pago = this.facturaForm.get('id_forma_pago').value;
-    const fecha_pago = this.facturaForm.get('fecha_pago').value;
-    const abono = this.facturaForm.get('abono').value;
-    const observacion = this.facturaForm.get('observacion').value;
+    const id_forma_pago = this.ventaForm.get('id_forma_pago').value;
+    const fecha_pago = this.ventaForm.get('fecha_pago').value;
+    const abono = this.ventaForm.get('abono').value;
+    const observacion = this.ventaForm.get('observacion').value;
     if (abono > 0) {
       if (!fecha_pago) {
         alert('Debes proporcionar una fecha de pago si el abono es mayor a cero.');
@@ -685,7 +704,7 @@ export class FacturaVentaComponent implements OnInit {
 
     // Comprobar si la cantidad en los detalles es mayor que el stock disponible
     // Comprobar si la cantidad en los detalles es mayor que el stock disponible
-    for (const detalle of this.detalleFacturaFormInterface) {
+    for (const detalle of this.detalleVentaFormInterface) {
       if (detalle.cantidad > detalle.stock) {
         alert(`La cantidad para el producto ${detalle.producto} excede el stock disponible (${detalle.stock}).`);
         return; // La función se detiene aquí
@@ -696,26 +715,29 @@ export class FacturaVentaComponent implements OnInit {
     }
 
     // Verificar si fecha_vencimiento no está definido y asignar null
-    if (!this.facturaForm.get('fecha_vencimiento').value) {
-      this.facturaForm.get('fecha_vencimiento').setValue(null);
+    if (!this.ventaForm.get('fecha_vencimiento').value) {
+      this.ventaForm.get('fecha_vencimiento').setValue(null);
     }
 
-    this.facturaForm.get('total_sin_impuesto').setValue(this.sumaTotalSinImpuesto);
-    this.facturaForm.get('total_descuento').setValue(this.sumaTotalDescuento);
-    this.facturaForm.get('valor').setValue(this.sumaTotalIVA);
-    this.facturaForm.get('importe_total').setValue(this.sumaPrecioTotal);
+    this.ventaForm.get('total_sin_impuesto').setValue(this.sumaTotalSinImpuesto);
+    this.ventaForm.get('total_descuento').setValue(this.sumaTotalDescuento);
+    this.ventaForm.get('valor').setValue(this.sumaTotalIVA);
+    this.ventaForm.get('importe_total').setValue(this.sumaPrecioTotal);
 
-    this.facturaService.createFactura(this.facturaForm.value).subscribe(
+    // Agregar id_tipo_comprobante a la solicitud
+    const compraData = {
+      ...this.ventaForm.value,
+      id_tipo_comprobante: this.id_tipo_comprobante
+    };
+    this.ventaService.createVenta(compraData).subscribe(
       (res: any) => {
+        const ventaId = res.id_venta; // Obtener el ID del venta guardado
 
-        const facturaId = res.id_factura_venta; // Obtener el ID del factura guardado
-        console.log('facturaID: ', facturaId)
-
-        // Crear los detalles y asociarlos a la factura
+        // Crear los detalles y asociarlos a la venta
         const detalles = [];
-        for (const detalle of this.detalleFacturaFormInterface) {
-          const nuevoDetalle: DetalleFactura = {
-            id_factura_venta: facturaId,
+        for (const detalle of this.detalleVentaFormInterface) {
+          const nuevoDetalle: DetalleVenta = {
+            id_venta: ventaId,
             id_producto: detalle.producto,
             codigo_principal: detalle.codigo_principal,//ver
             descripcion: detalle.descripcion,
@@ -734,14 +756,14 @@ export class FacturaVentaComponent implements OnInit {
           };
           detalles.push(nuevoDetalle);
         }
-        console.log('DETALLES CON ID_factura')
+        console.log('DETALLES CON ID_venta')
         console.log(detalles)
-        this.detalleFacturaService.createDetalleFacturaArray(detalles).subscribe(
+        this.detalleVentaService.createDetalleVentaArray(detalles).subscribe(
           () => {
             Swal.fire({
               icon: 'success',
-              title: 'Factura Creada',
-              text: 'La factura se han creado correctamente.',
+              title: 'Venta Creada',
+              text: 'La venta se han creado correctamente.',
               showConfirmButton: false,
               timer: 1500
             });
@@ -749,7 +771,7 @@ export class FacturaVentaComponent implements OnInit {
             this.cerrarModal();
           },
           (err) => {
-            let errorMessage = 'Se produjo un error al crear el factura..';
+            let errorMessage = 'Se produjo un error al crear el venta..';
             if (err.error && err.error.msg) {
               errorMessage = err.error.msg;
             }
@@ -760,13 +782,13 @@ export class FacturaVentaComponent implements OnInit {
         //this.recargarComponente();
       },
       (err) => {
-        const errorMessage = err.error?.msg || 'Se produjo un error al crear la factura.';
+        const errorMessage = err.error?.msg || 'Se produjo un error al crear la venta.';
         Swal.fire('Error', errorMessage, 'error');
       }
     );
   }
 
-  // Método para crear cliente en Modal Create Factura
+  // Método para crear cliente en Modal Create Venta
   crearCliente() {
     this.formSubmitted = true;
     if (this.clienteForm.invalid) {
@@ -800,27 +822,27 @@ export class FacturaVentaComponent implements OnInit {
     //this.recargarComponente();
   }
 
-  // Método para agregar cliente en Modal Create Factura
+  // Método para agregar cliente en Modal Create Venta
   agregarCliente() {
     // Seleccionar automáticamente el nuevo cliente en el selector
-    this.facturaForm.get('id_cliente').setValue(this.id_cliente);
-    this.facturaForm.get('identificacion').setValue(this.identificacion);
-    this.facturaForm.get('razon_social').setValue(this.razon_social);
-    this.facturaForm.get('direccion').setValue(this.direccion);
-    this.facturaForm.get('telefono').setValue(this.telefono);
-    this.facturaForm.get('email').setValue(this.email);
+    this.ventaForm.get('id_cliente').setValue(this.id_cliente);
+    this.ventaForm.get('identificacion').setValue(this.identificacion);
+    this.ventaForm.get('razon_social').setValue(this.razon_social);
+    this.ventaForm.get('direccion').setValue(this.direccion);
+    this.ventaForm.get('telefono').setValue(this.telefono);
+    this.ventaForm.get('email').setValue(this.email);
   }
 
   public mostrarListaClientes: boolean = false;
 
-  // Método para filtrar clientes en Modal Create Factura
+  // Método para filtrar clientes en Modal Create Venta
   filtrarClientes(event: any) {
     const identficacion = event.target.value.toLowerCase();
     this.clientesFiltrados = this.clientes.filter(cliente => cliente.identificacion.toLowerCase().includes(identficacion));
     this.mostrarListaClientes = this.clientesFiltrados.length > 0;
   }
 
-  // Método para cerra lista de clientes en Modal Create Factura
+  // Método para cerra lista de clientes en Modal Create Venta
   @ViewChild('clientesLista', { read: ElementRef }) clientesLista: ElementRef;
   @HostListener('document:click', ['$event'])
   cerrarListaClientes(event: Event): void {
@@ -829,17 +851,17 @@ export class FacturaVentaComponent implements OnInit {
     }
   }
 
-  // Método para convertir a mayúsculas en Modal Create Factura
+  // Método para convertir a mayúsculas en Modal Create Venta
   convertirAMayusculas(event: any) {
     const inputValue = event.target.value;
     const upperCaseValue = inputValue.toUpperCase();
     event.target.value = upperCaseValue;
   }
 
-  // Método para seleccionar cliente en Modal Create Factura
+  // Método para seleccionar cliente en Modal Create Venta
   seleccionarCliente(cliente: any) {
     // Actualizamos valores del formulario
-    this.facturaForm.patchValue({
+    this.ventaForm.patchValue({
       id_cliente: cliente.id_cliente,
       identificacion: cliente.identificacion,
       razon_social: cliente.razon_social,
@@ -849,18 +871,18 @@ export class FacturaVentaComponent implements OnInit {
     });
   }
 
-  // Método para obtener detalles en Modal Create Factura
+  // Método para obtener detalles en Modal Create Venta
   obtenerDetallesForm() {
-    const formValues = this.detalleFacturaForm.getRawValue();
+    const formValues = this.detalleVentaForm.getRawValue();
 
     // Obtener el número de detalles
     const numDetalles2 = Object.keys(formValues).filter(key => key.startsWith('producto_')).length;
 
-    // Reiniciar el arreglo detalleFacturaFormInterface
-    this.detalleFacturaFormInterface = [];
+    // Reiniciar el arreglo detalleVentaFormInterface
+    this.detalleVentaFormInterface = [];
 
     for (let i = 0; i < numDetalles2; i++) {
-      const nuevoDetalle: DetalleFacturaFormInterface = {
+      const nuevoDetalle: DetalleVentaFormInterface = {
         producto: formValues[`producto_${i}`],
         cantidad: formValues[`cantidad_${i}`],
         codigo_principal: formValues[`codigo_principal_${i}`],
@@ -877,19 +899,19 @@ export class FacturaVentaComponent implements OnInit {
         ice: formValues[`ice_${i}`],
         precio_total: formValues[`precio_total_${i}`],
       };
-      this.detalleFacturaFormInterface.push(nuevoDetalle);
+      this.detalleVentaFormInterface.push(nuevoDetalle);
     }
-    //this.detalleFacturaForm.reset();
+    //this.detalleVentaForm.reset();
   }
 
-  // Método agregar detalle en Modal Create Factura
+  // Método agregar detalle en Modal Create Venta
   agregarDetalleForm(): void {
-    if (this.detalleFacturaForm.invalid) {
+    if (this.detalleVentaForm.invalid) {
       console.log('RETURN')
       return;
     }
 
-    const nuevoDetalle: DetalleFacturaFormInterface = {
+    const nuevoDetalle: DetalleVentaFormInterface = {
       producto: null,
       codigo_principal: null,
       stock: null,
@@ -919,18 +941,18 @@ export class FacturaVentaComponent implements OnInit {
     const precioTotalControl = new FormControl(nuevoDetalle.precio_total);
 
     // Agregar los controles al formulario
-    this.detalleFacturaForm.addControl('producto_' + this.detalleFacturaFormInterface.length, productoControl);
-    this.detalleFacturaForm.addControl('codigo_principal_' + this.detalleFacturaFormInterface.length, codigoPrincipalControl);
-    this.detalleFacturaForm.addControl('stock_' + this.detalleFacturaFormInterface.length, stockControl);
-    this.detalleFacturaForm.addControl('descripcion_' + this.detalleFacturaFormInterface.length, descripcionControl);
-    this.detalleFacturaForm.addControl('cantidad_' + this.detalleFacturaFormInterface.length, cantidadControl);
-    this.detalleFacturaForm.addControl('precio_unitario_' + this.detalleFacturaFormInterface.length, precioUnitarioControl);
-    this.detalleFacturaForm.addControl('descuento_' + this.detalleFacturaFormInterface.length, descuentoControl);
-    this.detalleFacturaForm.addControl('precio_total_sin_impuesto_' + this.detalleFacturaFormInterface.length, precioTotalSinImpuestoControl);
-    this.detalleFacturaForm.addControl('tarifa_' + this.detalleFacturaFormInterface.length, tarifaControl);
-    this.detalleFacturaForm.addControl('valor_' + this.detalleFacturaFormInterface.length, valorControl);
-    this.detalleFacturaForm.addControl('ice_' + this.detalleFacturaFormInterface.length, iceControl);
-    this.detalleFacturaForm.addControl('precio_total_' + this.detalleFacturaFormInterface.length, precioTotalControl);
+    this.detalleVentaForm.addControl('producto_' + this.detalleVentaFormInterface.length, productoControl);
+    this.detalleVentaForm.addControl('codigo_principal_' + this.detalleVentaFormInterface.length, codigoPrincipalControl);
+    this.detalleVentaForm.addControl('stock_' + this.detalleVentaFormInterface.length, stockControl);
+    this.detalleVentaForm.addControl('descripcion_' + this.detalleVentaFormInterface.length, descripcionControl);
+    this.detalleVentaForm.addControl('cantidad_' + this.detalleVentaFormInterface.length, cantidadControl);
+    this.detalleVentaForm.addControl('precio_unitario_' + this.detalleVentaFormInterface.length, precioUnitarioControl);
+    this.detalleVentaForm.addControl('descuento_' + this.detalleVentaFormInterface.length, descuentoControl);
+    this.detalleVentaForm.addControl('precio_total_sin_impuesto_' + this.detalleVentaFormInterface.length, precioTotalSinImpuestoControl);
+    this.detalleVentaForm.addControl('tarifa_' + this.detalleVentaFormInterface.length, tarifaControl);
+    this.detalleVentaForm.addControl('valor_' + this.detalleVentaFormInterface.length, valorControl);
+    this.detalleVentaForm.addControl('ice_' + this.detalleVentaFormInterface.length, iceControl);
+    this.detalleVentaForm.addControl('precio_total_' + this.detalleVentaFormInterface.length, precioTotalControl);
 
     nuevoDetalle.producto = productoControl.value;
     nuevoDetalle.codigo_principal = codigoPrincipalControl.value;
@@ -945,12 +967,12 @@ export class FacturaVentaComponent implements OnInit {
     nuevoDetalle.precio_total = precioTotalControl.value;
 
     // Agregar el detalle al arreglo
-    this.detalleFacturaFormInterface.push(nuevoDetalle);
+    this.detalleVentaFormInterface.push(nuevoDetalle);
   }
 
-  // Método para eliminar detalle en Modal Create Factura
+  // Método para eliminar detalle en Modal Create Venta
   eliminarDetalleForm(index: number): void {
-    this.detalleFacturaFormInterface.splice(index, 1);
+    this.detalleVentaFormInterface.splice(index, 1);
     // Volver a calcular los totales
     this.calcularPrecioTotalSinImpuestoConDescuento(index);
     this.calcularValor(index);
@@ -963,28 +985,28 @@ export class FacturaVentaComponent implements OnInit {
     this.actualizarSaldo();
   }
 
-  // Método para actualizar en Modal Create Factura
+  // Método para actualizar en Modal Create Venta
   actualizarCodigoPrincipal(event: Event, indice: number) {
     const selectElement = event.target as HTMLSelectElement;
     const productoId = parseInt(selectElement.value, 10);
     const productoSeleccionado = this.productos.find(producto => producto.id_producto === productoId);
     if (productoSeleccionado) {
-      this.detalleFacturaForm.controls[`codigo_principal_${indice}`].setValue(productoSeleccionado.codigo_principal);
+      this.detalleVentaForm.controls[`codigo_principal_${indice}`].setValue(productoSeleccionado.codigo_principal);
     } else {
-      this.detalleFacturaForm.controls[`codigo_principal_${indice}`].setValue('');
+      this.detalleVentaForm.controls[`codigo_principal_${indice}`].setValue('');
     }
   }
 
-  // Método para actualizar en Modal Create Factura
+  // Método para actualizar en Modal Create Venta
   actualizarStock(event: Event, indice: number) {
     const selectElement = event.target as HTMLSelectElement;
     const productoId = parseInt(selectElement.value, 10);
     const productoSeleccionado = this.productos.find(producto => producto.id_producto === productoId);
     if (productoSeleccionado) {
-      // Actualiza la descripción en el formulario del detalle de la factura
-      this.detalleFacturaForm.controls[`stock_${indice}`].setValue(productoSeleccionado.stock);
+      // Actualiza la descripción en el formulario del detalle de la venta
+      this.detalleVentaForm.controls[`stock_${indice}`].setValue(productoSeleccionado.stock);
     } else {
-      this.detalleFacturaForm.controls[`stock_${indice}`].setValue('');
+      this.detalleVentaForm.controls[`stock_${indice}`].setValue('');
     }
   }
 
@@ -992,51 +1014,51 @@ export class FacturaVentaComponent implements OnInit {
     return cantidad <= stock;
   }
 
-  // Método para actualizar en Modal Create Factura
+  // Método para actualizar en Modal Create Venta
   actualizarDescripcion(event: Event, indice: number) {
     const selectElement = event.target as HTMLSelectElement;
     const productoId = parseInt(selectElement.value, 10);
     const productoSeleccionado = this.productos.find(producto => producto.id_producto === productoId);
     if (productoSeleccionado) {
-      // Actualiza la descripción en el formulario del detalle de la factura
-      this.detalleFacturaForm.controls[`descripcion_${indice}`].setValue(productoSeleccionado.descripcion);
+      // Actualiza la descripción en el formulario del detalle de la venta
+      this.detalleVentaForm.controls[`descripcion_${indice}`].setValue(productoSeleccionado.descripcion);
     } else {
-      this.detalleFacturaForm.controls[`descripcion_${indice}`].setValue('');
+      this.detalleVentaForm.controls[`descripcion_${indice}`].setValue('');
     }
   }
 
-  // Método para actualizar en Modal Create Factura
+  // Método para actualizar en Modal Create Venta
   actualizarPrecioUnitario(event: Event, indice: number) {
     const selectElement = event.target as HTMLSelectElement;
     const productoId = parseInt(selectElement.value, 10);
     const productoSeleccionado = this.productos.find(producto => producto.id_producto === productoId);
     if (productoSeleccionado) {
-      // Actualiza la descripción en el formulario del detalle de la factura
-      this.detalleFacturaForm.controls[`precio_unitario_${indice}`].setValue(productoSeleccionado.precio_venta);
+      // Actualiza la descripción en el formulario del detalle de la venta
+      this.detalleVentaForm.controls[`precio_unitario_${indice}`].setValue(productoSeleccionado.precio_venta);
     } else {
-      this.detalleFacturaForm.controls[`precio_unitario_${indice}`].setValue('');
+      this.detalleVentaForm.controls[`precio_unitario_${indice}`].setValue('');
     }
   }
 
-  // Método para actualizar en Modal Create Factura
+  // Método para actualizar en Modal Create Venta
   actualizarTarifa(event: Event, indice: number) {
     const selectElement = event.target as HTMLSelectElement;
     const productoId = parseInt(selectElement.value, 10);
     const productoSeleccionado = this.productos.find(producto => producto.id_producto === productoId);
     if (productoSeleccionado) {
       const tarifaRedondeada = Math.round(productoSeleccionado.tarifa);
-      this.detalleFacturaForm.controls[`tarifa_${indice}`].setValue(tarifaRedondeada);
+      this.detalleVentaForm.controls[`tarifa_${indice}`].setValue(tarifaRedondeada);
     } else {
-      this.detalleFacturaForm.controls[`tarifa_${indice}`].setValue('');
+      this.detalleVentaForm.controls[`tarifa_${indice}`].setValue('');
     }
   }
 
-  // Método para calcular en Modal Create Factura
+  // Método para calcular en Modal Create Venta
   calcularPrecioTotalSinImpuestoConDescuento(index: number): void {
-    const cantidadControl = this.detalleFacturaForm.get(`cantidad_${index}`);
-    const precioUnitarioControl = this.detalleFacturaForm.get(`precio_unitario_${index}`);
-    const descuentoControl = this.detalleFacturaForm.get(`descuento_${index}`);
-    const precioTotalSinImpuestoControl = this.detalleFacturaForm.get(`precio_total_sin_impuesto_${index}`);
+    const cantidadControl = this.detalleVentaForm.get(`cantidad_${index}`);
+    const precioUnitarioControl = this.detalleVentaForm.get(`precio_unitario_${index}`);
+    const descuentoControl = this.detalleVentaForm.get(`descuento_${index}`);
+    const precioTotalSinImpuestoControl = this.detalleVentaForm.get(`precio_total_sin_impuesto_${index}`);
 
     if (cantidadControl && precioUnitarioControl && descuentoControl && precioTotalSinImpuestoControl) {
       const cantidad = cantidadControl.value;
@@ -1049,11 +1071,11 @@ export class FacturaVentaComponent implements OnInit {
     }
   }
 
-  // Método para calcular en Modal Create Factura
+  // Método para calcular en Modal Create Venta
   calcularValor(index: number): void {
-    const tarifaControl = this.detalleFacturaForm.get(`tarifa_${index}`);
-    const precioTotalSinImpuestoControl = this.detalleFacturaForm.get(`precio_total_sin_impuesto_${index}`);
-    const valorControl = this.detalleFacturaForm.get(`valor_${index}`);
+    const tarifaControl = this.detalleVentaForm.get(`tarifa_${index}`);
+    const precioTotalSinImpuestoControl = this.detalleVentaForm.get(`precio_total_sin_impuesto_${index}`);
+    const valorControl = this.detalleVentaForm.get(`valor_${index}`);
     if (tarifaControl && precioTotalSinImpuestoControl && valorControl) {
       const tarifa = tarifaControl.value || 0;
       const precioTotalSinImpuesto = precioTotalSinImpuestoControl.value || 0;
@@ -1062,13 +1084,13 @@ export class FacturaVentaComponent implements OnInit {
     }
   }
 
-  // Método para calcular en Modal Create Factura
+  // Método para calcular en Modal Create Venta
   calcularPrecioTotal(index: number): void {
-    const precioTotalSinImpuestoControl = this.detalleFacturaForm.get(`precio_total_sin_impuesto_${index}`);
-    const tarifaControl = this.detalleFacturaForm.get(`tarifa_${index}`);
-    const valorControl = this.detalleFacturaForm.get(`valor_${index}`);
-    const iceControl = this.detalleFacturaForm.get(`ice_${index}`);
-    const precioTotalControl = this.detalleFacturaForm.get(`precio_total_${index}`);
+    const precioTotalSinImpuestoControl = this.detalleVentaForm.get(`precio_total_sin_impuesto_${index}`);
+    const tarifaControl = this.detalleVentaForm.get(`tarifa_${index}`);
+    const valorControl = this.detalleVentaForm.get(`valor_${index}`);
+    const iceControl = this.detalleVentaForm.get(`ice_${index}`);
+    const precioTotalControl = this.detalleVentaForm.get(`precio_total_${index}`);
     if (precioTotalSinImpuestoControl && tarifaControl && valorControl && iceControl && precioTotalControl) {
       const precioTotalSinImpuesto = precioTotalSinImpuestoControl.value || 0;
       const tarifa = tarifaControl.value || 0;
@@ -1080,14 +1102,14 @@ export class FacturaVentaComponent implements OnInit {
     }
   }
 
-  // Método para actualizar en Modal Create Factura
+  // Método para actualizar en Modal Create Venta
   actualizarTotalesPorTarifa(): void {
     this.sumaTotalImpuesto = 0;
     this.sumaTotalImpuestoCero = 0;
-    for (let i = 0; i < this.detalleFacturaFormInterface.length; i++) {
-      const tarifaControl = this.detalleFacturaForm.get(`tarifa_${i}`);
-      const precioTotalSinImpuestoControl = this.detalleFacturaForm.get(`precio_total_sin_impuesto_${i}`);
-      const iceControl = this.detalleFacturaForm.get(`ice_${i}`);
+    for (let i = 0; i < this.detalleVentaFormInterface.length; i++) {
+      const tarifaControl = this.detalleVentaForm.get(`tarifa_${i}`);
+      const precioTotalSinImpuestoControl = this.detalleVentaForm.get(`precio_total_sin_impuesto_${i}`);
+      const iceControl = this.detalleVentaForm.get(`ice_${i}`);
       if (tarifaControl && precioTotalSinImpuestoControl && iceControl) {
         const tarifa = tarifaControl.value;
         const precioTotalSinImpuesto = precioTotalSinImpuestoControl.value || 0;
@@ -1101,11 +1123,11 @@ export class FacturaVentaComponent implements OnInit {
     }
   }
 
-  // Método para actualizar en Modal Create Factura
+  // Método para actualizar en Modal Create Venta
   actualizarTotalDescuento(): void {
     this.sumaTotalDescuento = 0;
-    for (let i = 0; i < this.detalleFacturaFormInterface.length; i++) {
-      const descuentoControl = this.detalleFacturaForm.get(`descuento_${i}`);
+    for (let i = 0; i < this.detalleVentaFormInterface.length; i++) {
+      const descuentoControl = this.detalleVentaForm.get(`descuento_${i}`);
       if (descuentoControl) {
         const descuento = descuentoControl.value || 0;
         this.sumaTotalDescuento += descuento;
@@ -1113,11 +1135,11 @@ export class FacturaVentaComponent implements OnInit {
     }
   }
 
-  // Método para actualizar en Modal Create Factura
+  // Método para actualizar en Modal Create Venta
   actualizarTotalSinImpuestos(): void {
     this.sumaTotalSinImpuesto = 0;
-    for (let i = 0; i < this.detalleFacturaFormInterface.length; i++) {
-      const precioTotalSinImpuestoControl = this.detalleFacturaForm.get(`precio_total_sin_impuesto_${i}`);
+    for (let i = 0; i < this.detalleVentaFormInterface.length; i++) {
+      const precioTotalSinImpuestoControl = this.detalleVentaForm.get(`precio_total_sin_impuesto_${i}`);
       if (precioTotalSinImpuestoControl) {
         const precioTotalSinImpuesto = precioTotalSinImpuestoControl.value || 0;
         this.sumaTotalSinImpuesto += precioTotalSinImpuesto;
@@ -1125,11 +1147,11 @@ export class FacturaVentaComponent implements OnInit {
     }
   }
 
-  // Método para actualizar en Modal Create Factura
+  // Método para actualizar en Modal Create Venta
   actualizarTotalICE(): void {
     this.sumaTotalICE = 0;
-    for (let i = 0; i < this.detalleFacturaFormInterface.length; i++) {
-      const iceControl = this.detalleFacturaForm.get(`ice_${i}`);
+    for (let i = 0; i < this.detalleVentaFormInterface.length; i++) {
+      const iceControl = this.detalleVentaForm.get(`ice_${i}`);
       if (iceControl) {
         const ice = iceControl.value || 0;
         this.sumaTotalICE += ice;
@@ -1137,12 +1159,12 @@ export class FacturaVentaComponent implements OnInit {
     }
   }
 
-  // Método para actualizar en Modal Create Factura
+  // Método para actualizar en Modal Create Venta
   actualizarTotalIVA(): void {
     this.sumaTotalIVA = 0;
-    for (let i = 0; i < this.detalleFacturaFormInterface.length; i++) {
-      const tarifaControl = this.detalleFacturaForm.get(`tarifa_${i}`);
-      const valorControl = this.detalleFacturaForm.get(`valor_${i}`);
+    for (let i = 0; i < this.detalleVentaFormInterface.length; i++) {
+      const tarifaControl = this.detalleVentaForm.get(`tarifa_${i}`);
+      const valorControl = this.detalleVentaForm.get(`valor_${i}`);
 
       if (tarifaControl && valorControl) {
         const tarifa = tarifaControl.value;
@@ -1155,11 +1177,11 @@ export class FacturaVentaComponent implements OnInit {
     }
   }
 
-  // Método para actualizar en Modal Create Factura
+  // Método para actualizar en Modal Create Venta
   actualizarPrecioTotal(): void {
     this.sumaPrecioTotal = 0;
-    for (let i = 0; i < this.detalleFacturaFormInterface.length; i++) {
-      const precioTotalControl = this.detalleFacturaForm.get(`precio_total_${i}`);
+    for (let i = 0; i < this.detalleVentaFormInterface.length; i++) {
+      const precioTotalControl = this.detalleVentaForm.get(`precio_total_${i}`);
       if (precioTotalControl) {
         const precioTotal = precioTotalControl.value || 0;
         this.sumaPrecioTotal += precioTotal;
@@ -1167,32 +1189,32 @@ export class FacturaVentaComponent implements OnInit {
     }
   }
 
-  // Método para actualizar en Modal Create Factura
+  // Método para actualizar en Modal Create Venta
   actualizarSaldo(): void {
-    this.abono = this.facturaForm.get('abono').value || 0;
+    this.abono = this.ventaForm.get('abono').value || 0;
     const nuevoSaldo = Math.max(this.sumaPrecioTotal - this.abono, 0);
     console.log("entra")
     if (nuevoSaldo === 0) {
       this.abono = this.sumaPrecioTotal;
-      this.facturaForm.get('abono').setValue(this.abono.toFixed(2));
-      this.facturaForm.get('saldo').setValue("0.00"); // Actualizar el campo "Saldo" en el formulario
+      this.ventaForm.get('abono').setValue(this.abono.toFixed(2));
+      this.ventaForm.get('saldo').setValue("0.00"); // Actualizar el campo "Saldo" en el formulario
     } else {
-      this.facturaForm.get('saldo').setValue(nuevoSaldo.toFixed(2));
+      this.ventaForm.get('saldo').setValue(nuevoSaldo.toFixed(2));
     }
   }
 
-  // Método para actualizar factura en Modal Update Factura
-  actualizarFactura() {
+  // Método para actualizar venta en Modal Update Venta
+  actualizarVenta() {
     this.formSubmitted = true;
-    if (this.facturaFormU.invalid) {
-      console.log("Validar Formulario", this.facturaForm.value);
+    if (this.ventaFormU.invalid) {
+      console.log("Validar Formulario", this.ventaForm.value);
       return;
     }
 
-    const idFormaPago = this.facturaFormU.get('id_forma_pago').value;
-    const fecha_pago = this.facturaFormU.get('fecha_pago').value;
-    const abono = this.facturaFormU.get('abono').value;
-    const observacion = this.facturaFormU.get('observacion').value;
+    const idFormaPago = this.ventaFormU.get('id_forma_pago').value;
+    const fecha_pago = this.ventaFormU.get('fecha_pago').value;
+    const abono = this.ventaFormU.get('abono').value;
+    const observacion = this.ventaFormU.get('observacion').value;
     if (abono > 0) {
       if (!fecha_pago) {
         alert('Debes proporcionar una fecha de pago si el abono es mayor a cero.');
@@ -1209,36 +1231,38 @@ export class FacturaVentaComponent implements OnInit {
     }
 
     const data = {
-      ...this.facturaFormU.value,
-      id_factura_venta: this.facturaSeleccionada.id_factura_venta,
+      ...this.ventaFormU.value,
+      id_venta: this.ventaSeleccionada.id_venta,
     }
 
-    this.facturaService.updateFactura(data)
+    this.ventaService.updateVenta(data)
       .subscribe(res => {
         Swal.fire({
           icon: 'success',
-          title: 'Factura actualizada',
-          text: 'Factura se ha actualizado correctamente',
+          title: 'Venta actualizada',
+          text: 'Venta se ha actualizado correctamente',
           showConfirmButton: false,
           timer: 1500
         });
         this.recargarComponente();
         this.cerrarModal();
       }, (err) => {
-        const errorMessage = err.error?.msg || 'Se produjo un error al actualizar la factura.';
+        const errorMessage = err.error?.msg || 'Se produjo un error al actualizar la venta.';
         Swal.fire('Error', errorMessage, 'error');
       });
   }
 
 
-  // Método para cargar factura por id en Modal Update Factura
-  cargarFacturaPorId(id_factura_venta: any) {
-    this.facturaService.loadFacturaById(id_factura_venta)
+  // Método para cargar venta por id en Modal Update Venta
+  cargarVentaPorId(id_venta: any) {
+    this.ventaService.loadVentaById(id_venta)
       .pipe(
-        switchMap((factura: any) => {
-          const { id_cliente, id_asiento, codigo, fecha_emision, fecha_vencimiento, estado_pago,
-            total_sin_impuesto, total_descuento, valor, importe_total, abono, estado } = factura.factura[0];
-          this.facturaSeleccionada = factura.factura[0];
+        switchMap((venta: any) => {
+          //const { id_cliente, id_asiento, codigo, fecha_emision, fecha_vencimiento, estado_pago,
+          //total_sin_impuesto, total_descuento, valor, importe_total, abono, estado } = venta.venta[0];
+          const { id_cliente, codigo, fecha_emision, fecha_vencimiento, estado_pago,
+            total_sin_impuesto, total_descuento, valor, importe_total, abono, estado } = venta.venta[0];
+          this.ventaSeleccionada = venta.venta[0];
           this.codigo = codigo;
           this.fechaEmisionU = fecha_emision; // Así mantenemos la fecha original
           this.fechaVencimientoU = fecha_vencimiento
@@ -1248,7 +1272,7 @@ export class FacturaVentaComponent implements OnInit {
           this.importe_total = importe_total;
           this.estado = estado;
 
-          const saldo = factura.saldo.toFixed(2);
+          const saldo = venta.saldo.toFixed(2);
           this.saldoInicial = parseFloat(saldo); // Saldo recuperado
 
           this.abonoU = abono; // Abono recuperado
@@ -1267,9 +1291,14 @@ export class FacturaVentaComponent implements OnInit {
               this.telefono = telefono;
               this.email = email;
               const abono = "0.00"; // Precargar abono en html
+              //return of({
+              //identificacion, razon_social, direccion, telefono, email,
+              //id_asiento, codigo, fecha_emision, fecha_vencimiento, estado_pago, total_sin_impuesto, total_descuento, valor, importe_total, abono, saldo,
+              //id_forma_pago, fecha_pago, observacion,
+              //});
               return of({
                 identificacion, razon_social, direccion, telefono, email,
-                id_asiento, codigo, fecha_emision, fecha_vencimiento, estado_pago, total_sin_impuesto, total_descuento, valor, importe_total, abono, saldo,
+                codigo, fecha_emision, fecha_vencimiento, estado_pago, total_sin_impuesto, total_descuento, valor, importe_total, abono, saldo,
                 id_forma_pago, fecha_pago, observacion,
               });
             })
@@ -1277,21 +1306,21 @@ export class FacturaVentaComponent implements OnInit {
         })
       )
       .subscribe(data => {
-        this.facturaFormU.setValue(data);
-        this.facturaFormU.get('fecha_emision').setValue(this.datePipe.transform(this.fechaEmisionU, 'yyyy-MM-dd'));
+        this.ventaFormU.setValue(data);
+        this.ventaFormU.get('fecha_emision').setValue(this.datePipe.transform(this.fechaEmisionU, 'yyyy-MM-dd'));
       });
   }
 
-  // Método para cargar cliente por id en Modal Update Factura
+  // Método para cargar cliente por id en Modal Update Venta
   cargarClientePorId(id_cliente: any) {
-    this.facturaFormU.get('fecha_emision').setValue(this.datePipe.transform(this.fechaEmisionU, 'dd/MM/yyyy'));
+    this.ventaFormU.get('fecha_emision').setValue(this.datePipe.transform(this.fechaEmisionU, 'dd/MM/yyyy'));
     return this.clienteService.loadClienteById(id_cliente);
   }
 
-  // Método para formatear fecha en Modal Update Factura
+  // Método para formatear fecha en Modal Update Venta
   /*
   getFormattedFechaEmisionU(): string {
-    const fechaEmision = this.facturaFormU.get('fecha_emision')?.value;
+    const fechaEmision = this.ventaFormU.get('fecha_emision')?.value;
     if (fechaEmision) {
       const fecha = new Date(fechaEmision);
       return fecha.toISOString().split('T')[0];
@@ -1300,9 +1329,9 @@ export class FacturaVentaComponent implements OnInit {
   }
   */
 
-  // Método para formatear fecha en Modal Update Factura
+  // Método para formatear fecha en Modal Update Venta
   getFormattedFechaVencimientoU(): string {
-    const fechaVencimiento = this.facturaFormU.get('fecha_vencimiento')?.value;
+    const fechaVencimiento = this.ventaFormU.get('fecha_vencimiento')?.value;
     if (fechaVencimiento) {
       const fecha = new Date(fechaVencimiento);
       return fecha.toISOString().split('T')[0];
@@ -1310,9 +1339,9 @@ export class FacturaVentaComponent implements OnInit {
     return '';
   }
 
-  // Método para formatear fecha en Modal Update Factura
+  // Método para formatear fecha en Modal Update Venta
   getFormattedFechaEmisionXML(): string {
-    const fechaEmision = this.facturaFormXML.get('fecha_emision')?.value;
+    const fechaEmision = this.ventaFormXML.get('fecha_emision')?.value;
     if (fechaEmision) {
       const fecha = new Date(fechaEmision);
       return fecha.toISOString().split('T')[0];
@@ -1320,34 +1349,35 @@ export class FacturaVentaComponent implements OnInit {
     return '';
   }
 
-  // Método para cargar detalles factura por id factura en Modal Update Factura
-  cargarDetallesFacturaByIdFactura(id_factura_venta: any) {
-    this.detalleFacturaService.loadDetallesFacturaByIdFactura(id_factura_venta)
-      .subscribe(({ detalles_factura }) => {
-        this.detalles_factura = detalles_factura;
+  // Método para cargar detalles venta por id venta en Modal Update Venta
+  cargarDetallesVentaByIdVenta(id_venta: any) {
+    this.detalleVentaService.loadDetallesVentaByIdVenta(id_venta)
+      .subscribe(({ detalles_ventas }) => {
+        console.log("detallessssssssss", detalles_ventas)
+        this.detalles_venta = detalles_ventas;
       })
   }
 
-  // Método para actualizar saldo en Modal Update Factura
+  // Método para actualizar saldo en Modal Update Venta
   actualizarSaldoU(): void {
-    this.abonoU = this.facturaFormU.get('abono').value || 0;
+    this.abonoU = this.ventaFormU.get('abono').value || 0;
     const nuevoSaldo = Math.max(this.saldoInicial - this.abonoU, 0);
     if (nuevoSaldo === 0) {
       this.abonoU = this.saldoInicial;
-      this.facturaFormU.get('abono').setValue(this.abonoU.toFixed(2));
-      this.facturaFormU.get('saldo').setValue("0.00");
+      this.ventaFormU.get('abono').setValue(this.abonoU.toFixed(2));
+      this.ventaFormU.get('saldo').setValue("0.00");
     } else {
-      this.facturaFormU.get('saldo').setValue(nuevoSaldo.toFixed(2));
+      this.ventaFormU.get('saldo').setValue(nuevoSaldo.toFixed(2));
     }
   }
 
 
-  // Método para crear factura en Modal XML
-  crearFacturaXML() {
+  // Método para crear venta en Modal XML
+  crearVentaXML() {
     // Reiniciar el arreglo detallesXMLInterface
     //this.detallesXMLInterface = [];
     // Limpiar el formulario de detalles
-    //this.detalleFacturaForm.reset();
+    //this.detalleVentaForm.reset();
     if (this.detallesXMLInterface.length === 0) {
       Swal.fire({
         icon: 'warning',
@@ -1358,16 +1388,16 @@ export class FacturaVentaComponent implements OnInit {
     }
 
     this.formSubmitted = true;
-    if (this.facturaFormU.invalid) {
+    if (this.ventaFormU.invalid) {
       // Aquí se valida los campos que están validando en "Input Validation"
-      console.log("Validar Formulario", this.facturaForm.value);
+      console.log("Validar Formulario", this.ventaForm.value);
       return;
     }
 
-    const id_forma_pago = this.facturaForm.get('id_forma_pago').value;
-    const fecha_pago = this.facturaForm.get('fecha_pago').value;
-    const abono = this.facturaForm.get('abono').value;
-    const observacion = this.facturaForm.get('observacion').value;
+    const id_forma_pago = this.ventaForm.get('id_forma_pago').value;
+    const fecha_pago = this.ventaForm.get('fecha_pago').value;
+    const abono = this.ventaForm.get('abono').value;
+    const observacion = this.ventaForm.get('observacion').value;
     if (abono > 0) {
       if (!fecha_pago) {
         alert('Debes proporcionar una fecha de pago si el abono es mayor a cero.');
@@ -1383,17 +1413,18 @@ export class FacturaVentaComponent implements OnInit {
       }
     }
 
-    // Una vez que los productos se han creado, procede a crear la factura
-    const facturaData: FacturaXMLInterface = {
+    // Una vez que los productos se han creado, procede a crear la venta
+    const ventaData: VentaXMLInterface = {
+      id_tipo_comprobante: this.id_tipo_comprobante,
       id_cliente: this.id_cliente,
       //id_forma_pago: this.id_forma_pago, con esto cargamos la forma de pago del XML
-      id_forma_pago: this.facturaFormXML.get("id_forma_pago").value,
-      id_asiento: 1,
+      id_forma_pago: this.ventaFormXML.get("id_forma_pago").value,
+      //id_asiento: 1,
       id_info_tributaria: 1,
       clave_acceso: this.claveAcceso,
       codigo: this.estab + "-" + this.ptoEmi + "-" + this.secuencial,
       fecha_emision: this.fechaEmision,
-      fecha_vencimiento: this.facturaFormXML.get("fecha_vencimiento").value,
+      fecha_vencimiento: this.ventaFormXML.get("fecha_vencimiento").value,
       estado_pago: '',
       total_sin_impuesto: this.totalSinImpuestos,
       total_descuento: this.totalDescuento,
@@ -1403,21 +1434,21 @@ export class FacturaVentaComponent implements OnInit {
 
       abono: this.abonoXML,
       //saldo: 0, // Valor válido
-      observacion: this.facturaFormXML.get("observacion").value,
+      observacion: this.ventaFormXML.get("observacion").value,
     };
-    console.log("Data: ", facturaData)
-    this.facturaService.createFactura(facturaData).subscribe(
+    console.log("Data: ", ventaData)
+    this.ventaService.createVenta(ventaData).subscribe(
       (res: any) => {
-        const facturaId = res.id_factura_venta; // Obtener el ID del factura guardado
+        const ventaId = res.id_venta; // Obtener el ID del venta guardado
         console.log("RES ", res)
-        console.log("FACTURA ID: ", facturaId)
+        console.log("FACTURA ID: ", ventaId)
         const productosObservables = this.crearProductosXML();
         forkJoin(productosObservables).subscribe((productosCreados: any[]) => {
-          // Crear los detalles y asociarlos a la factura y productos
+          // Crear los detalles y asociarlos a la venta y productos
           const detallesXMLInterface = this.detallesXMLInterface.map((detalleXML, index) => {
 
             return {
-              id_factura_venta: facturaId,
+              id_venta: ventaId,
               id_producto: productosCreados[index].id_producto, // Aquí accedemos al primer producto en el array de productos creados
               codigo_principal: detalleXML.codigoPrincipal,//ver
               descripcion: detalleXML.descripcion,
@@ -1436,12 +1467,12 @@ export class FacturaVentaComponent implements OnInit {
             };
             //detallesXMLInterface.push(nuevoDetalle);
           });
-          this.detalleFacturaService.createDetalleFacturaArray(detallesXMLInterface).subscribe(
+          this.detalleVentaService.createDetalleVentaArray(detallesXMLInterface).subscribe(
             () => {
               Swal.fire({
                 icon: 'success',
-                title: 'Factura Creada',
-                text: 'La factura se han creado correctamente.',
+                title: 'Venta Creada',
+                text: 'La venta se han creado correctamente.',
                 showConfirmButton: false,
                 timer: 1500
               });
@@ -1449,7 +1480,7 @@ export class FacturaVentaComponent implements OnInit {
               this.cerrarModal();
             },
             (err) => {
-              let errorMessage = 'Se produjo un error al crear el factura.';
+              let errorMessage = 'Se produjo un error al crear el venta.';
               if (err.error && err.error.msg) {
                 errorMessage = err.error.msg;
               }
@@ -1554,7 +1585,7 @@ export class FacturaVentaComponent implements OnInit {
         this.propina = parseFloat(infoFactura.propina[0]);
         this.importeTotal = parseFloat(infoFactura.importeTotal[0]);
         console.log("this.importeTotal--------------------", this.importeTotal)
-        //this.importeTotal = parseFloat(result.factura.infoFactura[0].importeTotal[0]);
+        //this.importeTotal = parseFloat(result.venta.infoVenta[0].importeTotal[0]);
         this.ivaAux = this.importeTotal - this.totalSinImpuestos
         this.moneda = infoFactura.moneda[0];
 
@@ -1574,7 +1605,6 @@ export class FacturaVentaComponent implements OnInit {
         if (result?.factura?.infoFactura?.pagos?.[0]?.pago?.[0]?.unidadTiempo) {
           this.unidadTiempo = result.factura.infoFactura.pagos[0].pago[0].unidadTiempo[0];
         } else {
-          console.log("unidadTiempo no diponible");
           this.unidadTiempo = null; // O un valor predeterminado
         }
 
@@ -1874,14 +1904,14 @@ export class FacturaVentaComponent implements OnInit {
 
   // Método para actualizar saldo en Modal XML
   actualizarSaldoXML(): void {
-    this.abonoXML = this.facturaFormXML.get('abono').value || 0;
+    this.abonoXML = this.ventaFormXML.get('abono').value || 0;
     const nuevoSaldo = Math.max(this.importeTotal - this.abonoXML, 0);
     if (nuevoSaldo === 0) {
       this.abonoXML = this.importeTotal;
-      this.facturaFormXML.get('abono').setValue(this.abonoXML.toFixed(2));
-      this.facturaFormXML.get('saldo').setValue("0.00");
+      this.ventaFormXML.get('abono').setValue(this.abonoXML.toFixed(2));
+      this.ventaFormXML.get('saldo').setValue("0.00");
     } else {
-      this.facturaFormXML.get('saldo').setValue(nuevoSaldo.toFixed(2));
+      this.ventaFormXML.get('saldo').setValue(nuevoSaldo.toFixed(2));
     }
   }
 
@@ -1896,7 +1926,7 @@ export class FacturaVentaComponent implements OnInit {
   // Método para recargar componente
   recargarComponente() {
     this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-      this.router.navigate(['/dashboard/facturas-ventas']);
+      this.router.navigate(['/dashboard/ventas']);
     });
   }
 

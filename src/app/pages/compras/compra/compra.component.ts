@@ -268,7 +268,6 @@ export class CompraComponent implements OnInit {
     this.compraForm = this.fb.group({
 
       id_tipo_comprobante: [''],
-
       id_compra: [''],
 
       id_proveedor: ['', [Validators.required, Validators.minLength(0)]],
@@ -692,7 +691,7 @@ export class CompraComponent implements OnInit {
       ...this.compraForm.value,
       id_tipo_comprobante: this.id_tipo_comprobante
     };
-    
+
     this.compraService.createCompra(compraData).subscribe(
       (res: any) => {
         const compraId = res.id_compra; // Obtener el ID del compra guardado
@@ -1291,6 +1290,7 @@ export class CompraComponent implements OnInit {
   cargarDetallesCompraByIdCompra(id_compra: any) {
     this.detalleCompraService.loadDetallesCompraByIdCompra(id_compra)
       .subscribe(({ detalles_compras }) => {
+        console.log("detallessssssssss", detalles_compras)
         this.detalles_compra = detalles_compras;
       })
   }

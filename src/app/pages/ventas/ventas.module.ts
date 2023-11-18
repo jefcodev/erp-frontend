@@ -4,12 +4,12 @@ import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { ClienteComponent } from './cliente/cliente.component';
-import { FacturaVentaComponent } from './factura/factura.component';
+import { VentaComponent } from './venta/venta.component'; 
 
 @NgModule({
   declarations: [
     ClienteComponent,
-    FacturaVentaComponent
+    VentaComponent
   ],
   imports: [
     CommonModule,

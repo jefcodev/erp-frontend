@@ -9,8 +9,8 @@
                             style="max-width: 50px; max-height: 50px;">
                     </div>
                     <div class="align-self-center">
-                        <h6 class="text-muted m-t-10 m-b-0">Número Facturas</h6>
-                        <h2 class="m-t-0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ totalFacturas }}</h2>
+                        <h6 class="text-muted m-t-10 m-b-0">Número Ventas</h6>
+                        <h2 class="m-t-0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ totalVentas }}</h2>
                     </div>
                 </div>
             </div>
@@ -25,7 +25,7 @@
                             style="max-width: 50px; max-height: 50px;">
                     </div>
                     <div class="align-self-center">
-                        <h6 class="text-muted m-t-10 m-b-0">Total Facturas</h6>
+                        <h6 class="text-muted m-t-10 m-b-0">Total Ventas</h6>
                         <h2 class="m-t-0">{{ sumaImporteTotal | currency: 'USD': 'symbol' }}</h2>
                     </div>
                 </div>
@@ -42,8 +42,8 @@
                             style="max-width: 50px; max-height: 50px;">
                     </div>
                     <div class="align-self-center">
-                        <h6 class="text-muted m-t-10 m-b-0">Facturas Pendientes</h6>
-                        <h2 class="m-t-0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ totalFacturasPendientes }}</h2>
+                        <h6 class="text-muted m-t-10 m-b-0">Ventas Pendientes</h6>
+                        <h2 class="m-t-0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ totalVentasPendientes }}</h2>
                     </div>
                 </div>
             </div>
@@ -67,7 +67,7 @@
     </div>
 </div>
 
-<!-- Table Data Factura -->
+<!-- Table Data Venta -->
 <div class="row">
     <div class="col-12">
 
@@ -77,73 +77,154 @@
                 <!-- Row Button  -->
                 <div class="row button-group">
 
-                    <!-- Button Groups  -->
-                    <div class="col-lg-12 col-md-12">
-                        <div class="float-left">
-                            <button type="button" class="btn btn-info waves-effect waves-light" data-toggle="modal"
-                                data-target="#exampleModal">
-                                <i class="fa fa-plus"></i> Nueva Factura
-                            </button>
-                            <button type="button" class="btn waves-effect waves-light btn-secondary" data-toggle="modal"
-                                data-target="#exampleModalXML">
-                                <span class="fa fa-download"></span> Importar XML
-                            </button>
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown"
-                                    aria-haspopup="true" aria-expanded="false">
-                                    Más opciones
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <div class="float-left">
+                                <!--
+                                <button type="button" class="btn btn-info waves-effect waves-light" data-toggle="modal"
+                                    data-target="#exampleModal">
+                                    <i class="fa fa-plus"></i> Nueva Compra
                                 </button>
-                                <div class="dropdown-menu" x-placement="bottom-start"
-                                    style="position: absolute; transform: translate3d(0px, 36px, 0px); top: 0px; left: 0px; will-change: transform;">
-                                    <a class="dropdown-item" href="#" data-toggle="modal"
-                                        data-target="#exampleModalXML">
-                                        <span class="fa fa-download"></span> Importar </a>
-                                    <a class="dropdown-item" href="#" data-toggle="modal"
-                                        data-target="#exampleModalXML">
-                                        <span class="fa fa-upload"></span> Exportar </a>
-                                    <a class="dropdown-item" href="#">
-                                        <span class="fa fa-money"></span> Cuentas por Cobrar</a>
-                                    <a class="dropdown-item" href="#">
-                                        <span class="fa fa-print"></span> Imprimir </a>
-                                    <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="#" data-toggle="modal"
-                                        data-target="#exampleModalXML">
-                                        <i class="fa fa-cog"></i> Configuración </a>
+                                
+                                <button type="button" class="btn waves-effect waves-light btn-secondary"
+                                    data-toggle="modal" data-target="#exampleModalXML">
+                                    <span class="fa fa-download"></span> Importar XML
+                                </button>
+                                -->
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-secondary dropdown-toggle"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Más opciones
+                                    </button>
+                                    <div class="dropdown-menu" x-placement="bottom-start"
+                                        style="position: absolute; transform: translate3d(0px, 36px, 0px); top: 0px; left: 0px; will-change: transform;">
+                                        <a class="dropdown-item" href="#" data-toggle="modal"
+                                            data-target="#exampleModalXML">
+                                            <span class="fa fa-download"></span> Importar </a>
+                                        <a class="dropdown-item" href="#" data-toggle="modal"
+                                            data-target="#exampleModalXML">
+                                            <span class="fa fa-upload"></span> Exportar </a>
+                                        <a class="dropdown-item" href="#">
+                                            <span class="fa fa-money"></span> Cuentas por Cobrar</a>
+                                        <a class="dropdown-item" href="#">
+                                            <span class="fa fa-print"></span> Imprimir </a>
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item" href="#" data-toggle="modal"
+                                            data-target="#exampleModalXML">
+                                            <i class="fa fa-cog"></i> Configuración </a>
+                                    </div>
+                                </div>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown"
+                                        aria-haspopup="true" aria-expanded="false">
+                                        Emisión
+                                    </button>
+                                    <div class="dropdown-menu" x-placement="bottom-start"
+                                        style="position: absolute; transform: translate3d(0px, 36px, 0px); top: 0px; left: 0px; will-change: transform;">
+                                        <a class="dropdown-item" href="#" (click)="actualizarTipoComprobante(1)"
+                                            data-toggle="modal" data-target="#exampleModal">
+                                            <span class="fa fa-file-pdf-o"></span>&nbsp;Factura</a>
+                                        <a class="dropdown-item" href="#" (click)="actualizarTipoComprobante(3)"
+                                            data-toggle="modal" data-target="#exampleModalXML">
+                                            <span class="fa fa-arrow-up"></span>&nbsp;Nota de Crédito </a>
+                                        <a class="dropdown-item" href="#" (click)="actualizarTipoComprobante(4)">
+                                            <span class="fa fa-arrow-down"></span>&nbsp;Nota de Débito</a>
+                                        <a class="dropdown-item" href="#">
+                                            <span class="fa fa-file-o"></span>&nbsp;Guías de Remisión</a>
+                                        <a class="dropdown-item" href="#">
+                                            <span class="fa fa-file-text-o"></span>&nbsp;Comprobantes de Retención</a>
+                                        <a class="dropdown-item" href="#">
+                                            <span class="fa fa-file-text"></span>&nbsp;Liquidación de Compra de Bienes y
+                                            Prestación de Servicios</a>
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item" href="#" data-toggle="modal"
+                                            data-target="#exampleModalXML">
+                                            <i class="fa fa-cog"></i>&nbsp;Configuración </a>
+                                    </div>
+                                </div>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-secondary dropdown-toggle"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Emisión XML
+                                    </button>
+                                    <div class="dropdown-menu" x-placement="bottom-start"
+                                        style="position: absolute; transform: translate3d(0px, 36px, 0px); top: 0px; left: 0px; will-change: transform;">
+                                        <a class="dropdown-item" href="#" (click)="actualizarTipoComprobante(1)"
+                                            data-toggle="modal" data-target="#exampleModalXML">
+                                            <span class="fa fa-file-pdf-o"></span>&nbsp;Factura</a>
+                                        <a class="dropdown-item" href="#" (click)="actualizarTipoComprobante(3)"
+                                            data-toggle="modal" data-target="#exampleModalXML">
+                                            <span class="fa fa-arrow-up"></span>&nbsp;Nota de Crédito </a>
+                                        <a class="dropdown-item" href="#" (click)="actualizarTipoComprobante(4)"
+                                            data-toggle="modal" data-target="#exampleModalXML">
+                                            <span class="fa fa-arrow-down"></span>&nbsp;Nota de Débito</a>
+                                        <a class="dropdown-item" href="#">
+                                            <span class="fa fa-file-o"></span>&nbsp;Guías de Remisión</a>
+                                        <a class="dropdown-item" href="#">
+                                            <span class="fa fa-file-text-o"></span>&nbsp;Comprobantes de Retención</a>
+                                        <a class="dropdown-item" href="#">
+                                            <span class="fa fa-file-text"></span>&nbsp;Liquidación de Compra de Bienes y
+                                            Prestación de Servicios</a>
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item" href="#" data-toggle="modal"
+                                            data-target="#exampleModalXML">
+                                            <i class="fa fa-cog"></i>&nbsp;Configuración </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    &nbsp;
+                    <br>
+                    <br>
+                    <br>
 
                     <!-- Date Range Input, Select Input and Search Input -->
-                    <div class="col-lg-12 col-md-12">
-                        <div class="button-group">
-                            <label>Fecha Emisión Inicio
-                                <input type="date" class="form-control" [(ngModel)]="fechaInicio"
-                                    (change)="filtrarFacturas()" (dblclick)="borrarFechaInicio()"
-                                    style="width: 100%;" />
-                            </label>
-                            &nbsp;
-                            <label>Fecha Emisión Fin
-                                <input type="date" class="form-control" [(ngModel)]="fechaFin"
-                                    (change)="filtrarFacturas()" (dblclick)="borrarFechaFin()" style="width: 100%;" />
-                            </label>
-                            &nbsp;
-                            <label>Estado Pago
-                                <select class="form-control" [(ngModel)]="estadoPagoSelect" (change)="filtrarFacturas()"
-                                    style="width: 100%;">
-                                    <option value="">TODOS</option>
-                                    <option value="PAGADA">PAGADA</option>
-                                    <option value="PENDIENTE">PENDIENTE</option>
-                                    <option value="ANULADA">ANULADA</option>
-                                </select>
-                            </label>
-                            &nbsp;
-                            <label>Buscar
-                                <input type="text" class="form-control flex-fill" [(ngModel)]="buscarTexto"
-                                    placeholder="Factura, RUC/CI, Razón Social " (input)="filtrarFacturas()"
-                                    style="width: 100%;" />
-                            </label>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label>Fecha Emisión Inicio</label>
+                            <input type="date" class="form-control" [(ngModel)]="fechaInicio" (change)="filtrarVentas()"
+                                (dblclick)="borrarFechaInicio()" style="width: 100%;" />
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label>Fecha Emisión Fin </label>
+                            <input type="date" class="form-control" [(ngModel)]="fechaFin" (change)="filtrarVentas()"
+                                (dblclick)="borrarFechaFin()" style="width: 100%;" />
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label>Estado Pago </label>
+                            <select class="form-control" [(ngModel)]="estadoPagoSelect" (change)="filtrarVentas()"
+                                style="width: 100%;">
+                                <option value="">TODOS</option>
+                                <option value="PAGADA">PAGADA</option>
+                                <option value="PENDIENTE">PENDIENTE</option>
+                                <option value="ANULADA">ANULADA</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label>Tipo Comprobante </label>
+                            <select class="form-control" [(ngModel)]="tipoComprobanteSelect" (change)="filtrarVentas()"
+                                style="width: 100%;">
+                                <option value="">TODOS</option>
+                                <option value=1>FACTURA</option>
+                                <option value=3>NOTA DE CRÉDITO</option>
+                                <option value=4>NOTA DE DÉBITO</option>
+                                <option value=5>GUÍA DE REMISIÓN </option>
+                                <option value=6>COMPROBANTE DE RETENCIÓN </option>
+                                <option value=2>LIQUIDACIÓN DE COMPRA DE BIENES Y PRESTACIÓN DE SERVICIOS</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Buscar</label>
+                            <input type="text" class="form-control flex-fill" [(ngModel)]="buscarTexto"
+                                placeholder="Venta, RUC/CI, Razón Social" (input)="filtrarVentas()" />
                         </div>
                     </div>
                 </div>
@@ -156,7 +237,8 @@
                             <tr>
                                 <th class="text-center">#</th>
                                 <th class="text-left">Fecha Emisión</th>
-                                <th class="text-left">Número Factura</th>
+                                <th class="text-left">Tipo</th>
+                                <th class="text-left">Número Venta</th>
                                 <th class="text-left">Identificación</th>
                                 <th class="text-left">Razón Social</th>
                                 <th class="text-center">Fecha Vencimiento</th>
@@ -164,39 +246,44 @@
                                 <th class="text-right">Abono</th>
                                 <th class="text-right">Saldo</th>
                                 <th class="text-left">Estado Pago</th>
-                                <th class="text-center">Asiento</th>
                                 <th class="text-left">Estado</th>
                                 <th class="text-center">Acción</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr *ngFor="let factura of facturas let i = index">
+                            <tr *ngFor="let venta of ventas let i = index">
                                 <td class="text-center">
                                     <span class="footable-toggle"></span>
                                     {{ (paginaActual - 1) * itemsPorPagina + i + 1 }}
                                 </td>
-                                <td>{{ factura.fecha_emision | date:'yyyy-MM-dd' }}</td>
-                                <td>{{ factura.codigo}}</td>
+                                <td>{{ venta.fecha_emision | date:'yyyy-MM-dd' }}</td>
+                                <td>
+                                    <ng-container *ngFor="let tc of tipos_comprobantes">
+                                        <ng-container
+                                            *ngIf="tc.id_tipo_comprobante == venta.id_tipo_comprobante ">{{tc.descripcion}}</ng-container>
+                                    </ng-container>
+                                </td>
+                                <td>{{ venta.codigo}}</td>
                                 <td>
                                     <ng-container *ngFor="let cliente of clientes">
                                         <ng-container
-                                            *ngIf="cliente.id_cliente == factura.id_cliente ">{{cliente.identificacion}}</ng-container>
+                                            *ngIf="cliente.id_cliente == venta.id_cliente ">{{cliente.identificacion}}</ng-container>
                                     </ng-container>
                                 </td>
                                 <td>
                                     <ng-container *ngFor="let cliente of clientes">
                                         <ng-container
-                                            *ngIf="cliente.id_cliente == factura.id_cliente ">{{cliente.razon_social}}</ng-container>
+                                            *ngIf="cliente.id_cliente == venta.id_cliente ">{{cliente.razon_social}}</ng-container>
                                     </ng-container>
                                 </td>
-                                <td class="text-center">{{ factura.fecha_vencimiento | date:'yyyy-MM-dd' }}</td>
-                                <td class="text-right">{{ factura.importe_total }}</td>
-                                <td class="text-right">{{ factura.abono }}</td>
-                                <td class="text-right">{{ (factura.importe_total - factura.abono) | number:'1.2-2'
+                                <td class="text-center">{{ venta.fecha_vencimiento | date:'yyyy-MM-dd' }}</td>
+                                <td class="text-right">{{ venta.importe_total }}</td>
+                                <td class="text-right">{{ venta.abono }}</td>
+                                <td class="text-right">{{ (venta.importe_total - venta.abono) | number:'1.2-2'
                                     }}
                                 </td>
                                 <td>
-                                    <ng-container [ngSwitch]="factura.estado_pago">
+                                    <ng-container [ngSwitch]="venta.estado_pago">
                                         <div *ngSwitchCase="'PAGADA'" class="label label-table label-success">PAGADA
                                         </div>
                                         <div *ngSwitchCase="'PENDIENTE'" class="label label-table label-info">
@@ -209,12 +296,11 @@
                                             ANULADA
                                         </div>
                                         <div *ngSwitchDefault class="label label-table label-info">{{
-                                            factura.estado_pago }}
+                                            venta.estado_pago }}
                                         </div>
                                     </ng-container>
                                 </td>
-                                <td class="text-center">{{ factura.id_asiento }}</td>
-                                <td *ngIf="factura.estado; else inactivo">
+                                <td *ngIf="venta.estado; else inactivo">
                                     <div class="label label-table label-success">ACTIVA</div>
                                 </td>
                                 <ng-template #inactivo>
@@ -222,13 +308,13 @@
                                         <div class="label label-table label-danger">ANULADA</div>
                                     </td>
                                 </ng-template>
-                                <td *ngIf="factura.estado else inactivoOption" class="text-nowrap text-center">
-                                    <button class="btn btn-outline-warning btn-sm m-r-5" data-toggle="modal" (click)="cargarFacturaPorId(factura.id_factura_venta);
-                                    cargarDetallesFacturaByIdFactura(factura.id_factura_venta);
-                                    cargarPagosByIdFactura(factura.id_factura_venta);" data-target="#exampleModalU">
+                                <td *ngIf="venta.estado else inactivoOption" class="text-nowrap text-center">
+                                    <button class="btn btn-outline-warning btn-sm m-r-5" data-toggle="modal" (click)="cargarVentaPorId(venta.id_venta);
+                                    cargarDetallesVentaByIdVenta(venta.id_venta);
+                                    cargarPagosByIdVenta(venta.id_venta);" data-target="#exampleModalU">
                                         <i class="fa fa-pencil"></i>
                                     </button>
-                                    <button class="btn btn-outline-danger btn-sm" (click)="borrarFactura(factura);"
+                                    <button class="btn btn-outline-danger btn-sm" (click)="borrarVenta(venta);"
                                         data-toggle="tooltip" data-original-title="Close">
                                         <i class="fa fa-trash"></i>
                                     </button>
@@ -236,7 +322,7 @@
                                 <ng-template #inactivoOption>
                                     <td class="text-nowrap text-center">
                                         <button class="btn btn-outline-info btn-sm" data-toggle="modal"
-                                            (click)="cargarFacturaPorId(factura.id_factura_venta); cargarDetallesFacturaByIdFactura(factura.id_factura_venta);"
+                                            (click)="cargarVentaPorId(venta.id_venta); cargarDetallesVentaByIdVenta(venta.id_venta);"
                                             data-target="#exampleModalU">
                                             <i class="fa fa-eye"></i>
                                         </button>
@@ -265,8 +351,8 @@
                         <div class="form-inline">
                             <label class="mr-2">Mostrando</label>
                             {{ getMinValue() }}
-                            a {{ getMaxValue() > totalFacturas ? totalFacturas : getMaxValue() }}
-                            de {{ totalFacturas }} datos
+                            a {{ getMaxValue() > totalVentas ? totalVentas : getMaxValue() }}
+                            de {{ totalVentas }} datos
                         </div>
                     </div>
                     <div class="col-md-6 float-left" style="text-align: right;">
@@ -307,7 +393,7 @@
     </div>
 </div>
 
-<!-- Modal Create Factura -->
+<!-- Modal Create Venta -->
 <div class="modal fadeIn fast modal-principal" id="exampleModal" tabindex="-1" role="dialog"
     aria-labelledby="exampleModalLabel1" #miModal>
     <div class="modal-dialog" role="document" style="width: 100%;" max-width="1000px;">
@@ -315,7 +401,7 @@
 
             <!-- Modal Header -->
             <div class="modal-header">
-                <h4 class="modal-title" id="exampleModalLabel1">Nueva Factura</h4>
+                <h4 class="modal-title" id="exampleModalLabel1">Nueva Venta</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -330,9 +416,9 @@
                 </div>
                 <br>
 
-                <form autocomplete="off" [formGroup]="facturaForm">
+                <form autocomplete="off" [formGroup]="ventaForm">
 
-                    <!-- Factura Form -->
+                    <!-- Venta Form -->
                     <div class="row">
 
                         <!-- Filtrar clientes -->
@@ -403,11 +489,11 @@
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
-                                <label for="exampleInputuname">No. Factura</label>
+                                <label for="exampleInputuname">No. Venta</label>
                                 <div class="input-group">
                                     <div class="input-group-addon">#<i class=""></i></div>
                                     <input type="text" class="form-control" id="exampleInputuname"
-                                        placeholder="Número de factura" formControlName="codigo">
+                                        placeholder="Número de venta" formControlName="codigo">
                                 </div>
                             </div>
                         </div>
@@ -430,22 +516,21 @@
                                         placeholder="Fecha Vencimiento" formControlName="fecha_vencimiento">
                                 </div>
                                 <div class="error-message text-danger"
-                                    *ngIf="facturaForm.get('fecha_vencimiento').hasError('fechaInvalida')">
+                                    *ngIf="ventaForm.get('fecha_vencimiento').hasError('fechaInvalida')">
                                     La fecha de vencimiento no puede ser mayor que la fecha de emisión.
                                 </div>
                             </div>
                         </div>
-
                         <!-- Input Validation -->
                         <div class="col">
                             <div class="text-danger">
-                                <p *ngIf="campoNoValido('identificacion', facturaForm)">La identificación es
+                                <p *ngIf="campoNoValido('identificacion', ventaForm)">La identificación es
                                     obligatoria.
                                 </p>
-                                <p *ngIf="campoNoValido('codigo', facturaForm)">El número de factura es obligatorio.</p>
-                                <p *ngIf="campoNoValido('fecha_emision', facturaForm)">La fecha de emisión es
+                                <p *ngIf="campoNoValido('codigo', ventaForm)">El número de venta es obligatorio.</p>
+                                <p *ngIf="campoNoValido('fecha_emision', ventaForm)">La fecha de emisión es
                                     obligatoria.</p>
-                                <p *ngIf="campoNoValido('fecha_vencimiento', facturaForm)">La fecha de vencimiento es
+                                <p *ngIf="campoNoValido('fecha_vencimiento', ventaForm)">La fecha de vencimiento es
                                     obligatoria.</p>
                             </div>
                         </div>
@@ -454,7 +539,7 @@
                     </div>
 
                     <!-- Detalle Table Form -->
-                    <form autocomplete="off" [formGroup]="detalleFacturaForm">
+                    <form autocomplete="off" [formGroup]="detalleVentaForm">
                         <div class="table-responsive m-t-5" style="clear: both;">
                             <table class="table table-hover">
                                 <thead>
@@ -474,7 +559,7 @@
                                     <th class="text-center">Acción</th>
                                 </thead>
                                 <tbody>
-                                    <tr *ngFor="let detalle of detalleFacturaFormInterface; let i = index">
+                                    <tr *ngFor="let detalle of detalleVentaFormInterface; let i = index">
                                         <td class="text-center">{{ i + 1 }}</td>
                                         <!-- original
                                         <td><select class="form-control" formControlName="producto_{{i}}">
@@ -575,13 +660,13 @@
                         </div>
                     </form>
 
-                    <!-- Factura Form 2 -->
+                    <!-- Venta Form 2 -->
                     <div class="col-md-12">
                         <div class="clearfix"></div>
                         <hr>
                         <div class="row">
 
-                            <!-- Pago de Factura -->
+                            <!-- Pago de Venta -->
                             <div class="col-md-3">
                                 <br>
                                 <div class="form-group">
@@ -614,7 +699,7 @@
                             <div class="col-md-3">
                                 <br>
                                 <div class="form-group">
-                                    <label for="exampleInputuname" style="width: 100%;">Pagar Factura
+                                    <label for="exampleInputuname" style="width: 100%;">Pagar Venta
                                         <div class="input-group">
                                             <div class="input-group-addon"><b>ABONAR:</b></div>
                                             <input type="number" class="form-control text-right" id="exampleInputuname"
@@ -626,7 +711,7 @@
                                         <div class="input-group">
                                             <div class="input-group-addon"><b>SALDO:</b>&nbsp;&nbsp;&nbsp;&nbsp;</div>
                                             <input type="number" class="form-control text-right" id="exampleInputuname"
-                                                placeholder="{{ facturaForm.get('saldo')?.value }}"
+                                                placeholder="{{ ventaForm.get('saldo')?.value }}"
                                                 formControlName="saldo" readonly>
                                         </div>
                                     </label>
@@ -678,7 +763,7 @@
             <!-- Modal Footer -->
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-info" (click)="crearFactura();">Guardar</button>
+                <button type="button" class="btn btn-info" (click)="crearVenta();">Guardar</button>
             </div>
         </div>
     </div>
@@ -692,7 +777,7 @@
 
             <!-- Modal Header -->
             <div class="modal-header">
-                <h4 class="modal-title" id="exampleModalLabel1">Cargar Factura</h4>
+                <h4 class="modal-title" id="exampleModalLabel1">Cargar Venta</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -707,9 +792,9 @@
                 </div>
                 <br>
 
-                <form autocomplete="off" [formGroup]="facturaFormXML">
+                <form autocomplete="off" [formGroup]="ventaFormXML">
 
-                    <!-- Factura Form -->
+                    <!-- Venta Form -->
                     <div class="row">
                         <div class="col-md-3">
                             <div class="form-group">
@@ -806,7 +891,7 @@
                                         placeholder="Fecha Vencimiento" formControlName="fecha_vencimiento">
                                 </div>
                                 <div class="error-message text-danger"
-                                    *ngIf="facturaFormXML.get('fecha_vencimiento').hasError('fechaInvalida')">
+                                    *ngIf="ventaFormXML.get('fecha_vencimiento').hasError('fechaInvalida')">
                                     La fecha de vencimiento no puede ser mayor que la fecha de emisión.
                                 </div>
                             </div>
@@ -840,7 +925,7 @@
                         <!-- Input Validation 
                         <div class="col">
                             <div class="text-danger">
-                                <p *ngIf="campoNoValido('estado_pago',facturaFormU)">El campo es obligatorio</p>
+                                <p *ngIf="campoNoValido('estado_pago',ventaFormU)">El campo es obligatorio</p>
                             </div>
                         </div>
                     -->
@@ -897,12 +982,12 @@
                     </div>
                     <hr>
 
-                    <!-- Factura Form 2 -->
+                    <!-- Venta Form 2 -->
                     <div class="col-md-12">
                         <div class="clearfix"></div>
                         <div class="row">
 
-                            <!-- Pago de Factura -->
+                            <!-- Pago de Venta -->
                             <div class="col-md-3">
                                 <br>
                                 <label for="exampleInputuname" style="width: 100%;">Fecha Pago
@@ -933,7 +1018,7 @@
                             <div class="col-md-3">
                                 <br>
                                 <div class="form-group">
-                                    <label for="exampleInputuname" style="width: 100%;">Pagar Factura
+                                    <label for="exampleInputuname" style="width: 100%;">Pagar Venta
                                         <div class="input-group">
                                             <div class="input-group-addon"><b>ABONAR:</b><i class=""></i></div>
                                             <input type="number" class="form-control text-right" id="exampleInputuname"
@@ -946,11 +1031,11 @@
                                             <div class="input-group-addon"><b>SALDO:</b>&nbsp;&nbsp;&nbsp;&nbsp;
                                             </div>
                                             <input type="number" class="form-control text-right" id="exampleInputuname"
-                                                placeholder="{{ facturaFormXML.get('saldo')?.value }}"
+                                                placeholder="{{ ventaFormXML.get('saldo')?.value }}"
                                                 formControlName="saldo" readonly>
                                         </div>
                                     </label>
-                                    <label for="exampleInputuname" style="width: 100%;">Total Factura
+                                    <label for="exampleInputuname" style="width: 100%;">Total Venta
                                         <div class="input-group">
                                             <div class="input-group-addon"><b>TOTAL:</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                             </div>
@@ -999,13 +1084,13 @@
             <!-- Modal Footer -->
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-info" (click)="crearFacturaXML();">Guardar</button>
+                <button type="button" class="btn btn-info" (click)="crearVentaXML();">Guardar</button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal Update Factura -->
+<!-- Modal Update Venta -->
 <div class="modal fadeIn fast modal-principal" id="exampleModalU" tabindex="-1" role="dialog"
     aria-labelledby="exampleModalLabel1" #miModal>
     <div class="modal-dialog" role="document" style="width: 100%;" max-width="1000px;">
@@ -1014,7 +1099,7 @@
             <!-- Modal Header -->
             <div class="modal-header">
                 <h4 class="modal-title" id="exampleModalLabel1">
-                    {{ estado ? 'Actualizar Factura' : 'Visualizar Factura' }}</h4>
+                    {{ estado ? 'Actualizar Venta' : 'Visualizar Venta' }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -1028,9 +1113,9 @@
                 </div>
                 <br>
 
-                <form autocomplete="off" [formGroup]="facturaFormU">
+                <form autocomplete="off" [formGroup]="ventaFormU">
 
-                    <!-- Factura Form Data-->
+                    <!-- Venta Form Data-->
                     <div class="row">
                         <div class="col-md-3">
                             <div class="form-group">
@@ -1084,16 +1169,6 @@
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
-                                <label for="exampleInputuname">Asiento</label>
-                                <div class="input-group">
-                                    <div class="input-group-addon"><i class="ti-file"></i></div>
-                                    <input type="text" class="form-control" id="exampleInputuname" placeholder="Asiento"
-                                        formControlName="id_asiento" readonly>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
                                 <label for="exampleInputuname">Fecha Emisión</label>
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="ti-calendar"></i></div>
@@ -1113,7 +1188,7 @@
                                         [readonly]="saldoInicial === 0|| !estado">
                                 </div>
                                 <div class="error-message text-danger"
-                                    *ngIf="facturaFormU.get('fecha_vencimiento').hasError('fechaInvalida')">
+                                    *ngIf="ventaFormU.get('fecha_vencimiento').hasError('fechaInvalida')">
                                     La fecha de vencimiento no puede ser menor que la fecha de emisión.
                                 </div>
                             </div>
@@ -1146,7 +1221,7 @@
                         <!-- Input Validation 
                         <div class="col">
                             <div class="text-danger">
-                                <p *ngIf="campoNoValido('estado_pago',facturaFormU)">El campo es obligatorio</p>
+                                <p *ngIf="campoNoValido('estado_pago',ventaFormU)">El campo es obligatorio</p>
                             </div>
                         </div>
                         <hr>-->
@@ -1170,7 +1245,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr *ngFor="let df of detalles_factura let i = index">
+                                <tr *ngFor="let df of detalles_venta let i = index">
                                     <td class="text-center">{{ i + 1 }}</td>
                                     <td class="text-center">{{df.id_producto}}</td>
                                     <td class="text-center">{{ df.cantidad | number: '1.2-2' }}</td>
@@ -1201,6 +1276,7 @@
                                 <tr>
                                     <th class="text-center">#</th>
                                     <th class="text-left">Fecha Pago</th>
+                                    <th class="text-center">Asiento</th>
                                     <th class="text-left">Forma de Pago</th>
                                     <th class="text-left">Observación </th>
                                     <th class="text-right">Abono</th>
@@ -1212,6 +1288,7 @@
                                 <tr *ngFor="let pago of pagos let i = index">
                                     <td class="text-center">{{ i + 1 }}</td>
                                     <td>{{ pago.fecha_pago | date:'yyyy-MM-dd' }}</td>
+                                    <td class="text-center">{{ pago.id_asiento }}</td>
                                     <td>
                                         <ng-container *ngFor="let fp of formas_pago">
                                             <span *ngIf="fp.id_forma_pago === pago.id_forma_pago">
@@ -1244,12 +1321,12 @@
                     </div>
                     <hr>
 
-                    <!-- Factura Form 2 -->
+                    <!-- Venta Form 2 -->
                     <div class="col-md-12">
                         <div class="clearfix"></div>
                         <div class="row">
 
-                            <!-- Pago de Factura -->
+                            <!-- Pago de Venta -->
                             <div class="col-md-3">
                                 <br>
                                 <div class="form-group">
@@ -1287,7 +1364,7 @@
                             <div class="col-md-3">
                                 <br>
                                 <div class="form-group">
-                                    <label for="exampleInputuname" style="width: 100%;">Pagar Factura
+                                    <label for="exampleInputuname" style="width: 100%;">Pagar Venta
                                         <div class="input-group">
                                             <div class="input-group-addon"><b>ABONAR:</b></div>
                                             <input type="number" class="form-control text-right" id="exampleInputuname"
@@ -1302,7 +1379,7 @@
                                                 placeholder="0.00" formControlName="saldo" readonly>
                                         </div>
                                     </label>
-                                    <label for="exampleInputuname" style="width: 100%;">Total Factura
+                                    <label for="exampleInputuname" style="width: 100%;">Total Venta
                                         <div class="input-group">
                                             <div class="input-group-addon"><b>TOTAL:</b>&nbsp;&nbsp;&nbsp;&nbsp;</div>
                                             <input type="number" class="form-control text-right" id="exampleInputuname"
@@ -1350,7 +1427,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger" [innerHTML]="estado ? 'Cancelar' : 'Cerrar'"
                     data-dismiss="modal"></button>
-                <button type="button" class="btn btn-info" *ngIf="estado" (click)="actualizarFactura();"
+                <button type="button" class="btn btn-info" *ngIf="estado" (click)="actualizarVenta();"
                     [disabled]="saldoInicial === 0">Actualizar</button>
             </div>
         </div>
@@ -1433,7 +1510,7 @@
 </div>
 
 <style>
-    /* Table Data Factura */
+    /* Table Data Venta */
 
     /* CSS personalizado para espaciar los botones */
     .float-left .btn {
@@ -1441,7 +1518,7 @@
         /* Ajusta este valor según el espacio deseado */
     }
 
-    /* Modal Create Factura */
+    /* Modal Create Venta */
 
     .modal-dialog {
         max-width: 80%;

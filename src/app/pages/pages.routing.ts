@@ -37,8 +37,8 @@ import { ProveedorComponent } from './compras/proveedor/proveedor.component';
 import { CompraComponent } from './compras/compra/compra.component';
 
 // Venta
-import { ClienteComponent } from './venta/cliente/cliente.component';
-import { FacturaVentaComponent } from './venta/factura/factura.component';
+import { ClienteComponent } from './ventas/cliente/cliente.component';
+import { VentaComponent } from './ventas/venta/venta.component';
 
 // Inventario
 import { ProductoComponent } from './inventario/producto/producto.component';
@@ -91,11 +91,11 @@ const routes: Routes = [
 
             // Compras
             { path: 'proveedores', component: ProveedorComponent, data: { titulo: 'Proveedores' } },
-            { path: 'compras', component: CompraComponent, data: { titulo: 'Facturas Compra FRONT' } },
+            { path: 'compras', component: CompraComponent, data: { titulo: 'Compras' } },
 
             // Venta
             { path: 'clientes', component: ClienteComponent, data: { titulo: 'Clientes' } },
-            { path: 'facturas-ventas', component: FacturaVentaComponent, data: { titulo: 'Facturas Ventas' } },
+            { path: 'ventas', component: VentaComponent, data: { titulo: 'Ventas' } },
 
             // Inventario
             { path: 'productos', canActivate: [BodegueroGuard], component: ProductoComponent, data: { titulo: 'Productos' } },

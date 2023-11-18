@@ -6,13 +6,13 @@ import { Router } from '@angular/router';
 import { map, Observable, tap, catchError, of } from 'rxjs';
 
 // Interfaces
-//import { FormFactura } from 'src/app/interfaces/venta/factura/form-factura.interface';
-import { LoadFactura } from 'src/app/interfaces/venta/factura/load-factura.interface';
+//import { FormVenta } from 'src/app/interfaces/venta/venta/form-venta.interface';
+import { LoadVenta } from 'src/app/interfaces/venta/venta/load-venta.interface';
 import { LoginForm } from '../../interfaces/login-form.iterface';
 
 // Models
-import { Factura } from 'src/app/models/venta/factura.model';
-//import { DetalleFactura } from 'src/app/models/venta/detalle-factura.model';
+import { Venta } from 'src/app/models/venta/venta.model';
+//import { DetalleVenta } from 'src/app/models/venta/detalle-venta.model';
 
 // Variable API
 const base_url = environment.base_url;
@@ -20,7 +20,7 @@ const base_url = environment.base_url;
 @Injectable({
   providedIn: 'root'
 })
-export class FacturaService {
+export class VentaService {
 
   constructor(private http: HttpClient,
     private router: Router) { }
@@ -35,40 +35,40 @@ export class FacturaService {
     }
   }
 
-  loadFacturas(desde: number = 0, limit: number = 0) {
-    const url = `${base_url}/facturas-ventas?desde=${desde}&limit=${limit}`;
-    return this.http.get<LoadFactura>(url, this.headers);
+  loadVentas(desde: number = 0, limit: number = 0) {
+    const url = `${base_url}/ventas?desde=${desde}&limit=${limit}`;
+    return this.http.get<LoadVenta>(url, this.headers);
   }
 
-  loadFacturasAll() {
-    const url = `${base_url}/facturas-ventas/all`;
-    return this.http.get<LoadFactura>(url, this.headers);
+  loadVentasAll() {
+    const url = `${base_url}/ventas/all`;
+    return this.http.get<LoadVenta>(url, this.headers);
   }
 
-  loadFacturaById(id_factura_venta: any) {
-    const url = `${base_url}/facturas-ventas/${id_factura_venta}`;
+  loadVentaById(id_venta_venta: any) {
+    const url = `${base_url}/ventas/${id_venta_venta}`;
     return this.http.get(url, this.headers).pipe(
-      map((resp: { ok: boolean, factura: Factura, saldo: number, observacion: string }) => {
-        return { factura: resp.factura, saldo: resp.saldo };
+      map((resp: { ok: boolean, venta: Venta, saldo: number, observacion: string }) => {
+        return { venta: resp.venta, saldo: resp.saldo };
       })
     );
   }
 
-  createFactura(formData: any) {
-    const url = `${base_url}/facturas-ventas`;
+  createVenta(formData: any) {
+    const url = `${base_url}/ventas`;
     return this.http.post(url, formData, this.headers)
       .pipe(
-        map((resp: { ok: boolean, factura: Factura[] }) => resp.factura)
+        map((resp: { ok: boolean, venta: Venta[] }) => resp.venta)
       )
   }
 
-  updateFactura(factura: Factura) {
-    const url = `${base_url}/facturas-ventas/${factura.id_factura_venta}`;
-    return this.http.put(url, factura, this.headers);
+  updateVenta(venta: Venta) {
+    const url = `${base_url}/ventas/${venta.id_venta}`;
+    return this.http.put(url, venta, this.headers);
   }
 
-  deleteFactura(id_factura_venta: any) { //OJO: any
-    const url = `${base_url}/facturas-ventas/${id_factura_venta}`;
+  deleteVenta(id_venta_venta: any) { //OJO: any
+    const url = `${base_url}/ventas/${id_venta_venta}`;
     return this.http.delete(url, this.headers);
   }
 

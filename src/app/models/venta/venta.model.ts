@@ -1,8 +1,9 @@
-export class Factura {
+export class Venta {
     constructor(
-        public id_factura_venta: number,
+        public id_venta: number,
+        public id_tipo_comprobante: number,
         public id_cliente: number,
-        public id_asiento: number,
+        //public id_asiento: number,
         public id_info_tributaria: number,
         public clave_acceso: string,
         public codigo: string,

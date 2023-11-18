@@ -6,13 +6,13 @@ import { Router } from '@angular/router';
 import { map, Observable, tap, catchError, of } from 'rxjs';
 
 // Interfaces
-//import { FormDetalleFactura } from 'src/app/interfaces/venta/detalle-factura/form-detalle-asiento.interface';
-import { LoadDetalleFactura } from 'src/app/interfaces/venta/detalle-factura/load-detalle-factura.interface';
+//import { FormDetalleVenta } from 'src/app/interfaces/venta/detalles-venta/form-detalles-asiento.interface';
+import { LoadDetalleVenta } from 'src/app/interfaces/venta/detalle-venta/load-detalle-venta.interface';
 import { LoginForm } from '../../interfaces/login-form.iterface';
 
 // Models
-import { DetalleFactura } from 'src/app/models/venta/detalle-factura.model';
-import { DetalleFacturaU } from 'src/app/models/venta/detalle-factura.model';
+import { DetalleVenta } from 'src/app/models/venta/detalle-venta.model';
+import { DetalleVentaU } from 'src/app/models/venta/detalle-venta.model';
 
 // Variable API
 const base_url = environment.base_url;
@@ -20,7 +20,7 @@ const base_url = environment.base_url;
 @Injectable({
   providedIn: 'root'
 })
-export class DetalleFacturaService {
+export class DetalleVentaService {
 
   constructor(private http: HttpClient,
     private router: Router) { }
@@ -35,49 +35,49 @@ export class DetalleFacturaService {
     }
   }
 
-  loadDetalleFacturas() {
-    const url = `${base_url}/detalle-facturas-ventas`;
-    return this.http.get<LoadDetalleFactura>(url, this.headers);
+  loadDetalleVentas() {
+    const url = `${base_url}/detalles-ventas`;
+    return this.http.get<LoadDetalleVenta>(url, this.headers);
   }
 
-  loadDetalleFacturaById(id_detalle_factura_venta: any) {
-    const url = `${base_url}/detalle-facturas-ventas/id/${id_detalle_factura_venta}`;
+  loadDetalleVentaById(id_detalle_venta: any) {
+    const url = `${base_url}/detalles-ventas/id/${id_detalle_venta}`;
     return this.http.get(url, this.headers)
       .pipe(
-        map((resp: { ok: boolean, detalle_factura: DetalleFactura }) => resp.detalle_factura)
+        map((resp: { ok: boolean, detalles_ventas: DetalleVenta }) => resp.detalles_ventas)
       )
   }
-  loadDetallesFacturaByIdFactura(id_factura_venta: any) {
-    const url = `${base_url}/detalle-facturas-ventas/factura/${id_factura_venta}`;
-    return this.http.get<LoadDetalleFactura>(url, this.headers);
+  loadDetallesVentaByIdVenta(id_venta_venta: any) {
+    const url = `${base_url}/detalles-ventas/venta/${id_venta_venta}`;
+    return this.http.get<LoadDetalleVenta>(url, this.headers);
   }
 
-  /*loadDetalleFacturaByFactura2(id_factura_venta: any) {
-    const url = `${base_url}/detalle-facturas-ventas/factura/${id_factura_venta}`;
-    return this.http.get<{ detalle_facturas: DetalleFactura[] }>(url, this.headers);
+  /*loadDetalleVentaByVenta2(id_venta_venta: any) {
+    const url = `${base_url}/detalles-ventas/venta/${id_venta_venta}`;
+    return this.http.get<{ detalles_ventass: DetalleVenta[] }>(url, this.headers);
   }
   */
 
-  //createDetalleFactura(formData: FormDetalleFactura) {
-  createDetalleFactura(formData: any) {
-    const url = `${base_url}/detalle-facturas-ventas`;
+  //createDetalleVenta(formData: FormDetalleVenta) {
+  createDetalleVenta(formData: any) {
+    const url = `${base_url}/detalles-ventas`;
     return this.http.post(url, formData, this.headers)
       .pipe(
-        map((resp: { ok: boolean, detalle_factura: DetalleFactura[] }) => resp.detalle_factura)
+        map((resp: { ok: boolean, detalles_ventas: DetalleVenta[] }) => resp.detalles_ventas)
       )
   }
 
-  createDetalleFacturaArray(detalles: DetalleFactura[]) {
-    const url = `${base_url}/detalle-facturas-ventas`;
+  createDetalleVentaArray(detalles: DetalleVenta[]) {
+    const url = `${base_url}/detalles-ventas`;
     const formData = { detalles }; // Crear un objeto con una propiedad 'detalles' que contenga el arreglo de detalles
     return this.http.post(url, formData, this.headers).pipe(
-      map((resp: { ok: boolean; detalle_factura: DetalleFactura[] }) => resp.detalle_factura)
+      map((resp: { ok: boolean; detalles_ventas: DetalleVenta[] }) => resp.detalles_ventas)
     );
   }
 
-  updateDetalleFactura(detalle_factura: DetalleFacturaU) {
-    const url = `${base_url}/detalle-facturas-ventas/${detalle_factura.id_detalle_factura_venta}`;
-    return this.http.put(url, detalle_factura, this.headers);
+  updateDetalleVenta(detalles_ventas: DetalleVentaU) {
+    const url = `${base_url}/detalles-ventas/${detalles_ventas.id_detalle_venta}`;
+    return this.http.put(url, detalles_ventas, this.headers);
   }
 
   logout() {
