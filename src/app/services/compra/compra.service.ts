@@ -6,12 +6,12 @@ import { Router } from '@angular/router';
 import { map, Observable, tap, catchError, of } from 'rxjs';
 
 // Interfaces
-//import { FormFactura } from 'src/app/interfaces/compra/factura/form-factura.interface';
-import { LoadFactura } from 'src/app/interfaces/compra/factura/load-factura.interface';
+//import { FormCompra } from 'src/app/interfaces/compra/compra/form-compra.interface';
+import { LoadCompra } from 'src/app/interfaces/compra/compra/load-compra.interface';
 import { LoginForm } from '../../interfaces/login-form.iterface';
 
 // Models
-import { Factura } from 'src/app/models/compra/factura.model';
+import { Compra } from 'src/app/models/compra/compra.model';
 
 // Variable API
 const base_url = environment.base_url;
@@ -20,7 +20,7 @@ const base_url = environment.base_url;
   providedIn: 'root'
 })
 
-export class FacturaService {
+export class CompraService {
 
   constructor(private http: HttpClient,
     private router: Router) { }
@@ -35,40 +35,40 @@ export class FacturaService {
     }
   }
 
-  loadFacturas(desde: number = 0, limit: number = 0) {
-    const url = `${base_url}/facturas?desde=${desde}&limit=${limit}`;
-    return this.http.get<LoadFactura>(url, this.headers);
+  loadCompras(desde: number = 0, limit: number = 0) {
+    const url = `${base_url}/compras?desde=${desde}&limit=${limit}`;
+    return this.http.get<LoadCompra>(url, this.headers);
   }
 
-  loadFacturasAll() {
-    const url = `${base_url}/facturas/all`;
-    return this.http.get<LoadFactura>(url, this.headers);
+  loadComprasAll() {
+    const url = `${base_url}/compras/all`;
+    return this.http.get<LoadCompra>(url, this.headers);
   }
 
-  loadFacturaById(id_factura_compra: any) {
-    const url = `${base_url}/facturas/${id_factura_compra}`;
+  loadCompraById(id_compra_compra: any) {
+    const url = `${base_url}/compras/${id_compra_compra}`;
     return this.http.get(url, this.headers).pipe(
-      map((resp: { ok: boolean, factura: Factura, saldo: number, observacion: string }) => {
-        return { factura: resp.factura, saldo: resp.saldo };
+      map((resp: { ok: boolean, compra: Compra, saldo: number, observacion: string }) => {
+        return { compra: resp.compra, saldo: resp.saldo };
       })
     );
   }
 
-  createFactura(formData: any) {
-    const url = `${base_url}/facturas`;
+  createCompra(formData: any) {
+    const url = `${base_url}/compras`;
     return this.http.post(url, formData, this.headers)
       .pipe(
-        map((resp: { ok: boolean, factura: Factura[] }) => resp.factura)
+        map((resp: { ok: boolean, compra: Compra[] }) => resp.compra)
       )
   }
 
-  updateFactura(factura: Factura) {
-    const url = `${base_url}/facturas/${factura.id_factura_compra}`;
-    return this.http.put(url, factura, this.headers);
+  updateCompra(compra: Compra) {
+    const url = `${base_url}/compras/${compra.id_compra}`;
+    return this.http.put(url, compra, this.headers);
   }
 
-  deleteFactura(id_factura_compra: any) { //OJO: any
-    const url = `${base_url}/facturas/${id_factura_compra}`;
+  deleteCompra(id_compra_compra: any) { //OJO: any
+    const url = `${base_url}/compras/${id_compra_compra}`;
     return this.http.delete(url, this.headers);
   }
 

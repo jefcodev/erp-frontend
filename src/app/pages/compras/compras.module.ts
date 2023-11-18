@@ -4,12 +4,12 @@ import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { ProveedorComponent } from './proveedor/proveedor.component';
-import { FacturaComponent } from './factura/factura.component';
+import { CompraComponent } from './compra/compra.component';
 
 @NgModule({
   declarations: [
     ProveedorComponent,
-    FacturaComponent,
+    CompraComponent,
   ],
   imports: [
     CommonModule,

@@ -34,14 +34,14 @@ import { ApuComponent } from './apu/apus/apu.component';
 
 // Compras
 import { ProveedorComponent } from './compras/proveedor/proveedor.component';
-import { FacturaComponent } from './compras/factura/factura.component';
+import { CompraComponent } from './compras/compra/compra.component';
 
 // Venta
 import { ClienteComponent } from './venta/cliente/cliente.component';
 import { FacturaVentaComponent } from './venta/factura/factura.component';
 
 // Inventario
-import { ProductoComponent } from './inventario/producto/producto.component'; 
+import { ProductoComponent } from './inventario/producto/producto.component';
 
 // Contabilidad
 import { CuentaComponent } from './contabilidad/cuenta/cuenta.component';
@@ -72,12 +72,12 @@ const routes: Routes = [
 
             /* Users */
             { path: 'roles', component: RolesComponent, data: { titulo: 'Roles' } },
-            { path: 'users', canActivate:[AdminGuard],  component: UsersComponent, data: { titulo: 'Usuarios' } },
+            { path: 'users', canActivate: [AdminGuard], component: UsersComponent, data: { titulo: 'Usuarios' } },
             { path: 'user/:id', component: UserComponent, data: { titulo: 'Usuarios' } },
 
             /* Inventory */
             { path: 'inventory/categories', component: CategoriesComponent, data: { titulo: 'Categorías' } },
-            { path: 'inventory/products', canActivate:[BodegueroGuard], component: ProductsComponent, data: { titulo: 'Productos' } },
+            { path: 'inventory/products', canActivate: [BodegueroGuard], component: ProductsComponent, data: { titulo: 'Productos' } },
             { path: 'inventory/product', component: ProductComponent, data: { titulo: 'Nuevo Producto' } },
             { path: 'inventory/units', component: UnitsComponent, data: { titulo: 'Unidades' } },
             { path: 'inventory/import-products', component: ImportInventoryComponent, data: { titulo: 'Importar Productos' } },
@@ -91,7 +91,7 @@ const routes: Routes = [
 
             // Compras
             { path: 'proveedores', component: ProveedorComponent, data: { titulo: 'Proveedores' } },
-            { path: 'facturas', component: FacturaComponent, data: { titulo: 'Facturas Compra' } },
+            { path: 'compras', component: CompraComponent, data: { titulo: 'Facturas Compra FRONT' } },
 
             // Venta
             { path: 'clientes', component: ClienteComponent, data: { titulo: 'Clientes' } },

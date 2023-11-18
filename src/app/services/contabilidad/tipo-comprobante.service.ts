@@ -6,20 +6,20 @@ import { Router } from '@angular/router';
 import { map, Observable, tap, catchError, of } from 'rxjs';
 
 // Interfaces
-import { LoadPago } from '../../interfaces/contabilidad/pago/load-pago.interface';
+import { LoadTipoComprobante } from '../../interfaces/contabilidad/tipo-comprobante/load-tipo-comprobante.interface';
 import { LoginForm } from '../../interfaces/login-form.iterface';
 
 // Models
-import { Pago } from '../../models/contabilidad/pago.model';
+import { TipoComprobante } from '../../models/contabilidad/tipo-comprobante.model';
 
 // Variable API
 const base_url = environment.base_url;
 
+
 @Injectable({
   providedIn: 'root'
 })
-
-export class PagoService {
+export class TipoComprobanteService {
 
   constructor(private http: HttpClient,
     private router: Router) { }
@@ -34,49 +34,50 @@ export class PagoService {
     }
   }
 
-  loadPagos(desde: number = 0, limit: number = 0) {
-    const url = `${base_url}/pagos?desde=${desde}&limit=${limit}`;
-    return this.http.get<LoadPago>(url, this.headers);
+  loadTiposComprobantes(desde: number = 0, limit: number = 0) {
+    const url = `${base_url}/contabilidad/tipos-comprobantes?desde=${desde}&limit=${limit}`;
+    return this.http.get<LoadTipoComprobante>(url, this.headers);
   }
 
-  loadPagosAll() {
-    const url = `${base_url}/pagos/all`;
-    return this.http.get<LoadPago>(url, this.headers);
+
+  loadTiposComprobantesAll() {
+    const url = `${base_url}/contabilidad/tipos-comprobantes/all`;
+    return this.http.get<LoadTipoComprobante>(url, this.headers);
   }
 
-  loadPagosByIdCompra(id_compra: any) {
-    const url = `${base_url}/pagos/compra/${id_compra}`;
-    return this.http.get<LoadPago>(url, this.headers);
+  loadTipoComprobanteByIdCompra(id_compra: any) {
+    const url = `${base_url}/contabilidad/tipos-comprobantes/compra/${id_compra}`;
+    return this.http.get<LoadTipoComprobante>(url, this.headers);
   }
 
-  loadPagosByIdVenta(id_compra: any) {
-    const url = `${base_url}/pagos/venta/${id_compra}`;
-    return this.http.get<LoadPago>(url, this.headers);
+  loadTipoComprobanteByIdVenta(id_compra: any) {
+    const url = `${base_url}/contabilidad/tipos-comprobantes/venta/${id_compra}`;
+    return this.http.get<LoadTipoComprobante>(url, this.headers);
   }
 
-  loadPagoById(id_pago: any) {
-    const url = `${base_url}/pagos/id/${id_pago}`;
+  loadTipoComprobanteById(id_tipo_comprobante: any) {
+    const url = `${base_url}/contabilidad/tipos-comprobantes/id/${id_tipo_comprobante}`;
     return this.http.get(url, this.headers)
       .pipe(
-        map((resp: { ok: boolean, pago: Pago }) => resp.pago)
+        map((resp: { ok: boolean, tipoComprobante: TipoComprobante }) => resp.tipoComprobante)
       )
   }
 
-  createPago(formData: any) {
-    const url = `${base_url}/pagos`;
+  createTipoComprobante(formData: any) {
+    const url = `${base_url}/contabilidad/tipos-comprobantes`;
     return this.http.post(url, formData, this.headers)
       .pipe(
-        map((resp: { ok: boolean, pago: Pago[] }) => resp.pago)
+        map((resp: { ok: boolean, tipoComprobante: TipoComprobante[] }) => resp.tipoComprobante)
       )
   }
 
-  updatePago(pago: Pago) {
-    const url = `${base_url}/pagos/${pago.id_pago}`;
-    return this.http.put(url, pago, this.headers);
+  updateTipoComprobante(tipoComprobante: TipoComprobante) {
+    const url = `${base_url}/contabilidad/tipos-comprobantes/${tipoComprobante.id_tipo_comprobante}`;
+    return this.http.put(url, tipoComprobante, this.headers);
   }
 
-  deletePago(id_pago: any) { //OJO: any
-    const url = `${base_url}/pagos/${id_pago}`;
+  deleteTipoComprobante(id_tipo_comprobante: any) { //OJO: any
+    const url = `${base_url}/contabilidad/tipos-comprobantes/${id_tipo_comprobante}`;
     return this.http.delete(url, this.headers);
   }
 

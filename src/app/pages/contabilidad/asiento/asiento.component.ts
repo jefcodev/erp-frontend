@@ -214,7 +214,8 @@ export class AsientoComponent implements OnInit {
 
         const pasaFiltro = (
           (asiento.id_asiento.toString().includes(this.buscarTexto) ||
-            asiento.referencia.match(regex) !== null) &&
+            asiento.referencia.match(regex) !== null ||
+            asiento.documento.match(regex) !== null) &&
           (!this.estadoSelect || asiento.estado === (this.estadoSelect === 'true')) &&
           (!this.fechaInicio || fechaAsiento >= this.fechaInicio) &&
           (!this.fechaFin || fechaAsiento <= this.fechaFin)

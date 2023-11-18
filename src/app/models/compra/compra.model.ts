@@ -1,6 +1,7 @@
-export class Factura {
+export class Compra {
     constructor(
-        public id_factura_compra: number,
+        public id_compra: number,
+        public id_tipo_comprobante: number,
         public id_proveedor: number,
         public id_asiento: number,
         public id_info_tributaria: number,

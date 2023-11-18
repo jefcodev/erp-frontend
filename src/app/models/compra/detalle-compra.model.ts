@@ -1,7 +1,7 @@
-export class DetalleFactura {
+export class DetalleCompra {
     constructor(
-        //public id_detalle_factura_compra: number, // ojo se activo esta linea para mostrar los detalles
-        public id_factura_compra: number,
+        //public id_detalle_compra: number, // ojo se activo esta linea para mostrar los detalles
+        public id_compra: number,
         public id_producto: number,
         public codigo_principal: string,
         public descripcion: string,
@@ -20,11 +20,11 @@ export class DetalleFactura {
     ) { }
 }
 
-export class DetalleFacturaU {
+export class DetalleCompraU {
     constructor(
-        public id_detalle_factura_compra: number,
+        public id_detalle_compra: number,
         public id_producto: number,
-        public id_factura_compra: number,
+        public id_compra: number,
         public codigo_principal: string,
         public cantidad: number,
         public descripcion: string,

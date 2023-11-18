@@ -443,7 +443,7 @@ export class FacturaVentaComponent implements OnInit {
 
   // Método para cargar los pagos 
   cargarPagosByIdFactura(id_factura: any) {
-    this.pagoService.loadPagosByIdFacturaVenta(id_factura)
+    this.pagoService.loadPagosByIdVenta(id_factura)
       .subscribe(({ pagos }) => {
         this.pagos = pagos;
         console.log("this.pagos", this.pagos)
@@ -1409,6 +1409,8 @@ export class FacturaVentaComponent implements OnInit {
     this.facturaService.createFactura(facturaData).subscribe(
       (res: any) => {
         const facturaId = res.id_factura_venta; // Obtener el ID del factura guardado
+        console.log("RES ", res)
+        console.log("FACTURA ID: ", facturaId)
         const productosObservables = this.crearProductosXML();
         forkJoin(productosObservables).subscribe((productosCreados: any[]) => {
           // Crear los detalles y asociarlos a la factura y productos
@@ -1495,9 +1497,10 @@ export class FacturaVentaComponent implements OnInit {
           trim: true,
           explicitArray: true
         });
-
+      console.log("PASA: ", this.ruc)
       parser.parseString(data, (err, result) => {
         const factura = result?.factura;
+        console.log("PASA 2: ", factura)
         if (!factura) {
           resolve(arr);
           return;
@@ -1519,7 +1522,7 @@ export class FacturaVentaComponent implements OnInit {
         } else {
           this.contribuyenteRimpe = null; // O establecerlo en null o un valor predeterminado
         }
-
+        console.log("RUC: ", this.ruc)
         // infoFactura
         const infoFactura = factura.infoFactura[0];
         const fecha_aux = infoFactura.fechaEmision[0];
