@@ -196,8 +196,8 @@
                       <!-- Valores -->
                       <div class="col-md-2">
                         <div class="pull-right m-t-30 text-right">
-                          <p class="text-right">$ {{totalMateriales}}</p>
-                          <p class="text-right">$ {{totalMateriales}}</p>
+                          <p class="text-right">$ {{totalMateriales | number:'1.2-2'}}</p>
+                          <p class="text-right">$ {{totalMateriales | number:'1.2-2'}}</p>
                         </div>
                       </div>
                     </div>
@@ -281,8 +281,8 @@
                       <!-- Valores -->
                       <div class="col-md-2">
                         <div class="pull-right m-t-30 text-right">
-                          <p class="text-right">$ {{totalTransporte}}</p>
-                          <p class="text-right">$ {{totalTransporte}}</p>
+                          <p class="text-right">$ {{totalTransporte | number:'1.2-2'}}</p>
+                          <p class="text-right">$ {{totalTransporte | number:'1.2-2'}}</p>
                         </div>
                       </div>
                     </div>
@@ -374,8 +374,8 @@
                       <!-- Valores -->
                       <div class="col-md-2">
                         <div class="pull-right m-t-30 text-right">
-                          <p class="text-right">$ {{totalEquipos}} </p>
-                          <p class="text-right">$ {{unitarioEquipos}} </p>
+                          <p class="text-right">$ {{totalEquipos | number:'1.2-2'}} </p>
+                          <p class="text-right">$ {{unitarioEquipos | number:'1.2-2'}} </p>
                         </div>
                       </div>
                     </div>
@@ -467,10 +467,10 @@
                       <!-- Valores -->
                       <div class="col-md-2">
                         <div class="pull-right m-t-30 text-right">
-                          <p class="text-right">$ {{subTotalManoObra}} </p>
-                          <p class="text-right">$ {{totalPrestaciones}} </p>
-                          <p class="text-right">$ {{totalManoyPrestaciones}} </p>
-                          <p class="text-right">$ {{unitarioManoObra}}</p>
+                          <p class="text-right">$ {{subTotalManoObra | number:'1.2-2'}} </p>
+                          <p class="text-right">$ {{totalPrestaciones | number:'1.2-2'}} </p>
+                          <p class="text-right">$ {{totalManoyPrestaciones | number:'1.2-2'}} </p>
+                          <p class="text-right">$ {{unitarioManoObra | number:'1.2-2'}}</p>
                         </div>
                       </div>
                     </div>
@@ -510,11 +510,11 @@
                             <p>$ {{ sumaTotalICE.toFixed(2) }} </p>
                             <p>$ {{ sumaTotalIVA.toFixed(2) }} </p>
                             <h3>$ {{ sumaPrecioTotal.toFixed(2) }} </h3> -->
-                      <p class="text-right">$ {{costosDirectos}} </p>
-                      <p class="text-right">$ {{administracion}} </p>
-                      <p class="text-right">$ {{subTotalUnitario}} </p>
-                      <p class="text-right">$ {{utilidad}} </p>
-                      <h3 class="text-right">$ {{precioUnitario}} </h3>
+                      <p class="text-right">$ {{costosDirectos | number:'1.2-2'}} </p>
+                      <p class="text-right">$ {{administracion | number:'1.2-2'}} </p>
+                      <p class="text-right">$ {{subTotalUnitario | number:'1.2-2'}} </p>
+                      <p class="text-right">$ {{utilidad | number:'1.2-2'}} </p>
+                      <h3 class="text-right">$ {{precioUnitario | number:'1.2-2'}} </h3>
                     </div>
                   </div>
                 </div>

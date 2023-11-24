@@ -34,15 +34,10 @@ export class ApusComponent implements OnInit{
 
 
   cargarApus(){
-
     this.apuService.cargarApus().subscribe
       (apu =>{
         this.capitulo = apu;
-
-
       })
-
-
   }
 
   cargarApuId() {

@@ -111,7 +111,7 @@ a.link:hover, a.link:focus {
 *******************/
 .card-no-border .left-sidebar,
 .card-no-border .sidebar-nav {
-  background: #242a33; }
+  background: #1d2228; }
 
 .mini-sidebar .sidebar-nav {
   background: transparent; }
@@ -121,7 +121,7 @@ a.link:hover, a.link:focus {
     background: #1c2128; } }
 
 .sidebar-nav {
-  background: #242a33; }
+  background: #1d2228; }
 
 .user-profile .profile-text a {
   color: #687384 !important; }

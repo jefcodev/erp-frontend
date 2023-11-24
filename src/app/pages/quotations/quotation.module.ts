@@ -8,6 +8,7 @@ import { QuotationComponent } from './quotations/quotation.component';
 import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 
 
@@ -25,7 +26,8 @@ import { DatePipe } from '@angular/common';
     CommonModule,
     RouterModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    NgSelectModule
   ]
 })
 export class QuotationModule { }

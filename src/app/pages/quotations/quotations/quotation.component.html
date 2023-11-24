@@ -3,38 +3,86 @@
         <div class="card">
 
             <div class="card-body">
-                <form (submit)="createQuotation()" >
+                <form name="miFormulario"  >
                     <div class="form-body">
                         <div class="row p-t-20">
-                            <div class="col-md-4">
+
+
+                              <!-- Filtrar clientes -->
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Cliente </label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-id-badge"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder="Buscar identificación"  >
+                                    <button class="btn btn-success" data-toggle="modal" data-target="#modalCliente"
+                                        type="button">
+                                        <span class="fa fa-plus"></span> Nuevo
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Razón Social</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-user"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder="Razón Social"  readonly>
+                                </div>
+                            </div>
+                        </div>
+                            <div class="col-md-3">
                                 <div class="form-group">
-                                    <label class="control-label">Fecha de proforma:*</label>
-                                    <input type="text"  [value]="fechaActual"  class="form-control" disabled >
-                                    <!-- <span class="font-13 text-muted">e.g "15/08/2023"</span>  -->
-                                    <!-- <small class="form-control-feedback"> This is inline help </small> -->
+                                    <label for="exampleInputuname">Fecha Proforma</label>
+                                    <div class="input-group">
+                                        <div class="input-group-addon"><i class="ti-calendar"></i></div>
+                                        <input type="text" class="form-control" id="exampleInputuname"
+                                            placeholder="Fecha Emisión" [value]="fechaActual" disabled>
+                                    </div>
                                 </div>
                             </div>
                             <!--/span-->
-                            <div class="col-md-4">
+                            
+                            <div class="col-md-3">
                                 <div class="form-group">
-                                    <label class="control-label">Número de proforma:</label>
-                                    <input type="text" [value]="numeroProforma" class="form-control" disabled>
-                                   <!--  <label class="control-label">Número de factura:</label>
-                                    <input type="text" placeholder="" [(ngModel)]="code_buy" name="code_buy" id="code_buy" 
-                                    data-mask="999-999-999999999"
-                                        class="form-control"> -->
-                                    <!-- <small class="form-control-feedback"> This field has error. </small> -->
+                                    <label for="exampleInputuname">No. Proforma</label>
+                                    <div class="input-group">
+                                        <div class="input-group-addon">#<i class=""></i></div>
+                                        <input type="text" class="form-control" id="exampleInputuname"
+                                            placeholder="Dirección" [value]="numeroProforma"  readonly>
+                                    </div>
                                 </div>
-
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="form-group">
-                                    <label class="control-label">Cliente:</label>
-                                    <select class="form-control" [(ngModel)]="id_client" name="id_client"
-                                        id="id_client" tabindex="1">
-                                        <option *ngFor="let item of clients" [value]="item.id">{{item.name}}
-                                        </option>
-                                    </select>
+                                    <label for="exampleInputuname">Dirección</label>
+                                    <div class="input-group">
+                                        <div class="input-group-addon"><i class="ti-location-pin"></i></div>
+                                        <input type="text" class="form-control" id="exampleInputuname"
+                                            placeholder="Dirección"  readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="exampleInputuname">Teléfono</label>
+                                    <div class="input-group">
+                                        <div class="input-group-addon"><i class="ti-mobile"></i></div>
+                                        <input type="text" class="form-control" id="exampleInputuname"
+                                            placeholder="Teléfono"  readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="exampleInputuname">Email</label>
+                                    <div class="input-group">
+                                        <div class="input-group-addon"><i class="ti-email"></i></div>
+                                        <input type="text" class="form-control" id="exampleInputuname" placeholder="Email"
+                                             readonly>
+                                    </div>
                                 </div>
                             </div>
 
@@ -43,69 +91,121 @@
                         <!--/row-->
                         <div class="row">
 
-                            
-
-                            <div class="col-md-5">
-                                <div class="form-group">
-                                    <label class="control-label">Seleccione producto:</label>
-                                  <select class="form-control" [(ngModel)]="selectedProduct" name="selectedProduct" id="selectedProduct" tabindex="1">
-                                    <option *ngFor="let item of products" [ngValue]="item">{{item.stock}}</option>
-                                  </select>
-                                  
-                                </div>
-                              </div>
-
-                              <div class="col-md-3">
-                                <div class="form-group">
-                                    <label class="control-label">Cantidad:</label>
-                                    <input class="form-control" type="number" [(ngModel)]="selectedQuantity" name="selectedQuantity" id="selectedQuantity" tabindex="2">
-
-                                </div>
-                            </div>
-                              
-
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <button class="btn btn-info" type="button" (click)="agregarProducto()">Agregar Producto</button>
-
-                                    <button  type="submit" class=" btn btn-success"> <i class="fa fa-check"></i>
-                                        Crear Compra</button>
-                                </div>
-                            </div>
+            
 
                         </div>
 
-                        <div class="row">
-                            
-                            <div class="col-md-12">
-                                <table class="table">
-                                  <thead>
-                                    <tr>
-                                      <th>ID</th>
-                                      <th>Nombre</th>
-                                      <th>Cantidad</th>
-                                      <th>Precio</th>
-                                      <th>Sub Total</th>
-                                      <th>Acciones</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    <tr *ngFor="let product of purchasedProducts;  let i = index">
-                                      <td>{{ product.id }}</td>
-                                      <td>{{ product.description_product }}</td>
-                                      <td>{{ product.amount_product }}</td>
-                                      <td>{{ product.price_product }}</td>
-                                      <td>{{ product.price_product * product.amount_product }}</td>
-
-                                      <td>
-                                        <!-- <button type="button" (click)="removePrice(i)">Eliminar</button> -->
-                                        <button type="button" (click)="removePrice(i)" class="btn btn-danger"><i class="ti-trash"></i></button>
-                                    </td>
-                                    </tr>
-                                  </tbody>
-                                </table>
-                              </div>
-
+                            <div class="form-body">
+                              <div class="row p-t-20">
+                                <div class="col-md-12">
+                                  <h3 class="box-title">Materiales</h3>
+                                  <hr class="m-t-0 m-b-40">
+                  
+                                  <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                      <thead>
+                                        <th class="w200 text-center">Tipo</th>
+                                        <th class="w400 text-center">Producto</th>
+                                        <th class="text-center">Cantidad</th>
+                                        <th class="text-center">Unidad</th>
+                                        <th class="text-center">Precio</th>
+                                        <th class="text-center">Descuento</th>
+                                        <th class="text-center">Total</th>
+                                        <th class="w50">Acciones</th>
+                                      </thead>
+                                      <tbody>
+                                        <tr *ngFor="let item of filasProforma; let i = index">
+                                            <td>
+                                                <select class="form-control" name="tipo" [(ngModel)]="item.tipo" [ngModelOptions]="{standalone: true}" (ngModelChange)="cargarDatos(item)">
+                                                    <option value="">Seleccione</option>
+                                                    <option value="PRODUCTO">Productos</option>
+                                                    <option value="APU">Construcción</option>
+                                                  </select>
+                                                  
+                                              </td>
+                                              <td>
+                                                <ng-select *ngIf="item.tipo === 'PRODUCTO'" [items]="productos" bindLabel="descripcion" placeholder="Seleccione un producto"
+                                                  [(ngModel)]="item.producto" name="descripcion{{i}}" [searchable]="true"   (ngModelChange)="actualizarDatos($event, i); calcularSubTotalPro(i);"></ng-select>
+                                          
+                                                <ng-select *ngIf="item.tipo === 'APU'" [items]="apus" bindLabel="nombre" placeholder="Seleccione un APU"
+                                                  [(ngModel)]="item.apu" name="apu{{i}}" [searchable]="true" (ngModelChange)="actualizarDatosApu($event, i); calcularSubTotalPro(i);"></ng-select>
+                                              </td>
+                                          <td>
+                                            <input type="number" min="0.0000" class="form-control text-right" [(ngModel)]="item.cantidad"
+                                              name="cantidad{{i}}" (ngModelChange)="calcularSubTotalPro(i); calcularTotal();   "
+                                               >
+                                          </td>
+                                          <td>
+                                            <input type="text" class="form-control text-right" [(ngModel)]="item.unidad"
+                                              name="unidad{{i}}">
+                                          </td>
+                                          <td>
+                                            <input type="number" class="form-control text-right" [(ngModel)]="item.precio"
+                                              name="precio{{i}}" (ngModelChange)="calcularSubTotalPro(i); calcularTotal();   ">
+                                          </td>
+                                          <td>
+                                            <input type="number" class="form-control text-right" [(ngModel)]="item.descuento"
+                                              name="descuento{{i}}"  (ngModelChange)="calcularSubTotalPro(i); calcularTotal();   ">
+                                              <span *ngIf="mostrarErrorDescuento(item)" class="text-danger">
+                                                El descuento no debe ser mayor.
+                                              </span>
+                                          </td>
+                                          <td>
+                                            <input type="number" class="form-control text-right" [(ngModel)]="item.total"
+                                              name="item.total{{i}}" disabled>
+                                          </td>
+                  
+                                          <td class="text-center">
+                                            <a class="cursor" (click)="deleteFilaProforma(i); calcularTotal(); " data-toggle="tooltip"
+                                              data-original-title="Eliminar"> <i class="fa fa-close text-danger"></i> </a>
+                  
+                                          </td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                    <div class="col-md-12">
+                                      <div class="form-group">
+                                        <!-- Botón para agregar una nueva fila -->
+                                        <button (click)="addFilaProforma()" class="btn btn-success">
+                                          Agregar <span class="fa fa-plus" style="padding-left: 10px;"></span>
+                                        </button>
+                                      </div>
+                                    </div>
+                                    <div class="col-md-12">
+                  
+                                      <div class="row">
+                                        <!-- Espaciador -->
+                                        <div class="col-md-6"></div>
+                  
+                                        <!-- Detalle -->
+                                        <div class="col-md-4">
+                                          <div class="m-t-30 text-right">
+                                            <p class="text-right">Total sin impuestos:</p>
+                                            <p class="text-right">Subtotal 12%:</p>
+                                            <p class="text-right">Subtotal 0%:</p>
+                                            <p class="text-right">Total descuento: </p>
+                                            <p class="text-right">Iva: </p>
+                                            <h3 class="text-right">Total Proforma:</h3>
+                                          </div>
+                                        </div>
+                                        <!-- Valores -->
+                                        <div class="col-md-2">
+                                          <div class="pull-right m-t-30 text-right">
+                                            <p class="text-right">$ {{totalSinImp | number:'1.2-2'}}</p>
+                                            <p class="text-right">$ {{totalSinImp | number:'1.2-2'}}</p>
+                                            <p class="text-right">$ {{subTotal | number:'1.2-2'}}</p>
+                                            <p class="text-right">$ {{totalDescuento | number:'1.2-2'}}</p>
+                                            <p class="text-right">$ {{iva | number:'1.2-2'}}</p>
+                                            <h3 class="text-right">$ {{totalPro | number:'1.2-2'}}</h3>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <br>
+                                    </div>
+                  
+                                  </div>
+                                </div>
+                            </div>
                         </div>
 
                     </div>
