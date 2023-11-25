@@ -29,12 +29,12 @@ export class LibroMayorService {
   }
 
   loadLibroMayor() {
-    const url = `${base_url}/libro-mayor`;
+    const url = `${base_url}/contabilidad/libro-mayor`;
     return this.hhtp.get<LoadLibroMayor>(url, this.headers);
   }
 
   loadSumaDebeHaber() {
-    const url = `${base_url}/libro-diario/suma`;
+    const url = `${base_url}/contabilidad/libro-diario/suma`;
     return this.hhtp.get<LoadLibroMayor>(url, this.headers);
   }
 

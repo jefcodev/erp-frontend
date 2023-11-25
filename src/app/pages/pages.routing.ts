@@ -53,6 +53,7 @@ import { LibroDiarioComponent } from './contabilidad/libro-diario/libro-diario.c
 import { LibroMayorComponent } from './contabilidad/libro-mayor/libro-mayor.component';
 import { BalanceGeneralComponent } from './contabilidad/balance-general/balance-general.component';
 import { EstadoResultadoComponent } from './contabilidad/estado-resultado/estado-resultado.component';
+import { IVAComponent } from './contabilidad/iva/iva.component';
 import { AdminGuard } from '../guards/admin.guard';
 import { BodegueroGuard } from '../guards/bodeguero.guard';
 
@@ -119,8 +120,9 @@ const routes: Routes = [
             { path: 'detalle-asientos', component: DetalleAsientoComponent, data: { titulo: 'Detalle Asientos' } },
             { path: 'libro-diario', component: LibroDiarioComponent, data: { titulo: 'Libro Diario' } },
             { path: 'libro-mayor', component: LibroMayorComponent, data: { titulo: 'Libro Mayor' } },
-            { path: 'estado-resultado', component: EstadoResultadoComponent, data: { titulo: 'Estado Resultado' } },
+            { path: 'estado-resultado', component: EstadoResultadoComponent, data: { titulo: 'Estado de Resultado' } },
             { path: 'balance-general', component: BalanceGeneralComponent, data: { titulo: 'Balance General' } },
+            { path: 'iva', component: IVAComponent, data: { titulo: 'Impuesto al Valor Agregado' } },
         ]
     },
 ];

@@ -275,6 +275,7 @@ export class BalanceGeneralComponent implements OnInit {
           style: 'headerDate',
           alignment: 'right',
           margin: [10, 10],
+          fontSize: 10, // Ajusta el tamaño de la fuente según sea necesario
         },
       ]
     };
@@ -283,7 +284,12 @@ export class BalanceGeneralComponent implements OnInit {
     const footer = function (currentPage, pageCount) {
       return {
         columns: [
-          { text: 'Página ' + currentPage.toString() + ' de ' + pageCount, alignment: 'right', margin: [10, 10] },
+          {
+            text: 'Página ' + currentPage.toString() + ' de ' + pageCount,
+            alignment: 'right',
+            margin: [10, 10],
+            fontSize: 10, // Ajusta el tamaño de la fuente según sea necesario
+          },
           //{ text: 'Pie de página', alignment: 'right', margin: [10, 10] }
         ]
       };
