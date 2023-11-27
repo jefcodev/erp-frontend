@@ -84,7 +84,7 @@
 
 
                 <!-- Row Button  -->
-                <div class="row button-group">
+                <div class="row button-group" style="margin-bottom: 20px;">
 
                     <!-- Date Range Input, Select Input and Search Input -->
                     <div class="col-lg-12 col-md-12">
@@ -134,18 +134,16 @@
                         data-page-size="10">
                         <thead>
                             <tr>
-                                <th class="footable-sortable">Codigo <span class="footable-sort-indicator"></span>
-                                </th>
-                                <th class="footable-sortable">Descripcion<span class="footable-sort-indicator"></span>
-                                </th>
-                                <th class="footable-sortable">Saldo<span class="footable-sort-indicator"></span></th>
+                                <th class="text-left">Código</th>
+                                <th class="text-left">Cuenta</th>
+                                <th class="text-right">Saldo $</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr *ngFor="let bg of balance_general let i = index">
                                 <td>{{bg.codigo}}</td>
                                 <td>{{bg.descripcion }}</td>
-                                <td>{{bg.saldo}}</td>
+                                <td class="text-right">{{bg.saldo}}</td>
                                 <ng-template #inactivoOption>
                                 </ng-template>
                             </tr>

@@ -13,6 +13,7 @@ import { LibroDiarioComponent } from './libro-diario/libro-diario.component';
 import { LibroMayorComponent } from './libro-mayor/libro-mayor.component';
 import { BalanceGeneralComponent } from './balance-general/balance-general.component';
 import { EstadoResultadoComponent } from './estado-resultado/estado-resultado.component';
+import { IVAComponent } from './iva/iva.component';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { EstadoResultadoComponent } from './estado-resultado/estado-resultado.co
     LibroMayorComponent,
     BalanceGeneralComponent,
     EstadoResultadoComponent,
+    IVAComponent
   ],
   imports: [
     CommonModule,

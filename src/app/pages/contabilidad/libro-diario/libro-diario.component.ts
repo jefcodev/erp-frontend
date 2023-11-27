@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { formatDate } from '@angular/common';
 import Swal from 'sweetalert2';
+
 import { LibroDiario, SumaDebeHaber } from '../../../models/contabilidad/libro-diario.model';
 import { LibroDiarioService } from 'src/app/services/contabilidad/libro-diario.service';
-import { formatDate } from '@angular/common';
 
 @Component({
   selector: 'app-libro-diario',

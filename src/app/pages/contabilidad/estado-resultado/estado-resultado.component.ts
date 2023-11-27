@@ -154,7 +154,10 @@ export class EstadoResultadoComponent implements OnInit {
               { text: 'Saldo', style: 'tableHeader' }
             ],
             // Filas de datos
-            ...this.estado_resultado.map(er => [er.codigo, er.descripcion, { text: er.saldo, alignment: 'right' }])
+            ...this.estado_resultado.map(er => [
+              er.codigo,
+              er.descripcion,
+              { text: er.saldo, alignment: 'right' }])
           ]
         },
         layout: {
@@ -234,13 +237,19 @@ export class EstadoResultadoComponent implements OnInit {
     // Encabezado del documento
     const header = {
       columns: [
-        { text: 'Estado de Resultado', style: 'headerText', margin: [10, 10] },
+        {
+          text: 'Estado de Resultado',
+          style: 'headerText',
+          margin: [10, 10],
+          fontSize: 10, // Ajusta el tamaño de la fuente según sea necesario
+        },
         //{ text: new Date().toLocaleString('es', { dateStyle: 'medium', timeStyle: 'medium' }), style: 'headerDate', alignment: 'right', margin: [10, 10] }
         {
           text: '' + formatDate(new Date()),
           style: 'headerDate',
           alignment: 'right',
           margin: [10, 10],
+          fontSize: 10, // Ajusta el tamaño de la fuente según sea necesario
         },
       ]
     };
@@ -249,7 +258,12 @@ export class EstadoResultadoComponent implements OnInit {
     const footer = function (currentPage, pageCount) {
       return {
         columns: [
-          { text: 'Página ' + currentPage.toString() + ' de ' + pageCount, alignment: 'right', margin: [10, 10] },
+          {
+            text: 'Página ' + currentPage.toString() + ' de ' + pageCount,
+            alignment: 'right',
+            margin: [10, 10],
+            fontSize: 10, // Ajusta el tamaño de la fuente según sea necesario
+          },
           //{ text: 'Pie de página', alignment: 'right', margin: [10, 10] }
         ]
       };

@@ -3,9 +3,8 @@ import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { map, Observable, tap, catchError, of } from 'rxjs';
-
-import { LoadLibroDiario } from 'src/app/interfaces/contabilidad/libro-diario/load-libro-diario.interface';
 import { LoginForm } from '../../interfaces/login-form.iterface';
+import { LoadIVA } from 'src/app/interfaces/contabilidad/iva/load-iva.interface';
 
 // Variable API
 const base_url = environment.base_url;
@@ -13,9 +12,9 @@ const base_url = environment.base_url;
 @Injectable({
   providedIn: 'root'
 })
-export class LibroDiarioService {
+export class IVAService {
 
-  constructor(private hhtp: HttpClient,
+  constructor(private http: HttpClient,
     private router: Router) { }
   get token(): string {
     return localStorage.getItem('token');
@@ -28,14 +27,9 @@ export class LibroDiarioService {
     }
   }
 
-  loadLibroDiario() {
-    const url = `${base_url}/contabilidad/libro-diario`;
-    return this.hhtp.get<LoadLibroDiario>(url, this.headers);
-  }
-
-  loadSumaDebeHaber() {
-    const url = `${base_url}/contabilidad/libro-diario/suma`;
-    return this.hhtp.get<LoadLibroDiario>(url, this.headers);
+  loadIVA() {
+    const url = `${base_url}/contabilidad/iva`;
+    return this.http.get<LoadIVA>(url, this.headers);
   }
 
   logout() {
@@ -46,7 +40,7 @@ export class LibroDiarioService {
   // Validación de token 
   validarToken(): Observable<boolean> {
     const token = localStorage.getItem('token') || '';
-    return this.hhtp.get(`${base_url}/login/renew`, {
+    return this.http.get(`${base_url}/login/renew`, {
       headers: {
         'x-token': token
       }
@@ -67,7 +61,7 @@ export class LibroDiarioService {
   // Validación de token Fin //OJO
   login(formData: any) {
     const fomrLogin: LoginForm = formData;
-    return this.hhtp.post(`${base_url}/login`, fomrLogin)
+    return this.http.post(`${base_url}/login`, fomrLogin)
       .pipe(
         tap((resp: any) => {
           localStorage.setItem('token', resp.token)

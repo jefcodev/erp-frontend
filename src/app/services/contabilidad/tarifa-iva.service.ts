@@ -35,17 +35,17 @@ export class TarifaIVAService {
   }
 
   loadTarifasIVA(desde: number = 0, limit: number = 0) {
-    const url = `${base_url}/tarifas-iva?desde=${desde}&limit=${limit}`;
+    const url = `${base_url}/contabilidad/tarifas-iva?desde=${desde}&limit=${limit}`;
     return this.http.get<LoadTarifaIVA>(url, this.headers);
   }
 
   loadTarifasIVAAll() {
-    const url = `${base_url}/tarifas-iva/all`;
+    const url = `${base_url}/contabilidad/tarifas-iva/all`;
     return this.http.get<LoadTarifaIVA>(url, this.headers);
   }
 
   loadTarifaIVAById(id_tarifa_iva: any) {
-    const url = `${base_url}/tarifas-iva/id/${id_tarifa_iva}`;
+    const url = `${base_url}/contabilidad/tarifas-iva/id/${id_tarifa_iva}`;
     return this.http.get(url, this.headers)
       .pipe(
         map((resp: { ok: boolean, tarifa_iva: TarifaIVA }) => resp.tarifa_iva)
@@ -53,7 +53,7 @@ export class TarifaIVAService {
   }
 
   createTarifaIVA(formData: any) {
-    const url = `${base_url}/tarifas-iva`;
+    const url = `${base_url}/contabilidad/tarifas-iva`;
     return this.http.post(url, formData, this.headers)
       .pipe(
         map((resp: { ok: boolean, tarifa_iva: TarifaIVA[] }) => resp.tarifa_iva)
@@ -61,12 +61,12 @@ export class TarifaIVAService {
   }
 
   updateTarifaIVA(tarifa_iva: TarifaIVA) {
-    const url = `${base_url}/tarifas-iva/${tarifa_iva.id_tarifa_iva}`;
+    const url = `${base_url}/contabilidad/tarifas-iva/${tarifa_iva.id_tarifa_iva}`;
     return this.http.put(url, tarifa_iva, this.headers);
   }
 
   deleteTarifaIVA(id_tarifa_iva: any) { //OJO: any
-    const url = `${base_url}/tarifas-iva/${id_tarifa_iva}`;
+    const url = `${base_url}/contabilidad/tarifas-iva/${id_tarifa_iva}`;
     return this.http.delete(url, this.headers);
   }
 

@@ -36,17 +36,17 @@ export class FormaPagoService {
   }
 
   loadFormasPago(desde: number = 0, limit: number = 0) {
-    const url = `${base_url}/formas-pago?desde=${desde}&limit=${limit}`;
+    const url = `${base_url}/contabilidad/formas-pago?desde=${desde}&limit=${limit}`;
     return this.http.get<LoadFormaPago>(url,);
   }
 
   loadFormasPagoAll() {
-    const url = `${base_url}/formas-pago/all`;
+    const url = `${base_url}/contabilidad/formas-pago/all`;
     return this.http.get<LoadFormaPago>(url, this.headers);
   }
 
   loadFormaPagoById(id_forma_pago: any) {
-    const url = `${base_url}/formas-pago/id/${id_forma_pago}`;
+    const url = `${base_url}/contabilidad/formas-pago/id/${id_forma_pago}`;
     return this.http.get(url, this.headers)
       .pipe(
         map((resp: { ok: boolean, forma_pago: FormaPago }) => resp.forma_pago)
@@ -54,7 +54,7 @@ export class FormaPagoService {
   }
 
   loadFormaPagoByCodigo(codigo: any) {
-    const url = `${base_url}/formas-pago/codigo/${codigo}`;
+    const url = `${base_url}/contabilidad/formas-pago/codigo/${codigo}`;
     return this.http.get(url, this.headers)
       .pipe(
         map((resp: { ok: boolean, forma_pago: FormaPago }) => resp.forma_pago)
@@ -62,7 +62,7 @@ export class FormaPagoService {
   }
 
   createFormaPago(formData: FormFormaPago) {
-    const url = `${base_url}/formas-pago`;
+    const url = `${base_url}/contabilidad/formas-pago`;
     return this.http.post(url, formData, this.headers)
       .pipe(
         map((resp: { ok: boolean, forma_pago: FormaPago[] }) => resp.forma_pago)
@@ -70,12 +70,12 @@ export class FormaPagoService {
   }
 
   updateFormaPago(forma_pago: FormaPago) {
-    const url = `${base_url}/formas-pago/${forma_pago.id_forma_pago}`;
+    const url = `${base_url}/contabilidad/formas-pago/${forma_pago.id_forma_pago}`;
     return this.http.put(url, forma_pago, this.headers);
   }
 
   deleteFormaPago(id_forma_pago: any) { //OJO: any
-    const url = `${base_url}/formas-pago/${id_forma_pago}`;
+    const url = `${base_url}/contabilidad/formas-pago/${id_forma_pago}`;
     return this.http.delete(url, this.headers);
   }
 
