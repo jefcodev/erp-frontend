@@ -3,10 +3,12 @@ import { Router } from '@angular/router';
 
 //Model
 import { Proforma } from 'src/app/models/quotations/quotation.model'; 
+import { Cliente } from 'src/app/models/venta/cliente.model';
+
 
 //Service 
-
 import { QuotationService } from 'src/app/services/quotations/quotation.service';
+import { ClienteService } from 'src/app/services/venta/cliente.service';
 
 
 @Component({
@@ -17,10 +19,15 @@ import { QuotationService } from 'src/app/services/quotations/quotation.service'
 })
 export class QuotationsComponent implements OnInit{
 
+  
   public proformas: Proforma[]=[];
+  public clientes : Cliente []=[];
+
+
   public cargando: boolean = true;
   constructor(
     private quotationService: QuotationService,
+    private clienteServive : ClienteService,
     private router: Router
   ){
 
@@ -28,6 +35,7 @@ export class QuotationsComponent implements OnInit{
 
   ngOnInit(): void {
     this.cargarQuotations();
+    this.cargarClientes();
   }
 
   cargarQuotations() {
@@ -37,6 +45,13 @@ export class QuotationsComponent implements OnInit{
           this.proformas = quotations;
           console.log(quotations);
         });
+    }
+
+    cargarClientes(){
+      this.clienteServive.loadClientesAll()
+      .subscribe(({clientes})=>{
+        this.clientes = clientes;
+      })
     }
 
 }

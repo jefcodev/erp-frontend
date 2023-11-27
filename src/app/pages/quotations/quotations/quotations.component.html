@@ -2,9 +2,7 @@
     <div class="col-12">
         <div class="card">
             <div class="card-body">
-                <input type="text" 
-                        class="form-control"
-                        placeholder="Buscar...">
+                <input type="text" class="form-control" placeholder="Buscar...">
             </div>
         </div>
     </div>
@@ -27,27 +25,45 @@
         <div class="card">
             <div class="card-body">
                 <h4 class="card-title">Bordered Table</h4>
-                <h6 class="card-subtitle">Add<code>.table-bordered</code>for borders on all sides of the table and cells.</h6>
+                <h6 class="card-subtitle">Add<code>.table-bordered</code>for borders on all sides of the table and
+                    cells.</h6>
                 <div class="table-responsive">
                     <table class="table table-striped">
                         <thead>
                             <tr>
-                                <th>Cliente</th>
-                                <th>Fecha</th>
-                                <th>Descuento</th>
-                                <th>Total</th>
-                                <th>Estado</th>
-                                <th class="text-nowrap">Action</th>
+                                <th class="text-center w400">Cliente</th>
+                                <th class="text-center">Fecha</th>
+                                <th class="text-center">Descuento</th>
+                                <th class="text-center">Total</th>
+                                <th class="text-center">Estado</th>
+                                <th class="text-center">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr *ngFor="let item of proformas">
-                                <td>{{item.id_cliente}}</td>
-                                <td>{{item.fecha}}</td>
-                                <td>{{item.descuento}}</td>
-                                <td>{{item.total}}</td>
-                                <td>{{item.estado}}</td>
-                                <td class="text-nowrap">
+                                <td>
+                                    <ng-container *ngFor="let cliente of clientes">
+                                        <ng-container
+                                            *ngIf="cliente.id_cliente == item.id_cliente ">{{cliente.razon_social}}</ng-container>
+                                    </ng-container>
+
+                                </td>
+                                <td class="text-center">{{item.fecha}}</td>
+                                <td class="text-right">$ {{item.descuento}}</td>
+                                <td class="text-right">$ {{item.total}}</td>
+                                <td class="text-center">
+                                    <div
+                                        [class]="'label label-table ' + (item.estado ? 'label-info' : 'label-warning')">
+                                        {{ item.estado ? 'FACTURA' : 'PROFORMA' }}
+                                    </div>
+                                </td>
+
+
+                                <td class="text-center">
+                                    <button class="btn btn-success btn-sm m-r-5" data-toggle="modal"
+                                        data-target="#nombreModal">
+                                        <i class="fa fa-pencil"></i>
+                                    </button>
                                     <button class="btn btn-success btn-sm m-r-5" data-toggle="modal"
                                         data-target="#nombreModal">
                                         <i class="fa fa-pencil"></i>
@@ -56,21 +72,17 @@
                                         data-target="#nombreModal">
                                         <i class="fa fa-eye"></i>
                                     </button>
-                                    <button class="btn btn-danger btn-sm m-r-5" data-toggle="modal"
-                                        data-target="#nombreModal">
-                                        <i class="fa fa-trash"></i>
-                                    </button>
                                 </td>
                             </tr>
-                            
+
                         </tbody>
-                        
+
                     </table>
                 </div>
-                 <div class="btn-group" role="group" aria-label="Basic example">
-                <button type="button" class="btn btn-secondary">Anterior</button>
-                <button type="button" class="btn btn-secondary">Siguiente</button>
-            </div>
+                <div class="btn-group" role="group" aria-label="Basic example">
+                    <button type="button" class="btn btn-secondary">Anterior</button>
+                    <button type="button" class="btn btn-secondary">Siguiente</button>
+                </div>
             </div>
         </div>
     </div>

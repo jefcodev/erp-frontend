@@ -41,9 +41,9 @@ export class QuotationService {
     )
   }
 
-  createPurchase(quotation:any) {
+  createProfroma(proforma: Proforma) {
     const url = `${base_url}/quotation`;
-    return this.http.post(url, quotation, this.headers);
+    return this.http.post(url, proforma, this.headers);
   }
 
 }
