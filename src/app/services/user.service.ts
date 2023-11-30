@@ -119,7 +119,7 @@ get role(): number {
             user => new Usuario (user.nombre,user.apellido,user.email,user.rol_id, user.img,user.id,user.estado)
             );
 
-            console.log(usuarios);
+            //console.log(usuarios);
 
           return {
             total: resp.total,

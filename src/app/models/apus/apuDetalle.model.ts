@@ -40,6 +40,7 @@ export class ApuDetalle {
     codigo: string;
     descripcion: string;
     cantidad: string;
+    depreciacion: number;
     unidad: string;
     precio: string;
   }

@@ -25,12 +25,18 @@ import { ImportClientsComponent } from './quotations/import-clients/import-clien
 import { ImportProvidersComponent } from './purchases/import-providers/import-providers.component';
 import { ImportInventoryComponent } from './inventory/import-inventory/import-inventory.component';
 import { PurchasesComponent } from './purchases/purchases/purchases.component';
-import { QuotationsComponent } from './quotations/quotations/quotations.component';
 import { ProductComponent } from './inventory/products/product.component';
 import { PurchaseComponent } from './purchases/purchases/purchase.component';
+
+
+/* Cotizaciones */
 import { QuotationComponent } from './quotations/quotations/quotation.component';
+import { QuotationsComponent } from './quotations/quotations/quotations.component';
+
+/* Apus */
 import { ApusComponent } from './apu/apus/apus.component';
 import { ApuComponent } from './apu/apus/apu.component';
+
 
 // Compras
 import { ProveedorComponent } from './compras/proveedor/proveedor.component';
@@ -42,6 +48,8 @@ import { VentaComponent } from './ventas/venta/venta.component';
 
 // Inventario
 import { ProductoComponent } from './inventario/producto/producto.component';
+import { MarcasComponent } from './inventario/marcas/marcas.component';
+import { TiposComponent } from './inventario/tipos/tipos.component';
 
 // Contabilidad
 import { CuentaComponent } from './contabilidad/cuenta/cuenta.component';
@@ -54,6 +62,9 @@ import { LibroMayorComponent } from './contabilidad/libro-mayor/libro-mayor.comp
 import { BalanceGeneralComponent } from './contabilidad/balance-general/balance-general.component';
 import { EstadoResultadoComponent } from './contabilidad/estado-resultado/estado-resultado.component';
 import { IVAComponent } from './contabilidad/iva/iva.component';
+
+
+/* Guardianes */
 import { AdminGuard } from '../guards/admin.guard';
 import { BodegueroGuard } from '../guards/bodeguero.guard';
 
@@ -82,6 +93,8 @@ const routes: Routes = [
             { path: 'inventory/product', component: ProductComponent, data: { titulo: 'Nuevo Producto' } },
             { path: 'inventory/units', component: UnitsComponent, data: { titulo: 'Unidades' } },
             { path: 'inventory/import-products', component: ImportInventoryComponent, data: { titulo: 'Importar Productos' } },
+            { path: 'inventory/marcas', component: MarcasComponent, data: { titulo: 'Marcas' } },
+            { path: 'inventory/tipos', component: TiposComponent, data: { titulo: 'Tipos de Inventario' } },
 
             /* Purchases */
             { path: 'purchase/iva', component: IvaComponent, data: { titulo: 'Iva' } },

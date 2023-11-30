@@ -33,7 +33,7 @@ export class ApuComponent implements OnInit {
 
 
   /* Variables del capítulo apu */
-  codigoC: string;
+  codigoC: string = 'APU-001';
   nombreC: string;
   descripcionC: string;
   rendimientoC: number;
@@ -41,7 +41,7 @@ export class ApuComponent implements OnInit {
 
   /* Variables costos indirectos APU */
   prestacionesSociales: number = 0.0945;
- 
+
 
 
   /* Variables de totales unitarios */
@@ -50,22 +50,22 @@ export class ApuComponent implements OnInit {
 
   totalEquipos: number = 0;
   unitarioEquipos: number = 0;
-  
-  totalTransporte: number = 0;
-  unitarioTransporte : number =0;
 
-  subTotalManoObra : number = 0.00;
-  totalPrestaciones : number = 0;
-  totalManoyPrestaciones: number =0;
+  totalTransporte: number = 0;
+  unitarioTransporte: number = 0;
+
+  subTotalManoObra: number = 0.00;
+  totalPrestaciones: number = 0;
+  totalManoyPrestaciones: number = 0;
   totalManoObra: number = 0;
   unitarioManoObra: number = 0;
 
   costosDirectos: number = 0;
 
   administracion: number = 0;
-  subTotalUnitario : number = 0;
-  utilidad: number = 0 ;
-  precioUnitario : number = 0;
+  subTotalUnitario: number = 0;
+  utilidad: number = 0;
+  precioUnitario: number = 0;
 
 
 
@@ -95,8 +95,10 @@ export class ApuComponent implements OnInit {
   addFilaMateriales() {
     this.filasMateriales.push({ codigo: '', descripcion: '', cantidad: null, unidad: '', desperdicio: null, precio: null, total: null });
     console.log(this.filasMateriales);
+    console.log('uNIDAD C:' + this.unidadC);
   }
   deleteFilaMateriales(index: number) {
+
     if (this.filasMateriales.length >= 1) {
       this.filasMateriales.splice(index, 1);
     }
@@ -104,7 +106,7 @@ export class ApuComponent implements OnInit {
 
   /* Add & Delete Filas Equipos */
   addFilaEquipos() {
-    this.filasEquipos.push({ codige: '', descripcione: '', cantidade: null, unidade: '', precioe: null, totale: null });
+    this.filasEquipos.push({ codige: '', descripcione: '', cantidade: null, depreciacion: 0.005 , unidade: '', precioe: null, totale: null });
   }
   deleteFilaEquipos(index: number) {
     if (this.filasEquipos.length >= 1) {
@@ -115,7 +117,7 @@ export class ApuComponent implements OnInit {
   /* Add & Delete Filas Mano de Obra */
   addFilaManoObra() {
     console.log(this.filasManoObra);
-    this.filasManoObra.push({ codigom: '', descripcionm: '', cantidadm: null, unidadm: '', preciom: null, totalm: null });
+    this.filasManoObra.push({ codigom: '', descripcionm: '', cantidadm: null, unidadm: 'Jornada', preciom: null, totalm: null });
   }
   deleteFilaManoObra(index: number) {
     if (this.filasManoObra.length >= 1) {
@@ -144,14 +146,23 @@ export class ApuComponent implements OnInit {
       this.filasMateriales[indice].precio = productoSeleccionado.precio_compra;
       this.filasMateriales[indice].descripcion = productoSeleccionado.descripcion;
       this.filasMateriales[indice].codigo = productoSeleccionado.codigo_principal;
+
+      // Asignar valaor cuando esta un id
+      const unidadSeleccionada = this.unidades.find(u => u.id_unidad_medida === productoSeleccionado.id_unidad_medida);
+      this.filasMateriales[indice].unidad = unidadSeleccionada ? unidadSeleccionada.descripcion : '';
+
+
     }
   }
 
   calcularSubTotalMateriales(indice: number) {
     const fila = this.filasMateriales[indice];
     if (fila.cantidad !== null && fila.precio !== null) {
-      fila.total = fila.cantidad * fila.precio;
+      fila.total = ((fila.cantidad * fila.desperdicio) + fila.cantidad) * fila.precio;
+      fila.total = parseFloat(fila.total.toFixed(2));
+
     }
+
   }
 
   calcularTotalMateriales() {
@@ -168,11 +179,14 @@ export class ApuComponent implements OnInit {
   /* Métodos para cambiar datos Equipo Herramientas y Maquinaria */
 
   actualizarDatosEquipos(productoSeleccionado: any, indice: number) {
+   
 
     if (productoSeleccionado) {
       // Si se ha seleccionado un producto, actualiza el campo de "precio" en la fila correspondiente
+      //this.filasEquipos[indice].precioe =  productoSeleccionado.precio;
       this.filasEquipos[indice].precioe = productoSeleccionado.precio_compra;
       this.filasEquipos[indice].descripcione = productoSeleccionado.descripcion;
+      this.filasEquipos[indice].codige = productoSeleccionado.codigo_principal;
 
     }
   }
@@ -180,8 +194,9 @@ export class ApuComponent implements OnInit {
   calcularSubTotalEquipos(indice: number) {
     const fila = this.filasEquipos[indice];
     if (fila.cantidade !== null && fila.precioe !== null) {
-      fila.totale = fila.cantidade * fila.precioe;
+      fila.totale = fila.cantidade * fila.precioe * fila.depreciacion ;
     }
+    fila.totale = parseFloat(fila.totale.toFixed(2));
   }
 
   calcularTotalEquipos() {
@@ -220,6 +235,7 @@ export class ApuComponent implements OnInit {
     if (fila.cantidadm !== null && fila.preciom !== null) {
       fila.totalm = fila.cantidadm * fila.preciom;
     }
+    fila.totalm = parseFloat(fila.totalm.toFixed(2));
   }
 
   calcularSubTotalManoObra2() {
@@ -227,42 +243,42 @@ export class ApuComponent implements OnInit {
     this.subTotalManoObra = this.filasManoObra.reduce((total, fila) => {
       return total + (fila.totalm || 0); // Se utiliza "totale" en lugar de "total"
     }, 0);
-    
+
     this.subTotalManoObra = parseFloat(this.subTotalManoObra.toFixed(2));
-    
+
     this.totalPrestaciones = this.subTotalManoObra * this.prestacionesSociales;
     this.totalPrestaciones = parseFloat(this.totalPrestaciones.toFixed(2));
-    
+
     this.totalManoyPrestaciones = this.subTotalManoObra + this.totalPrestaciones;
     this.totalManoyPrestaciones = parseFloat(this.totalManoyPrestaciones.toFixed(2));
-    
+
     this.unitarioManoObra = this.totalManoyPrestaciones / this.rendimientoC;
     this.unitarioManoObra = parseFloat(this.unitarioManoObra.toFixed(2));
 
   }
 
-  
- /*  calcularPrestaciones() {
-    console.log('Prestacioens');
-    this.totalPrestaciones = this.subTotalManoObra * this.prestacionesSociales;
 
-    this.totalPrestaciones = parseFloat(this.totalPrestaciones.toFixed(2))
-    return this.totalPrestaciones;
-  } */
+  /*  calcularPrestaciones() {
+     console.log('Prestacioens');
+     this.totalPrestaciones = this.subTotalManoObra * this.prestacionesSociales;
+ 
+     this.totalPrestaciones = parseFloat(this.totalPrestaciones.toFixed(2))
+     return this.totalPrestaciones;
+   } */
 
   calcularRendimientoManoObra() {
     this.unitarioManoObra = this.totalManoObra / this.rendimientoC
     this.unitarioEquipos = parseFloat(this.unitarioEquipos.toFixed(2));
     return this.unitarioEquipos;
   }
-  
-/* 
 
-  subTotalManoObra : number = 0.00;
-  totalPrestaciones : number = 0;
-  totalManoyPrestaciones: number =0;
-  totalManoObra: number = 0;
-  unitarioManoObra: number = 0;*/
+  /* 
+  
+    subTotalManoObra : number = 0.00;
+    totalPrestaciones : number = 0;
+    totalManoyPrestaciones: number =0;
+    totalManoObra: number = 0;
+    unitarioManoObra: number = 0;*/
 
 
 
@@ -275,6 +291,8 @@ export class ApuComponent implements OnInit {
       // Si se ha seleccionado un producto, actualiza el campo de "precio" en la fila correspondiente
       this.filasTransporte[indice].preciot = trabajoSeleccionado.precio_compra;
       this.filasTransporte[indice].descripciont = trabajoSeleccionado.descripcion;
+      this.filasTransporte[indice].descripciont = trabajoSeleccionado.descripcion;
+
 
     }
   }
@@ -294,7 +312,7 @@ export class ApuComponent implements OnInit {
     this.totalTransporte = parseFloat(this.totalTransporte.toFixed(2));
   }
 
-  
+
   /* 
   administracion: number = 0;
   subTotalUnitario : number = 0;
@@ -304,8 +322,8 @@ export class ApuComponent implements OnInit {
 
 
 
-  calcularCostosDirectos(){
-    this.costosDirectos =  this.totalMateriales + this.unitarioEquipos + this.totalTransporte + this.unitarioManoObra;
+  calcularCostosDirectos() {
+    this.costosDirectos = this.totalMateriales + this.unitarioEquipos + this.totalTransporte + this.unitarioManoObra;
     this.costosDirectos = parseFloat(this.costosDirectos.toFixed(2));
     this.administracion = this.costosDirectos * 0.12;
     this.administracion = parseFloat(this.administracion.toFixed(2));
@@ -316,7 +334,7 @@ export class ApuComponent implements OnInit {
     this.precioUnitario = this.subTotalUnitario + this.utilidad;
     this.precioUnitario = parseFloat(this.precioUnitario.toFixed(2));
   };
-  
+
 
 
   /* Cargar datos */
@@ -373,7 +391,7 @@ export class ApuComponent implements OnInit {
       descripcion: this.descripcionC,
       rendimiento: this.rendimientoC,
       unidad: this.unidadC,
-      total : this.precioUnitario,
+      total: this.precioUnitario,
       materiales: this.filasMateriales,
       equipos: this.filasEquipos,
       mano_obra: this.filasManoObra,

@@ -114,9 +114,8 @@ export class UsersComponent implements OnInit {
   }
 
   crearUsuario() {
-    console.log('Usuario'+ this.userForm.value);
+    //console.log('Usuario'+ this.userForm.value);
     this.formSubmitted = true;
-
     if (this.userForm.invalid) {
       return;
     }

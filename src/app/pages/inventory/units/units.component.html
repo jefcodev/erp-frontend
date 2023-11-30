@@ -16,8 +16,58 @@
     <div class="col-12">
         <div class="card">
             <div class="card-body">
-                <h4 class="card-title">Bordered Table</h4>
-                <h6 class="card-subtitle">Add<code>.table-bordered</code>for borders on all sides of the table and cells.</h6>
+                <h4 class="card-title">Lista de unidades</h4>
+                <h6 class="card-subtitle">Puede exportar los datos en Excel &amp; PDF</h6>
+                <!-- Row acciones header table -->
+
+                <div class="row p-t-12">
+                    <div class="col-md-4">
+                        <!-- Mostrar archivos -->
+                        <div class="dataTables_length" id="myTable_length">
+                            <label>Mostrar
+                                <select name="myTable_length" aria-controls="myTable" class="">
+                                    <option value="10">10</option>
+                                    <option value="25">25</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select> datos</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <!-- Acciones -->
+                        <div class="dt-buttons" style="text-align: center;">
+
+                            <a class="dt-button buttons-copy buttons-html5 cursor" tabindex="0"
+                                aria-controls="example23">
+                                <span>
+                                    <i class=" mdi mdi-plus"></i>
+                                    Nuevo</span></a>
+
+                          <!--   <button class="btn btn-info waves-effect waves-light" data-toggle="modal"
+                                data-target="#exampleModal" type="button">
+                                <span class="fa fa-plus" style="padding-left:0px;"></span>&nbsp;Nuevo XD
+                            </button> -->
+
+                            <a class="dt-button buttons-excel buttons-html5" tabindex="0" aria-controls="example23"
+                                href="#">
+                                <span>
+                                    <i class=" mdi mdi-file-excel"></i>
+                                    Excel</span></a>
+                            <a class="dt-button buttons-pdf buttons-html5 " tabindex="0" aria-controls="example23"
+                                href="#"><span>
+                                    <i class=" mdi mdi-file-pdf"></i>
+                                    PDF</span></a>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <!-- Buscador -->
+                        <div id="myTable_filter" class="dataTables_filter">
+                            <label>Buscar:<input type="search" class="" placeholder="" aria-controls="myTable">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="table-responsive">
                     <table class="table table-striped">
                         <thead>
@@ -32,7 +82,12 @@
                             <tr *ngFor="let item of units">
                                 <td>{{item.id_unidad_medida}}</td>
                                 <td>{{item.descripcion}}</td>
-                                <td>{{item.estado}}</td>
+                                <td>
+                                    <div
+                                        [class]="'label label-table ' + (item.estado ? 'label-success' : 'label-warning')">
+                                        {{ item.estado ? 'ACTIVO' : 'INACTIVO' }}
+                                    </div>
+                                </td>
                                 <td class="text-nowrap">
                                     <a href="#" data-toggle="tooltip" data-original-title="Edit"> <i class="fa fa-pencil text-inverse m-r-10"></i> </a>
                                     <a href="#" data-toggle="tooltip" data-original-title="Close"> <i class="fa fa-close text-danger"></i> </a>

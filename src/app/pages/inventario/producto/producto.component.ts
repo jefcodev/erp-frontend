@@ -1,13 +1,20 @@
 import { Component, OnInit } from '@angular/core';
-
 import { EventEmitter, Output } from '@angular/core';
-
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+
+
 import Swal from 'sweetalert2';
 
-import { Producto } from '../../../models/inventario/producto.model';
+/* Servicios */
 import { ProductoService } from 'src/app/services/inventario/producto.service';
+
+/* Models */
+import { Producto } from '../../../models/inventario/producto.model';
+import { TipoInven } from 'src/app/models/inventario/tipos-inv.model';
+import { UnitService } from 'src/app/services/inventory/unit.service';
+import { Unit } from 'src/app/models/inventory/unit.model';
+
 
 @Component({
   selector: 'app-producto',
@@ -21,6 +28,10 @@ export class ProductoComponent implements OnInit {
 
   public productos: Producto[] = [];
   public productosAll: Producto[] = [];
+  public tipoInve: TipoInven [] = []; 
+  public unidades: Unit [] = [];
+
+
   public productoSeleccionado: Producto;
   public formSubmitted = false;
   public ocultarModal: boolean = true;
@@ -31,11 +42,14 @@ export class ProductoComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private productoService: ProductoService,
+    private unidadService : UnitService,
     private router: Router,
     private activatedRoute: ActivatedRoute
   ) {
     this.productoForm = this.fb.group({
       codigo_principal: ['101', [Validators.required, Validators.minLength(1)]],
+      id_tipo_inventario:'',
+      id_unidad_medida:'',
       descripcion: ['MARTILLO', [Validators.required, Validators.minLength(1)]],
       stock: [3, [Validators.required, Validators.minLength(1)]],
       stock_minimo: [5, [Validators.required, Validators.minLength(1)]],
@@ -58,6 +72,8 @@ export class ProductoComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarProductos();
+    this.cargarTipoInve();
+    this.cargarUnidades();
   }
 
   cerrarModal() {
@@ -214,4 +230,20 @@ export class ProductoComponent implements OnInit {
     this.productos.push(producto);
   }
 
+  /* Categorías */
+
+
+cargarTipoInve() {
+  this.productoService.loadTipoInventario()
+  .subscribe(resp => {
+    this.tipoInve = resp;
+  });
+}
+
+cargarUnidades(){
+  this.unidadService.cargarUnits()
+  .subscribe(resp => {
+    this.unidades = resp;
+  });
+}
 }

@@ -18,7 +18,6 @@ constructor( private serviceUser : UserService){
 
 }
 
-
 logout(){
   this.serviceUser.logout();
 }

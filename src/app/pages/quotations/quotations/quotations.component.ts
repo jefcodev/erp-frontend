@@ -43,7 +43,7 @@ export class QuotationsComponent implements OnInit{
       this.quotationService.cargarQuotations()
         .subscribe(quotations => {
           this.proformas = quotations;
-          console.log(quotations);
+          //console.log(quotations);
         });
     }
 

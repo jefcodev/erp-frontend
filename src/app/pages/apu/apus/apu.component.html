@@ -12,7 +12,7 @@
             <hr class="m-t-0 m-b-40">
             <!--/row-->
             <div class="row">
-              <div class="col-md-6">
+              <!-- <div class="col-md-6">
 
 
                 <div class="form-group row">
@@ -24,14 +24,26 @@
                     </div>
                   </div>
                 </div>
+              </div> -->
+              <div class="col-md-6">
+                <div class="form-group row">
+                  <label for="exampleInputuname3" class="col-sm-3 control-label">Proyecto :</label>
+                  <div class="col-sm-9">
+                    <div class="input-group">
+                      <div class="input-group-addon"><i class="ti-pencil-alt"></i></div>
+                      <input type="text" class="form-control" [(ngModel)]="nombreC" name="nombreC" placeholder="Nombre del proyecto">
+                    </div>
+                  </div>
+                </div>
               </div>
               <div class="col-md-6">
                 <div class="form-group row">
-                  <label for="exampleInputuname3" class="col-sm-3 control-label">Nombre</label>
+                  <label for="exampleInputuname3" class="col-sm-3 control-label">Descripción:</label>
                   <div class="col-sm-9">
                     <div class="input-group">
-                      <div class="input-group-addon"><i class="ti-user"></i></div>
-                      <input type="text" class="form-control" [(ngModel)]="nombreC" name="nombreC" placeholder="Nombre">
+                      <div class="input-group-addon"><i class="ti-pencil-alt"></i></div>
+                      <input type="text" class="form-control" [(ngModel)]="descripcionC" name="descripcionC"
+                        placeholder="Descripción del proyecto">
                     </div>
                   </div>
                 </div>
@@ -40,58 +52,32 @@
             <div class="row">
               <div class="col-md-6">
                 <div class="form-group row">
-                  <label for="exampleInputuname3" class="col-sm-3 control-label">Descripcion</label>
+                  <label for="exampleInputuname3" class="col-sm-3 control-label">Unidad:</label>
                   <div class="col-sm-9">
                     <div class="input-group">
-                      <div class="input-group-addon"><i class="ti-user"></i></div>
-                      <input type="text" class="form-control" [(ngModel)]="descripcionC" name="descripcionC"
-                        placeholder="Descripcion">
+                      <div class="input-group-addon"><i class="ti-ruler-alt"></i></div>
+                      <ng-select [items]="unidades" bindLabel="descripcion" bindValue="descripcion"
+                        placeholder="Seleccione una Unidad" [(ngModel)]="unidadC" name="unidadC"
+                        [searchable]="true"></ng-select>
                     </div>
                   </div>
                 </div>
               </div>
-              <!--/span-->
               <div class="col-md-6">
-
                 <div class="form-group row">
-                  <label for="exampleInputuname3" class="col-sm-3 control-label">Rendimiento</label>
+                  <label for="exampleInputuname3" class="col-sm-3 control-label">Rendimiento:</label>
                   <div class="col-sm-9">
                     <div class="input-group">
-                      <div class="input-group-addon"><i class="ti-user"></i></div>
+                      <div class="input-group-addon"><i class="ti-stats-up"></i></div>
                       <input type="number" min="0.000" class="form-control" [(ngModel)]="rendimientoC"
                         name="rendimientoC" (ngModelChange)="calcularRendimiento();" placeholder="Rendimiento">
-                    </div>
-                  </div>
-                </div>
-                <!-- <div class="form-group row">
-                                  <label class="control-label text-right col-md-3">Rendimiento</label>
-                                  <div class="col-md-9">
-                                      <input type="number" min="0.000" class="form-control" [(ngModel)]="rendimientoC" name="rendimientoC">
-                                  </div>
-                              </div> -->
-              </div>
-              <!--/span-->
-            </div>
-            <!--/row-->
-            <div class="row">
-              <div class="col-md-6">
-
-                <div class="form-group row">
-                  <label for="exampleInputuname3" class="col-sm-3 control-label">Unidad</label>
-                  <div class="col-sm-9">
-                    <div class="input-group">
-                      <div class="input-group-addon"><i class="ti-user"></i></div>
-                      <input type="text" class="form-control" [(ngModel)]="unidadC" name="unidadC" placeholder="Unidad">
+                        <span class="input-group-addon" id="basic-addon2" name="unidadC"> {{unidadC}} / Día</span>
                     </div>
                   </div>
                 </div>
               </div>
-
-              <!--/span-->
             </div>
-            <!--/row-->
           </div>
-
         </form>
       </div>
     </div>
@@ -114,21 +100,20 @@
                 <div class="table-responsive">
                   <table class="table table-bordered">
                     <thead>
-                      <th class="text-center">Código</th>
+                      <th class="text-center">#</th>
                       <th class="text-center">Descripción</th>
                       <th class="text-center">Cantidad</th>
                       <th class="text-center">Unidad</th>
-                      <th class="text-center">Desp %</th>
+                      <th class="text-center">Desperdicio</th>
                       <th class="text-center">Precio</th>
-                      <th class="w100 text-center">Total</th>
+                      <th class="w150 text-center">Total</th>
                       <th class="w50">Acciones</th>
                     </thead>
                     <tbody>
                       <tr *ngFor="let item of filasMateriales; let i = index">
-                        <td>
-                          <input type="text" class="form-control text-right" [(ngModel)]="item.codigo"
-                            name="codigo{{i}}" disabled>
-                        </td>
+                       
+                          <td class="text-center">{{ i + 1 }}</td>
+                       
 
                         <td>
                           <ng-select [items]="productos" bindLabel="descripcion" placeholder="Seleccione un producto"
@@ -143,11 +128,12 @@
                         </td>
                         <td>
                           <input type="text" class="form-control text-right" [(ngModel)]="item.unidad"
-                            name="unidad{{i}}">
+                            name="unidad{{i}}" disabled>
                         </td>
                         <td>
                           <input type="number" class="form-control text-right" [(ngModel)]="item.desperdicio"
-                            name="desperdicio{{i}}">
+                            name="desperdicio{{i}}"
+                            (ngModelChange)="calcularSubTotalMateriales(i); calcularTotalMateriales(); calcularCostosDirectos();">
                         </td>
                         <td>
                           <input type="number" class="form-control text-right" [(ngModel)]="item.precio"
@@ -162,8 +148,10 @@
 
                         <td class="text-center">
                           <!-- Botón para eliminar la fila actual -->
-                          <a class="cursor" (click)="deleteFilaMateriales(i); calcularTotalMateriales(); calcularCostosDirectos();" data-toggle="tooltip"
-                            data-original-title="Eliminar"> <i class="fa fa-close text-danger"></i> </a>
+                          <a class="cursor"
+                            (click)="deleteFilaMateriales(i); calcularTotalMateriales(); calcularCostosDirectos();"
+                            data-toggle="tooltip" data-original-title="Eliminar"> <i
+                              class="fa fa-close text-danger"></i> </a>
 
                         </td>
                       </tr>
@@ -206,7 +194,7 @@
 
                 </div>
               </div>
-              <div class="col-md-12">
+              <!--  <div class="col-md-12">
                 <h3 class="box-title">Transporte</h3>
                 <hr class="m-t-0 m-b-40">
 
@@ -228,8 +216,8 @@
                         </td>
                   
                         <td>
-                          <ng-select [items]="transporte" bindLabel="descripcion" placeholder="Seleccione un producto"
-                            [(ngModel)]="item.transporte" name="descripciont{{i}}" [searchable]="true"
+                          <ng-select [items]="filasMateriales" bindLabel="descripcion" placeholder="Seleccione un producto"
+                            [(ngModel)]="item.filasMateriales" name="filasMateriales{{i}}" [searchable]="true"
                             (ngModelChange)="actualizarDatosTransporte($event, i); calcularSubTotalTransporte(i);  calcularTotalTransporte(); calcularCostosDirectos();"></ng-select>
                         </td>
                         <td>
@@ -256,7 +244,7 @@
                                 
                   <div class="col-md-12">
                     <div class="form-group">
-                      <!-- Botón para agregar una nueva fila -->
+                      
                       <button (click)="addFilaTransporte()" class="btn btn-success">
                         Agregar <span class="fa fa-plus" style="padding-left: 10px;"></span>
                       </button>
@@ -265,10 +253,10 @@
                   <div class="col-md-12">
 
                     <div class="row">
-                      <!-- Espaciador -->
+                      
                       <div class="col-md-6"></div>
 
-                      <!-- Detalle -->
+                     
                       <div class="col-md-4">
                         <div class="m-t-30 text-right">
                           <p class="text-right">Total Transporte =</p>
@@ -278,7 +266,7 @@
 
                       </div>
 
-                      <!-- Valores -->
+                     
                       <div class="col-md-2">
                         <div class="pull-right m-t-30 text-right">
                           <p class="text-right">$ {{totalTransporte | number:'1.2-2'}}</p>
@@ -291,7 +279,7 @@
 
                 </div>
               </div>
-
+ -->
 
               <div class="col-md-12">
                 <h3 class="box-title">Equipos, Herramientas y Maquinaria</h3>
@@ -303,7 +291,7 @@
                       <th class="text-center">#</th>
                       <th class="text-center">Descripción</th>
                       <th class="text-center">Cantidad</th>
-                      <th class="text-center">Unidad</th>
+                      <th class="text-center">Depreciación</th>
                       <th class="text-center">Precio</th>
                       <th class="text-center">Total</th>
                       <th class="text-center">Acciones</th>
@@ -328,8 +316,8 @@
 
                         </td>
                         <td>
-                          <input type="text" class="form-control text-right" [(ngModel)]="item.unidade"
-                            name="unidade{{i}}">
+                          <input type="text" class="form-control text-right" [(ngModel)]="item.depreciacion"
+                            name="depreciacion{{i}}"  (ngModelChange)="calcularSubTotalEquipos(i); calcularTotalEquipos(); calcularRendimiento(); calcularCostosDirectos();">
                         </td>
 
                         <td>
@@ -341,8 +329,10 @@
                             name="item.totale{{i}}" disabled>
                         </td>
                         <td class="text-center">
-                           <a class="cursor" (click)="deleteFilaEquipos(i); calcularTotalEquipos(); calcularRendimiento(); calcularCostosDirectos();" data-toggle="tooltip"
-                           data-original-title="Eliminar"> <i class="fa fa-close text-danger"></i> </a>
+                          <a class="cursor"
+                            (click)="deleteFilaEquipos(i); calcularTotalEquipos(); calcularRendimiento(); calcularCostosDirectos();"
+                            data-toggle="tooltip" data-original-title="Eliminar"> <i
+                              class="fa fa-close text-danger"></i> </a>
                         </td>
                       </tr>
                     </tbody>
@@ -390,37 +380,37 @@
                 <div class="table-responsive m-t-5" style="clear: both;">
                   <table class="table table-bordered">
                     <thead>
-                      <th class="text-center">Código</th>
+                      <th class="text-center">#</th>
                       <th class="text-center">Descripción</th>
                       <th class="text-center">Cantidad</th>
                       <th class="text-center">Unidad</th>
-                      <th class="text-center">Precio</th>
-                      <th class="text-center">Total</th>
+                      <th class="text-center">Jornal</th>
+                      <th class="text-center">Total Jornal</th>
                       <th class="text-center">Acciones</th>
                     </thead>
                     <tbody>
                       <tr *ngFor="let item of filasManoObra; let i = index">
-                        <td>
-                          <input type="text" class="form-control text-right" [(ngModel)]="item.codigom"
-                            name="codigom{{i}}">
-                        </td>
+                        
+                          <td class="text-center">{{ i + 1 }}</td>
+                        
 
                         <td>
                           <ng-select [items]="puestos" bindLabel="cargo" placeholder="Seleccione puesto"
                             [(ngModel)]="item.puestos" name="descripcionm{{i}}" [searchable]="true"
-                            (ngModelChange)="actualizarDatosManoObra($event, i); calcularSubTotalManoObra(i);  calcularSubTotalManoObra2(); calcularCostosDirectos();"                            >
+                            (ngModelChange)="actualizarDatosManoObra($event, i); calcularSubTotalManoObra(i);  calcularSubTotalManoObra2(); calcularCostosDirectos();">
                           </ng-select>
 
                         </td>
                         <td>
                           <input type="number" class="form-control text-right" [(ngModel)]="item.cantidadm"
-                            name="cantidadm{{i}}" min="0.0000" (ngModelChange)="calcularSubTotalManoObra(i); calcularSubTotalManoObra2(); calcularCostosDirectos();" >
+                            name="cantidadm{{i}}" min="0.0000"
+                            (ngModelChange)="calcularSubTotalManoObra(i); calcularSubTotalManoObra2(); calcularCostosDirectos();">
                         </td>
                         <td>
                           <input type="text" class="form-control text-right" [(ngModel)]="item.unidadm"
-                            name="unidadm{{i}}">
+                            name="unidadm{{i}}" disabled>
                         </td>
-                        
+
                         <td>
                           <input type="number" class="form-control text-right" [(ngModel)]="item.preciom"
                             name="preciom{{i}}" disabled>
@@ -430,9 +420,11 @@
                             name="totalm{{i}}" disabled>
                         </td>
                         <td class="text-center">
-                          
-                          <a class="cursor" (click)="deleteFilaManoObra(i);  calcularSubTotalManoObra2(); calcularCostosDirectos();" data-toggle="tooltip"
-                           data-original-title="Eliminar"> <i class="fa fa-close text-danger"></i> </a>
+
+                          <a class="cursor"
+                            (click)="deleteFilaManoObra(i);  calcularSubTotalManoObra2(); calcularCostosDirectos();"
+                            data-toggle="tooltip" data-original-title="Eliminar"> <i
+                              class="fa fa-close text-danger"></i> </a>
                         </td>
                       </tr>
                     </tbody>

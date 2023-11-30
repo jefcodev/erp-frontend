@@ -109,6 +109,20 @@
                             <input type="text" class="form-control" id="exampleInputuname"
                                 placeholder="Código Principal" formControlName="codigo_principal">
                         </div>
+                        <label for="exampleInputuname">Tipo de inventario</label>
+                        <div class="input-group">
+                            <select class="form-control" formControlName="id_tipo_inventario">
+                                <option value="">Tipo de inventario</option>
+                                <option *ngFor="let item of tipoInve" [value]="item.id_tipo_inventario"> {{item.descripcion}}</option>
+                            </select>
+                        </div>
+                        <label for="exampleInputuname">Unidad</label>
+                        <div class="input-group">
+                            <select class="form-control" formControlName="id_unidad_medida">
+                                <option value="">Seleccione unidad</option>
+                                <option *ngFor="let item of unidades" [value]="item.id_unidad_medida"> {{item.descripcion}}</option>
+                            </select>
+                        </div>
 
                         <label for="exampleInputuname">Descripción</label>
                         <div class="input-group">
@@ -217,8 +231,8 @@
                         <div class="col-sm-9">
                             <div class="input-group">
                                 <div class="input-group-addon"><i class="ti-user"></i></div>
-                                <input type="text" class="form-control" id="exampleInputuname3" placeholder="Stock Mínimo"
-                                    formControlName="stock_minimo">
+                                <input type="text" class="form-control" id="exampleInputuname3"
+                                    placeholder="Stock Mínimo" formControlName="stock_minimo">
                             </div>
                         </div>
                     </div>
@@ -227,8 +241,8 @@
                         <div class="col-sm-9">
                             <div class="input-group">
                                 <div class="input-group-addon"><i class="ti-user"></i></div>
-                                <input type="text" class="form-control" id="exampleInputuname3" placeholder="Stock Máximo "
-                                    formControlName="stock_maximo">
+                                <input type="text" class="form-control" id="exampleInputuname3"
+                                    placeholder="Stock Máximo " formControlName="stock_maximo">
                             </div>
                         </div>
                     </div>

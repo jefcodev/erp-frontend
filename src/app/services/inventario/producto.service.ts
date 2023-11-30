@@ -13,6 +13,8 @@ import { LoginForm } from '../../interfaces/login-form.iterface';
 // Models
 import { Producto } from 'src/app/models/inventario/producto.model';
 import { LoadPuesto } from 'src/app/interfaces/apu/load-puestos.interface';
+import { TipoInven } from 'src/app/models/inventario/tipos-inv.model';
+
 //import { ProductoU } from 'src/app/models/inventario/producto.model';
 
 // Variable API
@@ -53,8 +55,17 @@ export class ProductoService {
     const url = `${base_url}/inventario/productos/puestos`;
     return this.hhtp.get<LoadPuesto>(url, this.headers);
   }
-
   
+
+  loadTipoInventario(){
+    const url=`${base_url}/inventario/productos/tipos`;
+    return this.hhtp.get(url, this.headers)
+    .pipe(
+      map((resp :{ok:boolean, tipos: TipoInven[]}
+      ) => resp.tipos)
+    )
+  }
+
   
   loadProductosAll() {
     const url = `${base_url}/inventario/productos/all/`;

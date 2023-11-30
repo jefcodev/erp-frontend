@@ -16,6 +16,8 @@ import { QuotationService } from 'src/app/services/quotations/quotation.service'
 import Swal from 'sweetalert2';
 import { Cliente } from 'src/app/models/venta/cliente.model';
 import { ClienteService } from 'src/app/services/venta/cliente.service';
+import { Unit } from 'src/app/models/inventory/unit.model';
+import { UnitService } from 'src/app/services/inventory/unit.service';
 
 
 @Component({
@@ -29,21 +31,22 @@ export class QuotationComponent implements OnInit {
 
   public productos: Producto[] = [];
   public apus: Apu[] = [];
-  public clientes : Cliente [] =[];
+  public clientes: Cliente[] = [];
+  public unidades: Unit[] = [];
 
 
   public fechaActual: string;
   public numeroProforma: string = "PROF-0015";
 
-  
+
 
   /* Variables  */
-  public id_cliente : number ;
+  public id_cliente: number;
 
   razonSocial: string = '';
   telefono: string = '';
   direccion: string = '';
-  email: string= '';
+  email: string = '';
 
   public subTotalPro: number = 0;
   public totalSinImp: number = 0;
@@ -61,13 +64,15 @@ export class QuotationComponent implements OnInit {
   constructor(
     private productoService: ProductoService,
     private apuService: ApuService,
-    private proformaService : QuotationService,
-    private clienteServive : ClienteService,
+    private proformaService: QuotationService,
+    private clienteServive: ClienteService,
+    private unidadService: UnitService,
     private datePipe: DatePipe
   ) { }
   ngOnInit(): void {
     this.fechaActual = this.datePipe.transform(new Date(), 'yyyy/MM/dd');
     this.cargarClientes();
+    this.cargarUnidades();
 
   }
   //customValue = (cliente: any): string => `${cliente.identificacion} ${cliente.razonSocial}`;
@@ -77,7 +82,7 @@ export class QuotationComponent implements OnInit {
   addFilaProforma() {
     //console.log('Id: '+ this.id_cliente);
     this.filasProforma.push({ item: '', item_id: '', cantidad: null, unidad: '', precio_unitario: null, descuento: 0, total: null });
-    
+
   }
   deleteFilaProforma(index: number) {
     if (this.filasProforma.length >= 1) {
@@ -92,6 +97,11 @@ export class QuotationComponent implements OnInit {
       // Si se ha seleccionado un producto, actualiza el campo de "precio" en la fila correspondiente
       this.filasProforma[indice].precio_unitario = productoSeleccionado.precio_venta;
       this.filasProforma[indice].item_id = productoSeleccionado.id_producto;
+      //this.filasProforma[indice].unidad = productoSeleccionado.id_unidad_medida;
+
+      const unidadSeleccionada = this.unidades.find(u => u.id_unidad_medida === productoSeleccionado.id_unidad_medida);
+      this.filasProforma[indice].unidad = unidadSeleccionada ? unidadSeleccionada.descripcion : '';
+
 
     }
   }
@@ -100,12 +110,14 @@ export class QuotationComponent implements OnInit {
       // Si se ha seleccionado un producto, actualiza el campo de "precio" en la fila correspondiente
       this.filasProforma[indice].precio_unitario = apuSeleccionado.total;
       this.filasProforma[indice].item_id = apuSeleccionado.id_capitulo;
+      this.filasProforma[indice].unidad = apuSeleccionado.unidad;
+
     }
   }
 
 
   cargarDetallesCliente() {
-    
+
     const clienteSeleccionado = this.clientes.find(cliente => cliente.id_cliente === this.id_cliente);
 
     if (clienteSeleccionado) {
@@ -122,6 +134,15 @@ export class QuotationComponent implements OnInit {
       this.email = '';
     }
   }
+
+
+  cargarUnidades() {
+    this.unidadService.cargarUnits().
+      subscribe(unidades => {
+        this.unidades = unidades;
+      })
+  }
+
 
   calcularSubTotalPro(indice: number) {
     const fila = this.filasProforma[indice];
@@ -156,11 +177,11 @@ export class QuotationComponent implements OnInit {
 
 
 
-  cargarClientes(){
+  cargarClientes() {
     this.clienteServive.loadClientesAll()
-    .subscribe(({clientes})=>{
-      this.clientes = clientes;
-    })
+      .subscribe(({ clientes }) => {
+        this.clientes = clientes;
+      })
   }
 
 
@@ -189,7 +210,7 @@ export class QuotationComponent implements OnInit {
       total: this.totalPro,
       productos: this.filasProforma
     };
-    
+
     this.proformaService.createProfroma(proforma).subscribe(
       (response) => {
         Swal.fire({

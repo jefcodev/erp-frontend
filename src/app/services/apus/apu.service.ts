@@ -21,8 +21,6 @@ export class ApuService {
   constructor(private  http: HttpClient) { }
 
 
-
-
   
   get token(): string {
     return localStorage.getItem('token');

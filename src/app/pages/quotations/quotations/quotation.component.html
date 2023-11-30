@@ -8,7 +8,7 @@
             <div class="row p-t-20">
 
 
-              <div class="col-md-4">
+              <div class="col-md-8">
                 <div class="form-group">
                   <label for="exampleInputuname">Cliente </label>
                   <div class="input-group">
@@ -28,16 +28,7 @@
                   </div>
                 </div>
               </div>
-              <div class="col-md-4">
-                <div class="form-group">
-                  <label for="exampleInputuname">Razón Social</label>
-                  <div class="input-group">
-                    <div class="input-group-addon"><i class="ti-user"></i></div>
-                    <input type="text" class="form-control" id="exampleInputuname" placeholder="Razón Social"
-                      [(ngModel)]="razonSocial" name="razonSocial" readonly>
-                  </div>
-                </div>
-              </div>
+             
               <div class="col-md-4">
                 <div class="form-group">
                   <label for="exampleInputuname">Fecha Proforma</label>
@@ -49,8 +40,17 @@
                 </div>
               </div>
 
-
-              <div class="col-md-4">
+              <div class="col-md-3">
+                <div class="form-group">
+                  <label for="exampleInputuname">Razón Social</label>
+                  <div class="input-group">
+                    <div class="input-group-addon"><i class="ti-user"></i></div>
+                    <input type="text" class="form-control" id="exampleInputuname" placeholder="Razón Social"
+                      [(ngModel)]="razonSocial" name="razonSocial" readonly>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
                 <div class="form-group">
                   <label for="exampleInputuname">Dirección</label>
                   <div class="input-group">
@@ -60,7 +60,7 @@
                   </div>
                 </div>
               </div>
-              <div class="col-md-4">
+              <div class="col-md-3">
                 <div class="form-group">
                   <label for="exampleInputuname">Teléfono</label>
                   <div class="input-group">
@@ -70,7 +70,7 @@
                   </div>
                 </div>
               </div>
-              <div class="col-md-4">
+              <div class="col-md-3">
                 <div class="form-group">
                   <label for="exampleInputuname">Email</label>
                   <div class="input-group">
@@ -133,16 +133,16 @@
                           <td>
                             <input type="number" min="0.0000" class="form-control text-right"
                               [(ngModel)]="item.cantidad" name="cantidad{{i}}"
-                              (ngModelChange)="calcularSubTotalPro(i); calcularTotal();   ">
+                              (ngModelChange)="calcularSubTotalPro(i); calcularTotal();">
                           </td>
                           <td>
                             <input type="text" class="form-control text-right" [(ngModel)]="item.unidad"
-                              name="unidad{{i}}">
+                              name="unidad{{i}}" disabled>
                           </td>
                           <td>
                             <input type="number" class="form-control text-right" [(ngModel)]="item.precio_unitario"
                               name="precio_unitario{{i}}" min="0.0000"
-                              (ngModelChange)="calcularSubTotalPro(i); calcularTotal();   ">
+                              (ngModelChange)="calcularSubTotalPro(i); calcularTotal();">
                           </td>
                           <td>
                             <input type="number" class="form-control text-right" [(ngModel)]="item.descuento"
@@ -173,11 +173,9 @@
                       </div>
                     </div>
                     <div class="col-md-12">
-
                       <div class="row">
                         <!-- Espaciador -->
                         <div class="col-md-6"></div>
-
                         <!-- Detalle -->
                         <div class="col-md-4">
                           <div class="m-t-30 text-right">
@@ -203,19 +201,11 @@
                       </div>
                       <br>
                     </div>
-
                   </div>
                 </div>
               </div>
             </div>
-
           </div>
-          <!-- <div class="form-actions">
-                        <button type="submit" class="btn btn-success"> <i class="fa fa-check"></i> Crear</button>
-                        <button type="button" class="btn btn-inverse">Cancel</button>
-                        <button  type="submit" class=" btn btn-success"> <i class="fa fa-check"></i>
-                            Crear Compra</button>
-                    </div> -->
           <div class="form-actions">
             <button type="submit" class="btn btn-inverse" (click)="crearProforma()">Crear Proforma</button>
           </div>
@@ -223,5 +213,4 @@
       </div>
     </div>
   </div>
-
 </div>
