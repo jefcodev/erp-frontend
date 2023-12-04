@@ -54,7 +54,7 @@ export class AsientoComponent implements OnInit {
   // Modal Update Asiento
   public asientoFormU: FormGroup;
   public asientoSeleccionado: Asiento;
-  public detalles_asiento: DetalleAsiento[] = [];
+  public detalles_asientos: DetalleAsiento[] = [];
   public id_asiento: number;
   public total_debe: number;
   public total_haber: number;
@@ -528,11 +528,11 @@ export class AsientoComponent implements OnInit {
   // Método para cargar detalles asiento por id asiento en Modal Update Asiento
   cargarDetallesAsientoByIdAsiento(id_asiento: any) {
     this.detalleAsientoService.loadDetallesAsientoByIdAsiento(id_asiento)
-      .subscribe(({ detalles_asiento, total_debe, total_haber }) => {
-        this.detalles_asiento = detalles_asiento;
+      .subscribe(({ detalles_asientos, total_debe, total_haber }) => {
+        this.detalles_asientos = detalles_asientos;
         this.total_debe = total_debe;
         this.total_haber = total_haber;
-        console.log("detalles_asiento: ", detalles_asiento)
+        console.log("detalles_asientos: ", detalles_asientos)
         console.log("total_debe: ", total_debe)
         console.log("total_haber: ", total_haber)
       })
