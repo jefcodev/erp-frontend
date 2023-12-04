@@ -35,27 +35,27 @@ export class PagoService {
   }
 
   loadPagos(desde: number = 0, limit: number = 0) {
-    const url = `${base_url}/pagos?desde=${desde}&limit=${limit}`;
+    const url = `${base_url}/contabilidad/pagos?desde=${desde}&limit=${limit}`;
     return this.http.get<LoadPago>(url, this.headers);
   }
 
   loadPagosAll() {
-    const url = `${base_url}/pagos/all`;
+    const url = `${base_url}/contabilidad/pagos/all`;
     return this.http.get<LoadPago>(url, this.headers);
   }
 
   loadPagosByIdCompra(id_compra: any) {
-    const url = `${base_url}/pagos/compra/${id_compra}`;
+    const url = `${base_url}/contabilidad/pagos/compra/${id_compra}`;
     return this.http.get<LoadPago>(url, this.headers);
   }
 
   loadPagosByIdVenta(id_compra: any) {
-    const url = `${base_url}/pagos/venta/${id_compra}`;
+    const url = `${base_url}/contabilidad/pagos/venta/${id_compra}`;
     return this.http.get<LoadPago>(url, this.headers);
   }
 
   loadPagoById(id_pago: any) {
-    const url = `${base_url}/pagos/id/${id_pago}`;
+    const url = `${base_url}/contabilidad/pagos/id/${id_pago}`;
     return this.http.get(url, this.headers)
       .pipe(
         map((resp: { ok: boolean, pago: Pago }) => resp.pago)
@@ -63,7 +63,7 @@ export class PagoService {
   }
 
   createPago(formData: any) {
-    const url = `${base_url}/pagos`;
+    const url = `${base_url}/contabilidad/pagos`;
     return this.http.post(url, formData, this.headers)
       .pipe(
         map((resp: { ok: boolean, pago: Pago[] }) => resp.pago)
@@ -71,12 +71,12 @@ export class PagoService {
   }
 
   updatePago(pago: Pago) {
-    const url = `${base_url}/pagos/${pago.id_pago}`;
+    const url = `${base_url}/contabilidad/pagos/${pago.id_pago}`;
     return this.http.put(url, pago, this.headers);
   }
 
   deletePago(id_pago: any) { //OJO: any
-    const url = `${base_url}/pagos/${id_pago}`;
+    const url = `${base_url}/contabilidad/pagos/${id_pago}`;
     return this.http.delete(url, this.headers);
   }
 

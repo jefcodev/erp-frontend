@@ -91,6 +91,7 @@
                                     <span class="fa fa-download"></span> Importar XML
                                 </button>
                                 -->
+                                <!--
                                 <div class="btn-group">
                                     <button type="button" class="btn btn-secondary dropdown-toggle"
                                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -114,10 +115,11 @@
                                             <i class="fa fa-cog"></i> Configuración </a>
                                     </div>
                                 </div>
+                                -->
                                 <div class="btn-group">
                                     <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown"
                                         aria-haspopup="true" aria-expanded="false">
-                                        Emisión
+                                        Nueva Compra
                                     </button>
                                     <div class="dropdown-menu" x-placement="bottom-start"
                                         style="position: absolute; transform: translate3d(0px, 36px, 0px); top: 0px; left: 0px; will-change: transform;">
@@ -145,7 +147,7 @@
                                 <div class="btn-group">
                                     <button type="button" class="btn btn-secondary dropdown-toggle"
                                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        Emisión XML
+                                        Cargar Compra XML
                                     </button>
                                     <div class="dropdown-menu" x-placement="bottom-start"
                                         style="position: absolute; transform: translate3d(0px, 36px, 0px); top: 0px; left: 0px; will-change: transform;">
@@ -1234,7 +1236,7 @@
                             <thead>
                                 <tr>
                                     <th class="text-center">#</th>
-                                    <th class="text-right">Código</th>
+                                    <th class="text-left">Código</th>
                                     <th class="text-center">Cantidad</th>
                                     <th class="text-center">Descripción </th>
                                     <th class="text-right">Precio Unitario</th>
@@ -1247,14 +1249,14 @@
                             <tbody>
                                 <tr *ngFor="let df of detalles_compra let i = index">
                                     <td class="text-center">{{ i + 1 }}</td>
-                                    <td class="text-center">{{df.id_producto}}</td>
+                                    <td class="text-left">{{df.id_producto}}</td>
                                     <td class="text-center">{{ df.cantidad | number: '1.2-2' }}</td>
                                     <td>{{df.descripcion}}</td>
                                     <td class="text-right">{{df.precio_unitario | number: '1.2-2' }}</td>
                                     <td class="text-right">{{df.descuento}}</td>
-                                    <td class="text-right">{{df.tarifa}}</td>
+                                    <td class="text-center">{{df.tarifa | number: '1.0-0'}}%</td>
                                     <td class="text-right">{{df.valor}}</td>
-                                    <td class="text-right">{{df.precio_total_sin_impuesto}}</td>
+                                    <td class="text-right">{{df.precio_total}}</td>
                                     <ng-template #inactivoOption>
                                     </ng-template>
                                 </tr>

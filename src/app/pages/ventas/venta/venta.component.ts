@@ -1239,7 +1239,7 @@ export class VentaComponent implements OnInit {
       .subscribe(res => {
         Swal.fire({
           icon: 'success',
-          title: 'Venta actualizada',
+          title: 'Venta Actualizada',
           text: 'Venta se ha actualizado correctamente',
           showConfirmButton: false,
           timer: 1500
