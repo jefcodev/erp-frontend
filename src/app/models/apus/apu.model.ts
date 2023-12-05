@@ -1,5 +1,6 @@
 // models/apu.model.ts
 export class Apu {
+    id_capitulo?: number;
     codigo: string;
     nombre: string;
     descripcion: string;

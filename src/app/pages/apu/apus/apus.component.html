@@ -26,8 +26,50 @@
     <div class="col-12">
         <div class="card">
             <div class="card-body">
-                <h4 class="card-title">Bordered Table</h4>
-                <h6 class="card-subtitle">Add<code>.table-bordered</code>for borders on all sides of the table and cells.</h6>
+                <h4 class="card-title">Lista de APU's</h4>
+                <h6 class="card-subtitle"> Lista de Análisis de Precios Unitarios</h6>
+                <div class="row p-t-12">
+                    <div class="col-md-4">
+                        <!-- Mostrar archivos -->
+                        <div class="dataTables_length" id="myTable_length">
+                            <label>Mostrar
+                                <select name="myTable_length" aria-controls="myTable" class="">
+                                    <option value="10">10</option>
+                                    <option value="25">25</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select> datos</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <!-- Acciones -->
+                        <div class="dt-buttons" style="text-align: center;">
+
+                            <a class="dt-button buttons-copy buttons-html5 cursor" tabindex="0"
+                                aria-controls="example23" routerLink="/dashboard/apu" >
+                                <span>
+                                    <i class=" mdi mdi-plus"></i>
+                                    Nuevo</span></a>
+
+                          <!--   <button class="btn btn-info waves-effect waves-light" data-toggle="modal"
+                                data-target="#exampleModal" type="button">
+                                <span class="fa fa-plus" style="padding-left:0px;"></span>&nbsp;Nuevo XD
+                            </button> -->
+
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <!-- Buscador -->
+                        <div id="myTable_filter" class="dataTables_filter">
+                            <label>Buscar:
+                                <input type="search" class="" placeholder="" aria-controls="myTable" >
+                               
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <!-- End, row acciones header table -->
+
                 <div class="table-responsive">
                     <table class="table table-striped">
                         <thead>
@@ -50,20 +92,12 @@
                                 <td>{{item.unidad}}</td>
                                 <td>{{item.total}}</td>
                                 <td class="text-nowrap">
-                                    <button class="btn btn-warning btn-sm m-r-5" data-toggle="modal"
-                                        data-target="#modalApu">
-                                        <i class="fa fa-pencil"></i>
-                                    </button>
                                     <button class="btn btn-info btn-sm m-r-5" data-toggle="modal"
                                         data-target="#modalApu">
                                         <i class="fa fa-eye"></i>
                                     </button>
-                                  <a href="#" data-toggle="tooltip" data-original-title="Edit"> <i class="fa fa-pencil text-inverse m-r-10"></i> </a>
-                                  <a href="#" data-toggle="tooltip" data-original-title="Close"> <i class="fa fa-close text-danger"></i> </a>
                                 </td>
                               </tr>
-                              
-                            
                         </tbody>
                         
                     </table>
@@ -201,11 +235,8 @@
                                     <th class="text-center">#</th>
                                     <th class="text-right">Código</th>
                                     <th class="text-center">Cantidad</th>
-                                    <th class="text-center">Descripción </th>
                                     <th class="text-right">Precio Unitario</th>
                                     <th class="text-right">Descuento</th>
-                                    <th class="text-center">Tarifa</th>
-                                    <th class="text-right">Valor</th>
                                     <th class="text-right">Precio Total</th>
                                 </tr>
                             </thead>

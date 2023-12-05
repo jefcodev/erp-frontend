@@ -22,9 +22,9 @@
                     <ng-select [(ngModel)]="id_cliente" name="id_cliente" (ngModelChange)="cargarDetallesCliente()">
                       <ng-option *ngFor="let item of clientes" [value]="item.id_cliente" >{{item.identificacion}} - {{item.razon_social}}</ng-option>
                    </ng-select>
-                    <button class="btn btn-success" data-toggle="modal" data-target="#modalCliente" type="button">
+                    <!-- <button class="btn btn-success" data-toggle="modal" data-target="#modalCliente" type="button">
                       <span class="fa fa-plus"></span> Nuevo
-                    </button>
+                    </button> -->
                   </div>
                 </div>
               </div>

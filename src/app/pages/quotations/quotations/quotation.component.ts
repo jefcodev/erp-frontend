@@ -67,7 +67,8 @@ export class QuotationComponent implements OnInit {
     private proformaService: QuotationService,
     private clienteServive: ClienteService,
     private unidadService: UnitService,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
+    private router:  Router
   ) { }
   ngOnInit(): void {
     this.fechaActual = this.datePipe.transform(new Date(), 'yyyy/MM/dd');
@@ -201,14 +202,18 @@ export class QuotationComponent implements OnInit {
   }
 
 
-
+  recargarComponente() {
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this.router.navigate(['/dashboard/quotations']);
+    });
+  }
   crearProforma() {
     const proforma: Proforma = {
       id_cliente: this.id_cliente,
       fecha: this.fechaActual,
       descuento: this.totalDescuento,
       total: this.totalPro,
-      productos: this.filasProforma
+      detalle: this.filasProforma
     };
 
     this.proformaService.createProfroma(proforma).subscribe(
@@ -220,6 +225,7 @@ export class QuotationComponent implements OnInit {
           showConfirmButton: false,
           timer: 1500
         });
+        this.recargarComponente();
       },
       (error) => {
         Swal.fire('Error', error, 'error');

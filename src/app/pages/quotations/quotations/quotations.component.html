@@ -1,38 +1,54 @@
-<div class="row animated fadeIn fast">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-body">
-                <input type="text" class="form-control" placeholder="Buscar...">
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- <div class="row animated fadeIn fast"
-        *ngIf="cargando">
-    <div class="col-12">
-        <div class="alert alert-info text-center">
-            <h4 class="alert-heading"> Cargando</h4>
-            <i class="fa fa-spin fa-refresh fa-2x"></i>
-            <p class="mb-0">Por favor espere</p>
-
-        </div>
-    </div>
-</div> -->
 
 <div class="row animated fadeIn fast">
     <div class="col-12">
         <div class="card">
             <div class="card-body">
-                <h4 class="card-title">Bordered Table</h4>
-                <h6 class="card-subtitle">Add<code>.table-bordered</code>for borders on all sides of the table and
-                    cells.</h6>
+                <h4 class="card-title">Proformas</h4>
+                <h6 class="card-subtitle"> Lista de proformas </h6>
+                <div class="row p-t-12">
+                    <div class="col-md-4">
+                        <!-- Mostrar archivos -->
+                        <div class="dataTables_length" id="myTable_length">
+                            <label>Mostrar
+                                <select name="myTable_length" aria-controls="myTable" class="">
+                                    <option value="10">10</option>
+                                    <option value="25">25</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select> datos</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <!-- Acciones -->
+                        <div class="dt-buttons" style="text-align: center;">
+
+                            <a class="dt-button buttons-copy buttons-html5 cursor" tabindex="0"
+                                aria-controls="example23" routerLink="/dashboard/quotation">
+                                <span>
+                                    <i class=" mdi mdi-plus"></i>
+                                    Nueva</span></a>
+
+                         
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <!-- Buscador -->
+                        <div id="myTable_filter" class="dataTables_filter">
+                            <label>Buscar:
+                                <input type="search" class="" placeholder="" aria-controls="myTable" >
+                               
+                            </label>
+                        </div>
+                    </div>
+                </div>
                 <div class="table-responsive">
                     <table class="table table-striped">
                         <thead>
                             <tr>
-                                <th class="text-center w400">Cliente</th>
                                 <th class="text-center">Fecha</th>
+                                <th class="text-center">Código</th>
+                                <th class="text-center w400">Cliente</th>
                                 <th class="text-center">Descuento</th>
                                 <th class="text-center">Total</th>
                                 <th class="text-center">Estado</th>
@@ -41,6 +57,8 @@
                         </thead>
                         <tbody>
                             <tr *ngFor="let item of proformas">
+                                <td class="text-center">{{item.fecha | date:'dd-MMM-yyyy'}}</td>
+                                <td class="text-center">PRO-00{{item.id_proforma}}</td>
                                 <td>
                                     <ng-container *ngFor="let cliente of clientes">
                                         <ng-container
@@ -48,29 +66,29 @@
                                     </ng-container>
 
                                 </td>
-                                <td class="text-center">{{item.fecha}}</td>
                                 <td class="text-right">$ {{item.descuento}}</td>
                                 <td class="text-right">$ {{item.total}}</td>
                                 <td class="text-center">
                                     <div
-                                        [class]="'label label-table ' + (item.estado ? 'label-info' : 'label-warning')">
-                                        {{ item.estado ? 'FACTURA' : 'PROFORMA' }}
+                                        [class]="'label label-table ' + (item.estado ? 'label-info' : 'label-danger')">
+                                        {{ item.estado ? 'FACTURADO' : 'PROFORMA' }}
                                     </div>
                                 </td>
 
 
                                 <td class="text-center">
-                                    <button class="btn btn-success btn-sm m-r-5" data-toggle="modal"
-                                        data-target="#nombreModal">
-                                        <i class="fa fa-pencil"></i>
-                                    </button>
-                                    <button class="btn btn-success btn-sm m-r-5" data-toggle="modal"
-                                        data-target="#nombreModal">
-                                        <i class="fa fa-pencil"></i>
-                                    </button>
-                                    <button class="btn btn-info btn-sm m-r-5" data-toggle="modal"
-                                        data-target="#nombreModal">
+                                    <button class="btn btn-info btn-sm m-r-5" data-toggle="modal" (click)="generarPDF(item.id_proforma)"
+                                       >
                                         <i class="fa fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-warning btn-sm m-r-5" data-toggle="modal"
+                                        data-target="#modalUpdate" (click)="cargarValores(item.id_proforma)">
+                                        <i class="fa fa-pencil"></i>
+                                    </button>
+                                    
+                                    <button  *ngIf="!item.estado" class="btn btn-success btn-sm m-r-5" data-toggle="modal"
+                                    (click)="crearProformaFactura(item.id_proforma, item)">
+                                        <i class="fa fa-file-text-o"></i>
                                     </button>
                                 </td>
                             </tr>
@@ -87,3 +105,306 @@
         </div>
     </div>
 </div>
+
+
+<!-- Modal Update Proveedores -->
+<div class="modal fadeIn fast modal-principal" id="modalUpdate" tabindex="-1" role="dialog"
+    aria-labelledby="exampleModalLabel1" #miModal>
+    <div class="modal-dialog" role="document" style="width: 100%;" max-width="1000px;">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title" id="exampleModalLabel1">
+                    Visulizar Proforma</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <div class="text-center">
+                    <h3><b>Editar Proforma</b></h3>
+                    
+                </div>
+                <br>
+
+                <form autocomplete="off">
+
+                    <!-- Factura Form Data-->
+                    <div class="row" *ngFor="let item of proformaEdit">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Código</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-id-badge"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder="Identificación" name="item.id_cliente" [(ngModel)]="item.id_cliente" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Nombre</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-user"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder="Razón Social" name="item.fecha" [(ngModel)]="item.fecha" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Descripción</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-location-pin"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder="Descripción" name="item.descuento" [(ngModel)]="item.descuento" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Rendimiento</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-mobile"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder="Rendimiento" name="item.total" [(ngModel)]="item.total" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Unidad</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-email"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname" placeholder="Email"
+                                    name="item.total" [(ngModel)]="item.total" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Asiento</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-file"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname" placeholder="Asiento"
+                                         readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Fecha Emisión</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-calendar"></i></div>
+                                    <input type="text" class="form-control" id="exampleInputuname"
+                                        placeholder="Fecha Emisión" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="exampleInputuname">Fecha vencimiento</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="ti-calendar"></i></div>
+                                    <input type="date" class="form-control" id="exampleInputuname"
+                                        placeholder="Fecha Vencimiento" 
+                                        >
+                                </div>
+                                <div class="error-message text-danger"
+                                    >
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Detalle Table Data -->
+                    <div class="table-responsive">
+                        <table id="demo-foo-addrow"
+                            class="table m-t-30 table-hover contact-list footable-loaded footable" data-page-size="10">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">#</th>
+                                    <th class="text-right">Código</th>
+                                    <th class="text-center">Cantidad</th>
+                                    <th class="text-right">Precio Unitario</th>
+                                    <th class="text-right">Descuento</th>
+                                    <th class="text-right">Precio Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                               
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <!--paginador-->
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <hr>
+
+                    
+
+                    <!-- Factura Form 2 -->
+                    <div class="col-md-12">
+                        <div class="clearfix"></div>
+                        <div class="row">
+                            <div class="col-md-3">
+                               
+                            </div>
+                            <div class="col-md-3">
+                               
+                            </div>
+
+                            <!-- Detalle -->
+                            <div class="col-md-3">
+                                <div class="pull-right m-t-30 text-right">
+                                    <p>SUBTOTAL SIN IMPUESTOS: </p>
+                                    <p>SUBTOTAL 12%: </p>
+                                    <p>SUBTOTAL 0%: </p>
+                                    <p>TOTAL DESCUENTO: </p>
+                                    <p>IVA 12%: </p>
+                                    <h3 class="left-align"><b>VALOR TOTAL: </b></h3>
+                                </div>
+                            </div>
+
+                            <!-- Valores -->
+                            <div class="col-md-3">
+                                <div class="pull-right m-t-30 text-right">
+                                    <p>$ 0.00</p>
+                                    <p>$ 0.00</p>
+                                    <p>$ 0.00</p>
+                                    <p>$ 0.00</p>
+                                    <p>$ 0.00</p>
+                                    <h3>$ 0.00</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" 
+                    data-dismiss="modal"></button>
+                <button type="button" class="btn btn-info"
+                    [disabled]="  0">Actualizar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Table Data Factura */
+
+    /* CSS personalizado para espaciar los botones */
+    .float-left .btn {
+        margin-right: 5px;
+        /* Ajusta este valor según el espacio deseado */
+    }
+
+    /* Modal Create Factura */
+
+    .modal-dialog {
+        max-width: 80%;
+        /* Ajusta el valor según tus necesidades */
+        margin: 30px auto;
+    }
+
+    .left-align {
+        /* Alinea a la izquierda la etiqueta  VALOR TOTAL */
+        text-align: left;
+    }
+
+    /* Modal Create Cliente */
+
+    .clientes-filtrados {
+        position: absolute;
+        z-index: 9999;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    /* Modal Create Cliente */
+    .modal-custom .modal-dialog {
+        max-width: 30%;
+        /* Ajusta el valor según tus necesidades */
+        margin: 30px auto;
+    }
+
+    /* Modal XML */
+    .custom-file-upload {
+        display: inline-block;
+        padding: 6px 20px;
+        cursor: pointer;
+        background-color: #007bff;
+        color: #fff;
+        border: 1px solid #007bff;
+        border-radius: 5px;
+    }
+
+    .custom-file-upload:hover {
+        background-color: #0056b3;
+    }
+
+    /*
+    .custom-file-upload {
+        display: inline-block;
+        padding: 6px 20px;
+        cursor: pointer;
+        background-color: #007bff;
+        color: #fff;
+        border: 1px solid #007bff;
+        border-radius: 5px;
+    }
+
+    .custom-file-upload:hover {
+        background-color: #0056b3;
+    }
+
+    */
+
+    /* Modal Cliente */
+    .modal-body-aux {
+        padding-bottom: 0px;
+    }
+
+    .material-aux {
+        font-weight: 300;
+    }
+
+    .custom-width-modal .modal-content {
+        max-width: 500px;
+        /* Cambia este valor al ancho deseado */
+        margin: 0 auto;
+        /* Centra el modal en la ventana */
+    }
+
+    /* fecha de vencimiento  */
+    .fecha-vencida {
+        color: red;
+        /* O cualquier estilo que desees para fechas vencidas */
+    }
+
+    .fecha-no-vencida {
+        color: rgb(29, 0, 215);
+        /* O cualquier estilo que desees para fechas no vencidas */
+    }
+
+    /* Totales*/
+
+    .row-item {
+        margin-bottom: 5px;
+    }
+
+    .column-item {
+        border-right: 50px solid transparent;
+        /* Ajusta este valor según tus preferencias */
+    }
+</style>

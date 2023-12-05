@@ -73,7 +73,8 @@ export class ApuComponent implements OnInit {
 
   constructor(private apuService: ApuService,
     private unidadesService: UnitService,
-    private productoService: ProductoService
+    private productoService: ProductoService,
+    private router: Router
   ) { }
 
 
@@ -106,7 +107,7 @@ export class ApuComponent implements OnInit {
 
   /* Add & Delete Filas Equipos */
   addFilaEquipos() {
-    this.filasEquipos.push({ codige: '', descripcione: '', cantidade: null, depreciacion: 0.005 , unidade: '', precioe: null, totale: null });
+    this.filasEquipos.push({ codige: '', descripcione: '', cantidade: null, depreciacion: 0.05 , unidade: '', precioe: null, totale: null });
   }
   deleteFilaEquipos(index: number) {
     if (this.filasEquipos.length >= 1) {
@@ -379,6 +380,11 @@ export class ApuComponent implements OnInit {
   }
 
 
+  recargarComponente() {
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this.router.navigate(['/dashboard/apus']);
+    });
+  }
 
   /* Métodos Crear */
 
@@ -410,6 +416,7 @@ export class ApuComponent implements OnInit {
           showConfirmButton: false,
           timer: 1500
         });
+        this.recargarComponente();
       },
       (error) => {
         Swal.fire('Error', error, 'error');
