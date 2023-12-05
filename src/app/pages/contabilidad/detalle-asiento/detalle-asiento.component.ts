@@ -57,18 +57,20 @@ export class DetalleAsientoComponent implements OnInit {
   }
 
   cargarDetalleAsientos() {
-    this.detalleAsientoService.loadDetalleAsientos()
-      .subscribe(({ detalles_asiento }) => {
-        this.detalle_asientos = detalles_asiento;
+    this.detalleAsientoService.loadDetallesAsientos()
+      .subscribe(({ detalles_asientos }) => {
+        this.detalle_asientos = detalles_asientos;
+        console.log("holis: ", detalles_asientos)
       })
-  }
-
-  cargarDetalleAsientoPorId(id_detalle_asiento: any) {
-    this.detalleAsientoService.loadDetalleAsientoById(id_detalle_asiento)
-      .subscribe(detalle_asiento => {
-        const { codigo, descripcion} = detalle_asiento[0];
-        this.detalleAsientoSeleccionado = detalle_asiento[0];
+    }
+    
+    cargarDetalleAsientoPorId(id_detalle_asiento: any) {
+      this.detalleAsientoService.loadDetallesAsientoById(id_detalle_asiento)
+      .subscribe(detalle_asientos => {
+        const { codigo, descripcion} = detalle_asientos[0];
+        this.detalleAsientoSeleccionado = detalle_asientos[0];
         this.detalleAsientoFormU.setValue({ codigo, descripcion })
+        console.log("holis 2: ", detalle_asientos[0])
         //this.detalleAsientoFormU.setValue({ descripcion })
       })
   }

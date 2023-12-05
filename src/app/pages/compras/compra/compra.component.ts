@@ -1176,7 +1176,7 @@ export class CompraComponent implements OnInit {
       .subscribe(res => {
         Swal.fire({
           icon: 'success',
-          title: 'Compra actualizada',
+          title: 'Compra Actualizada',
           text: 'Compra se ha actualizado correctamente',
           showConfirmButton: false,
           timer: 1500

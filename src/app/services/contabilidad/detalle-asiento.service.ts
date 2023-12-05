@@ -36,21 +36,21 @@ export class DetalleAsientoService {
     }
   }
 
-  loadDetalleAsientos() {
-    const url = `${base_url}/detalle-asientos`;
+  loadDetallesAsientos() {
+    const url = `${base_url}/contabilidad/detalles-asientos`;
     return this.hhtp.get<LoadDetalleAsiento>(url, this.headers);
   }
 
-  loadDetalleAsientoById(id_detalle_asiento: any) {
-    const url = `${base_url}/detalle-asientos/${id_detalle_asiento}`;
+  loadDetallesAsientoById(id_detalle_asiento: any) {
+    const url = `${base_url}/contabilidad/detalles-asientos/${id_detalle_asiento}`;
     return this.hhtp.get(url, this.headers)
       .pipe(
-        map((resp: { ok: boolean, detalle_asiento: DetalleAsiento }) => resp.detalle_asiento)
+        map((resp: { ok: boolean, detalles_asientos: DetalleAsiento }) => resp.detalles_asientos)
       )
   }
 
   loadDetallesAsientoByIdAsiento3(id_asiento: any) {
-    const url = `${base_url}/contabilidad/detalle-asientos/asiento/${id_asiento}`;
+    const url = `${base_url}/contabilidad/detalles-asientos/asiento/${id_asiento}`;
     return this.hhtp.get(url, this.headers)
       .pipe(
         map((resp: { ok: boolean, detalle_asiento: DetalleAsiento, total_debe: number, total_haber: number }) => resp.detalle_asiento)
@@ -58,12 +58,12 @@ export class DetalleAsientoService {
   }
 
   loadDetallesAsientoByIdAsiento(id_asiento: any) {
-    const url = `${base_url}/contabilidad/detalle-asientos/asiento/${id_asiento}`;
+    const url = `${base_url}/contabilidad/detalles-asientos/asiento/${id_asiento}`;
     return this.hhtp.get<LoadDetalleAsiento>(url, this.headers);
   }
 
   createDetalleAsiento(formData: any) {
-    const url = `${base_url}/detalle-asientos`;
+    const url = `${base_url}/detalles-asientos`;
     return this.hhtp.post(url, formData, this.headers)
       .pipe(
         map((resp: { ok: boolean, detalle_asiento: DetalleAsiento[] }) => resp.detalle_asiento)
@@ -71,7 +71,7 @@ export class DetalleAsientoService {
   }
 
   createDetalleAsientoArray(detalles: DetalleAsiento[]) {
-    const url = `${base_url}/contabilidad/detalle-asientos`;
+    const url = `${base_url}/contabilidad/detalles-asientos`;
     const formData = { detalles }; // Crear un objeto con una propiedad 'detalles' que contenga el arreglo de detalles
     return this.hhtp.post(url, formData, this.headers).pipe(
       map((resp: { ok: boolean; detalle_asiento: DetalleAsiento[] }) => resp.detalle_asiento)
@@ -79,7 +79,7 @@ export class DetalleAsientoService {
   }
 
   updateDetalleAsiento(detalle_asiento: DetalleAsientoU) {
-    const url = `${base_url}/detalle-asientos/${detalle_asiento.id_detalle_asiento}`;
+    const url = `${base_url}/contabilidad/detalles-asientos/${detalle_asiento.id_detalle_asiento}`;
     return this.hhtp.put(url, detalle_asiento, this.headers);
   }
 
